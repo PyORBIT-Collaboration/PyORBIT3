@@ -1,0 +1,17 @@
+name: pyorbit
+channels:
+  - ics-conda-forge
+  - conda-forge
+  - anaconda-main
+  - conda-e3-virtual
+dependencies:
+  - python=3.10
+  - gxx
+  - gcc
+  - mc
+  - fftw
+variables:
+  ORBIT3_ROOT: /nfs/Linacshare_controlroom/MCR/pyorbit
+  PYTHON3_ROOT_INC: /home/operator-mcr/.conda/envs/pyorbit/include/python3.10
+  PYTHON3_ROOT_LIB: -L/home/operator-mcr/.conda/envs/pyorbit/lib/ -lpython3.10
+prefix: /home/operator-mcr/.conda/envs/pyorbit
