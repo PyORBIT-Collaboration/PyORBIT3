@@ -279,7 +279,7 @@ extern "C" {
   static void Function_del(pyORBIT_Object* self){
 		//std::cerr<<"The Function __del__ has been called!"<<std::endl;
 		delete ((Function*)self->cpp_obj);
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 	
 	// defenition of the methods of the python Function wrapper class
@@ -320,8 +320,7 @@ extern "C" {
 	
 	//new python Function wrapper type definition
 	static PyTypeObject pyORBIT_Function_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL, 0)
 		"Function", /*tp_name*/
 		sizeof(pyORBIT_Object), /*tp_basicsize*/
 		0, /*tp_itemsize*/

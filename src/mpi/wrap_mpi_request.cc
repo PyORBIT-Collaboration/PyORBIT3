@@ -49,7 +49,7 @@ extern "C" {
   //this is implementation of the __del__ method
   static void MPI_Request_del(pyORBIT_MPI_Request* self){
 		//std::cerr<<"The MPI_Request __del__ has been called!"<<std::endl;	
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 		
 	// defenition of the methods of the python MPI_Request wrapper class
@@ -67,8 +67,7 @@ extern "C" {
 	
 	//new python SyncPart wrapper type definition
 	static PyTypeObject pyORBIT_MPI_Request_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL, 0)
 		"MPI_Request", /*tp_name*/
 		sizeof(pyORBIT_MPI_Request), /*tp_basicsize*/
 		0, /*tp_itemsize*/

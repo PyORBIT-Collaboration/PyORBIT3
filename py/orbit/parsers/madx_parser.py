@@ -108,10 +108,8 @@ class MADX_LattElement:
 		self.__par[nameOfPar] = parVal
 	
 	def hasParameter(self, nameOfPar):
-	
-		if self.__par.has_key(nameOfPar) == 0:
+		if(not (nameOfPar in self.__par)):
 			return 0
-
 		else:
 			return 1
 	
@@ -119,7 +117,7 @@ class MADX_LattElement:
 		"""
 			Method. Returns name of parameter.
 			"""
-		if self.__par.has_key(nameOfPar) == 0:
+		if(not (nameOfPar in self.__par)):
 			print "class MAD_LattElement, method getParameter"
 			print "The name of Element = ", self.__name
 			print "The type of Element = ", self.__type
@@ -564,7 +562,7 @@ class MADX_Parser:
 						resArr = []
 						for x in tmp.split(","):
 							resArr += StringFunctions.getElementKeys(x)
-					if(len(resArr) == 0 and accElemDictInit.has_key(name)):
+					if(len(resArr) == 0 and (name in accElemDictInit)):
 						del accElemDictInit[name]
 					for [el,k] in resArr:
 						doNotStop = True

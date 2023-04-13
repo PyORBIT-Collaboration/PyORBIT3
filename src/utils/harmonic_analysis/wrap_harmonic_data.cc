@@ -189,7 +189,7 @@ extern "C" {
   static void HarmonicData_del(pyORBIT_Object* self){
 		//std::cerr<<"The HarmonicData __del__ has been called! order="<< ((HarmonicData*)self->cpp_obj)->getOrder()<<std::endl;
 		delete ((HarmonicData*)self->cpp_obj);
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 	
 	// defenition of the methods of the python HarmonicData wrapper class
@@ -216,8 +216,7 @@ extern "C" {
 	
 	//new python HarmonicData wrapper type definition
 	static PyTypeObject pyORBIT_HarmonicData_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL, 0)
 		"HarmonicData", /*tp_name*/
 		sizeof(pyORBIT_Object), /*tp_basicsize*/
 		0, /*tp_itemsize*/

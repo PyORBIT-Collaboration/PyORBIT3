@@ -89,7 +89,7 @@ extern "C" {
 		//std::cerr<<"The RfGapTTF_slow __del__ has been called!"<<std::endl;
 		RfGapTTF_slow* cpp_RfGapTTF_slow = (RfGapTTF_slow*) self->cpp_obj;	
 		delete cpp_RfGapTTF_slow;
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 	
 	// defenition of the methods of the python RfGapTTF_slow wrapper class
@@ -107,8 +107,7 @@ extern "C" {
 
 	//new python RfGapTTF_slow wrapper type definition
 	static PyTypeObject pyORBIT_RfGapTTF_slow_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL,0)
 		"RfGapTTF_slow", /*tp_name*/
 		sizeof(pyORBIT_Object), /*tp_basicsize*/
 		0, /*tp_itemsize*/

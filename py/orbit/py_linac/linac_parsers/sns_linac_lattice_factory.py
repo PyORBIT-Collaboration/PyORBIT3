@@ -22,7 +22,7 @@ from orbit.py_linac.lattice import DCorrectorH, DCorrectorV, ThickKick
 from orbit.py_linac.lattice import RF_Cavity, Sequence
 from orbit.py_linac.lattice import BaseRF_Gap
 
-from orbit.py_linac.materials import VacuumWindowNode
+#from orbit.py_linac.materials import VacuumWindowNode
 
 # import general accelerator elements
 from orbit.lattice import AccNode
@@ -96,13 +96,8 @@ class SNS_LinacLatticeFactory():
 		#----------------------------------------------------------------------
 		# The DRIFTS will be generated additionally and put into right places
 		#----------------------------------------------------------------------
-		def positionComp(node1_da,node2_da):
-			if(node1_da.getParam("pos") > node2_da.getParam("pos")):
-				return 1
-			else:
-				if(node1_da.getParam("pos") == node2_da.getParam("pos")):
-					return 0
-			return -1
+		def positionComp(node_da):
+			return node_da.getParam("pos")
 		accSeqs = []
 		accRF_Cavs = [] 
 		seqPosition = 0.
@@ -139,7 +134,7 @@ class SNS_LinacLatticeFactory():
 			#put nodes in order according to the position in the sequence
 			for node_da in node_da_arr:
 				node_da.setParam("pos",node_da.doubleValue("pos"))
-			node_da_arr.sort(positionComp)	
+			node_da_arr.sort(key = positionComp)	
 			#thinNodes - array of accNode nodes with zero length
 			#They can be positioned inside the thick nodes, and this will be done at the end
 			#of this method
@@ -315,7 +310,7 @@ class SNS_LinacLatticeFactory():
 					unusedThinNodes.append(thinNode)
 			thinNodes = unusedThinNodes
 			newAccNodes = accSeq.getNodes()[:] + thinNodes
-			newAccNodes.sort(positionComp)
+			newAccNodes.sort(key = positionComp)
 			accSeq.setNodes(newAccNodes)
 			#insert the drifts ======================start ===========================
 			#-----now check the integrety quads and rf_gaps should not overlap

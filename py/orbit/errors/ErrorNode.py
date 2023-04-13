@@ -1044,7 +1044,7 @@ class AddErrorNode():
     					node.getType(), " L = ", node.getLength()
     					orbitFinalize("Field Error: Wanted a Multipole node! Stop!")
     				klArr = node.getParam("kls")
-    				for i in xrange(len(klArr)):
+    				for i in range(len(klArr)):
     					klArr[i] *= (1.0 + fracerr)
     				node.setParam("kls", klArr)
     		for node in lattice.getNodes()[nodeIndexi : Indexf]:
@@ -1053,7 +1053,7 @@ class AddErrorNode():
     				node.getType(), " L = ", node.getLength()
     				orbitFinalize("Field Error: Wanted a Multipole node! Stop!")
     			klArr = node.getParam("kls")
-    			for i in xrange(len(klArr)):
+    			for i in range(len(klArr)):
     				klArr[i] *= (1.0 + fracerr)
     			node.setParam("kls", klArr)
     	if(self.localDict["subtype"] == "QuadField"):
@@ -1066,7 +1066,7 @@ class AddErrorNode():
     				kq = node.getParam("kq") * (1.0 + fracerr)
     				node.setParam("kq", kq)
     				klArr = node.getParam("kls")
-    				for i in xrange(len(klArr)):
+    				for i in range(len(klArr)):
     					klArr[i] *= (1.0 + fracerr)
     				node.setParam("kls", klArr)
     		for node in lattice.getNodes()[nodeIndexi : Indexf]:
@@ -1077,7 +1077,7 @@ class AddErrorNode():
     			kq = node.getParam("kq") * (1.0 + fracerr)
     			node.setParam("kq", kq)
     			klArr = node.getParam("kls")
-    			for i in xrange(len(klArr)):
+    			for i in range(len(klArr)):
     				klArr[i] *= (1.0 + fracerr)
     			node.setParam("kls", klArr)
     	if(self.localDict["subtype"] == "BendField"):
@@ -1088,7 +1088,7 @@ class AddErrorNode():
     					node.getType(), " L = ", node.getLength()
     					orbitFinalize("Field Error: Wanted a Bend node! Stop!")
     				klArr = node.getParam("kls")
-    				for i in xrange(len(klArr)):
+    				for i in range(len(klArr)):
     					klArr[i] *= (1.0 + fracerr)
     				node.setParam("kls", klArr)
     		for node in lattice.getNodes()[nodeIndexi : Indexf]:
@@ -1097,7 +1097,7 @@ class AddErrorNode():
     				node.getType(), " L = ", node.getLength()
     				orbitFinalize("Field Error: Wanted a Bend node! Stop!")
     			klArr = node.getParam("kls")
-    			for i in xrange(len(klArr)):
+    			for i in range(len(klArr)):
     				klArr[i] *= (1.0 + fracerr)
     			node.setParam("kls", klArr)
     		nodei = lattice.getNodes()[nodeIndexi]

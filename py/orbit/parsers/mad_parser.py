@@ -755,14 +755,14 @@ class MAD_Parser:
 			str0 = str_local
 			if str0.rfind("!") > 0:
 				str_local = ""
-				for i in xrange(str0.rfind("!")):
+				for i in range(str0.rfind("!")):
 					str_local = "".join([str_local,str0[i]])
 			str_local.strip()
 			#this part deal with a comment ";" at the end of line
 			str0 = str_local
 			if str0.rfind(";") > 0:
 				str_local = ""
-				for i in xrange(str0.rfind(";")):
+				for i in range(str0.rfind(";")):
 					str_local = "".join([str_local,str0[i]])
 			str_local.strip()
 			#this part deal with a continue sign at the end of line
@@ -770,7 +770,7 @@ class MAD_Parser:
 				str0 = str_local
 				if str0.rfind("&") > 0:
 					str_local = ""
-					for i in xrange(str0.rfind("&")):
+					for i in range(str0.rfind("&")):
 						str_local = "".join([str_local,str0[i]])
 				str_local.strip()
 				continue

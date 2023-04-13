@@ -5,7 +5,7 @@
 ##                         (reading/writing) (from/to) XML.
 
 
-from XmlDataAdaptor import XmlDataAdaptor
+from orbit.utils.xml.XmlDataAdaptor import XmlDataAdaptor
 
 __all__ = []
 __all__.append("XmlDataAdaptor")

@@ -64,7 +64,7 @@ extern "C" {
 		if(comm != MPI_COMM_NULL && comm != MPI_COMM_WORLD && comm != MPI_COMM_SELF){
 			ORBIT_MPI_Comm_free(&comm);
 		}
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 	
 	// defenition of the methods of the python MPI_Comm wrapper class
@@ -83,8 +83,7 @@ extern "C" {
 	
 	//new python SyncPart wrapper type definition
 	static PyTypeObject pyORBIT_MPI_Comm_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL, 0)
 		"MPI_Comm", /*tp_name*/
 		sizeof(pyORBIT_MPI_Comm), /*tp_basicsize*/
 		0, /*tp_itemsize*/

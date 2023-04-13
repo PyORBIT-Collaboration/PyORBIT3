@@ -74,7 +74,7 @@ extern "C" {
 		if(cpp_UniformEllipsoidFieldCalculator != NULL){
 			delete cpp_UniformEllipsoidFieldCalculator;
 		}
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 	
 	// defenition of the methods of the python UniformEllipsoidFieldCalculator wrapper class
@@ -93,8 +93,7 @@ extern "C" {
 
 	//new python UniformEllipsoidFieldCalculator wrapper type definition
 	static PyTypeObject pyORBIT_UniformEllipsoidFieldCalculator_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL, 0)
 		"UniformEllipsoidFieldCalculator", /*tp_name*/
 		sizeof(pyORBIT_Object), /*tp_basicsize*/
 		0, /*tp_itemsize*/

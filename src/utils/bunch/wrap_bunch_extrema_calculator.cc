@@ -113,7 +113,7 @@ extern "C" {
   //-----------------------------------------------------
   static void BunchExtremaCalculator_del(pyORBIT_Object* self){
 		delete ((BunchExtremaCalculator*)self->cpp_obj);
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 	
 	// defenition of the methods of the python BunchExtremaCalculator wrapper class
@@ -134,8 +134,7 @@ extern "C" {
 
 	//new python BunchExtremaCalculator wrapper type definition
 	static PyTypeObject pyORBIT_BunchExtremaCalculator_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL, 0)
 		"BunchExtremaCalculator", /*tp_name*/
 		sizeof(pyORBIT_Object), /*tp_basicsize*/
 		0, /*tp_itemsize*/

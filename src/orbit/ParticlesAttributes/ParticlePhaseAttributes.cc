@@ -15,7 +15,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "Bunch.hh"
+#include "../Bunch.hh"
 #include "ParticlePhaseAttributes.hh"
 
 ParticlePhaseAttributes::ParticlePhaseAttributes(Bunch* bunch):

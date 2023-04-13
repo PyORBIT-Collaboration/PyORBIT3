@@ -78,7 +78,7 @@ class Field_Parser3D:
 ##############################################################################	
 	def getGridSize(self,range, step, usrLimits):
 		
-		for i in xrange(3):
+		for i in range(3):
 			range[i] = range[i]*1.0/step[i]		
 		gridSize = [range[0]+1,range[1]+1, range[2]+1]
 
@@ -88,9 +88,9 @@ class Field_Parser3D:
 		zrnge = usrLimits[5] - usrLimits[4]
 		usrRange = [xrnge,yrnge,zrnge]
 		
-		for i in xrange(3):
+		for i in range(3):
 			usrRange[i] = (usrRange[i]*1.0/step[i]) + 1
-		for i in xrange(3):
+		for i in range(3):
 			if(usrRange[i]<gridSize[i]): 
 				gridSize[i] = usrRange[i]
 		gridSize = map(int,gridSize)
@@ -105,7 +105,7 @@ class Field_Parser3D:
 	def getCoordinates(self, gridSize, step,rawNumbers, limits):
 		
 		coordinates = [rawNumbers[0] ,rawNumbers[1],rawNumbers[2]]
-		for i in xrange(len(coordinates)):
+		for i in range(len(coordinates)):
 			coordinates[i] = coordinates[i]*(1.0/step[i])
 			coordinates[i] = coordinates[i]-limits[2*i]/step[i]
 		coordinates = map(int, coordinates)
@@ -134,13 +134,13 @@ class Field_Parser3D:
 	def checkGrid(self,step,value):
 		localStep = [0,0,0]
 		localValue = [0,0,0]
-		for i in xrange(3):
+		for i in range(3):
 			localStep[i] = 2*step[i]
 			localValue[i] = 2*value[i]
 		map(int, localStep)
 		map(int, localValue)
 		
-		for i in xrange(3):
+		for i in range(3):
 			if(value[i]%step[i] != 0):
 				return False
 		else:

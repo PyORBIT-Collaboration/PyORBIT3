@@ -64,7 +64,7 @@ extern "C" {
 		if(group != MPI_GROUP_NULL && group != MPI_GROUP_EMPTY){
 			ORBIT_MPI_Group_free(&group);
 		}		
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 		
 	// defenition of the methods of the python MPI_Group wrapper class
@@ -83,8 +83,7 @@ extern "C" {
 	
 	//new python SyncPart wrapper type definition
 	static PyTypeObject pyORBIT_MPI_Group_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL, 0)
 		"MPI_Group", /*tp_name*/
 		sizeof(pyORBIT_MPI_Group), /*tp_basicsize*/
 		0, /*tp_itemsize*/

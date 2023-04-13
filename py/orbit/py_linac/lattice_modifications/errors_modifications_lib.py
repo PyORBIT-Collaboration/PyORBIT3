@@ -152,7 +152,7 @@ class CoordinateDisplacementNodesModification(ErrorForNodesModification):
 		Sets the error value for a particular coordinate for all nodes.
 		The cooridinate is defined by key parameter.
 		"""
-		if(self.param_dict.has_key(key)):
+		if(key in self.param_dict):
 			self.param_dict[key] = value
 		else:
 			msg = "Class CoordinateDisplacementNodesModification - key-value problem"
@@ -173,7 +173,7 @@ class CoordinateDisplacementNodesModification(ErrorForNodesModification):
 		The cooridinate is defined by key parameter.
 		"""
 		value = abs(value)
-		if(self.param_dict.has_key(key)):
+		if(key in self.param_dict):
 			self.param_dict[key] = value
 		else:
 			msg = "Class CoordinateDisplacementNodesModification - key-value problem"

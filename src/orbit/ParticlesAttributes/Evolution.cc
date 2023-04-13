@@ -16,7 +16,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "Bunch.hh"
+#include "../Bunch.hh"
 #include "Evolution.hh"
 
 Evolution::Evolution(Bunch* bunch, int size_in):

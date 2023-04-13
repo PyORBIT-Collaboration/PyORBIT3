@@ -158,10 +158,19 @@ extern "C" {
 	//It will be called from utils wrapper initialization
 	//--------------------------------------------------
 	
-  void initBunchUtilsFunctions(PyObject* module, const char* bunch_utils_module_name){
+	static struct PyModuleDef cModPyDem =
+	{
+		PyModuleDef_HEAD_INIT,
+		"bunch_utils_functions", "Function that operates on Bunch.",
+		-1,
+		BunchUtilsFunctionMethods
+	};   	
+		
+	
+  void initBunchUtilsFunctions(PyObject* module){
     //create ==operations with bunches== module
-    PyObject* module_local = Py_InitModule(bunch_utils_module_name,BunchUtilsFunctionMethods);
-		PyModule_AddObject(module,bunch_utils_module_name,module_local);
+    PyObject* module_local= PyModule_Create(&cModPyDem);
+		PyModule_AddObject(module,const_cast<char*>("bunch_utils_functions"),module_local);
 		Py_INCREF(module_local);
 	}
 

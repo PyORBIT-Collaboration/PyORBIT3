@@ -118,7 +118,7 @@ extern "C" {
 		if(cpp_SpaceChargeCalcUnifEllipse != NULL){
 			delete cpp_SpaceChargeCalcUnifEllipse;
 		}
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }	
   
   // defenition of the methods of the python SpaceChargeCalcUnifEllipse wrapper class
@@ -139,8 +139,7 @@ extern "C" {
 
 	//new python SpaceChargeCalcUnifEllipse wrapper type definition
 	static PyTypeObject pyORBIT_SpaceChargeCalcUnifEllipse_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL, 0)
 		"SpaceChargeCalcUnifEllipse", /*tp_name*/
 		sizeof(pyORBIT_Object), /*tp_basicsize*/
 		0, /*tp_itemsize*/

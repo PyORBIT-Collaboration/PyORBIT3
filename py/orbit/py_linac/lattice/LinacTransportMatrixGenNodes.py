@@ -23,8 +23,6 @@ from orbit.py_linac.lattice import MarkerLinacNode
 
 import orbit_utils
 from orbit_utils import bunch_utils_functions
-from bunch_utils_functions import copyCoordsToInitCoordsAttr
-from bunch_utils_functions import transportMtrxFromInitCoords
 
 from orbit_utils import Matrix
 
@@ -92,9 +90,9 @@ class LinacTrMatrixGenNode(MarkerLinacNode):
 		self.relativistic_gamma = bunch.getSyncParticle().gamma()
 		if(self.trMtrxNode_ind == 0):
 			self.trMtrx.unit()
-			copyCoordsToInitCoordsAttr(bunch)
+			bunch_utils_functions.copyCoordsToInitCoordsAttr(bunch)
 		else:
-			transportMtrxFromInitCoords(bunch,self.trMtrx,self.use_twiss_weight_x,self.use_twiss_weight_y,self.use_twiss_weight_z)
+			bunch_utils_functions.transportMtrxFromInitCoords(bunch,self.trMtrx,self.use_twiss_weight_x,self.use_twiss_weight_y,self.use_twiss_weight_z)
 
 	def trackDesign(self, paramsDict):
 		"""
@@ -162,12 +160,13 @@ class LinacTrMatrixGenNode(MarkerLinacNode):
 		if(self.trMtrxNode_ind > 0):
 			name0 = self.trMatricesController.getNode(self.trMtrxNode_ind-1).getName()
 		name1 = self.trMatricesController.getNode(self.trMtrxNode_ind).getName()
-		print "----Transport matrix--- from name0=",name0," to name1=",name1
+		st = "----Transport matrix--- from name0=" + name0 + " to name1=" + name1
+		print (st)
 		m = self.trMtrx
-		for i in xrange(m.size()[0]):
-			for j in xrange(m.size()[1]):
+		for i in range(m.size()[0]):
+			for j in range(m.size()[1]):
 				print ("m(" + str(i) + "," + str(j)+")="+"%12.5g"%m.get(i,j) + " "),
-			print ""		
+			print ("")		
 	
 
 class LinacTrMatricesContrioller:

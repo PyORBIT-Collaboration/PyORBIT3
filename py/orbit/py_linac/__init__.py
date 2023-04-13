@@ -2,5 +2,7 @@
 ## \Classes and packages of ORBIT Linac.
 ##
 
-__all__ = []
+import orbit.py_linac.linac_parsers
 
+__all__ = []
+__all__.append("linac_parsers")

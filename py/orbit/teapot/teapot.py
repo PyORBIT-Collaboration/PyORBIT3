@@ -379,7 +379,7 @@ class _teapotFactory:
 		poles = []
 		kls = []
 		skews = []
-		for i in xrange(20):
+		for i in range(20):
 			pole = i
 			kl_param = None
 			skew = 0
@@ -713,7 +713,7 @@ class MultipoleTEAPOT(NodeTEAPOT):
 			useCharge = 1
 			if(paramsDict.has_key("useCharge")): \
                           useCharge = paramsDict["useCharge"]
-			for i in xrange(len(poleArr)):
+			for i in range(len(poleArr)):
 				pole = poleArr[i]
 				kl = strength * klArr[i]
 				skew = skewArr[i]
@@ -737,7 +737,7 @@ class MultipoleTEAPOT(NodeTEAPOT):
 			useCharge = 1
 			if(paramsDict.has_key("useCharge")): \
                           useCharge = paramsDict["useCharge"]
-			for i in xrange(len(poleArr)):
+			for i in range(len(poleArr)):
 				pole = poleArr[i]
 				kl = strength * klArr[i]
 				skew = skewArr[i]
@@ -771,7 +771,7 @@ class MultipoleTEAPOT(NodeTEAPOT):
 		lengthStep = lengthIN + lengthOUT
 		self.setLength(lengthIN, 0)
 		self.setLength(lengthOUT, nParts - 1)
-		for i in xrange(nParts - 2):
+		for i in range(nParts - 2):
 			self.setLength(lengthStep, i + 1)
 
 	def track(self, paramsDict):
@@ -797,7 +797,7 @@ class MultipoleTEAPOT(NodeTEAPOT):
 			TPB.drift(bunch, length)
 			return
 		if(index > 0 and index < (nParts - 1)):
-			for i in xrange(len(poleArr)):
+			for i in range(len(poleArr)):
 				pole = poleArr[i]
 				kl = strength * klArr[i] / (nParts - 1)
 				skew = skewArr[i]
@@ -805,7 +805,7 @@ class MultipoleTEAPOT(NodeTEAPOT):
 			TPB.drift(bunch, length)
 			return
 		if(index == (nParts-1)):
-			for i in xrange(len(poleArr)):
+			for i in range(len(poleArr)):
 				pole = poleArr[i]
 				kl = strength * klArr[i] / (nParts - 1)
 				skew = skewArr[i]
@@ -857,7 +857,7 @@ class QuadTEAPOT(NodeTEAPOT):
 			TPB.quadfringeIN(bunch, kq, useCharge)
 			if(length == 0.):
 				return
-			for i in xrange(len(poleArr)):
+			for i in range(len(poleArr)):
 				pole = poleArr[i]
 				kl = strength * klArr[i]
 				skew = skewArr[i]
@@ -883,7 +883,7 @@ class QuadTEAPOT(NodeTEAPOT):
 			TPB.quadfringeOUT(bunch, kq, useCharge)
 			if(length == 0.):
 				return
-			for i in xrange(len(poleArr)):
+			for i in range(len(poleArr)):
 				pole = poleArr[i]
 				kl = strength * klArr[i]
 				skew = skewArr[i]
@@ -921,7 +921,7 @@ class QuadTEAPOT(NodeTEAPOT):
 		lengthStep = lengthIN + lengthOUT
 		self.setLength(lengthIN, 0)
 		self.setLength(lengthOUT, nParts - 1)
-		for i in xrange(nParts - 2):
+		for i in range(nParts - 2):
 			self.setLength(lengthStep, i + 1)
 
 	def track(self, paramsDict):
@@ -948,7 +948,7 @@ class QuadTEAPOT(NodeTEAPOT):
 			return
 		if(index > 0 and index < (nParts - 1)):
 			TPB.quad2(bunch, length/2.0)
-			for i in xrange(len(poleArr)):
+			for i in range(len(poleArr)):
 				pole = poleArr[i]
 				kl = strength * klArr[i] / (nParts - 1)
 				skew = skewArr[i]
@@ -958,7 +958,7 @@ class QuadTEAPOT(NodeTEAPOT):
 			return
 		if(index == (nParts - 1)):
 			TPB.quad2(bunch, length)
-			for i in xrange(len(poleArr)):
+			for i in range(len(poleArr)):
 				pole = poleArr[i]
 				kl = strength * klArr[i] / (nParts - 1)
 				skew = skewArr[i]
@@ -1013,7 +1013,7 @@ class BendTEAPOT(NodeTEAPOT):
 					TPB.wedgerotate(bunch, e, frinout)
 					TPB.bendfringeIN(bunch, rho)
 					if(length != 0.):
-						for i in xrange(len(poleArr)):
+						for i in range(len(poleArr)):
 							pole = poleArr[i]
 							kl = klArr[i]/length
 							skew = skewArr[i]
@@ -1025,7 +1025,7 @@ class BendTEAPOT(NodeTEAPOT):
 				if(usageIN):
 					TPB.bendfringeIN(bunch, rho)
 					if(length != 0.):
-						for i in xrange(len(poleArr)):
+						for i in range(len(poleArr)):
 							pole = poleArr[i]
 							kl = klArr[i]/length
 							skew = skewArr[i]
@@ -1051,7 +1051,7 @@ class BendTEAPOT(NodeTEAPOT):
 					TPB.wedgerotate(bunch, -e, frinout)
 					TPB.bendfringeOUT(bunch, rho)
 					if(length != 0.):
-						for i in xrange(len(poleArr)):
+						for i in range(len(poleArr)):
 							pole = poleArr[i]
 							kl = klArr[i]/length
 							skew = skewArr[i]
@@ -1063,7 +1063,7 @@ class BendTEAPOT(NodeTEAPOT):
 				if(usageOUT):
 					TPB.bendfringeOUT(bunch, rho)
 					if(length != 0.):
-						for i in xrange(len(poleArr)):
+						for i in range(len(poleArr)):
 							pole = poleArr[i]
 							kl = klArr[i]/length
 							skew = skewArr[i]
@@ -1098,7 +1098,7 @@ class BendTEAPOT(NodeTEAPOT):
 		lengthStep = lengthIN + lengthOUT
 		self.setLength(lengthIN,0)
 		self.setLength(lengthOUT,nParts - 1)
-		for i in xrange(nParts-2):
+		for i in range(nParts-2):
 			self.setLength(lengthStep,i+1)
 
 	def track(self, paramsDict):
@@ -1123,7 +1123,7 @@ class BendTEAPOT(NodeTEAPOT):
 			TPB.bend2(bunch, length/2.0)
 			TPB.bend3(bunch, theta/2.0)
 			TPB.bend4(bunch,theta/2.0)
-			for i in xrange(len(poleArr)):
+			for i in range(len(poleArr)):
 				pole = poleArr[i]
 				kl = klArr[i]/(nParts - 1)
 				skew = skewArr[i]
@@ -1137,7 +1137,7 @@ class BendTEAPOT(NodeTEAPOT):
 			TPB.bend2(bunch, length)
 			TPB.bend3(bunch, theta/2.0)
 			TPB.bend4(bunch, theta/2.0)
-			for i in xrange(len(poleArr)):
+			for i in range(len(poleArr)):
 				pole = poleArr[i]
 				kl = klArr[i]/(nParts - 1)
 				skew = skewArr[i]
@@ -1254,7 +1254,7 @@ class KickTEAPOT(NodeTEAPOT):
 		lengthStep = lengthIN + lengthOUT
 		self.setLength(lengthIN,0)
 		self.setLength(lengthOUT,nParts - 1)
-		for i in xrange(nParts-2):
+		for i in range(nParts-2):
 			self.setLength(lengthStep,i+1)
 
 	def track(self, paramsDict):

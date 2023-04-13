@@ -53,7 +53,7 @@ extern "C"
     static void MatrixGenerator_del(pyORBIT_Object* self)
     {
         delete ((MatrixGenerator*)self->cpp_obj);
-        self->ob_type->tp_free((PyObject*)self);
+        self->ob_base.ob_type->tp_free((PyObject*)self);
     }
 
     //Sets or returns the value of the phase vector element with particular index
@@ -219,8 +219,7 @@ extern "C"
     //New python MatrixGenerator wrapper type definition
     static PyTypeObject pyORBIT_MatrixGenerator_Type =
     {
-        PyObject_HEAD_INIT(NULL)
-        0, /*ob_size*/
+        PyVarObject_HEAD_INIT(NULL, 0)
         "MatrixGenerator", /*tp_name*/
         sizeof(pyORBIT_Object), /*tp_basicsize*/
         0, /*tp_itemsize*/

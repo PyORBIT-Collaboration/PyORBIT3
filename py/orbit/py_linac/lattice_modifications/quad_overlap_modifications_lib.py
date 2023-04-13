@@ -22,7 +22,7 @@ from orbit.py_linac.lattice import Quad, Drift
 
 from orbit.py_linac.lattice import OverlappingQuadsNode
 
-from rf_quad_overlap_modifications_lib import GetEngeFunction
+from orbit.py_linac.lattice_modifications.rf_quad_overlap_modifications_lib import GetEngeFunction
 
 def Replace_Quads_to_OverlappingQuads_Nodes(\
 	accLattice,\

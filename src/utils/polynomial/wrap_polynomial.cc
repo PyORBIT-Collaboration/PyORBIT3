@@ -171,7 +171,7 @@ extern "C" {
   static void Polynomial_del(pyORBIT_Object* self){
 		//std::cerr<<"The Polynomial __del__ has been called! order="<< ((Polynomial*)self->cpp_obj)->getOrder()<<std::endl;
 		delete ((Polynomial*)self->cpp_obj);
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 	
 	// defenition of the methods of the python Polynomial wrapper class
@@ -196,8 +196,7 @@ extern "C" {
 	
 	//new python Polynomial wrapper type definition
 	static PyTypeObject pyORBIT_Polynomial_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL, 0)
 		"Polynomial", /*tp_name*/
 		sizeof(pyORBIT_Object), /*tp_basicsize*/
 		0, /*tp_itemsize*/

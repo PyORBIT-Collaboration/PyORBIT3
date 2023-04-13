@@ -17,7 +17,7 @@ from orbit.utils import orbitFinalize, NamedObject, ParamsDictObject, phaseNearT
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 
 # import acc. nodes
-from LinacAccNodes import Quad, AbstractRF_Gap, MarkerLinacNode
+from orbit.py_linac.lattice.LinacAccNodes import Quad, AbstractRF_Gap, MarkerLinacNode
 
 # import orbit Bunch
 from bunch import Bunch
@@ -147,7 +147,7 @@ class LinacAccLattice(AccLattice):
 		paramsDict["lattice"] = self
 		paramsDict["actions"] = actionsContainer
 		paramsDict["stop tracking"] = False
-		if(not paramsDict.has_key("path_length")): paramsDict["path_length"] = 0.
+		if(not ("path_length" in paramsDict)): paramsDict["path_length"] = 0.
 		if(index_start < 0): index_start = 0
 		if(index_stop < 0): index_stop = len(self.getNodes()) - 1 		
 		for node in self.getNodes()[index_start:index_stop+1]:

@@ -48,7 +48,7 @@ static PyObject* mpi_allreduce(PyObject *self, PyObject *args){
 	//it is NOT SEQUENCE
 	if(is_seq == 0){
 		if(pyDatatype->datatype == MPI_INT){
-			int val = (int) PyInt_AS_LONG(pyO_arr);
+			int val = (int) PyLong_AsLong(pyO_arr);
 			int val_out = 0;
 			ORBIT_MPI_Allreduce(&val,&val_out,1,MPI_INT,pyOp->op,pyComm->comm);
 			return Py_BuildValue("i",val_out);
@@ -71,7 +71,7 @@ static PyObject* mpi_allreduce(PyObject *self, PyObject *args){
 		int* arr =  BufferStore::getBufferStore()->getFreeIntArr(buff_index0,size);
 		int* arr_out =  BufferStore::getBufferStore()->getFreeIntArr(buff_index1,size);
 		for(int i = 0; i < size; i++){
-			arr[i]= (int) PyInt_AsLong(PySequence_Fast_GET_ITEM(pyO_arr, i));
+			arr[i]= (int) PyLong_AsLong(PySequence_Fast_GET_ITEM(pyO_arr, i));
 		}			
 		ORBIT_MPI_Allreduce(arr,arr_out,size,MPI_INT,pyOp->op,pyComm->comm);
 		for(int i = 0; i < size; i++){
@@ -124,7 +124,7 @@ static PyObject* mpi_bcast(PyObject *self, PyObject *args){
 		if(pyDatatype->datatype == MPI_INT){
 			int val = 0;
 			if(rank_local == rank){
-				val = (int) PyInt_AS_LONG(pyO_arr);
+				val = (int) PyLong_AsLong(pyO_arr);
 			}
 			ORBIT_MPI_Bcast(&val,1,MPI_INT,rank,pyComm->comm);
 			return Py_BuildValue("i",val);
@@ -153,7 +153,7 @@ static PyObject* mpi_bcast(PyObject *self, PyObject *args){
 		int* arr =  BufferStore::getBufferStore()->getFreeIntArr(buff_index,size);
 		if(rank_local == rank){
 			for(int i = 0; i < size; i++){
-				arr[i]= (int) PyInt_AsLong(PySequence_Fast_GET_ITEM(pyO_arr, i));
+				arr[i]= (int) PyLong_AsLong(PySequence_Fast_GET_ITEM(pyO_arr, i));
 				if(arr[i] < 0){
 					error("MPI_Bcast([...data],MPI_Datatype type,int rank,MPI_Comm out) [...data] is not good.");
 				}
@@ -190,7 +190,7 @@ static PyObject* mpi_bcast(PyObject *self, PyObject *args){
 		char* arr = NULL;
 		int buff_index = -1;
 		if(rank_local == rank){
-			arr = PyString_AsString(pyO_arr);
+			arr = (char *)PyUnicode_AsUTF8(pyO_arr);
 		} else {
 			arr = BufferStore::getBufferStore()->getFreeCharArr(buff_index,size);
 		}
@@ -223,7 +223,7 @@ static PyObject* mpi_send(PyObject *self, PyObject *args){
 	//check if it is not sequence
 	if(PySequence_Check(pyO_arr) != 1){
 		if(pyDatatype->datatype == MPI_INT){
-			int val = (int) PyInt_AS_LONG(pyO_arr);
+			int val = (int) PyLong_AsLong(pyO_arr);
 			int res = ORBIT_MPI_Send(&val,1,MPI_INT,dest,tag,pyComm->comm);
 			if(res != MPI_SUCCESS){
 				std::cerr << "Error MPI_Send(...) rank="<< rank <<" dest_rank="<<dest<<" tag="<<tag<<std::endl;
@@ -250,7 +250,7 @@ static PyObject* mpi_send(PyObject *self, PyObject *args){
 	if(pyDatatype->datatype == MPI_INT){
 		int* arr =  BufferStore::getBufferStore()->getFreeIntArr(buff_index,size);
 		for(int i = 0; i < size; i++){
-			arr[i]= (int) PyInt_AsLong(PySequence_Fast_GET_ITEM(pyO_arr, i));
+			arr[i]= (int) PyLong_AsLong(PySequence_Fast_GET_ITEM(pyO_arr, i));
 		}			
 		res = ORBIT_MPI_Send(arr,size,MPI_INT,dest,tag,pyComm->comm);
 		BufferStore::getBufferStore()->setUnusedIntArr(buff_index);
@@ -266,7 +266,7 @@ static PyObject* mpi_send(PyObject *self, PyObject *args){
 	}
 	//data is a pyString
 	if(pyDatatype->datatype == MPI_CHAR){
-		char* arr = PyString_AsString(pyO_arr);
+		char* arr = (char *)PyUnicode_AsUTF8(pyO_arr);
 		res = ORBIT_MPI_Send(arr,size,MPI_CHAR,dest,tag,pyComm->comm);
 	}
 	if(res != MPI_SUCCESS){

@@ -22,8 +22,8 @@ from orbit_utils import Polynomial
 from orbit_utils import Function
 
 # from LinacAccLattice import Sequence
-from LinacAccLatticeLib import Sequence
-from LinacAccNodes import BaseLinacNode, LinacNode
+from orbit.py_linac.lattice.LinacAccLatticeLib import Sequence
+from orbit.py_linac.lattice.LinacAccNodes import BaseLinacNode, LinacNode
 
 class LinacBPM(BaseLinacNode):
 	"""
@@ -112,7 +112,7 @@ class LinacBPM(BaseLinacNode):
 			if(fl_out != None):
 				fl_out.write(st+"\n")
 			else:
-				print st
+				print (st)
 		if(fl_out != None): fl_out.close()
 		
 	def track(self, paramsDict):

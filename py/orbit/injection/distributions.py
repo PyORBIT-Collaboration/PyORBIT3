@@ -617,7 +617,7 @@ def rootNorm(ymin, ymax, prand, tol):
 		rtbis = ymax
 		dx = ymin - ymax
 
-	for i in xrange(imax):
+	for i in range(imax):
 		dx = dx * 0.5
 		xmid = rtbis + dx
 		fmid = erf(xmid) - math.fabs(2.0 * prand - 1.0)

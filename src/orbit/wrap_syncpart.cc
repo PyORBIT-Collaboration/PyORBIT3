@@ -60,7 +60,7 @@ extern "C" {
   //this is implementation of the __del__ method
   static void SyncPart_del(pyORBIT_Object* self){
 		//std::cerr<<"The SyncPart __del__ has been called!"<<std::endl;
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 
 	//Sets or returns the kinEnergy for the SyncPart object
@@ -575,8 +575,7 @@ extern "C" {
 
 	//new python SyncPart wrapper type definition
 	static PyTypeObject pyORBIT_SyncPart_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL, 0)
 		"SyncParticle", /*tp_name*/
 		sizeof(pyORBIT_Object), /*tp_basicsize*/
 		0, /*tp_itemsize*/

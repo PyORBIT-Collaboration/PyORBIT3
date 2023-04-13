@@ -39,7 +39,7 @@ class AccLattice(NamedObject, TypedObject):
 		"""
 		res_dict = {}
 		for node in self.__children:
-			if(res_dict.has_key(node)):
+			if(node in res_dict):
 				msg = "The AccLattice class instance should not have duplicate nodes!"
 				msg = msg + os.linesep
 				msg = msg + "Method initialize():"
@@ -246,7 +246,7 @@ class AccLattice(NamedObject, TypedObject):
 		"""
 		paramsDict["lattice"] = self
 		paramsDict["actions"] = actionsContainer
-		if(not paramsDict.has_key("path_length")): paramsDict["path_length"] = 0.
+		if(not ("path_length" in paramsDict)): paramsDict["path_length"] = 0.
 		if(index_start < 0): index_start = 0
 		if(index_stop < 0): index_stop = len(self.__children) - 1 		
 		for node in self.__children[index_start:index_stop+1]:

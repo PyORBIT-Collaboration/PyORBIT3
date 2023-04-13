@@ -5,8 +5,8 @@
 #include <cfloat>
 #include <cstdlib>
 
-#include "Bunch.hh"
-#include "ParticleMacroSize.hh"
+//#include "Bunch.hh"
+#include "ParticlesAttributes/ParticleMacroSize.hh"
 #include "SyncPart.hh"
 
 #include "OrbitConst.hh"

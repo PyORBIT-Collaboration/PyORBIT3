@@ -68,7 +68,7 @@ extern "C" {
   static void PhaseVector_del(pyORBIT_Object* self){
 		//std::cerr<<"The PhaseVector __del__ has been called!"<<std::endl;
 		delete ((PhaseVector*)self->cpp_obj);
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 
 	//Sets or returns the value of the phase vector element with particular index. 
@@ -289,8 +289,7 @@ extern "C" {
 
 	//new python PhaseVector wrapper type definition
 	static PyTypeObject pyORBIT_PhaseVector_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL, 0)
 		"PhaseVector", /*tp_name*/
 		sizeof(pyORBIT_Object), /*tp_basicsize*/
 		0, /*tp_itemsize*/

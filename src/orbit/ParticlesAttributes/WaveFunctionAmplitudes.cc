@@ -15,7 +15,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "Bunch.hh"
+#include "../Bunch.hh"
 #include "WaveFunctionAmplitudes.hh"
 
 WaveFunctionAmplitudes::WaveFunctionAmplitudes(Bunch* bunch, int size_in):

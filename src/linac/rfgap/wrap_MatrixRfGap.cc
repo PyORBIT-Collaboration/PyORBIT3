@@ -65,7 +65,7 @@ extern "C" {
 		//std::cerr<<"The MatrixRfGap __del__ has been called!"<<std::endl;
 		MatrixRfGap* cpp_MatrixRfGap = (MatrixRfGap*) self->cpp_obj;
 		delete cpp_MatrixRfGap;
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 	
 	// defenition of the methods of the python MatrixRfGap wrapper class
@@ -83,8 +83,7 @@ extern "C" {
 
 	//new python MatrixRfGap wrapper type definition
 	static PyTypeObject pyORBIT_MatrixRfGap_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL,0)
 		"MatrixRfGap", /*tp_name*/
 		sizeof(pyORBIT_Object), /*tp_basicsize*/
 		0, /*tp_itemsize*/

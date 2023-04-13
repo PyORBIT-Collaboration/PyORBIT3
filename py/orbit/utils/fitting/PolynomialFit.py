@@ -92,13 +92,13 @@ class PolynomialFit:
 		#now the resuting coefficients and errors	
 		aTCaI = aTCa.invert()
 		if(aTCaI == None):
-			print "python PolynomialFit: Problem with data."
+			print ( "python PolynomialFit: Problem with data.")
 			for i in range(nPoints):
 				x = self.x_y_err_arr[i][0]
 				y = self.x_y_err_arr[i][1]
 				err = self.x_y_err_arr[i][2]
-				print " x,y,err = %12.5g %12.5g %12.5g "%(x,y,err)
-			print "Stop."
+				print ( " x,y,err = %12.5g %12.5g %12.5g "%(x,y,err))
+			print ( "Stop.")
 			sys.exit(1)		
 		e = aTCaI.mult(aTCa)
 		coef_arr = [0.]*(self.order+1)			

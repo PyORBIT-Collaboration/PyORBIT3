@@ -19,13 +19,13 @@ static PyObject* mpi_graph_create(PyObject *self, PyObject *args) {
 	int* indexes = BufferStore::getBufferStore()->getFreeIntArr(buff_index0,nnodes);
 	int* edges = BufferStore::getBufferStore()->getFreeIntArr(buff_index1,edge_size);
 	for(int i = 0; i < nnodes; i++){
-		indexes[i] = (int) PyInt_AsLong(PySequence_Fast_GET_ITEM(pyO_indexes, i));
+		indexes[i] = (int) PyLong_AsLong(PySequence_Fast_GET_ITEM(pyO_indexes, i));
 		if(indexes[i] < 0){
 			error("MPI_Graph_create(MPI_Comm old, [...indexes],[...egdes],reorder,MPI_Comm graph), [...inds] is not good.");
 		}
 	}
 	for(int i = 0; i < edge_size; i++){
-		edges[i] = (int) PyInt_AsLong(PySequence_Fast_GET_ITEM(pyO_edges, i));
+		edges[i] = (int) PyLong_AsLong(PySequence_Fast_GET_ITEM(pyO_edges, i));
 		if(edges[i] < 0){
 			error("MPI_Graph_create(MPI_Comm old, [...indexes],[...egdes],reorder,MPI_Comm graph), [...edges] is not good.");
 		}
@@ -96,13 +96,13 @@ static PyObject* mpi_graph_map(PyObject *self, PyObject *args) {
 	int* indexes = BufferStore::getBufferStore()->getFreeIntArr(buff_index0,nnodes);
 	int* edges = BufferStore::getBufferStore()->getFreeIntArr(buff_index1,edge_size);
 	for(int i = 0; i < nnodes; i++){
-		indexes[i] = (int) PyInt_AsLong(PySequence_Fast_GET_ITEM(pyO_indexes, i));
+		indexes[i] = (int) PyLong_AsLong(PySequence_Fast_GET_ITEM(pyO_indexes, i));
 		if(indexes[i] < 0){
 			error("MPI_Graph_map(MPI_Comm old, [...indexes],[...egdes]), - [...inds] is not good.");
 		}
 	}
 	for(int i = 0; i < edge_size; i++){
-		edges[i] = (int) PyInt_AsLong(PySequence_Fast_GET_ITEM(pyO_edges, i));
+		edges[i] = (int) PyLong_AsLong(PySequence_Fast_GET_ITEM(pyO_edges, i));
 		if(edges[i] < 0){
 			error("MPI_Graph_map(MPI_Comm old, [...indexes],[...egdes]), - [...edges] is not good.");
 		}

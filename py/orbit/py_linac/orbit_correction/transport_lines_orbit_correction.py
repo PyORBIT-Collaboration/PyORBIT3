@@ -22,8 +22,8 @@ from orbit_utils import Matrix, PhaseVector
 
 def printM(m):
 	print "----matrix--- size=",m.size()
-	for i in xrange(m.size()[0]):
-		for j in xrange(m.size()[1]):
+	for i in range(m.size()[0]):
+		for j in range(m.size()[1]):
 			print ("m(" + str(i) + "," + str(j)+")= %10.3g "%m.get(i,j) + " "),
 		print ""
 

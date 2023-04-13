@@ -9,11 +9,11 @@ def multiDimDoubleArray(*dims):
 	"""
 	res = []
 	if len(dims) == 1:
-		for j in xrange(dims[0]):
+		for j in range(dims[0]):
 			res.append(0.)
 	else:
 		dims_rest = dims[1:len(dims)]
-		for j in xrange(dims[0]):
+		for j in range(dims[0]):
 			res.append(multiDimDoubleArray(*dims_rest))
 	return res
 
@@ -28,10 +28,10 @@ def multiDimIntArray(*dims):
 	"""
 	res = []
 	if len(dims) == 1:
-		for j in xrange(dims[0]):
+		for j in range(dims[0]):
 			res.append(0)
 	else:
 		dims_rest = dims[1:len(dims)]
-		for j in xrange(dims[0]):
+		for j in range(dims[0]):
 			res.append(multiDimIntArray(*dims_rest))
 	return res

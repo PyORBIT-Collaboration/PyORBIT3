@@ -17,11 +17,11 @@ from orbit.py_linac.lattice import AxisFieldRF_Gap
 from orbit.py_linac.lattice import AxisField_and_Quad_RF_Gap
 
 # import acc. nodes
-from LinacAccNodes import Quad
-from LinacRfGapNodes import AxisFieldRF_Gap
+from orbit.py_linac.lattice.LinacAccNodes import Quad
+from orbit.py_linac.lattice.LinacRfGapNodes import AxisFieldRF_Gap
 
-from LinacFieldOverlappingNodes import AxisField_and_Quad_RF_Gap
-from LinacFieldOverlappingNodes import OverlappingQuadsNode
+from orbit.py_linac.lattice.LinacFieldOverlappingNodes import AxisField_and_Quad_RF_Gap
+from orbit.py_linac.lattice.LinacFieldOverlappingNodes import OverlappingQuadsNode
 
 def GetGlobalQuadGradient(accLattice,z):
 	"""

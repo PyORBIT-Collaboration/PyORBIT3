@@ -135,7 +135,7 @@ extern "C" {
   static void SplineCH_del(pyORBIT_Object* self){
 		//std::cerr<<"The SplineCH __del__ has been called!"<<std::endl;
 		delete ((SplineCH*)self->cpp_obj);
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 	
 	// defenition of the methods of the python SplineCH wrapper class
@@ -159,8 +159,7 @@ extern "C" {
 	
 	//new python SplineCH wrapper type definition
 	static PyTypeObject pyORBIT_SplineCH_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL, 0)
 		"SplineCH", /*tp_name*/
 		sizeof(pyORBIT_Object), /*tp_basicsize*/
 		0, /*tp_itemsize*/

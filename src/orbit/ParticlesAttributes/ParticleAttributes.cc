@@ -17,7 +17,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "Bunch.hh"
+#include "../Bunch.hh"
 #include "ParticleAttributes.hh"
 
 ParticleAttributes::ParticleAttributes(Bunch* bunch, int size_in)

@@ -34,7 +34,7 @@ class TIME_DEP_Lattice(TEAPOT_Ring):
 		for i in range(len(accNodes)):
 			elem = accNodes[i]
 			elemname = elem.getName()
-			if(elemInLine.has_key(elemname)):
+			if(elemname in elemInLine):
 				elemInLine[elemname] += 1
 			else:	elemInLine[elemname] = 1
 			node = self.getNodes()[i]

@@ -284,7 +284,7 @@ class _element:
 		(ind0,ind1) = StringFunctions.findBracketsPos(line_init)
 		elemLine = line_init[ind0+1:ind1]
 		keys = re.compile(r'\s*([^=\s]+)\s*={1,1}').findall(elemLine)
-		for i in xrange(len(keys)):
+		for i in range(len(keys)):
 			i_start = elemLine.find(keys[i])
 			i_stop = len(elemLine)
 			if(i != (len(keys) -1)):
@@ -434,7 +434,7 @@ class StringFunctions:
 
 	def findLastBracketPos(self,line,nPos,nOpen):
 		""" The method will find a last closing bracket. """
-		for ip in xrange(nPos,len(line)):
+		for ip in range(nPos,len(line)):
 			if(line[ip] == "("):
 				nOpen = nOpen + 1
 			if(line[ip] == ")"):
@@ -447,7 +447,7 @@ class StringFunctions:
 
 	def findFirstBracketPos(self,line,nPos):
 		""" The method will find a first openning bracket. """
-		for ip in xrange(nPos,len(line)):
+		for ip in range(nPos,len(line)):
 			if(line[ip] == "("):
 				return ip
 		return -1

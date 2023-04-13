@@ -21,7 +21,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "Bunch.hh"
+#include "../Bunch.hh"
 #include "TurnNumberAttributes.hh"
 
 TurnNumberAttributes::TurnNumberAttributes(Bunch* bunch): 

@@ -71,7 +71,7 @@ extern "C" {
   static void Matrix_del(pyORBIT_Object* self){
 		//std::cerr<<"The Matrix __del__ has been called!"<<std::endl;
 		delete ((Matrix*)self->cpp_obj);
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 
 	//Sets or returns the value of the matrix element with (i,j) raw and column. 
@@ -310,8 +310,7 @@ extern "C" {
 
 	//new python Matrix wrapper type definition
 	static PyTypeObject pyORBIT_Matrix_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL, 0)
 		"Matrix", /*tp_name*/
 		sizeof(pyORBIT_Object), /*tp_basicsize*/
 		0, /*tp_itemsize*/

@@ -89,7 +89,7 @@ extern "C" {
 		//std::cerr<<"The RfGapTTF __del__ has been called!"<<std::endl;
 		RfGapTTF* cpp_RfGapTTF = (RfGapTTF*) self->cpp_obj;	
 		delete cpp_RfGapTTF;
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 	
 	// defenition of the methods of the python RfGapTTF wrapper class
@@ -107,8 +107,7 @@ extern "C" {
 
 	//new python RfGapTTF wrapper type definition
 	static PyTypeObject pyORBIT_RfGapTTF_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL,0)
 		"RfGapTTF", /*tp_name*/
 		sizeof(pyORBIT_Object), /*tp_basicsize*/
 		0, /*tp_itemsize*/

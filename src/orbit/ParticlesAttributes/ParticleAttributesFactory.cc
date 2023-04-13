@@ -38,7 +38,7 @@ ParticleAttributesFactory::~ParticleAttributesFactory()
 }
 
 ParticleAttributes* ParticleAttributesFactory::getParticleAttributesInstance(
-	const string name, 
+	const std::string name,
 	std::map<std::string,double> params_dict,
 	Bunch* bunch)
 {

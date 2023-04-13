@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
   namespace wrap_utils_bunch_functions{
-    void initBunchUtilsFunctions(PyObject* module, const char* part_with_id_module_name);
+    void initBunchUtilsFunctions(PyObject* module);
   }
 
 #ifdef __cplusplus

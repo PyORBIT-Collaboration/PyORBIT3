@@ -315,7 +315,7 @@ extern "C" {
 		//std::cerr<<"The Grid3D __del__ has been called!"<<std::endl;
 		Grid3D* cpp_Grid3D = (Grid3D*) self->cpp_obj;
 		delete cpp_Grid3D;
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 	
 	// defenition of the methods of the python Grid3D wrapper class
@@ -356,8 +356,7 @@ extern "C" {
 
 	//new python Grid3D wrapper type definition
 	static PyTypeObject pyORBIT_Grid3D_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL, 0)
 		"Grid3D", /*tp_name*/
 		sizeof(pyORBIT_Object), /*tp_basicsize*/
 		0, /*tp_itemsize*/

@@ -19,7 +19,7 @@
 #ifndef PARTICLE_ATTRIBUTES_H
 #define PARTICLE_ATTRIBUTES_H
 
-#include "orbit_mpi.hh"
+#include "../../mpi/orbit_mpi.hh"
 
 #include <string>
 #include <map>

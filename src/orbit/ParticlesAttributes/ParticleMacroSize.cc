@@ -16,7 +16,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "Bunch.hh"
+#include "../Bunch.hh"
 #include "ParticleMacroSize.hh"
 
 ParticleMacroSize::ParticleMacroSize(Bunch* bunch):

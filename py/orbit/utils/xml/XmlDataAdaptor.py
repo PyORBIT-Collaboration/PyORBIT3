@@ -137,7 +137,7 @@ class XmlDataAdaptor(NamedObject,ParamsDictObject):
 		
 	def setValue(self,attribute,value):
 		""" set the value for the attribute """
-		if(isinstance(value,(types.TupleType,types.ListType))):
+		if(isinstance(value,(tuple,list))):
 			st = ""
 			for s in value:
 				st = st+" "+str(s)

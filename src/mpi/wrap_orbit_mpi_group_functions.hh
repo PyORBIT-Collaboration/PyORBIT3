@@ -15,7 +15,7 @@ static PyObject* mpi_group_incl(PyObject *self, PyObject *args) {
 	int buff_index = 0;
 	int* i_arr = BufferStore::getBufferStore()->getFreeIntArr(buff_index,size);
 	for(int i = 0; i < size; i++){
-		i_arr[i]= (int) PyInt_AsLong(PySequence_Fast_GET_ITEM(pyO_arr, i));
+		i_arr[i]= (int) PyLong_AsLong(PySequence_Fast_GET_ITEM(pyO_arr, i));
 	}
 	if(ORBIT_MPI_Group_incl(pyGroup_in->group,size,i_arr,&pyGroup_out->group)  != MPI_SUCCESS){
 		error("MPI_Group_incl(MPI_Group in, [...ranks]) - fatal error. STOP.");
@@ -38,7 +38,7 @@ static PyObject* mpi_group_excl(PyObject *self, PyObject *args) {
 	int buff_index = 0;
 	int* i_arr = BufferStore::getBufferStore()->getFreeIntArr(buff_index,size);
 	for(int i = 0; i < size; i++){
-		i_arr[i]= (int) PyInt_AsLong(PySequence_Fast_GET_ITEM(pyO_arr, i));
+		i_arr[i]= (int) PyLong_AsLong(PySequence_Fast_GET_ITEM(pyO_arr, i));
 	}
 	if(ORBIT_MPI_Group_excl(pyGroup_in->group,size,i_arr,&pyGroup_out->group) != MPI_SUCCESS){
 		error("MPI_Group_excl(MPI_Group in, [...ranks]) - fatal error. STOP.");
@@ -119,7 +119,7 @@ static PyObject* mpi_group_translate_ranks(PyObject *self, PyObject *args) {
 	int* i_arr_in = BufferStore::getBufferStore()->getFreeIntArr(buff_index0,size);
 	int* i_arr_out = BufferStore::getBufferStore()->getFreeIntArr(buff_index1,size);
 	for(int i = 0; i < size; i++){
-		i_arr_in[i] = (int) PyInt_AsLong(PySequence_Fast_GET_ITEM(pyO_arr, i));
+		i_arr_in[i] = (int) PyLong_AsLong(PySequence_Fast_GET_ITEM(pyO_arr, i));
 		i_arr_out[i] = i_arr_in[i];
 	}
 	ORBIT_MPI_Group_translate_ranks(pyGroup_a->group, size, i_arr_in, pyGroup_b->group, i_arr_out);

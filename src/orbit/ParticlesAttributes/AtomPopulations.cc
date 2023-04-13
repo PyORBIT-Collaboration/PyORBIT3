@@ -16,7 +16,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "Bunch.hh"
+#include "../Bunch.hh"
 #include "AtomPopulations.hh"
 
 AtomPopulations::AtomPopulations(Bunch* bunch, int size_in):

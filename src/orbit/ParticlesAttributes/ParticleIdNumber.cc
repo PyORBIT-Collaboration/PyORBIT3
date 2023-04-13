@@ -16,7 +16,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "Bunch.hh"
+#include "../Bunch.hh"
 #include "ParticleIdNumber.hh"
 
 ParticleIdNumber::ParticleIdNumber(Bunch* bunch):

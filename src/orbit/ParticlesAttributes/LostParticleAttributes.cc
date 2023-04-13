@@ -15,7 +15,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "Bunch.hh"
+#include "../Bunch.hh"
 #include "LostParticleAttributes.hh"
 
 LostParticleAttributes::LostParticleAttributes(Bunch* bunch): 

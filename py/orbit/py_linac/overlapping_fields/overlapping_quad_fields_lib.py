@@ -345,10 +345,10 @@ if __name__ == "__main__":
 	for ind in range(2*np-1):
 		z = ind*step-z_max
 		val = func.getFuncValue(z)
-		print " %12.5e  %12.5e "%(z*1000.,val)
-	print "z limits=",func.getLimitsZ()
+		print (" %12.5e  %12.5e "%(z*1000.,val))
+	print ("z limits=",func.getLimitsZ())
 	func.setCutOffZ(0.5*func.getLimitsZ()[1])
-	print "new z limits=",func.getLimitsZ()
+	print ("new z limits=",func.getLimitsZ())
 
 
 

@@ -25,7 +25,7 @@ from orbit_mpi import mpi_comm
 # import from orbit Python utilities
 from orbit.utils import orbitFinalize
 
-from orbit.py_linac.lattice import LinacApertureNode
+#from orbit.py_linac.lattice import LinacApertureNode
 from orbit.py_linac.lattice import Quad, Drift
 from orbit.py_linac.lattice import BaseRF_Gap, AxisFieldRF_Gap
 
@@ -291,7 +291,7 @@ def Make_AxisFieldRF_Gaps_and_Find_Neihbor_Nodes(rf_length_tolerance,accLattice,
 			msg += "new rf gap (z_min,z_max) = " + str((z_min_new,z_max_new))
 			msg += os.linesep
 			msg += "debug =============== WARNING  END ================"
-			if(rank == 0): print msg
+			if(rank == 0): print (msg)
 	#--------------------------------------------------
 	#---- Let's fix the length of the axis fields to avoid the fields overlaping
 	for cav in cavs:

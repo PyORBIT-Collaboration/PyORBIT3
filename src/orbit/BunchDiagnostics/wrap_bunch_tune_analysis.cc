@@ -76,7 +76,7 @@ extern "C" {
   static void BunchTuneAnalysis_del(pyORBIT_Object* self){
 		//std::cerr<<"The BunchTuneAnalysis __del__ has been called!"<<std::endl;
 		delete ((BunchTuneAnalysis*)self->cpp_obj);
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 	
 	// defenition of the methods of the python BunchTuneAnalysis wrapper class
@@ -95,8 +95,7 @@ extern "C" {
 	
 	//new python BunchTwissAnalysis wrapper type definition
 	static PyTypeObject pyORBIT_BunchTuneAnalysis_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL, 0)
 		"BunchTuneAnalysis", /*tp_name*/
 		sizeof(pyORBIT_Object), /*tp_basicsize*/
 		0, /*tp_itemsize*/

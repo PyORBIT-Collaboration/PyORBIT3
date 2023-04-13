@@ -23,7 +23,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "Bunch.hh"
+#include "../Bunch.hh"
 #include "ParticleInitialCoordinates.hh"
 
 ParticleInitialCoordinates::ParticleInitialCoordinates(Bunch* bunch):

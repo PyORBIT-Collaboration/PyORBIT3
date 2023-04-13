@@ -718,7 +718,7 @@ namespace wrap_orbit_bunch{
 		//create tuple with names
 		PyObject* resTuple = PyTuple_New(names.size());
 		for(int i = 0, n = names.size(); i < n; i++){
-			PyObject* py_nm = PyString_FromString(names[i].c_str());
+			PyObject* py_nm = PyUnicode_FromString(names[i].c_str());
 			if(PyTuple_SetItem(resTuple,i,py_nm)){
 				error("PyBunch - bunchAttrDoubleNames - cannot create tuple with bunch attr names");
 			}
@@ -734,7 +734,7 @@ namespace wrap_orbit_bunch{
 		//create tuple with names
 		PyObject* resTuple = PyTuple_New(names.size());
 		for(int i = 0, n = names.size(); i < n; i++){
-			PyObject* py_nm = PyString_FromString(names[i].c_str());
+			PyObject* py_nm = PyUnicode_FromString(names[i].c_str());
 			if(PyTuple_SetItem(resTuple,i,py_nm)){
 				error("PyBunch - bunchAttrIntNames() - cannot create tuple with bunch attr names");
 			}
@@ -792,10 +792,10 @@ namespace wrap_orbit_bunch{
 			PyObject *key, *value;
 			Py_ssize_t pos = 0;
 			while (PyDict_Next(py_attrParamsDict, &pos, &key, &value)) {
-				if(!PyString_Check(key) || !PyNumber_Check(value)){
+				if(!PyUnicode_Check(key) || !PyNumber_Check(value)){
 					error("PyBunch - addPartAttr(name, [param_dict]) - param_dict is not a {str:val} dictionary");
 				}
-				std::string par_name(PyString_AsString(key));
+				std::string par_name((char *)PyUnicode_AsUTF8(key));
 				double d_val = PyFloat_AsDouble(value);
 				part_attr_dict[par_name] = d_val;
 			}
@@ -835,7 +835,7 @@ namespace wrap_orbit_bunch{
    //create tuple with names
    PyObject* resTuple = PyTuple_New(names.size());
    for(int i = 0, n = names.size(); i < n; i++){
-     PyObject* py_nm = PyString_FromString(names[i].c_str());
+     PyObject* py_nm = PyUnicode_FromString(names[i].c_str());
      if(PyTuple_SetItem(resTuple,i,py_nm)){
        error("PyBunch - getPartAttrNames() - cannot create tuple with bunch attr names");
      }
@@ -871,7 +871,7 @@ namespace wrap_orbit_bunch{
 		 //create tuple with names
 		 PyObject* resTuple = PyTuple_New(names.size());
 		 for(int i = 0, n = names.size(); i < n; i++){
-			 PyObject* py_nm = PyString_FromString(names[i].c_str());
+			 PyObject* py_nm = PyUnicode_FromString(names[i].c_str());
 			 if(PyTuple_SetItem(resTuple,i,py_nm)){
 				 error("PyBunch - getPossiblePartAttrNames - cannot create tuple with bunch attr names");
 			 }
@@ -922,7 +922,7 @@ namespace wrap_orbit_bunch{
 		//create tuple with names
 		PyObject* resTuple = PyTuple_New(names.size());
 		for(int i = 0, n = names.size(); i < n; i++){
-			PyObject* py_nm = PyString_FromString(names[i].c_str());
+			PyObject* py_nm = PyUnicode_FromString(names[i].c_str());
 			if(PyTuple_SetItem(resTuple,i,py_nm)){
 				error("PyBunch - readPartAttrNames(fileName) - cannot create tuple with particles attr. names");
 			}
@@ -1189,7 +1189,7 @@ namespace wrap_orbit_bunch{
   static void Bunch_del(pyORBIT_Object* self){
 		Bunch* cpp_bunch = (Bunch*) self->cpp_obj;
 		delete cpp_bunch;
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }	
 
   static PyMethodDef BunchClassMethods[] = {
@@ -1264,8 +1264,7 @@ namespace wrap_orbit_bunch{
 	
 	//new python Bunch wrapper type definition
 	static PyTypeObject pyORBIT_Bunch_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL, 0)
 		"Bunch", /*tp_name*/
 		sizeof(pyORBIT_Object), /*tp_basicsize*/
 		0, /*tp_itemsize*/
@@ -1312,18 +1311,26 @@ namespace wrap_orbit_bunch{
 extern "C" {
 #endif
 
-  void initbunch(){
-	  //check that the Bunch wrapper is ready
-	  if (PyType_Ready(&pyORBIT_Bunch_Type) < 0) return;
-	  Py_INCREF(&pyORBIT_Bunch_Type);
-	  //create new module
-	  PyObject* module = Py_InitModule("bunch",BunchModuleMethods);
-	  PyModule_AddObject(module, "Bunch", (PyObject *)&pyORBIT_Bunch_Type);
-	  //add the SyncParticle python class
-	  wrap_orbit_syncpart::initsyncpart(module);
-	  wrap_bunch_twiss_analysis::initbunchtwissanalysis(module);
-	  wrap_bunch_tune_analysis::initbunchtuneanalysis(module);
-	  wrap_synch_part_redefinition::initsynchpartredefinition(module);
+  static struct PyModuleDef cModPyDem =
+  {
+	  PyModuleDef_HEAD_INIT,
+	  "bunch", "Bunch class",
+	  -1,
+	  BunchModuleMethods
+  };
+
+  PyMODINIT_FUNC PyInit_bunch(void) {
+  	//check that the Bunch wrapper is ready
+  	if(PyType_Ready(&pyORBIT_Bunch_Type) < 0) return NULL;
+  	Py_INCREF(&pyORBIT_Bunch_Type);
+  	PyObject* module = PyModule_Create(&cModPyDem);
+  	PyModule_AddObject(module, "Bunch", (PyObject *)&pyORBIT_Bunch_Type);
+  	//add the SyncParticle python class
+  	wrap_orbit_syncpart::initsyncpart(module);
+  	wrap_bunch_twiss_analysis::initbunchtwissanalysis(module);
+  	wrap_bunch_tune_analysis::initbunchtuneanalysis(module);
+  	wrap_synch_part_redefinition::initsynchpartredefinition(module);
+  	return module;
   }
 
 	PyObject* getBunchType(const char* name){

@@ -7,7 +7,7 @@
 extern "C" {
 #endif
   namespace wrap_linac{
-	  void initlinac(void);
+	  PyMODINIT_FUNC initlinac(void);
 	  PyObject* getLinacType(char* name);
 	}
 	

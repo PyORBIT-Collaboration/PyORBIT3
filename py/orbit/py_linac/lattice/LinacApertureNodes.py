@@ -70,7 +70,7 @@ class LinacApertureNode(BaseLinacNode):
 
 	def track(self, paramsDict):
 		bunch = paramsDict["bunch"]
-		if(paramsDict.has_key("lostbunch")):
+		if("lostbunch" in paramsDict):
 			lostbunch = paramsDict["lostbunch"]
 			self.aperture.checkBunch(bunch, lostbunch)
 		else:
@@ -150,7 +150,7 @@ class LinacPhaseApertureNode(BaseLinacNode):
 	def track(self, paramsDict):
 		bunch = paramsDict["bunch"]
 		n_parts = bunch.getSize()
-		if(paramsDict.has_key("lostbunch")):
+		if("lostbunch" in paramsDict):
 			lostbunch = paramsDict["lostbunch"]
 			self.aperture.checkBunch(bunch, lostbunch)
 		else:
@@ -190,7 +190,7 @@ class LinacEnergyApertureNode(BaseLinacNode):
 	def track(self, paramsDict):
 		bunch = paramsDict["bunch"]
 		n_parts = bunch.getSize()
-		if(paramsDict.has_key("lostbunch")):
+		if("lostbunch" in paramsDict):
 			lostbunch = paramsDict["lostbunch"]
 			self.aperture.checkBunch(bunch, lostbunch)
 		else:

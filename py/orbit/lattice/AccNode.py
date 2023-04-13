@@ -305,8 +305,8 @@ class AccNode(NamedObject, TypedObject, ParamsDictObject):
 		"""
 		paramsDict["node"] = self
 		parentNode = None
-		if(paramsDict.has_key("parentNode")): parentNode = paramsDict["parentNode"]
-		if(not paramsDict.has_key("path_length")): paramsDict["path_length"] = 0.
+		if("parentNode" in paramsDict): parentNode = paramsDict["parentNode"]
+		if(not ("path_length" in paramsDict)): paramsDict["path_length"] = 0.
 		has_length = False
 		if(self.getLength() > 0.):
 			has_length = True

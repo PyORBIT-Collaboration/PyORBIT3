@@ -354,7 +354,7 @@ extern "C" {
 		//std::cerr<<"The Grid2D __del__ has been called!"<<std::endl;
 		Grid2D* cpp_Grid2D = (Grid2D*) self->cpp_obj;
 		delete cpp_Grid2D;
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 	
 	// defenition of the methods of the python Grid2D wrapper class
@@ -396,8 +396,7 @@ extern "C" {
 
 	//new python Grid2D wrapper type definition
 	static PyTypeObject pyORBIT_Grid2D_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL, 0)
 		"Grid2D", /*tp_name*/
 		sizeof(pyORBIT_Object), /*tp_basicsize*/
 		0, /*tp_itemsize*/

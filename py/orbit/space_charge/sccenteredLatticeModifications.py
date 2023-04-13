@@ -40,9 +40,9 @@ def setSC_Centered_AccNodes(lattice, sc_path_length_min, \
 		for ip in range(nParts):
 			part_length = accNode.getLength(ip)
 			if(part_length > 1.0):
-				print "Warning! Node ", accNode.getName(), " has length ", \
+				print ("Warning! Node ", accNode.getName(), " has length ", \
 					part_length, "m which is greater than 1 m. Space charge \
-					algorithm may be innacurate!"
+					algorithm may be innacurate!")
 			if(running_path > sc_path_length_min):
 				nodes_arr.append((accNode, ip, length_total, running_path))
 				running_path = 0.0

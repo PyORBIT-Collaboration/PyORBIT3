@@ -15,7 +15,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "Bunch.hh"
+#include "../Bunch.hh"
 #include "pq_coordinates.hh"
 
 pq_coordinates::pq_coordinates(Bunch* bunch, int size_in):

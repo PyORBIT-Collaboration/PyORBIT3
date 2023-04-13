@@ -23,15 +23,15 @@ from orbit_utils import Polynomial
 from orbit_utils import Function
 
 # from LinacAccLattice import Sequence
-from LinacAccLatticeLib import Sequence
-from LinacAccNodes import Drift, BaseLinacNode
+from orbit.py_linac.lattice.LinacAccLatticeLib import Sequence
+from orbit.py_linac.lattice.LinacAccNodes import Drift, BaseLinacNode
 
 # from linac import the RF gap classes
 from linac import BaseRfGap, MatrixRfGap, RfGapTTF, RfGapThreePointTTF
 from linac import BaseRfGap_slow, RfGapTTF_slow, RfGapThreePointTTF_slow
 
 # The abstract RF gap import
-from LinacAccNodes import AbstractRF_Gap
+from orbit.py_linac.lattice.LinacAccNodes import AbstractRF_Gap
 
 # import teapot base functions from wrapper around C++ functions
 from orbit.teapot_base import TPB
@@ -41,7 +41,7 @@ from orbit.teapot_base import TPB
 # drift - linac drift tracking
 # quad1 - linac quad linear part of tracking
 # quad2 - linac quad non-linear part of tracking
-import linac_tracking
+from linac import linac_tracking
 
 from bunch import Bunch
 
@@ -369,7 +369,7 @@ class RF_AxisFieldsStore:
 		the file name.
 		Returns the axis RF field function.
 		"""
-		if(cls.static_axis_field_dict.has_key(fl_name)): 
+		if(fl_name in cls.static_axis_field_dict): 
 			return cls.static_axis_field_dict[fl_name]
 		comm = orbit_mpi.mpi_comm.MPI_COMM_WORLD
 		data_type = mpi_datatype.MPI_DOUBLE
@@ -406,7 +406,7 @@ class RF_AxisFieldsStore:
 		name of the file. If store does not have this function it will return
 		the None object.
 		"""
-		if(cls.static_axis_field_dict.has_key(fl_name)):
+		if(fl_name in cls.static_axis_field_dict):
 			return cls.static_axis_field_dict[fl_name]
 		else:
 			return None

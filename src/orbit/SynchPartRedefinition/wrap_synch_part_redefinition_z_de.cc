@@ -139,7 +139,7 @@ extern "C" {
   static void SynchPartRedefinitionZdE_del(pyORBIT_Object* self){
 		//std::cerr<<"The SynchPartRedefinitionZdE __del__ has been called!"<<std::endl;
 		delete ((SynchPartRedefinitionZdE*)self->cpp_obj);
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 	
 	// defenition of the methods of the python SynchPartRedefinitionZdE wrapper class
@@ -163,8 +163,7 @@ extern "C" {
 	
 	//new python SynchPartRedefinitionZdE wrapper type definition
 	static PyTypeObject pyORBIT_SynchPartRedefinitionZdE_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL, 0)
 		"SynchPartRedefinitionZdE", /*tp_name*/
 		sizeof(pyORBIT_Object), /*tp_basicsize*/
 		0, /*tp_itemsize*/

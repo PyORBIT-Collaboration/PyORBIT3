@@ -23,7 +23,7 @@ from orbit.teapot_base import TPB
 # drift - linac drift tracking
 # quad1 - linac quad linear part of tracking
 # quad2 - linac quad non-linear part of tracking
-import linac_tracking
+from linac import linac_tracking
 
 class BaseLinacNode(AccNodeBunchTracker):
 	""" 
@@ -311,7 +311,7 @@ class Quad(LinacMagnetNode):
 			TPB.quadfringeIN(bunch,kq)
 			if(length == 0.):
 				return
-			for i in xrange(len(poleArr)):
+			for i in range(len(poleArr)):
 				pole = poleArr[i]
 				k = klArr[i]/length
 				skew = skewArr[i]
@@ -332,7 +332,7 @@ class Quad(LinacMagnetNode):
 			TPB.quadfringeOUT(bunch,kq)
 			if(length == 0.):
 				return
-			for i in xrange(len(poleArr)):
+			for i in range(len(poleArr)):
 				pole = poleArr[i]
 				k = klArr[i]/length
 				skew = skewArr[i]
@@ -420,7 +420,7 @@ class Quad(LinacMagnetNode):
 		step = length
 		self.tracking_module.quad1(bunch, step/4, kq)
 		self.tracking_module.quad2(bunch, step/4)
-		for i in xrange(len(poleArr)):
+		for i in range(len(poleArr)):
 			pole = poleArr[i]
 			kl = klArr[i]/(2*nParts)
 			skew = skewArr[i]
@@ -428,7 +428,7 @@ class Quad(LinacMagnetNode):
 		self.tracking_module.quad2(bunch, step/4)
 		self.tracking_module.quad1(bunch, step/2, kq)
 		self.tracking_module.quad2(bunch, step/4)
-		for i in xrange(len(poleArr)):
+		for i in range(len(poleArr)):
 			pole = poleArr[i]
 			kl = klArr[i]/(2*nParts)
 			skew = skewArr[i]
@@ -445,7 +445,7 @@ class Quad(LinacMagnetNode):
 			return
 		if(index > 0 and index < (nParts-1)):
 			self.tracking_module.quad2(bunch, length/2.0)
-			for i in xrange(len(poleArr)):
+			for i in range(len(poleArr)):
 				pole = poleArr[i]
 				kl = klArr[i]/(nParts - 1)
 				skew = skewArr[i]
@@ -455,7 +455,7 @@ class Quad(LinacMagnetNode):
 			return
 		if(index == (nParts-1)):
 			self.tracking_module.quad2(bunch, length)
-			for i in xrange(len(poleArr)):
+			for i in range(len(poleArr)):
 				pole = poleArr[i]
 				kl = klArr[i]*kq*length/(nParts - 1)
 				skew = skewArr[i]
@@ -518,7 +518,7 @@ class Bend(LinacMagnetNode):
 					TPB.wedgerotate(bunch, e, frinout)
 					TPB.bendfringeIN(bunch, rho)
 					if(length != 0.):
-						for i in xrange(len(poleArr)):
+						for i in range(len(poleArr)):
 							pole = poleArr[i]
 							kl = klArr[i]/length
 							skew = skewArr[i]
@@ -530,7 +530,7 @@ class Bend(LinacMagnetNode):
 				if(usageIN):
 					TPB.bendfringeIN(bunch, rho)
 					if(length != 0.):
-						for i in xrange(len(poleArr)):
+						for i in range(len(poleArr)):
 							pole = poleArr[i]
 							kl = klArr[i]/length
 							skew = skewArr[i]
@@ -554,7 +554,7 @@ class Bend(LinacMagnetNode):
 					TPB.wedgerotate(bunch, -e, frinout)
 					TPB.bendfringeOUT(bunch, rho)
 					if(length != 0.):
-						for i in xrange(len(poleArr)):
+						for i in range(len(poleArr)):
 							pole = poleArr[i]
 							kl = klArr[i]/length
 							skew = skewArr[i]
@@ -566,7 +566,7 @@ class Bend(LinacMagnetNode):
 				if(usageOUT):
 					TPB.bendfringeOUT(bunch, rho)
 					if(length != 0.):
-						for i in xrange(len(poleArr)):
+						for i in range(len(poleArr)):
 							pole = poleArr[i]
 							kl = klArr[i]/length
 							skew = skewArr[i]
@@ -599,7 +599,7 @@ class Bend(LinacMagnetNode):
 		lengthStep = lengthIN + lengthOUT
 		self.setLength(lengthIN,0)
 		self.setLength(lengthOUT,nParts - 1)
-		for i in xrange(nParts-2):
+		for i in range(nParts-2):
 			self.setLength(lengthStep,i+1)
 
 	def track(self, paramsDict):
@@ -607,7 +607,7 @@ class Bend(LinacMagnetNode):
 		The Bend Combined Functions TEAPOT  class implementation of
 		the AccNodeBunchTracker class track(probe) method.
 		"""
-                bunch = paramsDict["bunch"]
+		bunch = paramsDict["bunch"]
 		nParts = self.getnParts()
 		index = self.getActivePartIndex()
 		length = self.getLength(index)
@@ -622,7 +622,7 @@ class Bend(LinacMagnetNode):
 			TPB.bend2(bunch, length/2.0)
 			TPB.bend3(bunch, theta/2.0)
 			TPB.bend4(bunch,theta/2.0)
-			for i in xrange(len(poleArr)):
+			for i in range(len(poleArr)):
 				pole = poleArr[i]
 				kl = klArr[i]/(nParts - 1)
 				skew = skewArr[i]
@@ -636,7 +636,7 @@ class Bend(LinacMagnetNode):
 			TPB.bend2(bunch, length)
 			TPB.bend3(bunch, theta/2.0)
 			TPB.bend4(bunch, theta/2.0)
-			for i in xrange(len(poleArr)):
+			for i in range(len(poleArr)):
 				pole = poleArr[i]
 				kl = klArr[i]/(nParts - 1)
 				skew = skewArr[i]

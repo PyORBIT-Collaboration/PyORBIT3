@@ -10,8 +10,7 @@ extern "C"
 
 namespace wrap_linac_tracking
 {
-    void initlinactracking();
-    PyObject* getLinacTrackingType(char* name);
+    void initlinactracking(PyObject* module);
 }
 
 #ifdef __cplusplus

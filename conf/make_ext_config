@@ -2,7 +2,7 @@
 # Defines common variables for ORBIT extentions
 ######################################################################
 
-include  ${ORBIT_ROOT}/conf/make_common_config
+include  ${ORBIT3_ROOT}/conf/make_common_config
 
 #-------------------------------------------------------------------------------
 # library locations and names

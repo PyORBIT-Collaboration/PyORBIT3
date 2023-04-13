@@ -513,13 +513,22 @@ extern "C"
 			{ NULL, NULL }
     };
 
-    void initteapotbase(void)
+    static struct PyModuleDef cModPyDem =
+    {
+	    PyModuleDef_HEAD_INIT,
+	    "teapot_base", "TEAPOT tracking functions for different lattice elements.",
+	    -1,
+	    teapotbaseMethods
+    };    
+    
+    PyMODINIT_FUNC initteapotbase(void)
     {
         PyObject *m, *d;
-        m = Py_InitModule((char*)"teapot_base", teapotbaseMethods);
+        m = PyModule_Create(&cModPyDem);
         d = PyModule_GetDict(m);
         teapot_base::init_factorial();
         wrap_teapotbase_matrix_generator::initMatrixGenerator(m);
+        return m;
     }
 
     PyObject* getBaseTEAPOTType(char* name)

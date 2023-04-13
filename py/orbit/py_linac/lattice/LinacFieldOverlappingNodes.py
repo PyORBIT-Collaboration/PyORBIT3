@@ -12,8 +12,8 @@ import os
 from orbit.utils import orbitFinalize, phaseNearTargetPhase, phaseNearTargetPhaseDeg
 
 #---- base linac nodes
-from LinacAccNodes import AbstractRF_Gap
-from LinacAccNodes import BaseLinacNode, Drift, Quad
+from orbit.py_linac.lattice.LinacAccNodes import AbstractRF_Gap
+from orbit.py_linac.lattice.LinacAccNodes import BaseLinacNode, Drift, Quad
 
 # import teapot base functions from wrapper around C++ functions
 from orbit.teapot_base import TPB
@@ -604,7 +604,7 @@ class OverlappingQuadsNode(BaseLinacNode):
 		nParts = self.getnParts()
 		length = self.getLength()
 		lengthStep = length/nParts
-		for i in xrange(nParts):
+		for i in range(nParts):
 			self.setLength(lengthStep,i)
 
 	def track(self, paramsDict):

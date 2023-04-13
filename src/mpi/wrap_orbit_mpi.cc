@@ -169,9 +169,18 @@ namespace wrap_orbit_mpi{
 			{ NULL, NULL }
 		};
 		
-		void initorbit_mpi(void) {
+		static struct PyModuleDef cModPyDem =
+		{
+			PyModuleDef_HEAD_INIT,
+			"orbit_mpi", "PyORBIT MPI implementation.",
+			-1,
+			orbit_mpiMethods
+		};		
+		
+		
+		PyMODINIT_FUNC initorbit_mpi(void) {
 			PyObject *m, *d;
-			m = Py_InitModule((char*)"orbit_mpi",orbit_mpiMethods);
+			m = PyModule_Create(&cModPyDem);
 			d = PyModule_GetDict(m);
 
 			//add the results of comparisons	constants	
@@ -204,6 +213,8 @@ namespace wrap_orbit_mpi{
 			
 			//add MPI_Op class and fields
 			wrap_orbit_mpi_op::init_orbit_mpi_op(m);
+			
+			return m;
 		}
 		
 		

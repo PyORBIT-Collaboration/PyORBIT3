@@ -25,7 +25,7 @@ class ParamsDictObject:
 		"""
 		Method. Removes a parameter.
 		"""
-		if(self.__paramsDict.has_key(key)):
+		if(key in self.__paramsDict):
 			del  self.__paramsDict[key]
 
 	def setParam(self, key, value):
@@ -77,7 +77,7 @@ class ParamsDictObject:
 		Method. Returns True if the object has a parameter
 		for this key. Returns False otherwise.
 		"""
-		return self.__paramsDict.has_key(key)
+		return (key in self.__paramsDict)
 		
 	def keys(self):
 		""" return the list of the keys for the parameters """

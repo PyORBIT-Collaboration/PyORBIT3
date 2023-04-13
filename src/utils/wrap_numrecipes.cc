@@ -86,14 +86,23 @@ extern "C" {
 		{NULL, NULL, 0, NULL}        /* Sentinel */
 	};
   
+	
+	static struct PyModuleDef cModPyDem =
+	{
+		PyModuleDef_HEAD_INIT,
+		"num_recipes", "Bessel functions implementations from Numerical Recipes.",
+		-1,
+		NumrecipesModuleMethods
+	};   	
+	
 	//--------------------------------------------------
 	//Initialization functions of the numrecipes module
 	//--------------------------------------------------
-  void initNumrecipes(PyObject* module, const char* num_recipes_name){
+  void initNumrecipes(PyObject* module){
     //create numrecipes module
-    PyObject* module_nr = Py_InitModule(num_recipes_name,NumrecipesModuleMethods);
+    PyObject* module_nr = PyModule_Create(&cModPyDem);
 		Py_INCREF(module_nr);
-		PyModule_AddObject(module, num_recipes_name, module_nr);
+		PyModule_AddObject(module,const_cast<char*>("num_recipes"), module_nr);
 	}
 
 #ifdef __cplusplus

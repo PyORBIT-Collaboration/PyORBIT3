@@ -115,19 +115,20 @@ extern "C"
 		{ NULL, NULL }
 	};
 	
-	void initlinactracking()
-	{
-		PyObject *m;
-		m = Py_InitModule((char*)"linac_tracking", linactrackingMethods);
-	}
+  static struct PyModuleDef linacTrackingModDef =
+  {
+  	PyModuleDef_HEAD_INIT,
+  	"linac_tracking", "Linac bunch tracking C++ classes",
+  	-1,
+  	linactrackingMethods
+  };	
 	
-	PyObject* getLinacTrackingType(char* name)
+	
+	void initlinactracking(PyObject* module)
 	{
-		PyObject* mod = PyImport_ImportModule("linac_tracking");
-		PyObject* pyType = PyObject_GetAttrString(mod, name);
-		Py_DECREF(mod);
-		Py_DECREF(pyType);
-		return pyType;
+		PyObject* module_tr = PyModule_Create(&linacTrackingModDef);
+		Py_INCREF(module_tr);
+		PyModule_AddObject(module,const_cast<char*>("linac_tracking"), module_tr);		
 	}
   
 #ifdef __cplusplus

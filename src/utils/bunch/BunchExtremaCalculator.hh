@@ -17,8 +17,6 @@
 #ifndef BUNCH_EXTREMA_CALCULATIONS_H
 #define BUNCH_EXTREMA_CALCULATIONS_H
 
-#include "BaseFieldSource.hh"
-
 //ORBIT bunch
 #include "Bunch.hh"
 

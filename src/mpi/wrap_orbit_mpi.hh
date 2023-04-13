@@ -3,7 +3,7 @@ extern "C" {
 #endif
   namespace wrap_orbit_mpi{
 
-    void initorbit_mpi(void);
+    PyMODINIT_FUNC initorbit_mpi(void);
 
   }
 

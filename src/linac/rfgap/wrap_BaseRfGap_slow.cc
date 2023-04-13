@@ -66,7 +66,7 @@ extern "C" {
 		//std::cerr<<"The BaseRfGap_slow __del__ has been called!"<<std::endl;
 		BaseRfGap_slow* cpp_BaseRfGap_slow = (BaseRfGap_slow*) self->cpp_obj;
 		delete cpp_BaseRfGap_slow;
-		self->ob_type->tp_free((PyObject*)self);
+		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 	
 	// defenition of the methods of the python BaseRfGap_slow wrapper class
@@ -84,8 +84,7 @@ extern "C" {
 
 	//new python BaseRfGap_slow wrapper type definition
 	static PyTypeObject pyORBIT_BaseRfGap_slow_Type = {
-		PyObject_HEAD_INIT(NULL)
-		0, /*ob_size*/
+		PyVarObject_HEAD_INIT(NULL,0)
 		"BaseRfGap_slow", /*tp_name*/
 		sizeof(pyORBIT_Object), /*tp_basicsize*/
 		0, /*tp_itemsize*/

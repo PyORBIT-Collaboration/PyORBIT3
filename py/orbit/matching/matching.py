@@ -48,14 +48,14 @@ class Optics:
 		self.line.append(x)
 
 	def print_line(self):
-		for j in xrange(0,len(self.line)):
+		for j in range(0,len(self.line)):
 			print j, self.line[j].data['keyword'], "s:", self.line[j].data['s'], "L:", self.line[j].data['L'], 360.0*self.line[j].data['mux'],self.line[j].data['bety'],self.line[j].data['alfy'] 
 
 	def get_element(self, s):
 		Nb=len(self.line)
 		if self.line[0].data['s'] >= s and s >= 0.0: 
 			return 0
-		for j in xrange(1,Nb):
+		for j in range(1,Nb):
 			if self.line[j-1].data['s'] < s and self.line[j].data['s'] >=s : 
 				return j
 			if self.line[Nb-1].data['s'] < s : 
@@ -278,7 +278,7 @@ class EnvelopeSolver:
 		phasex=0.0
 		phasey=0.0
 		ds=s[1]-s[0]
-		for j in xrange(0,Np):
+		for j in range(0,Np):
 			phasex+=ds*emitx/(envx[j]**2-(Dx[j]*sigma_p)**2)
 			phasey+=ds*emity/envy[j]**2
 		return phasex, phasey	
@@ -298,7 +298,7 @@ class EnvelopeSolver:
 		Np=len(s)
 		ratet=0.0
 		ds=s[1]-s[0]
-		for j in xrange(0,Np):
+		for j in range(0,Np):
 			Tx=envx[j]**2/emitx**2
 			Ty=envy[j]**2/emity**2
 			ratet+=ds/(beta0*c)*0.5*(Tx-Ty)**2/(Tx*Ty)

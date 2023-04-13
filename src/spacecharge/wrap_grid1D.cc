@@ -461,7 +461,7 @@ static void Grid1D_del(pyORBIT_Object* self)
   //std::cerr << "The Grid1D __del__ has been called!" << std::endl;
   Grid1D* cpp_Grid1D = (Grid1D*) self->cpp_obj;
   delete cpp_Grid1D;
-  self->ob_type->tp_free((PyObject*)self);
+  self->ob_base.ob_type->tp_free((PyObject*)self);
 }
 
 
@@ -509,8 +509,7 @@ static PyMemberDef Grid1DClassMembers [] =
 
 static PyTypeObject pyORBIT_Grid1D_Type =
 {
-  PyObject_HEAD_INIT(NULL)
-  0, /*ob_size*/
+  PyVarObject_HEAD_INIT(NULL, 0)
   "Grid1D", /*tp_name*/
   sizeof(pyORBIT_Object), /*tp_basicsize*/
   0, /*tp_itemsize*/

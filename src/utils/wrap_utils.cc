@@ -3,18 +3,18 @@
 #include "wrap_utils.hh"
 #include "wrap_matrix.hh"
 #include "wrap_phase_vector.hh"
-#include "wrap_py_base_field_source.hh"
-#include "wrap_field_source_container.hh"
+//#include "wrap_py_base_field_source.hh"
+//#include "wrap_field_source_container.hh"
 #include "wrap_function.hh"
 #include "wrap_splinech.hh"
-#include "wrap_statmoments2d.hh"
+//#include "wrap_statmoments2d.hh"
 #include "wrap_bunch_extrema_calculator.hh"
 #include "wrap_gauss_legendre_integrator.hh"
 #include "wrap_polynomial.hh"
 #include "wrap_numrecipes.hh"
 #include "wrap_bunch_utils_functions.hh"
 #include "wrap_harmonic_data.hh"
-#include "wrap_field_sources_module.hh"
+//#include "wrap_field_sources_module.hh"
 
 namespace wrap_orbit_utils{
 
@@ -26,25 +26,34 @@ namespace wrap_orbit_utils{
 extern "C" {
 #endif
 
-  void initutils(){
+	static struct PyModuleDef cModPyDem =
+	{
+		PyModuleDef_HEAD_INIT,
+		"orbit_utils", "PyORBIT utilities.",
+		-1,
+		UtilsModuleMethods
+	};
+
+  PyMODINIT_FUNC initutils(){
     //create new module
-    PyObject* module = Py_InitModule(const_cast<char*>("orbit_utils"),UtilsModuleMethods);		
+    PyObject* module = PyModule_Create(&cModPyDem);
 		//add the other classes init
 		wrap_utils_martix::initMatrix(module);
 		wrap_utils_phase_vector::initPhaseVector(module);
-		wrap_utils_py_base_field_source::initPyBaseFieldSource(module);
-		wrap_field_source_container::initFieldSourceContainer(module);
+		//wrap_utils_py_base_field_source::initPyBaseFieldSource(module);
+		//wrap_field_source_container::initFieldSourceContainer(module);
 		wrap_function::initFunction(module);
 		wrap_splinech::initSplineCH(module);
-		wrap_statmoments2d::initstatmoments2d(module);
+		//wrap_statmoments2d::initstatmoments2d(module);
 		wrap_utils_bunch::initBunchExtremaCalculator(module);
 		wrap_gl_integrator::initGLIntegrator(module);
 		wrap_polynomial::initPolynomial(module);		
 		//this call creates the module orbit_utils.numrecipes with functions
-		wrap_numrecipes::initNumrecipes(module,const_cast<char*>("num_recipes"));
-		wrap_utils_bunch_functions::initBunchUtilsFunctions(module,const_cast<char*>("bunch_utils_functions"));	
+		wrap_numrecipes::initNumrecipes(module);
+		wrap_utils_bunch_functions::initBunchUtilsFunctions(module);
 		wrap_harmonicdata::initHarmonicData(module);
-		wrap_field_sources_module::initFieldSourcesModule(module,const_cast<char*>("field_sources"));
+		//wrap_field_sources_module::initFieldSourcesModule(module,const_cast<char*>("field_sources"));
+		return module;
   }
 
 	PyObject* getOrbitUtilsType(const char* name){

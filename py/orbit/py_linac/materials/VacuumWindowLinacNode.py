@@ -101,7 +101,7 @@ class VacuumWindowNode(BaseLinacNode):
 		length = self.getLength(self.getActivePartIndex())
 		if(length <= 0.): return
 		bunch = paramsDict["bunch"]
-		if(paramsDict.has_key("lostbunch")):
+		if("lostbunch" in paramsDict):
 			lostbunch = paramsDict["lostbunch"]
 			self.collimator.collimateBunch(bunch, lostbunch)
 		else:
