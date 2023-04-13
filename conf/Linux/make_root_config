@@ -3,5 +3,5 @@
 ######################################################################
 
 CXX             =  ${MPI_CPP}
-CXXFLAGS       += -g -O3 -DUSE_MPI=1
+CXXFLAGS       += -g -O3 -DUSE_MPI=0
 LINKFLAGS      += -export-dynamic
