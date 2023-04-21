@@ -2,7 +2,6 @@
 # Linux g++ for creation of ORBIT interpreter executable
 ######################################################################
 
-#CXX             =  ${MPI_CPP}
-CXX             = g++ 
+CXX             =  ${MPI_CPP}
 CXXFLAGS       += -g -O3 -DUSE_MPI=0
 LINKFLAGS      += -export-dynamic

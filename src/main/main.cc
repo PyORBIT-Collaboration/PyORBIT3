@@ -17,7 +17,7 @@
 //#include "wrap_collimator.hh"
 //#include "wrap_foil.hh"
 //#include "wrap_rfcavities.hh"
-//#include "wrap_aperture.hh"
+#include "wrap_aperture.hh"
 //#include "wrap_fieldtracker.hh"
 //#include "wrap_impedances.hh"
 
@@ -85,6 +85,12 @@ int main(int argc, char **argv)
   	fprintf(stderr, "Error: could not extend in-built modules table. linac\n");
   	exit(1);
   } 
+  
+  /* Add a built-in module bunch, before Py_Initialize */
+  if (PyImport_AppendInittab("aperture", wrap_aperture::PyInit_aperture) == -1) {
+  	fprintf(stderr, "Error: could not extend in-built modules table. aperture\n");
+  	exit(1);
+  }   
 
   // We need to initialize the extra ORBIT modules
   Py_Initialize();

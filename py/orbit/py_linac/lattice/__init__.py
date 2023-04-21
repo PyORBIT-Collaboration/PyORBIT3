@@ -14,14 +14,14 @@ from orbit.py_linac.lattice.LinacAccNodes import DCorrectorH, DCorrectorV
 from orbit.py_linac.lattice.LinacAccNodes import ThickKick
 
 from orbit.py_linac.lattice.LinacRfGapNodes import BaseRF_Gap, AxisFieldRF_Gap, RF_AxisFieldsStore
-"""
+
 from orbit.py_linac.lattice.LinacApertureNodes import LinacApertureNode
 from orbit.py_linac.lattice.LinacApertureNodes import CircleLinacApertureNode
 from orbit.py_linac.lattice.LinacApertureNodes import EllipseLinacApertureNode
 from orbit.py_linac.lattice.LinacApertureNodes import RectangleLinacApertureNode
 from orbit.py_linac.lattice.LinacApertureNodes import LinacPhaseApertureNode
 from orbit.py_linac.lattice.LinacApertureNodes import LinacEnergyApertureNode
-"""
+
 from orbit.py_linac.lattice.LinacFieldOverlappingNodes import AxisField_and_Quad_RF_Gap
 from orbit.py_linac.lattice.LinacFieldOverlappingNodes import OverlappingQuadsNode
 
@@ -54,14 +54,14 @@ __all__.append("DCorrectorV")
 __all__.append("ThickKick")
 __all__.append("Bend")
 
-"""
+
 __all__.append("LinacApertureNode")
 __all__.append("CircleLinacApertureNode")
 __all__.append("EllipseLinacApertureNode")
 __all__.append("RectangleLinacApertureNode")
 __all__.append("LinacPhaseApertureNode")
 __all__.append("LinacEnergyApertureNode")
-"""
+
 
 __all__.append("RF_Cavity")
 __all__.append("Sequence")
