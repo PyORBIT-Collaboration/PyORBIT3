@@ -14,12 +14,12 @@ import math
 import sys
 import time	
 	
-from orbit.utils.fitting.general_minimization.Solver import Solver, Scorer, SolveStopperFactory, VariableProxy, TrialPoint
+from orbit.utils.fitting.Solver_lib import Solver, Scorer, SolveStopperFactory, VariableProxy, TrialPoint
 
-from orbit.utils.fitting.general_minimization.BisectionSearch1D import BisectionSearchAlgorithm
-from orbit.utils.fitting.general_minimization.GoldenSectionSearch1D import GoldenSectionSearchAlgorithm
-from orbit.utils.fitting.general_minimization.SimplexSearch import SimplexSearchAlgorithm
-from orbit.utils.fitting.general_minimization.RandomSearch import RandomSearchAlgorithm
+from orbit.utils.fitting.BisectionSearch1D import BisectionSearchAlgorithm
+from orbit.utils.fitting.GoldenSectionSearch1D import GoldenSectionSearchAlgorithm
+from orbit.utils.fitting.SimplexSearch import SimplexSearchAlgorithm
+from orbit.utils.fitting.RandomSearch import RandomSearchAlgorithm
 
 #------------------------------------------------------
 #  Functions for minimization
@@ -103,21 +103,21 @@ def FitTest(scorer,searchAlgorithm,variableProxy_arr,maxIter = 10):
 	solver.solve(scorer,trialPoint)	
 	
 	#---- the fitting process ended, now about results
-	print "=============================================================="
-	print "??????????????????????????????????????????????????????????????"
+	print("==============================================================")
+	print("??????????????????????????????????????????????????????????????")
 	search_alg_name = searchAlgorithm.getName()
-	print "==============Fitting results for algorithm: ",search_alg_name
+	print("==============Fitting results for algorithm: ",search_alg_name)
 	solver.getScoreboard().printScoreBoard()
 	(pos_min_arr,value_min) = scorer.getAnswer()
-	print "===== best score ========== exact answer (pos. min, min value)=",(pos_min_arr,value_min)
+	print("===== best score ========== exact answer (pos. min, min value)=",(pos_min_arr,value_min))
 	bestScore = solver.getScoreboard().getBestScore()	
-	print "best score=",bestScore," iteration=",solver.getScoreboard().getIteration()
+	print("best score=",bestScore," iteration=",solver.getScoreboard().getIteration())
 	trialPoint = solver.getScoreboard().getBestTrialPoint()
-	print trialPoint.textDesciption()	
-	print "============STOP TEST================================="
+	print(trialPoint.textDesciption())	
+	print("============STOP TEST=================================")
 	success_limit = 0.01
 	if(abs(bestScore - value_min) > success_limit):
-		print "Search failed! Stop!"
+		print("Search failed! Stop!")
 		sys.exit(1)
 
 #--------------------------------------------
