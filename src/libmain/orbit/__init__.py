@@ -1,9 +1,9 @@
 import importlib.util
 import sys
 
-import _orbit3
+import _orbit
 
-pkg_path = _orbit3.__file__
+pkg_path = _orbit.__file__
 
 
 def _load_module(mod_name, path):
@@ -15,7 +15,7 @@ def _load_module(mod_name, path):
     return module
 
 
-_top_level_modules = ['orbit_mpi', 'bunch', 'teapot_base', 'linac', 'spacecharge', 'orbit_utils', 'aperture']
+_top_level_modules = ["orbit_mpi", "bunch", "teapot_base", "linac", "spacecharge", "orbit_utils", "aperture"]
 
 for mod_name in _top_level_modules:
     locals()[mod_name] = _load_module(mod_name, pkg_path)

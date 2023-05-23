@@ -18,7 +18,7 @@ static PyMethodDef OrbitMethods[] = {
 // Define the orbit module definition structure
 static PyModuleDef OrbitModule = {
     PyModuleDef_HEAD_INIT,
-    "orbit3",
+    "orbit",
     "pORBIT modules implemented in C++ .",
     -1,
     OrbitMethods,
@@ -30,7 +30,7 @@ static PyModuleDef OrbitModule = {
 
 // Define the module initialization function
 // It is a top level placeholder, has no methods or anything
-PyMODINIT_FUNC PyInit__orbit3(void) {
+PyMODINIT_FUNC PyInit__orbit(void) {
     PyObject* orbit_module = PyModule_Create(&OrbitModule);
     if (!orbit_module) {
         return nullptr;
