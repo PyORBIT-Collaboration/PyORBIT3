@@ -4,21 +4,21 @@
 ## - PolynomialFit - fitting a Function or SplineCH instances with the plynomial
 
 
-from orbit.utils.fitting.PolynomialFit import PolynomialFit
+from .PolynomialFit import PolynomialFit
 
-from orbit.utils.fitting.SimplexSearch import SimplexSearchAlgorithm
-from orbit.utils.fitting.RandomSearch import RandomSearchAlgorithm
-from orbit.utils.fitting.GoldenSectionSearch1D import GoldenSectionSearchAlgorithm
-from orbit.utils.fitting.BisectionSearch1D import BisectionSearchAlgorithm
+from .SimplexSearch import SimplexSearchAlgorithm
+from .RandomSearch import RandomSearchAlgorithm
+from .GoldenSectionSearch1D import GoldenSectionSearchAlgorithm
+from .BisectionSearch1D import BisectionSearchAlgorithm
 
-from orbit.utils.fitting.Solver_lib import Solver
-from orbit.utils.fitting.Solver_lib import TrialPoint
-from orbit.utils.fitting.Solver_lib import SolveStopper
-from orbit.utils.fitting.Solver_lib import SolveStopperFactory
-from orbit.utils.fitting.Solver_lib import ScoreboardActionListener
-from orbit.utils.fitting.Solver_lib import VariableProxy
-from orbit.utils.fitting.Solver_lib import Scorer
-from orbit.utils.fitting.Solver_lib import SearchAgorithm
+from .Solver_lib import Solver
+from .Solver_lib import TrialPoint
+from .Solver_lib import SolveStopper
+from .Solver_lib import SolveStopperFactory
+from .Solver_lib import ScoreboardActionListener
+from .Solver_lib import VariableProxy
+from .Solver_lib import Scorer
+from .Solver_lib import SearchAgorithm
 
 __all__ = []
 __all__.append("PolynomialFit")

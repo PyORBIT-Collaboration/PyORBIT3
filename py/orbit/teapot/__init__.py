@@ -3,19 +3,19 @@
 ##
 ## These classes use teapot_base C++ wrappers
 
-from teapot import TEAPOT_Lattice
-from teapot import TEAPOT_Ring
-from teapot import BaseTEAPOT
-from teapot import BendTEAPOT
-from teapot import DriftTEAPOT
-from teapot import FringeFieldTEAPOT
-from teapot import KickTEAPOT
-from teapot import MultipoleTEAPOT
-from teapot import QuadTEAPOT
-from teapot import RingRFTEAPOT
-from teapot import SolenoidTEAPOT
-from teapot import TiltTEAPOT
-from teapot import NodeTEAPOT
+from . import TEAPOT_Lattice
+from . import TEAPOT_Ring
+from . import BaseTEAPOT
+from . import BendTEAPOT
+from . import DriftTEAPOT
+from . import FringeFieldTEAPOT
+from . import KickTEAPOT
+from . import MultipoleTEAPOT
+from . import QuadTEAPOT
+from . import RingRFTEAPOT
+from . import SolenoidTEAPOT
+from . import TiltTEAPOT
+from . import NodeTEAPOT
 
 from teapot import TPB
 

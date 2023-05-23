@@ -3,8 +3,8 @@
 ##
 ## Classes:
 
-from diagnostics import StatLats, StatLatsSetMember
-from diagnostics import Moments, MomentsSetMember
+from . import StatLats, StatLatsSetMember
+from . import Moments, MomentsSetMember
 from orbit.diagnostics.profiles import profiles
 from diagnosticsLatticeModifications import addTeapotDiagnosticsNode
 from diagnosticsLatticeModifications import addTeapotDiagnosticsNodeAsChild
