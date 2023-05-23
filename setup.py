@@ -29,16 +29,20 @@ extension_mod = Extension('_orbit3',
                           extra_compile_args=['-DUSE_MPI=0'],
                           )
 
+packages = ["orbit3"]
+for folder in os.walk("py/orbit"):
+    path = os.path.normpath(folder[0])
+    path = path.split(os.sep)
+    packages.append("py" + ".".join(path[1:]))
+
 # Define the setup parameters
 setup(name='orbit3',
       version='1.0',
       description='A C++ extension module for Python.',
       ext_modules=[extension_mod],
       package_dir={'orbit3': 'src/libmain/orbit3',
-                   'orbit': 'py/orbit',
+                   'pyorbit': 'py/orbit',
                    },
-      packages=['orbit3',
-                'orbit',
-                ],
+      packages=packages,
       )
 
