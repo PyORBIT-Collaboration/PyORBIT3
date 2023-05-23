@@ -18,31 +18,30 @@ for f in Path("src").rglob("*.cc"):
 
 include = []
 for folder in os.walk("src"):
-    excludes = ["src", "src/libmain", "src/libmain/orbit3"]
+    excludes = ["src", "src/libmain", "src/libmain/orbit"]
     if folder[0] not in excludes:
         include.append(folder[0])
         print(folder[0])
 
-extension_mod = Extension('_orbit3',
-                          sources=src,
-                          include_dirs=include,
-                          extra_compile_args=['-DUSE_MPI=0'],
-                          )
+extension_mod = Extension(
+    "_orbit",
+    sources=src,
+    include_dirs=include,
+    extra_compile_args=["-DUSE_MPI=0"],
+)
 
-packages = ["orbit3"]
+packages = ["orbit"]
 for folder in os.walk("py/orbit"):
     path = os.path.normpath(folder[0])
     path = path.split(os.sep)
     packages.append("py" + ".".join(path[1:]))
 
 # Define the setup parameters
-setup(name='orbit3',
-      version='1.0',
-      description='A C++ extension module for Python.',
-      ext_modules=[extension_mod],
-      package_dir={'orbit3': 'src/libmain/orbit3',
-                   'pyorbit': 'py/orbit',
-                   },
-      packages=packages,
-      )
-
+setup(
+    ext_modules=[extension_mod],
+    package_dir={
+        "orbit": "src/libmain/orbit",
+        "pyorbit": "py/orbit",
+    },
+    packages=packages,
+)
