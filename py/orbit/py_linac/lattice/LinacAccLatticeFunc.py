@@ -9,19 +9,19 @@ import math
 import sys
 
 # import general accelerator elements and lattice
-from pyorbit.lattice import AccLattice, AccNode, AccActionsContainer
+from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 
-from pyorbit.py_linac.lattice import BaseLinacNode, Drift, Quad
-from pyorbit.py_linac.lattice import LinacMagnetNode
-from pyorbit.py_linac.lattice import AxisFieldRF_Gap
-from pyorbit.py_linac.lattice import AxisField_and_Quad_RF_Gap
+from orbit.py_linac.lattice import BaseLinacNode, Drift, Quad
+from orbit.py_linac.lattice import LinacMagnetNode
+from orbit.py_linac.lattice import AxisFieldRF_Gap
+from orbit.py_linac.lattice import AxisField_and_Quad_RF_Gap
 
 # import acc. nodes
-from pyorbit.py_linac.lattice.LinacAccNodes import Quad
-from pyorbit.py_linac.lattice.LinacRfGapNodes import AxisFieldRF_Gap
+from orbit.py_linac.lattice.LinacAccNodes import Quad
+from orbit.py_linac.lattice.LinacRfGapNodes import AxisFieldRF_Gap
 
-from pyorbit.py_linac.lattice.LinacFieldOverlappingNodes import AxisField_and_Quad_RF_Gap
-from pyorbit.py_linac.lattice.LinacFieldOverlappingNodes import OverlappingQuadsNode
+from orbit.py_linac.lattice.LinacFieldOverlappingNodes import AxisField_and_Quad_RF_Gap
+from orbit.py_linac.lattice.LinacFieldOverlappingNodes import OverlappingQuadsNode
 
 
 def GetGlobalQuadGradient(accLattice, z):

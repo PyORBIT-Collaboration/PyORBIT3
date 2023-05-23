@@ -4,16 +4,16 @@ by inserting one teapot node accelerator node.
 """
 
 # import the auxiliary classes
-from pyorbit.utils import orbitFinalize
+from orbit.utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from pyorbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import RF accelerator nodes
-from pyorbit.rf_cavities import RFNode
+from orbit.rf_cavities import RFNode
 
 # import teapot drift class
-from pyorbit.teapot import DriftTEAPOT
+from orbit.teapot import DriftTEAPOT
 
 
 def addRFNode(lattice, position, rf_node):

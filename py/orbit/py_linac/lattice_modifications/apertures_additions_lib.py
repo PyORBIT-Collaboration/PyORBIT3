@@ -9,10 +9,10 @@ import math
 import sys
 import os
 
-from pyorbit.py_linac.lattice import LinacApertureNode
-from pyorbit.py_linac.lattice import Quad, Drift, Bend, BaseRF_Gap, AxisFieldRF_Gap
-from pyorbit.py_linac.lattice import OverlappingQuadsNode
-from pyorbit.py_linac.lattice import AxisField_and_Quad_RF_Gap
+from orbit.py_linac.lattice import LinacApertureNode
+from orbit.py_linac.lattice import Quad, Drift, Bend, BaseRF_Gap, AxisFieldRF_Gap
+from orbit.py_linac.lattice import OverlappingQuadsNode
+from orbit.py_linac.lattice import AxisField_and_Quad_RF_Gap
 
 
 def Add_quad_apertures_to_lattice(accLattice, aprtNodes=[]):

@@ -10,13 +10,13 @@ import os
 import math
 
 # import the finalization function
-from pyorbit.utils import orbitFinalize
+from orbit.utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from pyorbit.lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
+from orbit.lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import teapot base functions from wrapper around C++ functions
-from pyorbit.teapot_base import TPB
+from orbit.teapot_base import TPB
 
 # Import the linac specific tracking from linac_tracking. This module has
 # the following functions duplicated the original TEAPOT functions

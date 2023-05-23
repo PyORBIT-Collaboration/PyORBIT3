@@ -3,21 +3,21 @@ Module. Includes functions that will modify the accelerator lattice
 by inserting an impedance node into a teapot accelerator node.
 """
 # import the auxiliary classes
-from pyorbit.utils import orbitFinalize
+from orbit.utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from pyorbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import impedance accelerator nodes
-from pyorbit.impedances import LImpedance_Node
-from pyorbit.impedances import FreqDep_LImpedance_Node
-from pyorbit.impedances import BetFreqDep_LImpedance_Node
-from pyorbit.impedances import TImpedance_Node
-from pyorbit.impedances import FreqDep_TImpedance_Node
-from pyorbit.impedances import BetFreqDep_TImpedance_Node
+from orbit.impedances import LImpedance_Node
+from orbit.impedances import FreqDep_LImpedance_Node
+from orbit.impedances import BetFreqDep_LImpedance_Node
+from orbit.impedances import TImpedance_Node
+from orbit.impedances import FreqDep_TImpedance_Node
+from orbit.impedances import BetFreqDep_TImpedance_Node
 
 # import teapot drift class
-from pyorbit.teapot import DriftTEAPOT
+from orbit.teapot import DriftTEAPOT
 
 
 def addImpedanceNode(lattice, position, Impedance_Node):

@@ -2,7 +2,7 @@
 ## \brief Python wrappers for teapot C++ functions.
 ##
 
-from orbit import teapot_base as TPB
+from orbit.core import teapot_base as TPB
 MatrixGenerator = TPB.MatrixGenerator
 
 __all__ = []

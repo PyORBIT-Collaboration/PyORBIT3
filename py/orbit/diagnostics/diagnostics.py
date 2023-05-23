@@ -13,7 +13,7 @@ from orbit_mpi import mpi_op
 import math
 import random
 import sys
-from orbit import bunch
+from orbit.core import bunch
 BunchTwissAnalysis = bunch.BunchTwissAnalysis
 BunchTuneAnalysis = bunch.BunchTuneAnalysis
 from ..utils.consts import speed_of_light

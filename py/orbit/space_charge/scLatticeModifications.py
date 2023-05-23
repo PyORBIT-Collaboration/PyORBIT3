@@ -2,10 +2,10 @@
 Module. Includes a base function that will modify the accelerator lattice by inserting the SC accelerator nodes.
 """
 # import the auxiliary classes
-from pyorbit.utils import orbitFinalize
+from orbit.utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from pyorbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 
 def setSC_General_AccNodes(lattice, sc_path_length_min, space_charge_calculator, SC_NodeConstructor):

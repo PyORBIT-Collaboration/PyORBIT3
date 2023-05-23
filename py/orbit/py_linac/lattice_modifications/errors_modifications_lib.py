@@ -28,23 +28,23 @@ from orbit_mpi import mpi_datatype
 from orbit_mpi import mpi_op
 
 # import from orbit Python utilities
-from pyorbit.utils import orbitFinalize
-from pyorbit.utils import NamedObject
-from pyorbit.utils import TypedObject
+from orbit.utils import orbitFinalize
+from orbit.utils import NamedObject
+from orbit.utils import TypedObject
 
 # import general accelerator elements and lattice
-from pyorbit.lattice import AccNode
-from pyorbit.py_linac.lattice import Quad
-from pyorbit.py_linac.lattice import DCorrectorH, DCorrectorV
-from pyorbit.py_linac.lattice import Bend
+from orbit.lattice import AccNode
+from orbit.py_linac.lattice import Quad
+from orbit.py_linac.lattice import DCorrectorH, DCorrectorV
+from orbit.py_linac.lattice import Bend
 
 # import error controllers from orbit.py_linac.errors package
-from pyorbit.py_linac.errors import ErrorCntrlCoordDisplacement
-from pyorbit.py_linac.errors import ErrorCntrlBendField
-from pyorbit.py_linac.errors import ErrorCntrlLongitudinalDisplacement
-from pyorbit.py_linac.errors import ErrorCntrlStraightRotationX
-from pyorbit.py_linac.errors import ErrorCntrlStraightRotationY
-from pyorbit.py_linac.errors import ErrorCntrlStraightRotationZ
+from orbit.py_linac.errors import ErrorCntrlCoordDisplacement
+from orbit.py_linac.errors import ErrorCntrlBendField
+from orbit.py_linac.errors import ErrorCntrlLongitudinalDisplacement
+from orbit.py_linac.errors import ErrorCntrlStraightRotationX
+from orbit.py_linac.errors import ErrorCntrlStraightRotationY
+from orbit.py_linac.errors import ErrorCntrlStraightRotationZ
 
 
 class ErrorForNodesModification(NamedObject, TypedObject):

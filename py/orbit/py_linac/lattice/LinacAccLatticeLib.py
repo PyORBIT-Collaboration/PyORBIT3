@@ -11,13 +11,13 @@ import os
 import math
 
 # import the utilities
-from pyorbit.utils import orbitFinalize, NamedObject, ParamsDictObject, phaseNearTargetPhase
+from orbit.utils import orbitFinalize, NamedObject, ParamsDictObject, phaseNearTargetPhase
 
 # import general accelerator elements and lattice
-from pyorbit.lattice import AccLattice, AccNode, AccActionsContainer
+from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 
 # import acc. nodes
-from pyorbit.py_linac.lattice.LinacAccNodes import Quad, AbstractRF_Gap, MarkerLinacNode
+from orbit.py_linac.lattice.LinacAccNodes import Quad, AbstractRF_Gap, MarkerLinacNode
 
 # import orbit Bunch
 from bunch import Bunch

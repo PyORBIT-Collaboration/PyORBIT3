@@ -7,7 +7,7 @@ from orbit_mpi import mpi_comm
 from orbit_utils import Function
 from orbit_utils import SplineCH
 from orbit_utils import GaussLegendreIntegrator
-from pyorbit.utils.fitting import PolynomialFit
+from orbit.utils.fitting import PolynomialFit
 from orbit_utils import Polynomial
 
 

@@ -14,7 +14,7 @@ from bunch import Bunch
 import numpy as np
 from numpy import linalg as LA
 from scipy.optimize import minimize, leastsq
-from pyorbit.teapot import TEAPOT_MATRIX_Lattice
+from orbit.teapot import TEAPOT_MATRIX_Lattice
 
 
 class orbit:

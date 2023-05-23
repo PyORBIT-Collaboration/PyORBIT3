@@ -7,13 +7,13 @@ import os
 import math
 
 # import the function that finalizes the execution
-from pyorbit.utils import orbitFinalize
+from orbit.utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from pyorbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import the base DirectForce AccNode class
-from pyorbit.space_charge.scAccNodes import SC_Base_AccNode
+from orbit.space_charge.scAccNodes import SC_Base_AccNode
 
 
 class DirectForce2p5D_AccNode(SC_Base_AccNode):

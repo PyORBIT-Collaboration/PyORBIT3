@@ -16,12 +16,12 @@ import math
 import sys
 import os
 
-from pyorbit.py_linac.lattice import BaseLinacNode, Drift, Quad
-from pyorbit.py_linac.lattice import AxisFieldRF_Gap
-from pyorbit.py_linac.lattice import AxisField_and_Quad_RF_Gap
+from orbit.py_linac.lattice import BaseLinacNode, Drift, Quad
+from orbit.py_linac.lattice import AxisFieldRF_Gap
+from orbit.py_linac.lattice import AxisField_and_Quad_RF_Gap
 
 # import teapot base functions from wrapper around C++ functions
-from pyorbit.teapot_base import TPB
+from orbit.teapot_base import TPB
 
 from orbit_utils import Function
 

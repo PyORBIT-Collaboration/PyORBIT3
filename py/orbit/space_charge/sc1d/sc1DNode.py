@@ -7,16 +7,16 @@ import os
 import math
 
 # import the function that finalizes the execution
-from pyorbit.utils import orbitFinalize
+from orbit.utils import orbitFinalize
 
 # import physical constants
-from pyorbit.utils import consts
+from orbit.utils import consts
 
 # import general accelerator elements and lattice
-from pyorbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import teapot drift class
-from pyorbit.teapot import DriftTEAPOT
+from orbit.teapot import DriftTEAPOT
 
 # import longitudinal space charge package
 from spacecharge import LSpaceChargeCalc

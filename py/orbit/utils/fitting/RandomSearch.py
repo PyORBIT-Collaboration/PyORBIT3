@@ -11,7 +11,7 @@ import sys
 import copy
 import random
 
-from pyorbit.utils.fitting.Solver_lib import SearchAgorithm
+from orbit.utils.fitting.Solver_lib import SearchAgorithm
 
 # ====================================================================
 #       class RandomSearchAlgorithm

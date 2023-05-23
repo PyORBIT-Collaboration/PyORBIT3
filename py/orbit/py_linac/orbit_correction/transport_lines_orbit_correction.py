@@ -5,18 +5,18 @@ import sys
 import os
 
 # import the utilities
-from pyorbit.utils import orbitFinalize
+from orbit.utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from pyorbit.lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
+from orbit.lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
 
 from bunch import Bunch
 from bunch import BunchTwissAnalysis
 
-from pyorbit.py_linac.lattice import Quad
-from pyorbit.py_linac.lattice import DCorrectorH, DCorrectorV
-from pyorbit.py_linac.lattice import MarkerLinacNode
-from pyorbit.py_linac.lattice import BaseLinacNode
+from orbit.py_linac.lattice import Quad
+from orbit.py_linac.lattice import DCorrectorH, DCorrectorV
+from orbit.py_linac.lattice import MarkerLinacNode
+from orbit.py_linac.lattice import BaseLinacNode
 
 from orbit_utils import Matrix, PhaseVector
 

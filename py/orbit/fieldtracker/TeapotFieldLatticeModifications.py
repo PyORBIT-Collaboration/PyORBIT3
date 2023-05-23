@@ -2,16 +2,16 @@
 Module. Includes functions that will modify the accelerator lattice by inserting the one fieldtracker node accelerator node.
 """
 # import the auxiliary classes
-from pyorbit.utils import orbitFinalize
+from orbit.utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from pyorbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import Teapot fieldtracker node
-from pyorbit.FieldTracker import TeapotFieldTrackerNode
+from orbit.FieldTracker import TeapotFieldTrackerNode
 
 # import teapot drift class
-from pyorbit.teapot import DriftTEAPOT
+from orbit.teapot import DriftTEAPOT
 
 
 def addTeapotFieldTrackerNode(lattice, position, fieldtracker_node):

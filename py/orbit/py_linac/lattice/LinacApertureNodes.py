@@ -9,9 +9,9 @@ import sys
 import os
 
 # import the auxiliary classes
-from pyorbit.utils import orbitFinalize
+from orbit.utils import orbitFinalize
 
-from pyorbit.py_linac.lattice import BaseLinacNode, Quad
+from orbit.py_linac.lattice import BaseLinacNode, Quad
 
 # import BaseAperture and Phase and Eneregy Apertures C++ classes
 from aperture import BaseAperture

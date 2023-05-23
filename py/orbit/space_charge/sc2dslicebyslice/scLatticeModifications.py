@@ -3,16 +3,16 @@ Module. Includes functions that will modify the accelerator lattice by inserting
 """
 
 # import SC acc. nodes
-from pyorbit.space_charge.sc2dslicebyslice import SC2DSliceBySlice_AccNode
+from orbit.space_charge.sc2dslicebyslice import SC2DSliceBySlice_AccNode
 
 # import general accelerator elements and lattice
-from pyorbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import the boindary from c++ py module
 from spacecharge import Boundary2D
 
 # import the general SC lattice modification function
-from pyorbit.space_charge.scLatticeModifications import setSC_General_AccNodes
+from orbit.space_charge.scLatticeModifications import setSC_General_AccNodes
 
 
 def setSC2DSliceBySliceAccNodes(lattice, sc_path_length_min, space_charge_calculator, boundary=None):

@@ -2,18 +2,18 @@
 Module. Includes functions that will modify the accelerator lattice by inserting the one teapot node accelerator node.
 """
 # import the auxiliary classes
-from pyorbit.utils import orbitFinalize
+from orbit.utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from pyorbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import SC acc. nodes
-from pyorbit.space_charge.sc1d import SC1D_AccNode
-from pyorbit.space_charge.sc1d import FreqDep_SC1D_AccNode
-from pyorbit.space_charge.sc1d import BetFreqDep_SC1D_AccNode
+from orbit.space_charge.sc1d import SC1D_AccNode
+from orbit.space_charge.sc1d import FreqDep_SC1D_AccNode
+from orbit.space_charge.sc1d import BetFreqDep_SC1D_AccNode
 
 # import teapot drift class
-from pyorbit.teapot import DriftTEAPOT
+from orbit.teapot import DriftTEAPOT
 
 
 def addLongitudinalSpaceChargeNode(lattice, position, sc1D_node):

@@ -5,10 +5,10 @@ import sys
 import os
 import math
 
-from pyorbit.teapot import TEAPOT_Ring
-from pyorbit.parsers.mad_parser import MAD_Parser, MAD_LattLine
-from pyorbit.lattice import AccNode, AccActionsContainer
-from pyorbit.time_dep import waveform
+from orbit.teapot import TEAPOT_Ring
+from orbit.parsers.mad_parser import MAD_Parser, MAD_LattLine
+from orbit.lattice import AccNode, AccActionsContainer
+from orbit.time_dep import waveform
 
 
 class TIME_DEP_Lattice(TEAPOT_Ring):

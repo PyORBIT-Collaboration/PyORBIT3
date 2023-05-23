@@ -30,18 +30,18 @@ extension_mod = Extension(
     extra_compile_args=["-DUSE_MPI=0"],
 )
 
-packages = ["orbit"]
+packages = ["orbit.core"]
 for folder in os.walk("py/orbit"):
     path = os.path.normpath(folder[0])
     path = path.split(os.sep)
-    packages.append("py" + ".".join(path[1:]))
+    packages.append(".".join(path[1:]))
 
 # Define the setup parameters
 setup(
     ext_modules=[extension_mod],
     package_dir={
-        "orbit": "src/libmain/orbit",
-        "pyorbit": "py/orbit",
+        "orbit.core": "src/libmain/orbit",
+        "orbit": "py/orbit",
     },
     packages=packages,
 )

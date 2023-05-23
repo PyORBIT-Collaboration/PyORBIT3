@@ -10,8 +10,8 @@ import math
 import sys
 import os
 
-from pyorbit.py_linac.lattice import LinacApertureNode
-from pyorbit.py_linac.lattice import Quad
+from orbit.py_linac.lattice import LinacApertureNode
+from orbit.py_linac.lattice import Quad
 
 
 def AddMEBTChopperPlatesAperturesToSNS_Lattice(accLattice, aprtNodes):

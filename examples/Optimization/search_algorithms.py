@@ -21,10 +21,10 @@ from orbit.utils.fitting.GoldenSectionSearch1D import GoldenSectionSearchAlgorit
 from orbit.utils.fitting.SimplexSearch import SimplexSearchAlgorithm
 from orbit.utils.fitting.RandomSearch import RandomSearchAlgorithm
 
-from pyorbit.utils.fitting.BisectionSearch1D import BisectionSearchAlgorithm
-from pyorbit.utils.fitting.GoldenSectionSearch1D import GoldenSectionSearchAlgorithm
-from pyorbit.utils.fitting.SimplexSearch import SimplexSearchAlgorithm
-from pyorbit.utils.fitting.RandomSearch import RandomSearchAlgorithm
+from orbit.utils.fitting.BisectionSearch1D import BisectionSearchAlgorithm
+from orbit.utils.fitting.GoldenSectionSearch1D import GoldenSectionSearchAlgorithm
+from orbit.utils.fitting.SimplexSearch import SimplexSearchAlgorithm
+from orbit.utils.fitting.RandomSearch import RandomSearchAlgorithm
 
 # ------------------------------------------------------
 #  Functions for minimization

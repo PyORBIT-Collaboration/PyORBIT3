@@ -8,16 +8,16 @@
 ##   addImpedanceNode - function to add one impedance
 ##                      node to the lattice
 
-from pyorbit.impedances.ImpedanceNode import LImpedance_Node
-from pyorbit.impedances.ImpedanceNode import FreqDep_LImpedance_Node
-from pyorbit.impedances.ImpedanceNode import BetFreqDep_LImpedance_Node
+from orbit.impedances.ImpedanceNode import LImpedance_Node
+from orbit.impedances.ImpedanceNode import FreqDep_LImpedance_Node
+from orbit.impedances.ImpedanceNode import BetFreqDep_LImpedance_Node
 
-from pyorbit.impedances.ImpedanceNode import TImpedance_Node
-from pyorbit.impedances.ImpedanceNode import FreqDep_TImpedance_Node
-from pyorbit.impedances.ImpedanceNode import BetFreqDep_TImpedance_Node
+from orbit.impedances.ImpedanceNode import TImpedance_Node
+from orbit.impedances.ImpedanceNode import FreqDep_TImpedance_Node
+from orbit.impedances.ImpedanceNode import BetFreqDep_TImpedance_Node
 
-from pyorbit.impedances.ImpedanceLatticeModifications import addImpedanceNode
-from pyorbit.impedances.ImpedanceLatticeModifications import addImpedanceNodeAsChild
+from orbit.impedances.ImpedanceLatticeModifications import addImpedanceNode
+from orbit.impedances.ImpedanceLatticeModifications import addImpedanceNodeAsChild
 
 __all__ = []
 __all__.append("ImpedanceNode")

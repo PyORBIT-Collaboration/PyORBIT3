@@ -3,13 +3,13 @@ Module. Includes functions that will modify the accelerator lattice by inserting
 """
 
 # import Direct Force acc. nodes
-from pyorbit.space_charge.directforce2p5d import DirectForce2p5D_AccNode
+from orbit.space_charge.directforce2p5d import DirectForce2p5D_AccNode
 
 # import general accelerator elements and lattice
-from pyorbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import the general SC lattice modification function
-from pyorbit.space_charge.scLatticeModifications import setSC_General_AccNodes
+from orbit.space_charge.scLatticeModifications import setSC_General_AccNodes
 
 
 def setDirectForce2p5DAccNodes(lattice, sc_path_length_min, space_charge_calculator):

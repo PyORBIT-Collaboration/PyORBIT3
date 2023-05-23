@@ -2,7 +2,7 @@ import sys
 import math
 import posix
 
-from pyorbit.lattice import AccLattice, AccNode, AccActionsContainer
+from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 
 lattice = AccLattice("test_lattice")
 

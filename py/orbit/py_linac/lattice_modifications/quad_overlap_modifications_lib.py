@@ -16,13 +16,13 @@ import os
 import time
 
 # import from orbit Python utilities
-from pyorbit.utils import orbitFinalize
+from orbit.utils import orbitFinalize
 
-from pyorbit.py_linac.lattice import Quad, Drift
+from orbit.py_linac.lattice import Quad, Drift
 
-from pyorbit.py_linac.lattice import OverlappingQuadsNode
+from orbit.py_linac.lattice import OverlappingQuadsNode
 
-from pyorbit.py_linac.lattice_modifications.rf_quad_overlap_modifications_lib import GetEngeFunction
+from orbit.py_linac.lattice_modifications.rf_quad_overlap_modifications_lib import GetEngeFunction
 
 
 def Replace_Quads_to_OverlappingQuads_Nodes(accLattice, z_step, accSeq_Names=[], quad_Names=[], EngeFunctionFactory=GetEngeFunction):

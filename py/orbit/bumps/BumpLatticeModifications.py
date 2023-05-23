@@ -2,17 +2,17 @@
 Module. Includes functions that will modify the accelerator lattice by inserting the one teapot node accelerator node.
 """
 # import the auxiliary classes
-from pyorbit.utils import orbitFinalize
+from orbit.utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from pyorbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import Teapot bump node
 import orbit.bumps
 from .TeapotBumpNode import TeapotSimpleBumpNode, TDTeapotSimpleBumpNode
 
 # import teapot drift class
-from pyorbit.teapot import DriftTEAPOT
+from orbit.teapot import DriftTEAPOT
 
 
 def addTeapotBumpNode(lattice, position, bump_node):

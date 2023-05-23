@@ -54,7 +54,7 @@ import xml.dom.minidom
 # import python XML ElementTree parser
 import xml.etree.ElementTree as ET
 
-from pyorbit.utils import NamedObject, ParamsDictObject
+from orbit.utils import NamedObject, ParamsDictObject
 
 
 class XmlDataAdaptor(NamedObject, ParamsDictObject):

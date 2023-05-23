@@ -2,13 +2,13 @@
 ## \Classes and packages of ORBIT Linac.
 ##
 
-from pyorbit.py_linac.overlapping_fields.overlapping_quad_fields_lib import EngeFunction
-from pyorbit.py_linac.overlapping_fields.overlapping_quad_fields_lib import AbstractQuadFieldSourceFunction
-from pyorbit.py_linac.overlapping_fields.overlapping_quad_fields_lib import SimpleQuadFieldFunc
-from pyorbit.py_linac.overlapping_fields.overlapping_quad_fields_lib import PMQ_Trace3D_Function
+from orbit.py_linac.overlapping_fields.overlapping_quad_fields_lib import EngeFunction
+from orbit.py_linac.overlapping_fields.overlapping_quad_fields_lib import AbstractQuadFieldSourceFunction
+from orbit.py_linac.overlapping_fields.overlapping_quad_fields_lib import SimpleQuadFieldFunc
+from orbit.py_linac.overlapping_fields.overlapping_quad_fields_lib import PMQ_Trace3D_Function
 
-from pyorbit.py_linac.overlapping_fields.sns_enge_func_factory import SNS_EngeFunctionFactory
-from pyorbit.py_linac.overlapping_fields.jparc_enge_func_factory import JPARC_EngeFunctionFactory
+from orbit.py_linac.overlapping_fields.sns_enge_func_factory import SNS_EngeFunctionFactory
+from orbit.py_linac.overlapping_fields.jparc_enge_func_factory import JPARC_EngeFunctionFactory
 
 __all__ = []
 __all__.append("EngeFunction")

@@ -30,7 +30,7 @@ import math
 import sys
 import copy
 
-from pyorbit.utils.fitting.Solver_lib import SearchAgorithm
+from orbit.utils.fitting.Solver_lib import SearchAgorithm
 
 # ====================================================================
 #       class SimplexSearchAlgorithm
