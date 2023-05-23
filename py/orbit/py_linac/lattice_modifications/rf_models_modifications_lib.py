@@ -23,11 +23,11 @@ import orbit_mpi
 from orbit_mpi import mpi_comm
 
 # import from orbit Python utilities
-from orbit.utils import orbitFinalize
+from pyorbit.utils import orbitFinalize
 
 # from orbit.py_linac.lattice import LinacApertureNode
-from orbit.py_linac.lattice import Quad, Drift
-from orbit.py_linac.lattice import BaseRF_Gap, AxisFieldRF_Gap
+from pyorbit.py_linac.lattice import Quad, Drift
+from pyorbit.py_linac.lattice import BaseRF_Gap, AxisFieldRF_Gap
 
 from orbit_utils import Function
 from orbit_utils import SplineCH

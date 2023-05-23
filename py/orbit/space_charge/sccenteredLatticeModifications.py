@@ -4,10 +4,10 @@ by inserting SC accelerator nodes.
 """
 
 # import auxiliary classes
-from orbit.utils import orbitFinalize
+from pyorbit.utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from pyorbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 
 def setSC_Centered_AccNodes(lattice, sc_path_length_min, space_charge_calculator, SC_NodeConstructor):

@@ -14,12 +14,12 @@ import sys
 import os
 
 # import the finalization function
-from orbit.utils import orbitFinalize
+from pyorbit.utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer
+from pyorbit.lattice import AccLattice, AccNode, AccActionsContainer
 
-from orbit.py_linac.lattice import MarkerLinacNode
+from pyorbit.py_linac.lattice import MarkerLinacNode
 
 import orbit_utils
 from orbit_utils import bunch_utils_functions

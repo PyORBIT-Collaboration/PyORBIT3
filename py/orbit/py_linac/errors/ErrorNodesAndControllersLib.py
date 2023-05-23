@@ -21,16 +21,16 @@ import math
 import sys
 
 # import the finalization function
-from orbit.utils import orbitFinalize
-from orbit.utils import NamedObject
-from orbit.utils import TypedObject
-from orbit.utils import ParamsDictObject
+from pyorbit.utils import orbitFinalize
+from pyorbit.utils import NamedObject
+from pyorbit.utils import TypedObject
+from pyorbit.utils import ParamsDictObject
 
 # import general accelerator elements and lattice
-from orbit.lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
+from pyorbit.lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import teapot base functions from wrapper around C++ functions
-from orbit.teapot_base import TPB
+from pyorbit.teapot_base import TPB
 
 # import error packages from C++
 from error_base import CoordDisplacement

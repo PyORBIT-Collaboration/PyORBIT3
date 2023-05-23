@@ -14,27 +14,27 @@ from orbit_mpi import mpi_datatype
 from orbit_mpi import mpi_op
 
 # import from orbit Python utilities
-from orbit.utils import orbitFinalize
-from orbit.utils import phaseNearTargetPhase, phaseNearTargetPhaseDeg
-from orbit.utils import speed_of_light
+from pyorbit.utils import orbitFinalize
+from pyorbit.utils import phaseNearTargetPhase, phaseNearTargetPhaseDeg
+from pyorbit.utils import speed_of_light
 
 # import from orbit c++ utilities
 from orbit_utils import Polynomial
 from orbit_utils import Function
 
 # from LinacAccLattice import Sequence
-from orbit.py_linac.lattice.LinacAccLatticeLib import Sequence
-from orbit.py_linac.lattice.LinacAccNodes import Drift, BaseLinacNode
+from pyorbit.py_linac.lattice.LinacAccLatticeLib import Sequence
+from pyorbit.py_linac.lattice.LinacAccNodes import Drift, BaseLinacNode
 
 # from linac import the RF gap classes
 from linac import BaseRfGap, MatrixRfGap, RfGapTTF, RfGapThreePointTTF
 from linac import BaseRfGap_slow, RfGapTTF_slow, RfGapThreePointTTF_slow
 
 # The abstract RF gap import
-from orbit.py_linac.lattice.LinacAccNodes import AbstractRF_Gap
+from pyorbit.py_linac.lattice.LinacAccNodes import AbstractRF_Gap
 
 # import teapot base functions from wrapper around C++ functions
-from orbit.teapot_base import TPB
+from pyorbit.teapot_base import TPB
 
 # Import the linac specific tracking from linac_tracking. This module has
 # the following functions duplicated the original TEAPOT functions

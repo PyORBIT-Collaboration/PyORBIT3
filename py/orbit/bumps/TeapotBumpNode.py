@@ -6,16 +6,16 @@ import os
 import math
 
 # import the auxiliary classes
-from orbit.utils import orbitFinalize, NamedObject, ParamsDictObject
+from pyorbit.utils import orbitFinalize, NamedObject, ParamsDictObject
 
 # import general accelerator elements and lattice
-from orbit.lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
+from pyorbit.lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import teapot drift class
-from orbit.teapot import DriftTEAPOT
+from pyorbit.teapot import DriftTEAPOT
 
 # import bump class
-from orbit.bumps import simpleBump, TDsimpleBump
+from pyorbit.bumps import simpleBump, TDsimpleBump
 
 
 class TeapotSimpleBumpNode(DriftTEAPOT):

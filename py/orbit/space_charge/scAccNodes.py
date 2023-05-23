@@ -7,10 +7,10 @@ import os
 import math
 
 # import the function that finalizes the execution
-from orbit.utils import orbitFinalize
+from pyorbit.utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from pyorbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 
 class SC_Base_AccNode(AccNodeBunchTracker):

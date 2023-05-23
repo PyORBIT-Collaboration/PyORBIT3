@@ -13,8 +13,8 @@ import math
 import sys
 import os
 
-from orbit.py_linac.overlapping_fields.overlapping_quad_fields_lib import EngeFunction
-from orbit.py_linac.overlapping_fields.overlapping_quad_fields_lib import SimpleQuadFieldFunc
+from pyorbit.py_linac.overlapping_fields.overlapping_quad_fields_lib import EngeFunction
+from pyorbit.py_linac.overlapping_fields.overlapping_quad_fields_lib import SimpleQuadFieldFunc
 
 
 def SNS_EngeFunctionFactory(quad):

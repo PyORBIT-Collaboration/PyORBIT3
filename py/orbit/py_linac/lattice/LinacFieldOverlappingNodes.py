@@ -9,14 +9,14 @@ import math
 import sys
 import os
 
-from orbit.utils import orbitFinalize, phaseNearTargetPhase, phaseNearTargetPhaseDeg
+from pyorbit.utils import orbitFinalize, phaseNearTargetPhase, phaseNearTargetPhaseDeg
 
 # ---- base linac nodes
-from orbit.py_linac.lattice.LinacAccNodes import AbstractRF_Gap
-from orbit.py_linac.lattice.LinacAccNodes import BaseLinacNode, Drift, Quad
+from pyorbit.py_linac.lattice.LinacAccNodes import AbstractRF_Gap
+from pyorbit.py_linac.lattice.LinacAccNodes import BaseLinacNode, Drift, Quad
 
 # import teapot base functions from wrapper around C++ functions
-from orbit.teapot_base import TPB
+from pyorbit.teapot_base import TPB
 
 # from linac import the RF gap classes
 from linac import RfGapThreePointTTF

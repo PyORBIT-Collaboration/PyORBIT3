@@ -12,23 +12,23 @@ import sys
 import math
 
 # import the XmlDataAdaptor XML parser
-from orbit.utils.xml import XmlDataAdaptor
+from pyorbit.utils.xml import XmlDataAdaptor
 
-from orbit.py_linac.lattice import LinacAccLattice
-from orbit.py_linac.lattice import LinacAccNodes
+from pyorbit.py_linac.lattice import LinacAccLattice
+from pyorbit.py_linac.lattice import LinacAccNodes
 
-from orbit.py_linac.lattice import BaseLinacNode, LinacNode, LinacMagnetNode, MarkerLinacNode, Drift, Quad, AbstractRF_Gap, Bend
-from orbit.py_linac.lattice import DCorrectorH, DCorrectorV, ThickKick
-from orbit.py_linac.lattice import RF_Cavity, Sequence
-from orbit.py_linac.lattice import BaseRF_Gap
+from pyorbit.py_linac.lattice import BaseLinacNode, LinacNode, LinacMagnetNode, MarkerLinacNode, Drift, Quad, AbstractRF_Gap, Bend
+from pyorbit.py_linac.lattice import DCorrectorH, DCorrectorV, ThickKick
+from pyorbit.py_linac.lattice import RF_Cavity, Sequence
+from pyorbit.py_linac.lattice import BaseRF_Gap
 
 # from orbit.py_linac.materials import VacuumWindowNode
 
 # import general accelerator elements
-from orbit.lattice import AccNode
+from pyorbit.lattice import AccNode
 
 # import pyORBIT Python utilities classes for objects with names, types, and dictionary parameters
-from orbit.utils import orbitFinalize
+from pyorbit.utils import orbitFinalize
 
 
 class SNS_LinacLatticeFactory:

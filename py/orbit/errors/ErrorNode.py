@@ -11,21 +11,21 @@ from random import random, seed
 from random import gauss
 
 # import the function that finalizes the execution
-from orbit.utils import orbitFinalize
+from pyorbit.utils import orbitFinalize
 
 # import physical constants
-from orbit.utils import consts
+from pyorbit.utils import consts
 
 # import general accelerator elements and lattice
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from pyorbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import teapot drift class
-from orbit.teapot import DriftTEAPOT
-from orbit.teapot import KickTEAPOT
-from orbit.teapot import SolenoidTEAPOT
-from orbit.teapot import MultipoleTEAPOT
-from orbit.teapot import QuadTEAPOT
-from orbit.teapot import BendTEAPOT
+from pyorbit.teapot import DriftTEAPOT
+from pyorbit.teapot import KickTEAPOT
+from pyorbit.teapot import SolenoidTEAPOT
+from pyorbit.teapot import MultipoleTEAPOT
+from pyorbit.teapot import QuadTEAPOT
+from pyorbit.teapot import BendTEAPOT
 
 # import error packages
 from error_base import CoordDisplacement
@@ -50,10 +50,10 @@ from error_base import QuadKicker
 from error_base import QuadKickerOsc
 
 # import node adders
-from orbit.errors.ErrorLatticeModifications import addErrorNode
-from orbit.errors.ErrorLatticeModifications import addErrorNodeAsChild
-from orbit.errors.ErrorLatticeModifications import addErrorNodeAsChild_I
-from orbit.errors.ErrorLatticeModifications import addErrorNodeAsChild_F
+from pyorbit.errors.ErrorLatticeModifications import addErrorNode
+from pyorbit.errors.ErrorLatticeModifications import addErrorNodeAsChild
+from pyorbit.errors.ErrorLatticeModifications import addErrorNodeAsChild_I
+from pyorbit.errors.ErrorLatticeModifications import addErrorNodeAsChild_F
 
 
 # Displace the coordinates of a bunch

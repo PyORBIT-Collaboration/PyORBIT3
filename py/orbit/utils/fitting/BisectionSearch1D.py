@@ -7,10 +7,10 @@ import math
 import sys
 import time
 
-from orbit.utils.fitting.Solver_lib import SearchAgorithm
+from pyorbit.utils.fitting.Solver_lib import SearchAgorithm
 
 # import the finalization function
-from orbit.utils import orbitFinalize
+from pyorbit.utils import orbitFinalize
 
 
 class BisectionSearchAlgorithm(SearchAgorithm):

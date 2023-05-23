@@ -11,7 +11,7 @@ from spacecharge import Grid2D
 from orbit_utils import Function
 from orbit_utils import SplineCH
 from orbit_utils import GaussLegendreIntegrator
-from orbit.utils.fitting import PolynomialFit
+from pyorbit.utils.fitting import PolynomialFit
 from orbit_utils import Polynomial
 
 

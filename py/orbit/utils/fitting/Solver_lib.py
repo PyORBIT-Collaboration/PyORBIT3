@@ -12,10 +12,10 @@ import math
 import sys
 import time
 
-from orbit.utils import NamedObject, ParamsDictObject
+from pyorbit.utils import NamedObject, ParamsDictObject
 
 # import the finalization function
-from orbit.utils import orbitFinalize
+from pyorbit.utils import orbitFinalize
 
 # ====================================================================
 #       class Solver

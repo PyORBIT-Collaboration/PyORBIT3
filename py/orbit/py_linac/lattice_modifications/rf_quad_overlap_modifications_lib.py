@@ -22,19 +22,19 @@ import os
 import time
 
 # import from orbit Python utilities
-from orbit.utils import orbitFinalize
+from pyorbit.utils import orbitFinalize
 
 # from orbit.py_linac.lattice import LinacApertureNode
-from orbit.py_linac.lattice import Quad, Drift
-from orbit.py_linac.lattice import BaseRF_Gap, AxisFieldRF_Gap
-from orbit.py_linac.lattice import OverlappingQuadsNode
-from orbit.py_linac.lattice import AxisField_and_Quad_RF_Gap
+from pyorbit.py_linac.lattice import Quad, Drift
+from pyorbit.py_linac.lattice import BaseRF_Gap, AxisFieldRF_Gap
+from pyorbit.py_linac.lattice import OverlappingQuadsNode
+from pyorbit.py_linac.lattice import AxisField_and_Quad_RF_Gap
 
-from orbit.py_linac.overlapping_fields import EngeFunction
+from pyorbit.py_linac.overlapping_fields import EngeFunction
 
 from orbit_utils import Function
 
-from orbit.py_linac.lattice_modifications.rf_models_modifications_lib import Make_AxisFieldRF_Gaps_and_Find_Neihbor_Nodes
+from pyorbit.py_linac.lattice_modifications.rf_models_modifications_lib import Make_AxisFieldRF_Gaps_and_Find_Neihbor_Nodes
 
 
 def GetEngeFunction(quad):

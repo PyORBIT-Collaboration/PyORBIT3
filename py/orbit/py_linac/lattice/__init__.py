@@ -6,37 +6,37 @@
 ## - LinacAccNodes         - Module. Collection of the linac accelerator nodes: drifts, quads, RF gaps etc..
 ## - LinacRfGapNodes       - Module. Collection of RF Gap models
 
-from orbit.py_linac.lattice.LinacAccLatticeLib import LinacAccLattice, RF_Cavity, Sequence
+from pyorbit.py_linac.lattice.LinacAccLatticeLib import LinacAccLattice, RF_Cavity, Sequence
 
-from orbit.py_linac.lattice.LinacAccNodes import BaseLinacNode, LinacNode, LinacMagnetNode
-from orbit.py_linac.lattice.LinacAccNodes import MarkerLinacNode, Drift, Quad, AbstractRF_Gap, Bend
-from orbit.py_linac.lattice.LinacAccNodes import DCorrectorH, DCorrectorV
-from orbit.py_linac.lattice.LinacAccNodes import ThickKick
+from pyorbit.py_linac.lattice.LinacAccNodes import BaseLinacNode, LinacNode, LinacMagnetNode
+from pyorbit.py_linac.lattice.LinacAccNodes import MarkerLinacNode, Drift, Quad, AbstractRF_Gap, Bend
+from pyorbit.py_linac.lattice.LinacAccNodes import DCorrectorH, DCorrectorV
+from pyorbit.py_linac.lattice.LinacAccNodes import ThickKick
 
-from orbit.py_linac.lattice.LinacRfGapNodes import BaseRF_Gap, AxisFieldRF_Gap, RF_AxisFieldsStore
+from pyorbit.py_linac.lattice.LinacRfGapNodes import BaseRF_Gap, AxisFieldRF_Gap, RF_AxisFieldsStore
 
-from orbit.py_linac.lattice.LinacApertureNodes import LinacApertureNode
-from orbit.py_linac.lattice.LinacApertureNodes import CircleLinacApertureNode
-from orbit.py_linac.lattice.LinacApertureNodes import EllipseLinacApertureNode
-from orbit.py_linac.lattice.LinacApertureNodes import RectangleLinacApertureNode
-from orbit.py_linac.lattice.LinacApertureNodes import LinacPhaseApertureNode
-from orbit.py_linac.lattice.LinacApertureNodes import LinacEnergyApertureNode
+from pyorbit.py_linac.lattice.LinacApertureNodes import LinacApertureNode
+from pyorbit.py_linac.lattice.LinacApertureNodes import CircleLinacApertureNode
+from pyorbit.py_linac.lattice.LinacApertureNodes import EllipseLinacApertureNode
+from pyorbit.py_linac.lattice.LinacApertureNodes import RectangleLinacApertureNode
+from pyorbit.py_linac.lattice.LinacApertureNodes import LinacPhaseApertureNode
+from pyorbit.py_linac.lattice.LinacApertureNodes import LinacEnergyApertureNode
 
-from orbit.py_linac.lattice.LinacFieldOverlappingNodes import AxisField_and_Quad_RF_Gap
-from orbit.py_linac.lattice.LinacFieldOverlappingNodes import OverlappingQuadsNode
+from pyorbit.py_linac.lattice.LinacFieldOverlappingNodes import AxisField_and_Quad_RF_Gap
+from pyorbit.py_linac.lattice.LinacFieldOverlappingNodes import OverlappingQuadsNode
 
-from orbit.py_linac.lattice.LinacAccLatticeFunc import GetGlobalQuadGradient
-from orbit.py_linac.lattice.LinacAccLatticeFunc import GetGlobalQuadGradientDerivative
-from orbit.py_linac.lattice.LinacAccLatticeFunc import GetGlobalRF_AxisField
-from orbit.py_linac.lattice.LinacAccLatticeFunc import getNodeForNameFromWholeLattice
-from orbit.py_linac.lattice.LinacAccLatticeFunc import getNodePosDictForWholeLattice
-from orbit.py_linac.lattice.LinacAccLatticeFunc import getAllNodesInLattice
-from orbit.py_linac.lattice.LinacAccLatticeFunc import getAllMagnetsInLattice
+from pyorbit.py_linac.lattice.LinacAccLatticeFunc import GetGlobalQuadGradient
+from pyorbit.py_linac.lattice.LinacAccLatticeFunc import GetGlobalQuadGradientDerivative
+from pyorbit.py_linac.lattice.LinacAccLatticeFunc import GetGlobalRF_AxisField
+from pyorbit.py_linac.lattice.LinacAccLatticeFunc import getNodeForNameFromWholeLattice
+from pyorbit.py_linac.lattice.LinacAccLatticeFunc import getNodePosDictForWholeLattice
+from pyorbit.py_linac.lattice.LinacAccLatticeFunc import getAllNodesInLattice
+from pyorbit.py_linac.lattice.LinacAccLatticeFunc import getAllMagnetsInLattice
 
-from orbit.py_linac.lattice.LinacTransportMatrixGenNodes import LinacTrMatrixGenNode
-from orbit.py_linac.lattice.LinacTransportMatrixGenNodes import LinacTrMatricesContrioller
+from pyorbit.py_linac.lattice.LinacTransportMatrixGenNodes import LinacTrMatrixGenNode
+from pyorbit.py_linac.lattice.LinacTransportMatrixGenNodes import LinacTrMatricesContrioller
 
-from orbit.py_linac.lattice.LinacDiagnosticsNodes import LinacBPM
+from pyorbit.py_linac.lattice.LinacDiagnosticsNodes import LinacBPM
 
 __all__ = []
 __all__.append("LinacAccLattice")

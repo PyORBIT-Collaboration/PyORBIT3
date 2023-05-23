@@ -6,13 +6,13 @@ import os
 import math
 
 # import the auxiliary classes
-from orbit.utils import orbitFinalize, NamedObject, ParamsDictObject
+from pyorbit.utils import orbitFinalize, NamedObject, ParamsDictObject
 
 # import general accelerator elements and lattice
-from orbit.lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
+from pyorbit.lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import linac base node
-from orbit.py_linac.lattice import BaseLinacNode
+from pyorbit.py_linac.lattice import BaseLinacNode
 
 # import Collimator class from C++ code
 # /src/orbit/MaterialInteractions/Collimator.cc

@@ -2,7 +2,7 @@ import sys
 import os
 import math
 
-from orbit.utils import NamedObject, TypedObject
+from pyorbit.utils import NamedObject, TypedObject
 
 
 class Waveform(NamedObject, TypedObject):

@@ -4,13 +4,13 @@ by inserting an error node into a teapot accelerator node.
 """
 
 # import the auxiliary classes
-from orbit.utils import orbitFinalize
+from pyorbit.utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from pyorbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import teapot drift class
-from orbit.teapot import DriftTEAPOT
+from pyorbit.teapot import DriftTEAPOT
 
 
 def addErrorNode(lattice, position, Error_Node):

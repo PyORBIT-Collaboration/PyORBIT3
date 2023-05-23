@@ -7,10 +7,10 @@
 ## Functions:
 ##   addRFNode- function to add one RF node to the lattice
 
-from orbit.rf_cavities.RFNode import Frequency_RFNode
-from orbit.rf_cavities.RFNode import Harmonic_RFNode
-from orbit.rf_cavities.RFNode import Barrier_RFNode
-from orbit.rf_cavities.RFLatticeModifications import addRFNode
+from pyorbit.rf_cavities.RFNode import Frequency_RFNode
+from pyorbit.rf_cavities.RFNode import Harmonic_RFNode
+from pyorbit.rf_cavities.RFNode import Barrier_RFNode
+from pyorbit.rf_cavities.RFLatticeModifications import addRFNode
 
 __all__ = []
 __all__.append("Frequency_RFNode")

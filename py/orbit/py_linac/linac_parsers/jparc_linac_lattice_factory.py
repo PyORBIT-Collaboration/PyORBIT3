@@ -12,7 +12,7 @@ import os
 import sys
 import math
 
-from orbit.py_linac.linac_parsers.sns_linac_lattice_factory import SNS_LinacLatticeFactory
+from pyorbit.py_linac.linac_parsers.sns_linac_lattice_factory import SNS_LinacLatticeFactory
 
 
 class JPARC_LinacLatticeFactory(SNS_LinacLatticeFactory):

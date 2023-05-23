@@ -6,8 +6,8 @@
 ##
 ## addTeapotColimatorNode - function to add one collimator node to the lattice
 
-from TeapotFoilNode import TeapotFoilNode
-from foilLatticeModifications import addTeapotFoilNode
+from .TeapotFoilNode import TeapotFoilNode
+from .foilLatticeModifications import addTeapotFoilNode
 
 __all__ = []
 __all__.append("TeapotFoilNode")
