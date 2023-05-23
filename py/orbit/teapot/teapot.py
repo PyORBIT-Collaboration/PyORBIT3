@@ -8,19 +8,19 @@ import os
 import math
 
 # import teapot base functions from wrapper around C++ functions
-from orbit.teapot_base import TPB
+from ..teapot_base import TPB
 
 # import the function that creates multidimensional arrays
-from orbit.utils import orbitFinalize
+from ..utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from ..lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import the MAD parser to construct lattices of TEAPOT elements.
-from orbit.parsers.mad_parser import MAD_Parser, MAD_LattElement
+from ..parsers.mad_parser import MAD_Parser, MAD_LattElement
 
 # import the MADX parser to construct lattices of TEAPOT elements.
-from orbit.parsers.madx_parser import MADX_Parser, MADX_LattElement
+from ..parsers.madx_parser import MADX_Parser, MADX_LattElement
 
 # import aperture
 from aperture import Aperture

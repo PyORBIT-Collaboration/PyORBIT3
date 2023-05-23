@@ -1,12 +1,12 @@
 import sys
 import os
 
-from orbit.utils import orbitFinalize
-from orbit.utils import NamedObject
-from orbit.utils import TypedObject
+from ..utils import orbitFinalize
+from ..utils import NamedObject
+from ..utils import TypedObject
 
-from orbit.lattice import AccActionsContainer
-from orbit.lattice import AccNode
+from ..lattice import AccActionsContainer
+from ..lattice import AccNode
 
 import orbit
 

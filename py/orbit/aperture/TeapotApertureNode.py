@@ -12,13 +12,13 @@ from orbit_mpi import mpi_datatype
 from orbit_mpi import mpi_op
 
 # import the auxiliary classes
-from orbit.utils import orbitFinalize, NamedObject, ParamsDictObject
+from ..utils import orbitFinalize, NamedObject, ParamsDictObject
 
 # import general accelerator elements and lattice
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from ..lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import teapot drift class
-from orbit.teapot import DriftTEAPOT
+from ..teapot import DriftTEAPOT
 
 # import injection class
 from aperture import Aperture

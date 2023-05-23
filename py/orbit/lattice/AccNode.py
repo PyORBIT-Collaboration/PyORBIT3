@@ -2,12 +2,12 @@ import sys
 import os
 import math
 
-from orbit.utils import orbitFinalize
-from orbit.utils import NamedObject
-from orbit.utils import TypedObject
-from orbit.utils import ParamsDictObject
+from ..utils import orbitFinalize
+from ..utils import NamedObject
+from ..utils import TypedObject
+from ..utils import ParamsDictObject
 
-from orbit.lattice import AccActionsContainer
+from ..lattice import AccActionsContainer
 
 import orbit
 
@@ -31,7 +31,6 @@ class AccNode(NamedObject, TypedObject, ParamsDictObject):
         NamedObject.__init__(self, name)
         TypedObject.__init__(self, type_in)
         ParamsDictObject.__init__(self)
-        self.AccNode = orbit.lattice.AccNode
         # ------------------------------------------------
         # nParts - number of parts in the body of node
         # ------------------------------------------------

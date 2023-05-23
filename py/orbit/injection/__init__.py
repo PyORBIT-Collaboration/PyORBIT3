@@ -6,11 +6,11 @@
 ## - Joho         - Class for generating JOHO style particle distributions
 ## - addTeapotInjectionNode - Adds an injection node to a teapot lattice
 ## - TeapotInjectionNode - Creates a teapot style injection Node
-from injectparticles import InjectParts
-from joho import JohoTransverse, JohoLongitudinal
-from InjectionLatticeModifications import addTeapotInjectionNode
-from TeapotInjectionNode import TeapotInjectionNode
-from distributions import UniformLongDist, UniformLongDistPaint, GULongDist, SNSESpreadDist, SNSESpreadDistPaint, ArbitraryLongDist
+from .injectparticles import InjectParts
+from .joho import JohoTransverse, JohoLongitudinal
+from .InjectionLatticeModifications import addTeapotInjectionNode
+from .TeapotInjectionNode import TeapotInjectionNode
+from .distributions import UniformLongDist, UniformLongDistPaint, GULongDist, SNSESpreadDist, SNSESpreadDistPaint, ArbitraryLongDist
 
 __all__ = []
 __all__.append("addTeapotInjectionNode")

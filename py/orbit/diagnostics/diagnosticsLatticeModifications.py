@@ -2,17 +2,17 @@
 Module. Includes functions that will modify the accelerator lattice by inserting the one diagnostics node accelerator node.
 """
 # import the auxiliary classes
-from orbit.utils import orbitFinalize
+from ..utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from ..lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import Teapot diagnostics node
 from .TeapotDiagnosticsNode import TeapotStatLatsNode, TeapotStatLatsNodeSetMember
 from .TeapotDiagnosticsNode import TeapotMomentsNode, TeapotMomentsNodeSetMember
 
 # import teapot drift class
-from orbit.teapot import DriftTEAPOT
+from ..teapot import DriftTEAPOT
 
 
 def addTeapotDiagnosticsNode(lattice, position, diagnostics_node):

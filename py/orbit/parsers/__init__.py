@@ -5,18 +5,18 @@
 ## - mad_parser - MAD-8 parser
 ## - sad_parser - SAD parser
 
-from mad_parser import MAD_Parser
-from mad_parser import MAD_LattElement
-from mad_parser import MAD_LattLine
+from .mad_parser import MAD_Parser
+from .mad_parser import MAD_LattElement
+from .mad_parser import MAD_LattLine
 
-from madx_parser import MADX_Parser
-from madx_parser import MADX_LattElement
+from .madx_parser import MADX_Parser
+from .madx_parser import MADX_LattElement
 
-from sad_parser import SAD_Parser
-from sad_parser import SAD_LattElement
-from sad_parser import SAD_LattLine
+from .sad_parser import SAD_Parser
+from .sad_parser import SAD_LattElement
+from .sad_parser import SAD_LattLine
 
-from field_parser import Field_Parser3D
+from .field_parser import Field_Parser3D
 
 __all__ = []
 __all__.append("MAD_Parser")

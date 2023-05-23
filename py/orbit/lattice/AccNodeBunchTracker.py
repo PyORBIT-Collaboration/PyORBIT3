@@ -1,4 +1,4 @@
-from orbit.lattice import AccActionsContainer, AccNode
+from ..lattice import AccActionsContainer, AccNode
 
 
 class AccNodeBunchTracker(AccNode):

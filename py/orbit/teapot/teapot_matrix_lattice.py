@@ -12,18 +12,18 @@ import math
 from bunch import Bunch
 
 # import the function that creates multidimensional arrays
-from orbit.utils import orbitFinalize
+from ..utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer
+from ..lattice import AccLattice, AccNode, AccActionsContainer
 
 # import C++ matrix, phase vector, and generator classes
-from orbit.teapot_base import MatrixGenerator
+from ..teapot_base import MatrixGenerator
 
-from orbit.matrix_lattice import MATRIX_Lattice, BaseMATRIX
+from ..matrix_lattice import MATRIX_Lattice, BaseMATRIX
 
 # import the MAD parser to construct lattices of TEAPOT elements.
-from orbit.teapot import TEAPOT_Lattice, RingRFTEAPOT, BaseTEAPOT
+from ..teapot import TEAPOT_Lattice, RingRFTEAPOT, BaseTEAPOT
 
 
 class TEAPOT_MATRIX_Lattice(MATRIX_Lattice):

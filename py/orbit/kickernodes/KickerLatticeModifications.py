@@ -2,17 +2,16 @@
 Module. Includes functions that will modify the accelerator lattice by inserting the one teapot node accelerator node.
 """
 # import the auxiliary classes
-from orbit.utils import orbitFinalize
+from ..utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from ..lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import Teapot kicker node
-import orbit.kickernodes
 from .TeapotKickerNode import TeapotXKickerNode, TeapotYKickerNode
 
 # import teapot drift class
-from orbit.teapot import DriftTEAPOT
+from ..teapot import DriftTEAPOT
 
 
 def addTeapotKickerNode(lattice, position, kicker_node):

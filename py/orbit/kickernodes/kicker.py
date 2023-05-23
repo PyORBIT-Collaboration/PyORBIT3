@@ -6,7 +6,6 @@ This is not a parallel version!
 import math
 import random
 import sys
-from bunch import Bunch
 
 
 class XKicker:

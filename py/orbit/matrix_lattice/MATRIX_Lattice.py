@@ -15,18 +15,18 @@ import math
 from bunch import Bunch
 
 # import the function that creates multidimensional arrays
-from orbit.utils import orbitFinalize
+from ..utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from ..lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import matrix class and generators
-from orbit.teapot_base import MatrixGenerator
+from ..teapot_base import MatrixGenerator
 from orbit_utils import Matrix
 from orbit_utils import PhaseVector
 
 # import the AccNode implementation for a transport matrix
-from BaseMATRIX import BaseMATRIX
+from .BaseMATRIX import BaseMATRIX
 
 
 class MATRIX_Lattice(AccLattice):

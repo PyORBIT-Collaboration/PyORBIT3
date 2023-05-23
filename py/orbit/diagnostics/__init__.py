@@ -3,16 +3,16 @@
 ##
 ## Classes:
 
-from . import StatLats, StatLatsSetMember
-from . import Moments, MomentsSetMember
-from orbit.diagnostics.profiles import profiles
-from diagnosticsLatticeModifications import addTeapotDiagnosticsNode
-from diagnosticsLatticeModifications import addTeapotDiagnosticsNodeAsChild
-from diagnosticsLatticeModifications import addTeapotStatLatsNodeSet
-from diagnosticsLatticeModifications import addTeapotMomentsNodeSet
-from TeapotDiagnosticsNode import TeapotStatLatsNode, TeapotStatLatsNodeSetMember
-from TeapotDiagnosticsNode import TeapotMomentsNode, TeapotMomentsNodeSetMember
-from TeapotDiagnosticsNode import TeapotTuneAnalysisNode
+from .diagnostics import StatLats, StatLatsSetMember
+from .diagnostics import Moments, MomentsSetMember
+from .profiles import profiles
+from .diagnosticsLatticeModifications import addTeapotDiagnosticsNode
+from .diagnosticsLatticeModifications import addTeapotDiagnosticsNodeAsChild
+from .diagnosticsLatticeModifications import addTeapotStatLatsNodeSet
+from .diagnosticsLatticeModifications import addTeapotMomentsNodeSet
+from .TeapotDiagnosticsNode import TeapotStatLatsNode, TeapotStatLatsNodeSetMember
+from .TeapotDiagnosticsNode import TeapotMomentsNode, TeapotMomentsNodeSetMember
+from .TeapotDiagnosticsNode import TeapotTuneAnalysisNode
 
 
 __all__ = []

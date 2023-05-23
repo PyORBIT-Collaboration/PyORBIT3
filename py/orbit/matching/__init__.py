@@ -7,7 +7,7 @@
 ## - addTeapotBumpNode - Adds a teapot bump node to a teapot lattice
 ## - TeapotSimpleBumpNode - Creates a teapot instance of a simple bump nodes
 
-from . import Optics, EnvelopeSolver
+from .matching import Optics, EnvelopeSolver
 
 __all__ = []
 __all__.append("Optics")

@@ -8,7 +8,7 @@ from scipy.integrate import odeint
 from scipy.constants import c
 from matplotlib.pyplot import *
 
-from orbit.teapot import TEAPOT_MATRIX_Lattice
+from ..teapot import TEAPOT_MATRIX_Lattice
 
 
 class Twiss:

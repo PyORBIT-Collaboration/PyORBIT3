@@ -1,8 +1,8 @@
 import sys
 import os
 
-from orbit.utils import orbitFinalize
-from orbit.utils import NamedObject
+from ..utils import orbitFinalize
+from ..utils import NamedObject
 import orbit
 
 

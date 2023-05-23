@@ -2,19 +2,19 @@
 Module. Includes functions that will modify the accelerator lattice by inserting the one collimator node accelerator node.
 """
 # import the auxiliary classes
-from orbit.utils import orbitFinalize
+from ..utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from ..lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import Teapot collimation node
-from orbit.collimation import TeapotCollimatorNode
+from ..collimation import TeapotCollimatorNode
 
 # import teapot drift class
-from orbit.teapot import DriftTEAPOT
+from ..teapot import DriftTEAPOT
 
 # import linac Drift which should be used only in the linac lattices
-from orbit.py_linac.lattice import Drift as LinacDrift
+from ..py_linac.lattice import Drift as LinacDrift
 
 
 def addTeapotCollimatorNode(lattice, position, collimator_node):

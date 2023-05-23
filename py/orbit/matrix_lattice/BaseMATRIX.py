@@ -3,7 +3,7 @@ The AccNode subclass that represents a transport 7x7 matrix in a MATRIX_Lattice 
 """
 
 # import general accelerator elements and lattice
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from ..lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import matrix class
 from orbit_utils import Matrix

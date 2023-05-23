@@ -2,10 +2,10 @@
 Module. Includes functions that will modify the accelerator lattice by inserting the one teapot node accelerator node.
 """
 # import the auxiliary classes
-from orbit.utils import orbitFinalize
+from ..utils import orbitFinalize
 
 # import general accelerator elements and lattice
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
+from ..lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import Teapot Aperture node
 from aperture import Aperture
@@ -13,7 +13,7 @@ from .TeapotApertureNode import TeapotApertureNode, CircleApertureNode, EllipseA
 from .ApertureLatticeModifications import addTeapotApertureNode
 
 # import teapot drift class
-from orbit.teapot import DriftTEAPOT
+from ..teapot import DriftTEAPOT
 
 
 # This create a set of circular apertures. a is the radius of the apertures, s is the starting position, e is the ending position, and  c is the x offset and d is the y offset of the apertures.

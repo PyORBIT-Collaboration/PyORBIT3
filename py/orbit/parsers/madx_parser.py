@@ -3,7 +3,7 @@ import sys
 import re
 import math
 
-from orbit.utils import orbitFinalize
+from ..utils import orbitFinalize
 
 # ===============================================================
 

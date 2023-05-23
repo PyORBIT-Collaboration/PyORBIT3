@@ -6,22 +6,23 @@ import os
 import math
 
 # import the auxiliary classes
-from orbit.utils import orbitFinalize, NamedObject, ParamsDictObject
+from ..utils import orbitFinalize, NamedObject, ParamsDictObject
 
 # import general accelerator elements and lattice
-from orbit.lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
+from ..lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
 
 
 # import Diagnostics classes
-from diagnostics import StatLats, StatLatsSetMember
-from diagnostics import Moments, MomentsSetMember, BPMSignal
+from .diagnostics import StatLats, StatLatsSetMember
+from .diagnostics import Moments, MomentsSetMember, BPMSignal
 
 # import teapot drift class
-from orbit.teapot import DriftTEAPOT
+from ..teapot import DriftTEAPOT
 
 
 # import Bunch diagnostics
-from bunch import BunchTuneAnalysis
+from orbit import bunch
+BunchTuneAnalysis = bunch.BunchTuneAnalysis
 
 
 class TeapotStatLatsNode(DriftTEAPOT):

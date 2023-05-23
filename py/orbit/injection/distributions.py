@@ -7,7 +7,7 @@ This is not a parallel version!
 import math
 import random
 import sys
-from orbit.utils.consts import speed_of_light
+from ..utils.consts import speed_of_light
 
 
 class UniformLongDist:
