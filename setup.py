@@ -1,27 +1,27 @@
 from setuptools import Extension, setup
 from pathlib import Path
-
-
-def list_cc(path):
-    return [str(f) for f in Path(path).iterdir() if f.is_file() and f.name.endswith('.cc')]
-
-
-def list_dirs(path, exclude=None):
-    exclude_list = [] if exclude is None else exclude
-    p = Path(path)
-    return [p] + [d for d in p.rglob('*')if d.is_dir() and d not in exclude_list]
-
-
-top_level_dirs = ['mpi', 'utils', 'orbit', 'linac', 'spacecharge', 'teapot']
-all_dirs = [d for sublist in [list_dirs(f'src/{p}') for p in top_level_dirs] for d in sublist]
-all_src = [list_cc(f'{p}') for p in all_dirs]
+import os
 
 # main dir is special
 # we need it in include but not the actual main.cc
 # libmain contains python package def, we don't want it in C++ sources
-include = [f'{d}' for d in all_dirs] + ['src/main']
-src = [d for sublist in all_src for d in sublist] +['src/libmain/libmain.cc']
 
+src = []
+for f in Path("src").rglob("*.cc"):
+    excludes = ["main/main.cc"]
+    include = True
+    for e in excludes:
+        if str(f).endswith(e):
+            include = False
+    if include:
+        src.append(str(f))
+
+include = []
+for folder in os.walk("src"):
+    excludes = ["src", "src/libmain", "src/libmain/orbit3"]
+    if folder[0] not in excludes:
+        include.append(folder[0])
+        print(folder[0])
 
 extension_mod = Extension('_orbit3',
                           sources=src,
@@ -35,10 +35,10 @@ setup(name='orbit3',
       description='A C++ extension module for Python.',
       ext_modules=[extension_mod],
       package_dir={'orbit3': 'src/libmain/orbit3',
-                   # 'orbit': 'py/orbit',
+                   'orbit': 'py/orbit',
                    },
       packages=['orbit3',
-                # 'orbit',
+                'orbit',
                 ],
       )
 
