@@ -75,7 +75,7 @@ void BaseRfGap::trackBunch(Bunch* bunch, double frequency, double E0TL, double p
   double kappa = -charge * E0TL * k /
                  (2.0 * mass * beta_gap * beta_gap * beta_out *
                   gamma_gap * gamma_gap * gamma_out);
-  double x, y, r, rp, d_phi;
+  double x, y, r, d_phi;
 	//the linear part - implemented in MatrixRFGap
   double d_rp = kappa *sin(phase);
   double I0, I1;
