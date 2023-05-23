@@ -3,7 +3,7 @@
 ##
 ## Classes:
 ## - simpleBump    - Class for simple coordinate transverse bump.
-## - TDsimpleBump  - Class for time-dependent simple coordinate 
+## - TDsimpleBump  - Class for time-dependent simple coordinate
 ##   		     transverse bump.
 ## - addTeapotBumpNode - Adds a teapot bump node to a teapot lattice
 ## - TeapotSimpleBumpNode - Creates a teapot instance of a simple bump nodes

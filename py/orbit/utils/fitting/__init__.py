@@ -18,7 +18,7 @@ from orbit.utils.fitting.Solver_lib import SolveStopperFactory
 from orbit.utils.fitting.Solver_lib import ScoreboardActionListener
 from orbit.utils.fitting.Solver_lib import VariableProxy
 from orbit.utils.fitting.Solver_lib import Scorer
-from orbit.utils.fitting.Solver_lib import SearchAgorithm 
+from orbit.utils.fitting.Solver_lib import SearchAgorithm
 
 __all__ = []
 __all__.append("PolynomialFit")
@@ -34,5 +34,3 @@ __all__.append("ScoreboardActionListener")
 __all__.append("VariableProxy")
 __all__.append("Scorer")
 __all__.append("SearchAgorithm")
-
-

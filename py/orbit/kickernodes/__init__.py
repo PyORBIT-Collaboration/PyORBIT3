@@ -6,12 +6,12 @@
 ## - rootTWaveform      - Class for generating square-root kicker waveform
 ## - flatTopWaveform    - Class for generating flat-top wave form.
 ## - SquareRootWaveform - Class for time-shifted square root waveform
-## - addTeapotKickerNode - Adds a teapot kicker node to a teapot lattice 
+## - addTeapotKickerNode - Adds a teapot kicker node to a teapot lattice
 ## - TeapotXKickerNode, TeapotYKickerNodes - Creates a X and Y teapot style kicker nodes
 from kicker import XKicker, YKicker
 from waveforms import rootTWaveform, flatTopWaveform, SquareRootWaveform
 from KickerLatticeModifications import addTeapotKickerNode
-from TeapotKickerNode import TeapotXKickerNode, TeapotYKickerNode 
+from TeapotKickerNode import TeapotXKickerNode, TeapotYKickerNode
 
 __all__ = []
 __all__.append("addTeapotKickerNode")

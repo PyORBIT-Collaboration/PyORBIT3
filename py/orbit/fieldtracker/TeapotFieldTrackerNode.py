@@ -17,18 +17,20 @@ from orbit.teapot import DriftTEAPOT
 # import Fieldtracker class
 from fieldtracker import FieldTracker
 
+
 class TeapotFieldTrackerNode(DriftTEAPOT):
-    """ 
+    """
     The fieldtracker node class for TEAPOT lattice
     """
-    def __init__(self, bx, by, ax, ay, ex, epx, l, zi, zf, ds, niters,
-                  resid, xrefi, yrefi, eulerai, eulerbi, eulergi, b, filename):
+
+    def __init__(self, bx, by, ax, ay, ex, epx, l, zi, zf, ds, niters, resid, xrefi, yrefi, eulerai, eulerbi, eulergi, b, filename):
         """
         Constructor. Creates the FieldTracker TEAPOT element.
         """
-        DriftTEAPOT.__init__(self,name)
-        self.fieldtracker = FieldTracker(order, bx, by, ax, ay, ex, epx, l, zi, zf, ds, niters,
-                  resid, xrefi, yrefi, eulerai, eulerbi, eulergi, apflag, b)
+        DriftTEAPOT.__init__(self, name)
+        self.fieldtracker = FieldTracker(
+            order, bx, by, ax, ay, ex, epx, l, zi, zf, ds, niters, resid, xrefi, yrefi, eulerai, eulerbi, eulergi, apflag, b
+        )
         self.setType("fieldtracker teapot")
         self.setLength(l)
 

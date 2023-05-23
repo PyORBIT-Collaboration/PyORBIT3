@@ -38,4 +38,3 @@ __all__.append("TiltTEAPOT")
 __all__.append("NodeTEAPOT")
 __all__.append("TPB")
 __all__.append("TEAPOT_MATRIX_Lattice")
-

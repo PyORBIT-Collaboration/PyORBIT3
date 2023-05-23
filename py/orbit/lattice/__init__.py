@@ -8,8 +8,8 @@
 ## - AccNodeBunchTracker - Class. A subclass of AccNode. The base class for each node that are bunch trackers.
 
 from orbit.lattice.AccActionsContainer import AccActionsContainer
-from orbit.lattice.AccNode             import AccNode
-from orbit.lattice.AccLattice          import AccLattice
+from orbit.lattice.AccNode import AccNode
+from orbit.lattice.AccLattice import AccLattice
 from orbit.lattice.AccNodeBunchTracker import AccNodeBunchTracker
 
 __all__ = []

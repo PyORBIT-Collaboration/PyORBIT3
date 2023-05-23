@@ -89,4 +89,3 @@ __all__.append("LinacTrMatrixGenNode")
 __all__.append("LinacTrMatricesContrioller")
 
 __all__.append("LinacBPM")
-

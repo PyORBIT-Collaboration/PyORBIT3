@@ -9,14 +9,14 @@
 ## - TypedObject      - Class. Represents an object with a type.
 ## - ParamsDictObject - Class. Represents an object that has a parameters dictionary.
 
-from orbit.utils.multiDimArray    import multiDimDoubleArray
-from orbit.utils.multiDimArray    import multiDimIntArray
-from orbit.utils.orbitFinalize    import orbitFinalize
-from orbit.utils.NamedObject      import NamedObject
-from orbit.utils.TypedObject      import TypedObject
+from orbit.utils.multiDimArray import multiDimDoubleArray
+from orbit.utils.multiDimArray import multiDimIntArray
+from orbit.utils.orbitFinalize import orbitFinalize
+from orbit.utils.NamedObject import NamedObject
+from orbit.utils.TypedObject import TypedObject
 from orbit.utils.ParamsDictObject import ParamsDictObject
 
-from orbit.utils.phaseOperations  import phaseNearTargetPhase, phaseNearTargetPhaseDeg
+from orbit.utils.phaseOperations import phaseNearTargetPhase, phaseNearTargetPhaseDeg
 from orbit.utils.consts import speed_of_light
 
 __all__ = []
@@ -29,4 +29,3 @@ __all__.append("ParamsDictObject")
 __all__.append("phaseNearTargetPhase")
 __all__.append("phaseNearTargetPhaseDeg")
 __all__.append("speed_of_light")
-

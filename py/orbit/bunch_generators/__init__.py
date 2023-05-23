@@ -2,7 +2,7 @@
 ## \brief The classes for bunch generation according to different models.
 ##
 ## Classes:
-## - TwissContainer  - Class. It keeps the twiss paremeters alpha, beta and 
+## - TwissContainer  - Class. It keeps the twiss paremeters alpha, beta and
 ##                     the emittance and performes operations on phase points (u,up).
 ## - TwissAnalysis   - Class calculates the rms twiss parameters for 1D,2D, and 3D distributions.
 ## -  GaussDist1D    - Class. Generates the 1D Gauss distribution.
@@ -18,7 +18,7 @@
 from orbit.bunch_generators.distribution_generators import TwissContainer, TwissAnalysis
 from orbit.bunch_generators.distribution_generators import GaussDist1D, GaussDist2D, GaussDist3D
 from orbit.bunch_generators.distribution_generators import KVDist1D, KVDist2D, KVDist3D
-from orbit.bunch_generators.distribution_generators import WaterBagDist1D,  WaterBagDist2D,  WaterBagDist3D
+from orbit.bunch_generators.distribution_generators import WaterBagDist1D, WaterBagDist2D, WaterBagDist3D
 
 
 __all__ = []
@@ -33,4 +33,3 @@ __all__.append("KVDist3D")
 __all__.append("WaterBagDist1D")
 __all__.append("WaterBagDist2D")
 __all__.append("WaterBagDist3D")
-

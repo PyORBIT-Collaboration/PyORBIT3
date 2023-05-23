@@ -19,4 +19,3 @@ __all__.append("BRhoDep_Harmonic_RFNode")
 __all__.append("SyncPhaseDep_Harmonic_RFNode")
 __all__.append("Barrier_RFNode")
 __all__.append("addRFNode")
-

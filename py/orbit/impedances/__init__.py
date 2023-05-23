@@ -23,4 +23,3 @@ __all__ = []
 __all__.append("ImpedanceNode")
 __all__.append("addImpedanceNode")
 __all__.append("addImpedanceNodeAsChild")
-

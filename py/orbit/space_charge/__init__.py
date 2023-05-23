@@ -6,8 +6,7 @@
 
 from orbit.space_charge.scAccNodes import SC_Base_AccNode
 from orbit.space_charge.scLatticeModifications import setSC_General_AccNodes
-from orbit.space_charge.sccenteredLatticeModifications \
-	import setSC_Centered_AccNodes
+from orbit.space_charge.sccenteredLatticeModifications import setSC_Centered_AccNodes
 
 __all__ = []
 __all__.append("SC_Base_AccNode")

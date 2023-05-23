@@ -17,29 +17,30 @@ from orbit.teapot import DriftTEAPOT
 # import Collimator class
 from collimator import Collimator
 
+
 class TeapotCollimatorNode(DriftTEAPOT):
-	""" 
-	The collimator node class for TEAPOT lattice
-	"""
-	def __init__(self, length, ma, density_fac, shape, a, b, c, d, angle, pos = 0., name = "collimator no name"):
-		"""
-		Constructor. Creates the Collimator TEAPOT element.
-		"""
-		DriftTEAPOT.__init__(self,name)
-		self.collimator = Collimator(length,ma,density_fac,shape,a,b,c,d,angle,pos)
-		self.setType("collimator teapot")
-		self.setLength(length)
+    """
+    The collimator node class for TEAPOT lattice
+    """
 
-	def track(self, paramsDict):
-		"""
-		The collimator-teapot class implementation of the AccNodeBunchTracker class track(probe) method.
-		"""
-		length = self.getLength(self.getActivePartIndex())
-		bunch = paramsDict["bunch"]
-		lostbunch = paramsDict["lostbunch"]
-		self.collimator.collimateBunch(bunch, lostbunch)
-			
-	def setPosition(self, pos):
-		self.pos = pos
-		self.collimator.setPosition(self.pos)
+    def __init__(self, length, ma, density_fac, shape, a, b, c, d, angle, pos=0.0, name="collimator no name"):
+        """
+        Constructor. Creates the Collimator TEAPOT element.
+        """
+        DriftTEAPOT.__init__(self, name)
+        self.collimator = Collimator(length, ma, density_fac, shape, a, b, c, d, angle, pos)
+        self.setType("collimator teapot")
+        self.setLength(length)
 
+    def track(self, paramsDict):
+        """
+        The collimator-teapot class implementation of the AccNodeBunchTracker class track(probe) method.
+        """
+        length = self.getLength(self.getActivePartIndex())
+        bunch = paramsDict["bunch"]
+        lostbunch = paramsDict["lostbunch"]
+        self.collimator.collimateBunch(bunch, lostbunch)
+
+    def setPosition(self, pos):
+        self.pos = pos
+        self.collimator.setPosition(self.pos)

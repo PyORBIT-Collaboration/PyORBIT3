@@ -8,4 +8,3 @@ from BaseMATRIX import BaseMATRIX
 __all__ = []
 __all__.append("MATRIX_Lattice")
 __all__.append("BaseMATRIX")
-

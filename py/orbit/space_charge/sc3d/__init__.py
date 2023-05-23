@@ -1,8 +1,8 @@
 ## \namespace orbit::space_charge::sc3d
 ## \ 3D Space Charge classes
-## 
+##
 ## Classes:
-## 
+##
 
 from orbit.space_charge.sc3d.scAccNodes import SC3D_AccNode
 from orbit.space_charge.sc3d.scAccNodes import SC_UniformEllipses_AccNode

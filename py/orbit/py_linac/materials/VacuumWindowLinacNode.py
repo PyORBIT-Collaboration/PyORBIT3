@@ -14,7 +14,7 @@ from orbit.lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
 # import linac base node
 from orbit.py_linac.lattice import BaseLinacNode
 
-# import Collimator class from C++ code 
+# import Collimator class from C++ code
 # /src/orbit/MaterialInteractions/Collimator.cc
 from collimator import Collimator
 
@@ -43,75 +43,77 @@ from collimator import Collimator
 //--------------------------------------------------------------------------
 """
 
+
 class VacuumWindowNode(BaseLinacNode):
-	""" 
-	The vacuum window node class for linac lattice
-	"""
-	def __init__(self, length, ma, density_fac = 1., name = "vacuum_window", pos = 0.):
-		"""
-		Constructor. Creates the vacuum window element.
-		"""
-		BaseLinacNode.__init__(self,name)
-		#---- material
-		self.ma = int(ma)
-		self.materials_arr  = ["carbon", "aluminum", "iron", "copper", "tantalum", "tungstun"]
-		self.materials_arr += ["platinum", "lead", "black absorber"]
-		#---- by default the shape is circle
-		shape = 1
-		#---- by default the radius is 0 m 
-		#---- It means no particles will escape the collimator! See Collimator.cc
-		radius = 0.
-		a = radius
-		b = a
-		#----
-		c = 1.
-		d = 1.
-		angle = 0.
-		#----
-		self.density_fac = density_fac
-		self.collimator = Collimator(length,self.ma,density_fac,shape,a,b,c,d,angle,pos)
-		self.setType("vacuum_window")
-		self.setLength(length)
-		self.setPosition(pos)
+    """
+    The vacuum window node class for linac lattice
+    """
 
-	def getMaterial(self):
-		"""
-		Returns the material
-		"""
-		if(self.ma >= 0 and self.ma <= 8):
-			return self.materials_arr[self.ma]
-		return self.materials_arr[len(self.materials_arr) - 1]
-		
-	def getDensityfactor(self):
-		"""
-		Returns density factor of the window material.
-		"""
-		return self.density_fac
+    def __init__(self, length, ma, density_fac=1.0, name="vacuum_window", pos=0.0):
+        """
+        Constructor. Creates the vacuum window element.
+        """
+        BaseLinacNode.__init__(self, name)
+        # ---- material
+        self.ma = int(ma)
+        self.materials_arr = ["carbon", "aluminum", "iron", "copper", "tantalum", "tungstun"]
+        self.materials_arr += ["platinum", "lead", "black absorber"]
+        # ---- by default the shape is circle
+        shape = 1
+        # ---- by default the radius is 0 m
+        # ---- It means no particles will escape the collimator! See Collimator.cc
+        radius = 0.0
+        a = radius
+        b = a
+        # ----
+        c = 1.0
+        d = 1.0
+        angle = 0.0
+        # ----
+        self.density_fac = density_fac
+        self.collimator = Collimator(length, self.ma, density_fac, shape, a, b, c, d, angle, pos)
+        self.setType("vacuum_window")
+        self.setLength(length)
+        self.setPosition(pos)
 
-	def trackDesign(self, paramsDict):
-		"""
-		For the design tracking it will do nothing.
-		"""
-		pass
+    def getMaterial(self):
+        """
+        Returns the material
+        """
+        if self.ma >= 0 and self.ma <= 8:
+            return self.materials_arr[self.ma]
+        return self.materials_arr[len(self.materials_arr) - 1]
 
-	def track(self, paramsDict):
-		"""
-		The vacuum window class implementation of the AccNodeBunchTracker class track(paramsDict) method.
-		"""
-		length = self.getLength(self.getActivePartIndex())
-		if(length <= 0.): return
-		bunch = paramsDict["bunch"]
-		if("lostbunch" in paramsDict):
-			lostbunch = paramsDict["lostbunch"]
-			self.collimator.collimateBunch(bunch, lostbunch)
-		else:
-			self.collimator.collimateBunch(bunch)
-			
-	def setPosition(self, pos):
-		"""
-		Sets the position of the vacuum window to put this info
-		into the lost particles bunch for each lost particle.
-		"""
-		BaseLinacNode.setPosition(self,pos)
-		self.collimator.setPosition(pos)
+    def getDensityfactor(self):
+        """
+        Returns density factor of the window material.
+        """
+        return self.density_fac
 
+    def trackDesign(self, paramsDict):
+        """
+        For the design tracking it will do nothing.
+        """
+        pass
+
+    def track(self, paramsDict):
+        """
+        The vacuum window class implementation of the AccNodeBunchTracker class track(paramsDict) method.
+        """
+        length = self.getLength(self.getActivePartIndex())
+        if length <= 0.0:
+            return
+        bunch = paramsDict["bunch"]
+        if "lostbunch" in paramsDict:
+            lostbunch = paramsDict["lostbunch"]
+            self.collimator.collimateBunch(bunch, lostbunch)
+        else:
+            self.collimator.collimateBunch(bunch)
+
+    def setPosition(self, pos):
+        """
+        Sets the position of the vacuum window to put this info
+        into the lost particles bunch for each lost particle.
+        """
+        BaseLinacNode.setPosition(self, pos)
+        self.collimator.setPosition(pos)
