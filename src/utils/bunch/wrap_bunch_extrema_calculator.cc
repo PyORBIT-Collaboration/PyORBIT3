@@ -45,69 +45,69 @@ extern "C" {
 		PyObject *pyIn;
 		if(!PyArg_ParseTuple(args,"O:extremaXYZ",&pyIn)){
 			error("PyBunchExtremaCalculator - extremaXYZ(Bunch) - Bunch is needed.");
-		}			
+		}
 		PyObject* pyBunchType = wrap_orbit_bunch::getBunchType("Bunch");
 		if((!PyObject_IsInstance(pyIn,pyBunchType))){
 			error("PyBunchExtremaCalculator - extremaXYZ(Bunch) - input parameter is not Bunch");
-		}		
+		}
 		Bunch* bunch = (Bunch*) ((pyORBIT_Object*) pyIn)->cpp_obj;
 		BunchExtremaCalculator* cpp_BunchExtremaCalculator = (BunchExtremaCalculator*) (((pyORBIT_Object*) self)->cpp_obj);
 		double xMin,xMax,yMin,yMax,zMin,zMax;
-		cpp_BunchExtremaCalculator->getExtremaXYZ(bunch, xMin, xMax, yMin, yMax, zMin, zMax);	
+		cpp_BunchExtremaCalculator->getExtremaXYZ(bunch, xMin, xMax, yMin, yMax, zMin, zMax);
 		return Py_BuildValue("(d,d,d,d,d,d)", xMin, xMax, yMin, yMax, zMin, zMax);
   }
-  
+
 	//Calculates xpMin,xpMax,  ypMin,ypMax, dE_Min, dE_Max,
   static PyObject* BunchExtremaCalculator_extremaXpYpdE(PyObject *self, PyObject *args){
 		PyObject *pyIn;
 		if(!PyArg_ParseTuple(args,"O:extremaXYZ",&pyIn)){
 			error("PyBunchExtremaCalculator - extremaXYZ(Bunch) - Bunch is needed.");
-		}			
+		}
 		PyObject* pyBunchType = wrap_orbit_bunch::getBunchType("Bunch");
 		if((!PyObject_IsInstance(pyIn,pyBunchType))){
 			error("PyBunchExtremaCalculator - extremaXpYpdE(Bunch) - input parameter is not Bunch");
-		}		
+		}
 		Bunch* bunch = (Bunch*) ((pyORBIT_Object*) pyIn)->cpp_obj;
 		BunchExtremaCalculator* cpp_BunchExtremaCalculator = (BunchExtremaCalculator*) (((pyORBIT_Object*) self)->cpp_obj);
 		double xpMin,xpMax,ypMin,ypMax,dE_Min,dE_Max;
-		cpp_BunchExtremaCalculator->getExtremaXpYpdE(bunch, xpMin, xpMax, ypMin, ypMax, dE_Min, dE_Max);	
+		cpp_BunchExtremaCalculator->getExtremaXpYpdE(bunch, xpMin, xpMax, ypMin, ypMax, dE_Min, dE_Max);
 		return Py_BuildValue("(d,d,d,d,d,d)", xpMin, xpMax, ypMin, ypMax, dE_Min, dE_Max);
-  }  
-  
+  }
+
 	//Calculates zMin,zMax
   static PyObject* BunchExtremaCalculator_extremaZ(PyObject *self, PyObject *args){
 		PyObject *pyIn;
 		if(!PyArg_ParseTuple(args,"O:extremaZ",&pyIn)){
 			error("PyBunchExtremaCalculator - extremaZ(Bunch) - Bunch is needed.");
-		}			
+		}
 		PyObject* pyBunchType = wrap_orbit_bunch::getBunchType("Bunch");
 		if((!PyObject_IsInstance(pyIn,pyBunchType))){
 			error("PyBunchExtremaCalculator - extremaZ(Bunch) - input parameter is not Bunch");
-		}		
+		}
 		Bunch* bunch = (Bunch*) ((pyORBIT_Object*) pyIn)->cpp_obj;
 		BunchExtremaCalculator* cpp_BunchExtremaCalculator = (BunchExtremaCalculator*) (((pyORBIT_Object*) self)->cpp_obj);
 		double zMin,zMax;
-		cpp_BunchExtremaCalculator->getExtremaZ(bunch, zMin, zMax);	
+		cpp_BunchExtremaCalculator->getExtremaZ(bunch, zMin, zMax);
 		return Py_BuildValue("(d,d)", zMin, zMax);
   }
-  
+
 	//Calculates rMax
   static PyObject* BunchExtremaCalculator_extremaR(PyObject *self, PyObject *args){
 		PyObject *pyIn;
 		if(!PyArg_ParseTuple(args,"O:extremaR",&pyIn)){
 			error("PyBunchExtremaCalculator - extremaR(Bunch) - Bunch is needed.");
-		}			
+		}
 		PyObject* pyBunchType = wrap_orbit_bunch::getBunchType("Bunch");
 		if((!PyObject_IsInstance(pyIn,pyBunchType))){
 			error("PyBunchExtremaCalculator - extremaR(Bunch) - input parameter is not Bunch");
-		}		
+		}
 		Bunch* bunch = (Bunch*) ((pyORBIT_Object*) pyIn)->cpp_obj;
 		BunchExtremaCalculator* cpp_BunchExtremaCalculator = (BunchExtremaCalculator*) (((pyORBIT_Object*) self)->cpp_obj);
 		double rMax;
-		cpp_BunchExtremaCalculator->getExtremaR(bunch, rMax);	
+		cpp_BunchExtremaCalculator->getExtremaR(bunch, rMax);
 		return Py_BuildValue("d", rMax);
-  }  
-  
+  }
+
   //-----------------------------------------------------
   //destructor for python BunchExtremaCalculator class (__del__ method).
   //-----------------------------------------------------
@@ -115,7 +115,7 @@ extern "C" {
 		delete ((BunchExtremaCalculator*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python BunchExtremaCalculator wrapper class
 	// they will be vailable from python level
   static PyMethodDef BunchExtremaCalculatorClassMethods[] = {

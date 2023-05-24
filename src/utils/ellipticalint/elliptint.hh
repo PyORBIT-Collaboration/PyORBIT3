@@ -26,10 +26,10 @@ Chapter 6. Special Functions elliptint.hh
 #include <cstdlib>
 
 namespace EllipticalIntegrals{
-	
+
 	/*
-	Computes Carlson’s degenerate elliptic integral, RC .x; y/. x 
-	must be nonnegative and y must be nonzero. If y < 0, 
+	Computes Carlson’s degenerate elliptic integral, RC .x; y/. x
+	must be nonnegative and y must be nonzero. If y < 0,
 	the Cauchy principal value is returned.
 	**/
 	double rc(const double x, const double y) {
@@ -59,9 +59,9 @@ namespace EllipticalIntegrals{
 			} while (fabs(s) > ERRTOL);
 			return w*(1.0+s*s*(C1+s*(C2+s*(C3+s*C4))))/sqrt(ave);
 	}
-	
+
 	/*
-	Computes Carlson’s elliptic integral of the first kind, RF .x; y; z/. x, y, and z 
+	Computes Carlson’s elliptic integral of the first kind, RF .x; y; z/. x, y, and z
 	must be non-negative, and at most one can be zero.
 	**/
 	double rf(const double x, const double y, const double z) {
@@ -91,12 +91,12 @@ namespace EllipticalIntegrals{
 			e3=delx*dely*delz;
 			return (1.0+(C1*e2-C2-C3*e3)*e2+C4*e3)/sqrt(ave);
 	}
-	
+
 	/*
-	Computes Carlson’s elliptic integral of the second kind, RD .x; y; z/. x and y 
-	must be nonnegative, and at most one can be zero. z must be positive.	
+	Computes Carlson’s elliptic integral of the second kind, RD .x; y; z/. x and y
+	must be nonnegative, and at most one can be zero. z must be positive.
 	**/
-	
+
 	double rd(const double x, const double y, const double z) {
 		static const double ERRTOL=0.0015, C1=3.0/14.0, C2=1.0/6.0, C3=9.0/22.0,
 		C4=3.0/26.0, C5=0.25*C3, C6=1.5*C4;
@@ -134,10 +134,10 @@ namespace EllipticalIntegrals{
 		return 3.0*sum+fac*(1.0+ed*(-C1+C5*ed-C6*delz*ee)
 			+delz*(C2*ee+delz*(-C3*ec+delz*C4*ea)))/(ave*sqrt(ave));
 	}
-	
+
 	/*
-	Computes Carlson’s elliptic integral of the third kind, RJ .x; y; z; p/. x, y, and z 
-	must be nonnegative, and at most one can be zero. p must be nonzero. If p < 0, 
+	Computes Carlson’s elliptic integral of the third kind, RJ .x; y; z; p/. x, y, and z
+	must be nonnegative, and at most one can be zero. p must be nonzero. If p < 0,
 	the Cauchy principal value is returned.
 	**/
 	double rj(const double x, const double y, const double z, const double p) {
@@ -197,10 +197,10 @@ namespace EllipticalIntegrals{
 				if (p <= 0.0) ans=a*(b*ans+3.0*(rcx-rf(xt,yt,zt)));
 				return ans;
 	}
-	
+
 	/*
 	Legendre elliptic integral of the first kind F(phi,ak),
-	evaluated using Carlson’s function RF . 
+	evaluated using Carlson’s function RF .
 	The argument ranges are 0<= phi <= pi/2, 0 <= k*sin(phi) <= 1.
 	**/
 	double ellf(const double phi, const double ak) {
@@ -210,8 +210,8 @@ namespace EllipticalIntegrals{
 
 	/*
 	Legendre elliptic integral of the second kind E(phi,ak),
-	evaluated using Carlson’s function RF and RD. 
-	The argument ranges are 0<= phi <= pi/2, 0 <= k*sin(phi) <= 1.	
+	evaluated using Carlson’s function RF and RD.
+	The argument ranges are 0<= phi <= pi/2, 0 <= k*sin(phi) <= 1.
 	**/
 	double elle(const double phi, const double ak) {
 		double cc,q,s;
@@ -220,7 +220,7 @@ namespace EllipticalIntegrals{
 		q=(1.0-s*ak)*(1.0+s*ak);
 		return s*(rf(cc,q,1.0)-(pow(s*ak,2))*rd(cc,q,1.0)/3.0);
 	}
-		
+
 	/*
 	Legendre elliptic integral of the third kind P(phi,ak),
 	evaluated using Carlson’s function RJ and RD.
@@ -238,4 +238,3 @@ namespace EllipticalIntegrals{
 };
 
 #endif
-

@@ -48,7 +48,7 @@ class ParticleAttributesFactory
   //returns the name of the particle attributes bucket
   static  ParticleAttributes* getParticleAttributesInstance(
 		const string name,
-		std::map<std::string,double> part_attr_dict, 
+		std::map<std::string,double> part_attr_dict,
 		Bunch* bunch);
 
   //returns the vector of possible particle attributes names

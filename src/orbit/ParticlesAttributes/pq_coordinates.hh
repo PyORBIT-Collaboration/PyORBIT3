@@ -10,7 +10,7 @@
 //    07/14/2005
 //
 // DESCRIPTION
-//    A subclass of the particle attributes class. 
+//    A subclass of the particle attributes class.
 //
 ///////////////////////////////////////////////////////////////////////////
 #ifndef PQCOORDINATES_HH_
@@ -28,12 +28,12 @@
 class pq_coordinates : public ParticleAttributes
 {
 public:
-	
+
 	/** This Attribute describe complex coefficients of Wave functions.
 	  * User can specify the number of variables that he wants to reserve.
 		*/
 	pq_coordinates(Bunch* bunch, int size_in);
-	
+
   ~pq_coordinates();
 
 };

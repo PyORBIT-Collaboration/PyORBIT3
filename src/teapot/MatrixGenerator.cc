@@ -70,7 +70,7 @@ namespace teapot_base
         bunch->addParticle(0., 0., step_arr[2]/step_reduce, 0., 0., 0.);
         bunch->addParticle(0., 0., 0., step_arr[3]/step_reduce, 0., 0.);
         bunch->addParticle(0., 0., 0., 0., step_arr[4]/step_reduce, 0.);
-        bunch->addParticle(0., 0., 0., 0., 0., step_arr[5]/step_reduce);		
+        bunch->addParticle(0., 0., 0., 0., 0., step_arr[5]/step_reduce);
         bunch->addParticle(step_arr[0], 0., 0., 0., 0., 0.);
         bunch->addParticle(0., step_arr[1], 0., 0., 0., 0.);
         bunch->addParticle(0., 0., step_arr[2], 0., 0., 0.);
@@ -276,4 +276,3 @@ namespace teapot_base
         coeff_yp_dE = ((y1-y0)*x2*x2 - (y2-y0)*x1*x1) / (x1*x2*(x2-x1));
     }
 }  //end of namespace teapot_base
-

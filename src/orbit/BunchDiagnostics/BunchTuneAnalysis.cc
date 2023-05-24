@@ -34,7 +34,7 @@ void BunchTuneAnalysis::assignTwiss(double bx, double ax, double dx, double dpx,
 
 /** Performs the Tune analysis of the bunch */
 void BunchTuneAnalysis::analyzeBunch(Bunch* bunch){
-	
+
 	//initialization
 	bunch->compress();
 	SyncPart* syncPart = bunch->getSyncPart();
@@ -52,7 +52,7 @@ void BunchTuneAnalysis::analyzeBunch(Bunch* bunch){
 		tunemap.insert(std::make_pair("yAction", 0));
 		bunch->addParticleAttributes("ParticlePhaseAttributes", tunemap);
 	}
-	
+
 	if(bunch->hasParticleAttributes("ParticlePhaseAttributes")){
 		for (int i=0; i < bunch->getSize(); i++)
 		{
@@ -62,12 +62,12 @@ void BunchTuneAnalysis::analyzeBunch(Bunch* bunch){
 			double yp = part_coord_arr[i][3];
 			double Etot = syncPart->getEnergy() + syncPart->getMass();
 			double dpp = 1/(beta*beta)*part_coord_arr[i][5]/Etot;
-			
+
 			double xval = (x - etax * dpp)/sqrt(betax);
 			double xpval = (xp - etapx * dpp) * sqrt(betax) + xval * alphax;
 			double yval = y / sqrt(betay);
 			double ypval = (yp + y * alphay/betay) * sqrt(betay);
-			
+
 			double angle = atan2(xpval, xval);
 			if(angle < 0.) angle += (2.0*OrbitConst::PI);
 			double xPhase = angle;
@@ -76,7 +76,7 @@ void BunchTuneAnalysis::analyzeBunch(Bunch* bunch){
 			if(xTune < 0.) xTune += 1.;
 			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 0) = xPhase;
 			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 2) = xTune;
-			
+
 			angle = atan2(ypval, yval);
 			if(angle < 0.) angle += (2.0*OrbitConst::PI);
 			double yPhase = angle;
@@ -85,7 +85,7 @@ void BunchTuneAnalysis::analyzeBunch(Bunch* bunch){
 			if(yTune < 0.) yTune += 1.;
 			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 1) = yPhase;
 			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 3) = yTune;
-			
+
 			double xcanonical = x - etax * dpp;
 			double ycanonical = y;
 			double xpfac = xp - etapx * dpp;
@@ -94,17 +94,10 @@ void BunchTuneAnalysis::analyzeBunch(Bunch* bunch){
 			double pycanonical =  ypfac + ycanonical * (alphay/betay);
 			double xAction = xcanonical  *  xcanonical / betax + pxcanonical * pxcanonical * betax;
 			double yAction = ycanonical  *  ycanonical / betay + pycanonical * pycanonical * betay;
-	
+
 			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 4) = xAction;
 			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 5) = yAction;
 			}
 	}
 
 }
-
-
-
-
-
-
-

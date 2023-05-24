@@ -22,6 +22,7 @@ from ..teapot import DriftTEAPOT
 
 # import Bunch diagnostics
 from orbit.core import bunch
+
 BunchTuneAnalysis = bunch.BunchTuneAnalysis
 
 

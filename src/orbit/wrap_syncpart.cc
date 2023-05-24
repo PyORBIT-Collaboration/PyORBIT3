@@ -39,10 +39,10 @@ extern "C" {
     if(nArgs != 1){
       error("SyncParticle constructor needs pyBunch instance as parameter.");
     }
-		
+
 		pyORBIT_Object* pyBunch = (pyORBIT_Object*) PyTuple_GetItem(args,0);
 		Bunch* cpp_bunch = (Bunch*) pyBunch->cpp_obj;
-		
+
 		if(cpp_bunch->getSyncPart()->getPyWrapper() != NULL){
 			error("You should not create SyncParticle class instance directly!");
 		}
@@ -163,7 +163,7 @@ extern "C" {
   }
 
   //  Sets or returns the momentum vector as a Tuple
-	//  for the SyncPart object the action is depended on 
+	//  for the SyncPart object the action is depended on
 	//  the number of arguments
   //  pVector() - returns Tuple (px,py,pz)
   //  pVector((px,py,pz)) - sets the new value for momentum vector
@@ -193,10 +193,10 @@ extern "C" {
     }
     Py_INCREF(Py_None);
     return Py_None;
-  }	
-	
+  }
+
   //  Sets or returns the position vector as a Tuple
-	//  for the SyncPart object the action is depended on 
+	//  for the SyncPart object the action is depended on
 	//  the number of arguments
   //  rVector() - returns Tuple (x,y,z)
   //  rVector((x,y,z)) - sets the new value for position vector
@@ -226,11 +226,11 @@ extern "C" {
     }
     Py_INCREF(Py_None);
     return Py_None;
-  }	
-	
-	
+  }
+
+
   //  Sets or returns the nX axis vector as a Tuple
-	//  for the SyncPart object the action is depended on 
+	//  for the SyncPart object the action is depended on
 	//  the number of arguments
   //  nxVector() - returns Tuple (nxx,nxy,nxz)
   //  nxVector((x,y,z)) - sets the new value for nx axis vector
@@ -260,10 +260,10 @@ extern "C" {
     }
     Py_INCREF(Py_None);
     return Py_None;
-  }		
+  }
 
   //  Returns the nY axis vector as a Tuple
-	//  for the SyncPart object the action is depended on 
+	//  for the SyncPart object the action is depended on
 	//  the number of arguments
   //  nyVector() - returns Tuple (nyx,nyy,nyz)
   static PyObject* SyncPart_nyVector(PyObject *self, PyObject *args){
@@ -277,7 +277,7 @@ extern "C" {
 		y = cpp_SyncPart->getNormalYY();
 		z = cpp_SyncPart->getNormalYZ();
     return Py_BuildValue("(ddd)",x,y,z);
-  }		
+  }
 
  //Sets or returns the time in seconds for the SyncPart object
   //  the action is depended on the number of arguments
@@ -558,10 +558,10 @@ extern "C" {
 		{ "px",		      SyncPart_px        ,METH_VARARGS,"Sets or returns the x-momentum"},
 		{ "py",		      SyncPart_py        ,METH_VARARGS,"Sets or returns the y-momentum"},
 		{ "pz",		      SyncPart_pz        ,METH_VARARGS,"Sets or returns the z-momentum"},
-		{ "pVector",    SyncPart_pVector   ,METH_VARARGS,"Sets or returns the momentum vector as a tuple"},		
-		{ "rVector",    SyncPart_rVector   ,METH_VARARGS,"Sets or returns the position vector as a tuple"},		
-		{ "nxVector",		SyncPart_nxVector  ,METH_VARARGS,"Sets or returns the x-axis vector as a tuple"},		
-		{ "nyVector",		SyncPart_nyVector  ,METH_VARARGS,"Returns the y-axis vector as a tuple"},		
+		{ "pVector",    SyncPart_pVector   ,METH_VARARGS,"Sets or returns the momentum vector as a tuple"},
+		{ "rVector",    SyncPart_rVector   ,METH_VARARGS,"Sets or returns the position vector as a tuple"},
+		{ "nxVector",		SyncPart_nxVector  ,METH_VARARGS,"Sets or returns the x-axis vector as a tuple"},
+		{ "nyVector",		SyncPart_nyVector  ,METH_VARARGS,"Returns the y-axis vector as a tuple"},
 		{ "energyToMomentum",  SyncPart_eToP  ,METH_VARARGS,"Transforms the kinetic energy to momentum"},
 		{ "momentumToEnergy",  SyncPart_pToE  ,METH_VARARGS,"Transforms the momentum to kinetic energy"},
     {NULL}

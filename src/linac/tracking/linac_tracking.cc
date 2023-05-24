@@ -10,7 +10,7 @@
 // DESCRIPTION
 //   Define elementary functions for tracking through
 //   specific linac accelerator elements without using
-//   TEAPOT algorithms. It is necessary for the cases 
+//   TEAPOT algorithms. It is necessary for the cases
 //   with a huge energy spread in the bunch.
 //
 /////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@
 
 namespace linac_tracking
 {
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	// NAME
 	//   linac_drift
@@ -51,21 +51,21 @@ namespace linac_tracking
 	//   Nothing
 	//
 	///////////////////////////////////////////////////////////////////////////
-	
+
 	void linac_drift(Bunch* bunch, double length)
 	{
 		SyncPart* syncPart = bunch->getSyncPart();
-		
+
 		double beta_s = syncPart->getBeta();
 		double v_s = OrbitConst::c * beta_s;
 		double beta1_s = 1.0/beta_s;
 		if(length <= 0.) return;
-		
+
 		double delta_t = length / v_s;
 		double delta_tc = delta_t*OrbitConst::c;
-		
+
 		syncPart->setTime(syncPart->getTime() + delta_t);
-		
+
 		double mass = syncPart->getMass();
 		double Ekin_s = syncPart->getEnergy();
 		double p_s = syncPart->getMomentum();
@@ -81,10 +81,10 @@ namespace linac_tracking
 		double beta_z = 0.;
 		double beta_x = 0.;
 		double beta_y = 0.;
-		
+
 		//coordinate array [part. index][x,xp,y,yp,z,dE]
 		//sqrt(fabs(p_z2)) - fabs function is a protection for case when xp and yp are too big for dE
-		//It means the particles are nonphysical and simulations do not make sense 
+		//It means the particles are nonphysical and simulations do not make sense
 		double** arr = bunch->coordArr();
 		for(int i = 0; i < bunch->getSize(); i++)
 		{
@@ -103,7 +103,7 @@ namespace linac_tracking
 			arr[i][4] += (beta_z - beta_s) * delta_tc;
 		}
 	}
-	
+
 	////////////////////////////
 	// NAME
 	//   linac_quad1
@@ -122,41 +122,41 @@ namespace linac_tracking
 	//   Nothing
 	//
 	///////////////////////////////////////////////////////////////////////////
-	
+
 	void linac_quad1(Bunch* bunch, double length, double kq, int useCharge)
 	{
     double charge = +1.0;
     if(useCharge == 1) charge = bunch->getCharge();
-    
+
     double kqc = kq * charge;
     if(kqc == 0.)
     {
     	linac_drift(bunch,length);
     	return;
     }
-    
+
     double x_init, xp_init, y_init, yp_init;
     double sqrt_kq, kqlength;
     double cx, sx, cy, sy;
     double m11 = 0., m12 = 0., m21 = 0., m22 = 0.;
     double m33 = 0., m34 = 0., m43 = 0., m44 = 0.;
-    
+
     SyncPart* syncPart = bunch->getSyncPart();
     double beta_s = syncPart->getBeta();
-		double beta1_s = 1.0/beta_s;    
-		double v_s = OrbitConst::c * beta_s; 
-		
+		double beta1_s = 1.0/beta_s;
+		double v_s = OrbitConst::c * beta_s;
+
  		double delta_t = length / v_s;
-		double delta_tc = delta_t*OrbitConst::c;   
-		
+		double delta_tc = delta_t*OrbitConst::c;
+
     if(length > 0.)
     {
     	syncPart->setTime(syncPart->getTime() + delta_t);
     }
-    
+
  		// ==== B*rho = 3.335640952*momentum [T*m] if momentum in GeV/c ===
  		double dB_dr = kqc*3.335640952*syncPart->getMomentum();
- 		
+
  		double mass = syncPart->getMass();
 		double Ekin_s = syncPart->getEnergy();
 		double p_s = syncPart->getMomentum();
@@ -164,31 +164,31 @@ namespace linac_tracking
 		double p2 = 0.;
 		double dE = 0.;
 		double p = 0.;
-		double Ekin = 0.;  
+		double Ekin = 0.;
 		double Etotal = 0.;
-		double coeff = 0.; 
-		
+		double coeff = 0.;
+
 		double p_z2 = 0.;
 		double beta_z = 0.;
-   
+
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
     int nParts = bunch->getSize();
-    
+
     for(int i = 0; i < nParts; i++)
     {
-    	
+
  			dE = arr[i][5];
 			Ekin = Ekin_s+dE;
 			Etotal = Ekin + mass;
-			p2 = Ekin*(Ekin+2.0*mass); 
+			p2 = Ekin*(Ekin+2.0*mass);
 			p = sqrt(p2);
     	kqc = dB_dr/(3.335640952*p);
 			beta_z = p/Etotal;
-			
+
     	sqrt_kq  = sqrt(fabs(kqc));
-    	kqlength = sqrt_kq * length; 
-    	
+    	kqlength = sqrt_kq * length;
+
     	if(kqc > 0.)
     	{
     		cx = cos(kqlength);
@@ -207,25 +207,25 @@ namespace linac_tracking
     		m21 = sx * sqrt_kq;
     		m43 = -sy * sqrt_kq;
     	}
-    	
+
     	m11 = cx;
     	m12 = sx / sqrt_kq;
     	m22 = cx;
     	m33 = cy;
     	m34 = sy / sqrt_kq;
-    	m44 = cy;    
-    	
+    	m44 = cy;
+
      	xp_init = arr[i][1];
     	yp_init = arr[i][3];
-     	
+
     	// coeff = p_s/p
   		coeff = p_s/p;
-  		
+
     	x_init  = arr[i][0];
     	xp_init = xp_init*coeff;
     	y_init  = arr[i][2];
     	yp_init = yp_init*coeff;
-    	
+
     	arr[i][0]  = x_init * m11 + xp_init * m12;
     	arr[i][1]  = (x_init * m21 + xp_init * m22)/coeff;
     	arr[i][2]  = y_init * m33 + yp_init * m34;
@@ -234,7 +234,7 @@ namespace linac_tracking
     	arr[i][4] += (beta_z - beta_s) * delta_tc;
     }
   }
-  
+
   ///////////////////////////////////////////////////////////////////////////
   // NAME
   //  linac_ quad2
@@ -250,12 +250,12 @@ namespace linac_tracking
   //   Nothing
   //
   ///////////////////////////////////////////////////////////////////////////
-  
+
   void linac_quad2(Bunch* bunch, double length)
   {
   	//there are no non-linear components
   }
-  
+
 
 	////////////////////////////
 	// NAME
@@ -278,12 +278,12 @@ namespace linac_tracking
 	//   Nothing
 	//
 	///////////////////////////////////////////////////////////////////////////
-	
+
 	void linac_quad3(Bunch* bunch, double length, double kq, int useCharge)
 	{
     double charge = +1.0;
     if(useCharge == 1) charge = bunch->getCharge();
-    
+
     double kqc = kq * charge;
     if(kqc == 0.)
     {
@@ -291,20 +291,20 @@ namespace linac_tracking
     }
 
     double kick_coeff = kqc*length;
-     
+
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
     int nParts = bunch->getSize();
-    
+
     double coef_xy = 0.;
-    
+
     for(int i = 0; i < nParts; i++){
     	coef_xy = kick_coeff*arr[i][0]*arr[i][2];
     	arr[i][1]  +=  arr[i][3]*coef_xy;
     	arr[i][3]  += -arr[i][1]*coef_xy;
     }
   }
-   
+
 ///////////////////////////////////////////////////////////////////////////
 // NAME
 //   kick
@@ -327,22 +327,22 @@ namespace linac_tracking
 	{
 		double charge = +1.0;
 		if(useCharge == 1) charge = bunch->getCharge();
-		
+
 		double kxc = kx * charge;
 		double kyc = ky * charge;
-		
+
 		SyncPart* syncPart = bunch->getSyncPart();
-		
+
 		double mass = syncPart->getMass();
-		double Ekin_s = syncPart->getEnergy();  	
+		double Ekin_s = syncPart->getEnergy();
 		double p_s = syncPart->getMomentum();
 		double p2_s = p_s*p_s;
 		double dE = 0.;
 		double p2 = 0.;
 		double p_z = 0.;
-		double Ekin = 0.;    
+		double Ekin = 0.;
 		double coeff = 0.;
-		
+
 		//coordinate array [part. index][x,xp,y,yp,z,dE]
 		double** arr = bunch->coordArr();
 		if(kxc != 0.)
@@ -365,7 +365,7 @@ namespace linac_tracking
 				Ekin = Ekin_s+dE;
 				p2 = Ekin*(Ekin+2.0*mass);
 				p_z = sqrt(p2 - (arr[i][1]*arr[i][1] + arr[i][3]*arr[i][3])*p2_s);
-				coeff = p_s/p_z;        	
+				coeff = p_s/p_z;
 				arr[i][3] += kyc*coeff;
 			}
 		}
@@ -377,5 +377,5 @@ namespace linac_tracking
 			}
 		}
 	}
-	
+
 }  //end of namespace linac_tracking

@@ -1,6 +1,6 @@
 #include "StringUtils.hh"
 
-#include <iostream> 
+#include <iostream>
 #include <cstdlib>
 
 using namespace OrbitUtils;
@@ -24,6 +24,3 @@ int StringUtils::Tokenize(const string& str,vector<string>& tokens,  const strin
     }
   return tokens.size();
 }
-
-
-

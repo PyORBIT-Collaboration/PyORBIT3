@@ -1,5 +1,5 @@
 /**
-  This class calculates the field of uniformly charged ellipsoid by using 
+  This class calculates the field of uniformly charged ellipsoid by using
 	the symmetric elliptic integral and Carlson formulas for these integrals.
 	*/
 
@@ -37,16 +37,16 @@ UniformEllipsoidFieldCalculator::UniformEllipsoidFieldCalculator(): CppPyWrapper
 	intFuncZ2 = new Function();
 	//the number of points
 	lambda_function_points0 = 200;
-	
+
 	//the number of points
 	lambda_function_points1 = 50;
-	
+
 	//the number of points
 	lambda_function_points2 = 50;
 
 	//Q_total is 1 by dfeault
 	Q_total = 1.0;
-	
+
 	//the parameter of ellipses
 	a = 1.; b  = 1.; c = 1.;
 	double r_max = 10.;
@@ -67,7 +67,7 @@ UniformEllipsoidFieldCalculator::~UniformEllipsoidFieldCalculator()
 		delete intFuncZ2;
 }
 
-	
+
 /** Sets the half-axis of the ellipsoid */
 void UniformEllipsoidFieldCalculator::setEllipsoid(double a_in, double b_in, double c_in, double r_max)
 {
@@ -82,19 +82,19 @@ void UniformEllipsoidFieldCalculator::setEllipsoid(double a_in, double b_in, dou
 		lambda_max1 = lambda_max2;
 		intFuncX1->clean();
 		intFuncY1->clean();
-		intFuncZ1->clean();		
+		intFuncZ1->clean();
 		intFuncX2->clean();
 		intFuncY2->clean();
-		intFuncZ2->clean();		
+		intFuncZ2->clean();
 	}
 	if(lambda_max2 < lambda_max1){
 		lambda_max1 = lambda_max2;
 		intFuncX2->clean();
 		intFuncY2->clean();
-		intFuncZ2->clean();			
+		intFuncZ2->clean();
 	}
 	//interval from 0 to lambda_max0
-	lambda_eps = 0.01*lambda_max0/(lambda_function_points0 - 1);	
+	lambda_eps = 0.01*lambda_max0/(lambda_function_points0 - 1);
 	//now integrate the part from lambda to lambda_max for different lambda and put values into functions
 	double lambda_step = lambda_max0/(lambda_function_points0 - 1);
 	intFuncX0->clean();
@@ -113,8 +113,8 @@ void UniformEllipsoidFieldCalculator::setEllipsoid(double a_in, double b_in, dou
 		int rank = 0;
 		ORBIT_MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 		if(rank == 0){
-			std::cerr << "UniformEllipsoidFieldCalculator::setEllipsoid(...)" << std::endl 
-			<< "The Functions for lambda are not equidistant!!! "<< std::endl 
+			std::cerr << "UniformEllipsoidFieldCalculator::setEllipsoid(...)" << std::endl
+			<< "The Functions for lambda are not equidistant!!! "<< std::endl
 			<< "Stop."<< std::endl;
 		}
 		ORBIT_MPI_Finalize();
@@ -137,12 +137,12 @@ void UniformEllipsoidFieldCalculator::setEllipsoid(double a_in, double b_in, dou
 			int rank = 0;
 			ORBIT_MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 			if(rank == 0){
-				std::cerr << "UniformEllipsoidFieldCalculator::setEllipsoid(...)" << std::endl 
-				<< "The Functions for lambda are not equidistant!!! "<< std::endl 
+				std::cerr << "UniformEllipsoidFieldCalculator::setEllipsoid(...)" << std::endl
+				<< "The Functions for lambda are not equidistant!!! "<< std::endl
 				<< "Stop."<< std::endl;
 			}
 			ORBIT_MPI_Finalize();
-		}		
+		}
 	}
 	if(lambda_max2 > lambda_max1){
 		lambda_step = (lambda_max2 - lambda_max1)/(lambda_function_points2 - 1);
@@ -162,27 +162,27 @@ void UniformEllipsoidFieldCalculator::setEllipsoid(double a_in, double b_in, dou
 			int rank = 0;
 			ORBIT_MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 			if(rank == 0){
-				std::cerr << "UniformEllipsoidFieldCalculator::setEllipsoid(...)" << std::endl 
-				<< "The Functions for lambda are not equidistant!!! "<< std::endl 
+				std::cerr << "UniformEllipsoidFieldCalculator::setEllipsoid(...)" << std::endl
+				<< "The Functions for lambda are not equidistant!!! "<< std::endl
 				<< "Stop."<< std::endl;
 			}
 			ORBIT_MPI_Finalize();
-		}			
-	}	
+		}
+	}
 }
 
 /** Calculates the field components */
-void UniformEllipsoidFieldCalculator::calcField(double x,   double y,   double z, 
+void UniformEllipsoidFieldCalculator::calcField(double x,   double y,   double z,
 	double x2,  double y2,  double z2,
 	double& ex, double& ey, double& ez)
-{	
+{
 	if((x2/a2+y2/b2+z2/c2) <= 1.){
 		ex = Q_total*x*intFuncX0->y(0);
 		ey = Q_total*y*intFuncY0->y(0);
 		ez = Q_total*z*intFuncZ0->y(0);
 		return;
 	}
-	
+
 	double lambda = this->calcLambda(x,y,z,x2,y2,z2);
 	if(lambda < lambda_max0){
 		ex = Q_total*x*intFuncX0->getY(lambda);
@@ -192,13 +192,13 @@ void UniformEllipsoidFieldCalculator::calcField(double x,   double y,   double z
 	} else if(lambda < lambda_max1) {
 		ex = Q_total*x*intFuncX1->getY(lambda)/lambda;
 		ey = Q_total*y*intFuncY1->getY(lambda)/lambda;
-		ez = Q_total*z*intFuncZ1->getY(lambda)/lambda;	
-		return;	
+		ez = Q_total*z*intFuncZ1->getY(lambda)/lambda;
+		return;
 	} else if(lambda < lambda_max2) {
 		ex = Q_total*x*intFuncX2->getY(lambda)/lambda;
 		ey = Q_total*y*intFuncY2->getY(lambda)/lambda;
-		ez = Q_total*z*intFuncZ2->getY(lambda)/lambda;	
-		return;			
+		ez = Q_total*z*intFuncZ2->getY(lambda)/lambda;
+		return;
 	}
 	double r2 = x2+y2+z2;
 	double r3 = sqrt(r2)*r2;
@@ -206,26 +206,26 @@ void UniformEllipsoidFieldCalculator::calcField(double x,   double y,   double z
 }
 
 /** Calculates lambda value as a root of eq. x^2/(a^2+s) + y^2/(b^2+s) + z^2/(c^2+s) - 1 = 0 */
-double UniformEllipsoidFieldCalculator::calcLambda(double x,   double y,   double z, 
+double UniformEllipsoidFieldCalculator::calcLambda(double x,   double y,   double z,
 	                                                double x2,  double y2,  double z2)
 {
 	double lambda_start = 0.;
 	double a2_ls, b2_ls, c2_ls;
-	a2_ls = a2+lambda_start; b2_ls = b2+lambda_start; c2_ls = c2+lambda_start; 
+	a2_ls = a2+lambda_start; b2_ls = b2+lambda_start; c2_ls = c2+lambda_start;
 	double v_start = x2/a2_ls + y2/b2_ls + z2/c2_ls - 1.0;
 	double lambda_stop = lambda_max2;
-	double v_stop = x2/(a2+lambda_stop) + y2/(b2+lambda_stop) + z2/(c2+lambda_stop) - 1.0;	
+	double v_stop = x2/(a2+lambda_stop) + y2/(b2+lambda_stop) + z2/(c2+lambda_stop) - 1.0;
 	double vp_start = x2/pow((a2+lambda_start),2) + y2/pow((b2+lambda_start),2) + z2/pow((c2+lambda_start),2);
 	lambda_stop = lambda_start - v_start*(lambda_start - lambda_stop)/(v_start - v_stop);
 	lambda_start = lambda_start + v_start/vp_start;
 	while(fabs(lambda_start - lambda_stop) > lambda_eps){
 		//std::cout << "debug calcFieldlambda_start ="<<lambda_start<<" lambda_stop="<< lambda_stop <<std::endl;
-		a2_ls = a2+lambda_start; b2_ls = b2+lambda_start; c2_ls = c2+lambda_start; 
+		a2_ls = a2+lambda_start; b2_ls = b2+lambda_start; c2_ls = c2+lambda_start;
 		v_start = x2/a2_ls + y2/b2_ls + z2/c2_ls - 1.0;
 		v_stop = x2/(a2+lambda_stop) + y2/(b2+lambda_stop) + z2/(c2+lambda_stop) - 1.0;
 		vp_start = x2/(a2_ls*a2_ls) + y2/(b2_ls*b2_ls) + z2/(c2_ls*c2_ls);
 	  lambda_stop = lambda_start - v_start*(lambda_start - lambda_stop)/(v_start - v_stop);
-	  lambda_start = lambda_start + v_start/vp_start;		
+	  lambda_start = lambda_start + v_start/vp_start;
 	}
 	return (lambda_start + lambda_stop)/2;
 }
@@ -277,5 +277,3 @@ void UniformEllipsoidFieldCalculator::setQ(double Q_in)
 {
 	Q_total = Q_in;
 }
-
-

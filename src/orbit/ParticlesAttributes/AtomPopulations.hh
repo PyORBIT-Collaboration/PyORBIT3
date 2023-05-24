@@ -31,9 +31,9 @@ public:
 	  * User can specify the number of variables that he wants to reserve.
 		*/
 	AtomPopulations(Bunch* bunch, int size_in);
-	
-  ~AtomPopulations();	
-	
+
+  ~AtomPopulations();
+
 };
 
 ///////////////////////////////////////////////////////////////////////////

@@ -10,7 +10,7 @@
 //    06/28/2008
 //
 // DESCRIPTION
-//    This class is a collection of the static methods to calculate 
+//    This class is a collection of the static methods to calculate
 //    different polynomials.
 //
 ///////////////////////////////////////////////////////////////////////////
@@ -27,12 +27,12 @@ double* MathPolynomial::fact_double_arr = NULL;
 /** The method calculates the Hermite polynomial of order n and value x. */
 double MathPolynomial::ReHermite(int n, double x){
 	double a,b,ff;
-	
+
 	a=1.0;
 	b=2.0*x;
-	
+
 	if(n==0) {
-		ff=a; 
+		ff=a;
 	}else if(n==1) {
 		ff=b;
 	} else if(n>=2)	{
@@ -48,10 +48,10 @@ double MathPolynomial::ReHermite(int n, double x){
 /** The method calculates the complex Hermite polynomial of order n and value x. */
 tcomplex MathPolynomial::ComplexHermite(int n, tcomplex x){
 	tcomplex a,b,ff;
-	
+
 	a=1.0;
 	b=2.0*x;
-	
+
 	if(n==0){
 		ff=a;
 	} else if(n==1) {
@@ -105,4 +105,3 @@ double* MathPolynomial::getFactorialDoubleArr(){
 	}
 	return fact_double_arr;
 }
-

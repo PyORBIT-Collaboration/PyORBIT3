@@ -1,9 +1,9 @@
 """
-The general Linac Accelerator lattice. It is a subclass of the Acclattice. 
-It tracks the bunch through the linac accelerator nodes. In addition to the 
-usual accelerator lattice it has the sequences and RF cavities. The sequences and 
-RF cavities are containers for accelerator nodes (seqencies) and RF gaps. 
-The Sequence class is used to keep iformation about positions of elements that are inside. 
+The general Linac Accelerator lattice. It is a subclass of the Acclattice.
+It tracks the bunch through the linac accelerator nodes. In addition to the
+usual accelerator lattice it has the sequences and RF cavities. The sequences and
+RF cavities are containers for accelerator nodes (seqencies) and RF gaps.
+The Sequence class is used to keep iformation about positions of elements that are inside.
 The Cavity class keeps the refernce to RF gaps and a value of the cavity amplitude.
 """
 
@@ -115,7 +115,7 @@ class LinacAccLattice(AccLattice):
             seq.setNodes(nodes)
         """
 		for seq in seqs:
-			for node in nodes: 
+			for node in nodes:
 				(pos_start,pos_stop) = node_pos_dict[node]
 				print "debug node=",node.getName()," (pos_start,pos_stop)=",(pos_start,pos_stop)," L=",node.getLength()
 		"""

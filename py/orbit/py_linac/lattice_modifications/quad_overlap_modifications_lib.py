@@ -327,7 +327,7 @@ def Find_Groups_of_Quads(accLattice, accSeq, quads, enge_func_quad_dict, node_to
 		for quad in quads_arr:
 			(pos_start,pos_end) = node_pos_dict[quad]
 			(z_min,z_max) = enge_func_quad_dict[quad].getLimitsZ()
-			pos_center = (pos_start+pos_end)/2 
+			pos_center = (pos_start+pos_end)/2
 			print "debug          quad = ",quad.getName()," (pos_center+z_min,pos_center+z_max) =",(pos_center+z_min,pos_center+z_max)
 	"""
     # ----------------------------------- DEBUG PRINTING END

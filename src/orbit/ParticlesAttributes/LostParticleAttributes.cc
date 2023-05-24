@@ -18,7 +18,7 @@
 #include "../Bunch.hh"
 #include "LostParticleAttributes.hh"
 
-LostParticleAttributes::LostParticleAttributes(Bunch* bunch): 
+LostParticleAttributes::LostParticleAttributes(Bunch* bunch):
 ParticleAttributes(bunch,1)
 {
   cl_name_ = "LostParticleAttributes";

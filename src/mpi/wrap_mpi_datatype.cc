@@ -36,7 +36,7 @@ extern "C" {
   //initializator for python MPI_Datatype  class
   //this is implementation of the __init__ method
   static int MPI_Datatype_init(pyORBIT_MPI_Datatype *self, PyObject *args, PyObject *kwds){
-    //pyORBIT_MPI_Datatype* pyMPI_Datatype = (pyORBIT_MPI_Datatype*) self;		
+    //pyORBIT_MPI_Datatype* pyMPI_Datatype = (pyORBIT_MPI_Datatype*) self;
     if(PyTuple_Size(args) != 0){
       error("MPI_Datatype constructor needs nothing.");
     }
@@ -48,10 +48,10 @@ extern "C" {
   //-----------------------------------------------------
   //this is implementation of the __del__ method
   static void MPI_Datatype_del(pyORBIT_MPI_Datatype* self){
-		//std::cerr<<"The MPI_Datatype __del__ has been called!"<<std::endl;	
+		//std::cerr<<"The MPI_Datatype __del__ has been called!"<<std::endl;
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-		
+
 	// defenition of the methods of the python MPI_Datatype wrapper class
 	// they will be vailable from python level
   static PyMethodDef MPI_DatatypeClassMethods[] = {
@@ -64,7 +64,7 @@ extern "C" {
 	static PyMemberDef MPI_DatatypeClassMembers[] = {
 		{NULL}
 	};
-	
+
 	//new python SyncPart wrapper type definition
 	static PyTypeObject pyORBIT_MPI_Datatype_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -114,27 +114,27 @@ extern "C" {
   void init_orbit_mpi_datatype(PyObject* module){
 		if (PyType_Ready(&pyORBIT_MPI_Datatype_Type) < 0) return;
 		Py_INCREF(&pyORBIT_MPI_Datatype_Type);
-		
+
 		PyObject * datatype_module = PyModule_New("mpi_datatype");
 		PyModule_AddObject(datatype_module, "MPI_Datatype", (PyObject *)&pyORBIT_MPI_Datatype_Type);
 		Py_INCREF(datatype_module);
-		
+
 		pyORBIT_MPI_Datatype* pyMPI_Datatype_CHAR = PyObject_New(pyORBIT_MPI_Datatype,&pyORBIT_MPI_Datatype_Type);
 		pyMPI_Datatype_CHAR->datatype = MPI_CHAR;
-		Py_INCREF((PyObject *) pyMPI_Datatype_CHAR); 
-		
+		Py_INCREF((PyObject *) pyMPI_Datatype_CHAR);
+
 		pyORBIT_MPI_Datatype* pyMPI_Datatype_INT = PyObject_New(pyORBIT_MPI_Datatype,&pyORBIT_MPI_Datatype_Type);
 		pyMPI_Datatype_INT->datatype = MPI_INT;
-		Py_INCREF((PyObject *) pyMPI_Datatype_INT); 
+		Py_INCREF((PyObject *) pyMPI_Datatype_INT);
 
 		pyORBIT_MPI_Datatype* pyMPI_Datatype_DOUBLE = PyObject_New(pyORBIT_MPI_Datatype,&pyORBIT_MPI_Datatype_Type);
 		pyMPI_Datatype_DOUBLE->datatype = MPI_DOUBLE;
-		Py_INCREF((PyObject *) pyMPI_Datatype_DOUBLE); 
+		Py_INCREF((PyObject *) pyMPI_Datatype_DOUBLE);
 
     PyModule_AddObject(datatype_module, "MPI_CHAR", (PyObject *) pyMPI_Datatype_CHAR);
     PyModule_AddObject(datatype_module, "MPI_INT", (PyObject *) pyMPI_Datatype_INT);
-    PyModule_AddObject(datatype_module, "MPI_DOUBLE", (PyObject *) pyMPI_Datatype_DOUBLE);		
-		
+    PyModule_AddObject(datatype_module, "MPI_DOUBLE", (PyObject *) pyMPI_Datatype_DOUBLE);
+
 		PyModule_AddObject(module, "mpi_datatype", datatype_module);
 	}
 

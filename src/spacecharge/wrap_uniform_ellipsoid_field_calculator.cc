@@ -37,35 +37,35 @@ extern "C" {
 		((UniformEllipsoidFieldCalculator*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 		return 0;
   }
-		
+
 	/** Sets the half-axis of the ellipsoid and maximal values of radius*/
 	static PyObject* UniformEllipsoidFieldCalculator_setEllipsoid(PyObject *self, PyObject *args){
 		pyORBIT_Object* pyUniformEllipsoidFieldCalculator = (pyORBIT_Object*) self;
 		UniformEllipsoidFieldCalculator* cpp_UniformEllipsoidFieldCalculator = (UniformEllipsoidFieldCalculator*) pyUniformEllipsoidFieldCalculator->cpp_obj;
 		double a,b,c,r_max;
-		if(!PyArg_ParseTuple(args,"dddd:setEllipsoid",&a,&b,&c,&r_max)){		
+		if(!PyArg_ParseTuple(args,"dddd:setEllipsoid",&a,&b,&c,&r_max)){
 			ORBIT_MPI_Finalize("PyUniformEllipsoidFieldCalculator.setEllipsoid(a,b,c,r_max) - method needs parameters.");
-		}			
+		}
 		cpp_UniformEllipsoidFieldCalculator->setEllipsoid(a,b,c,r_max);
 		Py_INCREF(Py_None);
     return Py_None;
 	}
-	
+
 	/** Calculates the field components */
 	static PyObject* UniformEllipsoidFieldCalculator_calcField(PyObject *self, PyObject *args){
 		pyORBIT_Object* pyUniformEllipsoidFieldCalculator = (pyORBIT_Object*) self;
 		UniformEllipsoidFieldCalculator* cpp_UniformEllipsoidFieldCalculator = (UniformEllipsoidFieldCalculator*) pyUniformEllipsoidFieldCalculator->cpp_obj;
 		double x,y,z;
-		if(!PyArg_ParseTuple(args,"ddd:calcField",&x,&y,&z)){		
+		if(!PyArg_ParseTuple(args,"ddd:calcField",&x,&y,&z)){
 			ORBIT_MPI_Finalize("PyUniformEllipsoidFieldCalculator.calcField(x,y,z) - method needs parameters.");
-		}	
+		}
 		double x2,y2,z2;
 		double ex,ey,ez;
 		x2 = x*x; y2 = y*y; z2 = z*z;
 		cpp_UniformEllipsoidFieldCalculator->calcField(x,y,z,x2,y2,z2,ex,ey,ez);
 		return Py_BuildValue("(ddd)",ex,ey,ez);
 	}
-	
+
   //-----------------------------------------------------
   //destructor for python UniformEllipsoidFieldCalculator class (__del__ method).
   //-----------------------------------------------------
@@ -76,7 +76,7 @@ extern "C" {
 		}
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python UniformEllipsoidFieldCalculator wrapper class
 	// they will be vailable from python level
   static PyMethodDef UniformEllipsoidFieldCalculatorClassMethods[] = {
@@ -131,7 +131,7 @@ extern "C" {
 		(initproc) UniformEllipsoidFieldCalculator_init, /* tp_init */
 		0, /* tp_alloc */
 		UniformEllipsoidFieldCalculator_new, /* tp_new */
-	};	
+	};
 
 	//--------------------------------------------------
 	//Initialization function of the pyUniformEllipsoidFieldCalculator class

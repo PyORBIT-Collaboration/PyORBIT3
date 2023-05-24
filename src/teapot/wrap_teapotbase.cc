@@ -195,8 +195,8 @@ extern "C"
     {
         Py_INCREF(Py_None);
         return Py_None;
-    }   
-    
+    }
+
     //Quadrupole element IN edge
     static PyObject* wrap_quadfringeIN(PyObject *self, PyObject *args)
     {
@@ -519,8 +519,8 @@ extern "C"
 	    "teapot_base", "TEAPOT tracking functions for different lattice elements.",
 	    -1,
 	    teapotbaseMethods
-    };    
-    
+    };
+
     PyMODINIT_FUNC initteapotbase(void)
     {
         PyObject *m, *d;
@@ -539,7 +539,7 @@ extern "C"
         Py_DECREF(pyType);
         return pyType;
     }
-	
+
 #ifdef __cplusplus
 }
 #endif

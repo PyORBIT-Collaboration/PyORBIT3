@@ -20,7 +20,7 @@ namespace wrap_function{
 extern "C" {
 #endif
 
-	/** 
+	/**
 	    Constructor for python class wrapping c++ Function instance.
       It never will be called directly.
 	*/
@@ -30,14 +30,14 @@ extern "C" {
 		self->cpp_obj = NULL;
 		return (PyObject *) self;
 	}
-	
+
   /** This is implementation of the __init__ method */
   static int Function_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
-	  self->cpp_obj =  new Function();	  
+	  self->cpp_obj =  new Function();
 	  ((Function*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
-  
+
 	/** It will add (x,y) or (x,y,err) point to the Function instance */
   static PyObject* Function_add(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
@@ -51,167 +51,167 @@ extern "C" {
 		Py_INCREF(Py_None);
 		return Py_None;
   }
-	
+
  	/** It will return the number of (x,y) pairs in the Function instance */
   static PyObject* Function_getSize(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 	  int size = cpp_Function->getSize();
 		return Py_BuildValue("i",size);
   }
-	
+
  	/** It will return x for a particular index ind */
   static PyObject* Function_x(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		int ind = -1;
 		if(!PyArg_ParseTuple(	args,"i:",&ind)){
 			error("pyFunction x(index) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("d",cpp_Function->x(ind));
   }
-	
+
  	/** It will return y for a particular index ind */
   static PyObject* Function_y(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		int ind = -1;
 		if(!PyArg_ParseTuple(	args,"i:",&ind)){
 			error("pyFunction y(index) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("d",cpp_Function->y(ind));
   }
-	
-	
+
+
  	/** It will return y for a particular index ind */
   static PyObject* Function_err(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		int ind = -1;
 		if(!PyArg_ParseTuple(	args,"i:",&ind)){
 			error("pyFunction err(index) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("d",cpp_Function->err(ind));
   }
-	
+
  	/** It will return (x,y) for a particular index ind */
   static PyObject* Function_xy(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		int ind = -1;
 		if(!PyArg_ParseTuple(	args,"i:",&ind)){
 			error("pyFunction xy(index) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("(dd)",cpp_Function->x(ind),cpp_Function->y(ind));
-  }		
-	
+  }
+
  	/** It will return (x,y) for a particular index ind */
   static PyObject* Function_xyErr(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		int ind = -1;
 		if(!PyArg_ParseTuple(	args,"i:",&ind)){
 			error("pyFunction xyErr(index) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("(ddd)",cpp_Function->x(ind),cpp_Function->y(ind),cpp_Function->err(ind));
-  }		
-	
+  }
+
  	/** It will return minimal x value in the Function */
   static PyObject* Function_getMinX(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		return Py_BuildValue("d",cpp_Function->getMinX());
-  }	
-	
+  }
+
  	/** It will return maximal x value in the Function */
   static PyObject* Function_getMaxX(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		return Py_BuildValue("d",cpp_Function->getMaxX());
-  }	
-	
+  }
+
  	/** It will return minimal y value in the Function */
   static PyObject* Function_getMinY(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		return Py_BuildValue("d",cpp_Function->getMinY());
-  }	
-	
+  }
+
  	/** It will return maximal y value in the Function */
   static PyObject* Function_getMaxY(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		return Py_BuildValue("d",cpp_Function->getMaxY());
-  }	
-		
+  }
+
  	/** It will remove all points in the Function */
   static PyObject* Function_clean(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		cpp_Function->clean();
 	 	Py_INCREF(Py_None);
-		return Py_None; 
-  }	
-	
+		return Py_None;
+  }
+
  	/** It will free the memeory and will remove all points in the Function */
   static PyObject* Function_cleanMemory(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		cpp_Function->cleanMemory();
 	 	Py_INCREF(Py_None);
-		return Py_None; 
-  }		
-	
+		return Py_None;
+  }
+
  	/** It will return y for a specified x value */
   static PyObject* Function_getY(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		double val = 0.;
 		if(!PyArg_ParseTuple(	args,"d:",&val)){
 			error("pyFunction getY(x) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("d",cpp_Function->getY(val));
   }
-  
+
  	/** It will return dy/dx for a specified x value */
   static PyObject* Function_getYP(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		double val = 0.;
 		if(!PyArg_ParseTuple(	args,"d:",&val)){
 			error("pyFunction getYP(x) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("d",cpp_Function->getYP(val));
-  }  
-	
+  }
+
  	/** It will return x for a specified y value */
   static PyObject* Function_getX(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		double val = 0.;
 		if(!PyArg_ParseTuple(	args,"d:",&val)){
 			error("pyFunction getX(y) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("d",cpp_Function->getX(val));
   }
-	
+
  	/** It will return x for a specified y value */
   static PyObject* Function_getYErr(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		double val = 0.;
 		if(!PyArg_ParseTuple(	args,"d:",&val)){
 			error("pyFunction getYErr(y) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("d",cpp_Function->getYErr(val));
   }
-	
+
  	/** It will set the constant step flag to 1 if it is possible */
   static PyObject* Function_setConstStep(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		int inf = -1;
 		if(!PyArg_ParseTuple(	args,"i:",&inf)){
 			error("pyFunction setConstStep(inf) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("i",cpp_Function->setConstStep(inf));
-  }	
-	
+  }
+
  	/** It will return 1 if the step is const and 0 otherwise */
   static PyObject* Function_isStepConst(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		return Py_BuildValue("i",cpp_Function->isStepConst());
-  }	
-	
+  }
+
   /** It will return the constant step tolerance for x variable */
   static PyObject* Function_getStepEps(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		return Py_BuildValue("d",cpp_Function->getStepEps());
   }
-  
+
   /** It will set the constant step tolerance for x variable */
   static PyObject* Function_setStepEps(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
@@ -221,8 +221,8 @@ extern "C" {
 		}
 		cpp_Function->setStepEps(eps);
 		return Py_BuildValue("d",cpp_Function->getStepEps());
-  } 
-  
+  }
+
  	/** It will build the reverse Function if it is possible and return 1 or 0 */
   static PyObject* Function_setInverse(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
@@ -235,12 +235,12 @@ extern "C" {
 			PyObject* pyORBIT_Function_Type = getOrbitUtilsType("Function");
 			if(!PyObject_IsInstance(pyF,pyORBIT_Function_Type)){
 				error("pyFunction - setInverse(pyFunction F) - pyFunction parameter is needed.");
-			}			
+			}
 			rf= (Function*) ((pyORBIT_Object*) pyF)->cpp_obj;
 			inf = cpp_Function->setInverse(rf);
 		}
 		return Py_BuildValue("i",inf);
-  }	
+  }
 
   //Prints Function into the std::cout stream or file
   static PyObject* Function_dump(PyObject *self, PyObject *args){
@@ -265,13 +265,13 @@ extern "C" {
     }
     Py_INCREF(Py_None);
     return Py_None;
-  }	
-	
+  }
+
  	/** It will return 1 if it is success and 0 otherwise */
   static PyObject* Function_normalize(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		return Py_BuildValue("i",cpp_Function->normalize());
-  }	
+  }
 
   //-----------------------------------------------------
   //destructor for python Function class (__del__ method).
@@ -281,7 +281,7 @@ extern "C" {
 		delete ((Function*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python Function wrapper class
 	// they will be vailable from python level
   static PyMethodDef FunctionClassMethods[] = {
@@ -311,13 +311,13 @@ extern "C" {
  		{ "normalize",	   Function_normalize,    METH_VARARGS,"It will return 1 if it is success and 0 otherwise"},
     {NULL}
   };
-	
+
 	// defenition of the memebers of the python Function wrapper class
 	// they will be vailable from python level
 	static PyMemberDef FunctionClassMembers [] = {
 		{NULL}
 	};
-	
+
 	//new python Function wrapper type definition
 	static PyTypeObject pyORBIT_Function_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -358,10 +358,10 @@ extern "C" {
 		(initproc) Function_init, /* tp_init */
 		0, /* tp_alloc */
 		Function_new, /* tp_new */
-	};	
-	
-	
-	
+	};
+
+
+
 	//--------------------------------------------------
 	//Initialization function of the pyFunction class
 	//--------------------------------------------------
@@ -369,7 +369,7 @@ extern "C" {
 		if (PyType_Ready(&pyORBIT_Function_Type) < 0) return;
 		Py_INCREF(&pyORBIT_Function_Type);
 		PyModule_AddObject(module, "Function", (PyObject *)&pyORBIT_Function_Type);
-		
+
 	}
 
 #ifdef __cplusplus

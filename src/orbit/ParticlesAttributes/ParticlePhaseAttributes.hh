@@ -10,7 +10,7 @@
 //    05/20/2013
 //
 // DESCRIPTION
-//    A subclass of the particle attributes class. 
+//    A subclass of the particle attributes class.
 //
 ///////////////////////////////////////////////////////////////////////////
 #ifndef PARTICLEPHASEATTRIBUTES_HH_
@@ -26,7 +26,7 @@
 class ParticlePhaseAttributes : public ParticleAttributes
 {
 public:
-	
+
 	/** This Attribute class contains additional properties of particle phases.
 	*/
 	ParticlePhaseAttributes(Bunch* bunch);

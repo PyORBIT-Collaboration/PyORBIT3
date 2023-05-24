@@ -1,5 +1,5 @@
 """
-The AccNode subclass that represents a transport 7x7 matrix in a MATRIX_Lattice instance. 
+The AccNode subclass that represents a transport 7x7 matrix in a MATRIX_Lattice instance.
 """
 
 # import general accelerator elements and lattice

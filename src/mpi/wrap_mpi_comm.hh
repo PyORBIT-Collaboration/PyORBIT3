@@ -14,11 +14,11 @@ extern "C" {
 
   namespace wrap_orbit_mpi_comm{
     void init_orbit_mpi_comm(PyObject* module);
-	  
-		//The function that will be exposed as C/C++ API for MPI_Comm		
+
+		//The function that will be exposed as C/C++ API for MPI_Comm
 		pyORBIT_MPI_Comm* newMPI_Comm();
 		void freeMPI_Comm(pyORBIT_MPI_Comm* pyMPI_Comm);
-		
+
 		//Returns the type object for the specified name, like MPI_Comm
 		PyObject* getMPI_CommType(const char* name);
   }

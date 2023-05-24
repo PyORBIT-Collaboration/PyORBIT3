@@ -12,4 +12,3 @@ namespace wrap_teapotbase
 #ifdef __cplusplus
 }
 #endif
-

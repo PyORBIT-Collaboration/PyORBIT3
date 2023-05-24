@@ -10,8 +10,8 @@
 //    07/01/2005
 //
 // DESCRIPTION
-//    BufferStore class - singleton to keep references 
-//    to integer, double, and char arrays that will be used in 
+//    BufferStore class - singleton to keep references
+//    to integer, double, and char arrays that will be used in
 //    parallel exchanges.
 //
 /////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ BufferStore::BufferStore()
   dbl_size = (int* ) malloc (sizeof(int));
   dbl_size[0] = 1;
 	dbl_in_use = (int* ) malloc (sizeof(int));
-	dbl_in_use[0] = 0;	
+	dbl_in_use[0] = 0;
   nDbl = 1;
 
 
@@ -50,7 +50,7 @@ BufferStore::BufferStore()
   char_size = (int* ) malloc (sizeof(int));
   char_size[0] = 1;
 	char_in_use = (int* ) malloc (sizeof(int));
-	char_in_use[0] = 0;	
+	char_in_use[0] = 0;
   nChar = 1;
 }
 
@@ -62,19 +62,19 @@ BufferStore::~BufferStore()
   free(int_data);
   free(int_size);
 	free(int_in_use);
-  
+
   for(int i = 0; i < nDbl; i++){
     free(dbl_data[i]);
   }
   free(dbl_data);
-  free(dbl_size);  
+  free(dbl_size);
 	free(dbl_in_use);
-	
+
   for(int i = 0; i < nChar; i++){
     free(char_data[i]);
   }
   free(char_data);
-  free(char_size); 
+  free(char_size);
 	free(char_in_use);
 }
 
@@ -99,15 +99,15 @@ double* BufferStore::getDoubleArr(int index, int size){
       dbl_data[i] =  (double *) malloc (size*sizeof(double));
       dbl_size[i] = size;
 			dbl_in_use[i] = 0;
-    } 
-    nDbl = nDbl_new;   
+    }
+    nDbl = nDbl_new;
   }
 
   if(size > dbl_size[index]){
     dbl_data[index] = (double *) realloc(dbl_data[index],size*sizeof(double));
     dbl_size[index] = size;
   }
-	
+
 	dbl_in_use[index] = 1;
   return dbl_data[index];
 }
@@ -148,7 +148,7 @@ int BufferStore::getDoubleArrSize(){
 int BufferStore::isInUseDoubleArr(int index){
 	return dbl_in_use[index];
 }
-	
+
 void BufferStore::setInUseDoubleArr(int index){
 	dbl_in_use[index] = 1;
 }
@@ -171,8 +171,8 @@ int* BufferStore::getIntArr(int index, int size){
       int_data[i] =  (int *) malloc (size*sizeof(int));
       int_size[i] = size;
 			int_in_use[i] = 0;
-    } 
-    nInt = nInt_new;   
+    }
+    nInt = nInt_new;
   }
 
   if(size > int_size[index]){
@@ -186,7 +186,7 @@ int* BufferStore::getIntArr(int index, int size){
 
 int* BufferStore::getFreeIntArr(int &index, int size){
 	int local_size_max = 0;
-	int ind_size_max = -1;	
+	int ind_size_max = -1;
 	for(int i = 0; i < getIntArrSize(); i++){
 		int used = isInUseIntArr(i);
 		int local_size = getIntArrSize(i);
@@ -199,12 +199,12 @@ int* BufferStore::getFreeIntArr(int &index, int size){
 				local_size_max = local_size;
 				ind_size_max = i;
 			}
-		}		
+		}
 	}
 	if(ind_size_max >= 0){
 		index = ind_size_max;
 		return getIntArr(ind_size_max,size);
-	}	
+	}
 	index = getIntArrSize();
 	return getIntArr(index,size);
 }
@@ -220,7 +220,7 @@ int BufferStore::getIntArrSize(){
 int BufferStore::isInUseIntArr(int index){
 	return int_in_use[index];
 }
-	
+
 void BufferStore::setInUseIntArr(int index){
 	int_in_use[index] = 1;
 }
@@ -243,15 +243,15 @@ char* BufferStore::getCharArr(int index, int size){
       char_data[i] =  (char *) malloc (size*sizeof(char));
       char_size[i] = size;
 			char_in_use[i] = 0;
-    } 
-    nChar = nChar_new;   
+    }
+    nChar = nChar_new;
   }
 
   if(size > int_size[index]){
     char_data[index] = (char *) realloc(char_data[index],size*sizeof(char));
     char_size[index] = size;
   }
-	
+
 	char_in_use[index] = 1;
   return char_data[index];
 }
@@ -279,7 +279,7 @@ int BufferStore::getCharArrSize(){
 int BufferStore::isInUseCharArr(int index){
 	return char_in_use[index];
 }
-	
+
 void BufferStore::setInUseCharArr(int index){
 	char_in_use[index] = 1;
 }
@@ -287,5 +287,3 @@ void BufferStore::setInUseCharArr(int index){
 void BufferStore::setUnusedCharArr(int index){
 	char_in_use[index] = 0;
 }
-
-

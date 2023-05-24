@@ -72,68 +72,68 @@ void Foil::traverseFoilSimpleScatter(Bunch* bunch){
 	double pInj0;
 	long idum = (unsigned)time(0);
 	idum = -idum;
-		
+
 	int foil_flag = 0;
 	double length = thick_ / (1.0e3 * OrbitUtils::get_rho(ma_));
 	double zrl = 0.0;
 	double random1 = 0;
-	
+
     // Momentum in g*cm/sec
 	SyncPart* syncPart = bunch->getSyncPart();
 	pInj0 = 1.6726e-22 * syncPart->getMass() / OrbitConst::mass_proton *
             syncPart->getBeta() * syncPart->getGamma() * OrbitConst::c;
-	
+
     // Thomas-Fermi atom radius (cm):
-	
+
     double TFRadius = muScatter *  BohrRadius * pow(OrbitUtils::get_z(ma_), -0.33333);
-	
+
     // Minimum scattering angle:
-	
+
     double thetaScatMin =  hBar / (pInj0 * TFRadius);
-	
+
     // Theta max as per Jackson (13.102)
-	
+
     double thetaScatMax = 274.0 * emass * 100.0 * OrbitConst::c /
 	(pInj0 * pow(OrbitUtils::get_a(ma_), 0.33333));
-	
+
     double pv = 1.e2 * pInj0 * syncPart->getBeta() * OrbitConst::c;
     double term = OrbitUtils::get_z(ma_) * echarge * echarge / pv;
     double sigmacoul = 4*OrbitConst::PI * term * term / (thetaScatMin * thetaScatMin);
-	
+
     // Scattering area per area
-	
+
     double nscatters = nAvogadro * (OrbitUtils::get_rho(ma_)/1000.0) /
 	OrbitUtils::get_a(ma_) * length * sigmacoul;
-	
+
     // Mean free path
-	
+
     double lscatter = length/nscatters;
 	bunch->compress();
 	int nParts = bunch->getSize();
 	double** part_coord_arr = bunch->coordArr();
-	
+
 	for(int ip = 0; ip < nParts; ip++){
-		
+
 		foil_flag = checkFoilFlag(part_coord_arr[ip][0], part_coord_arr[ip][2]);
-		
+
 		//If in the foil, tally the hit and start tracking
 		if(foil_flag == 1) {
-			nHits++;	
+			nHits++;
 			zrl = length;  // distance remaining in foil in cm//
 			double thetaX = 0.;
 			double thetaY = 0.;
-			
+
 			// Generate interaction points until particle exits foil
-			
+
 			while (zrl >= 0.0)
 			{
 				random1 = Random::ran1(idum);
 				//cout << "idum "<<idum<<"\n";
 				zrl += lscatter * log(random1);
 				if(zrl < 0.0) break; // exit foil
-				
+
 				// Generate random angles
-				
+
 				random1 = Random::ran1(idum);
 				double phi = 2*OrbitConst::PI * random1;
 				random1 = Random::ran1(idum);
@@ -150,7 +150,7 @@ void Foil::traverseFoilSimpleScatter(Bunch* bunch){
 
 }
 
-	
+
 ///////////////////////////////////////////////////////////////////////////
 //
 // NAME
@@ -162,7 +162,7 @@ void Foil::traverseFoilSimpleScatter(Bunch* bunch){
 //
 // PARAMETERS
 //	Bunch - The particle bunch
-//  LostBunch 
+//  LostBunch
 //
 // RETURNS
 //   int.
@@ -178,9 +178,9 @@ void Foil::traverseFoilFullScatter(Bunch* bunch, Bunch* lostbunch){
 	double t, dp_x=0.0, dp_y=0.0, thx = 0.0, thy = 0.0;
 	long idum = (unsigned)time(0);
 	idum = -idum;
-	
-	SyncPart* syncPart = bunch->getSyncPart();	
-	
+
+	SyncPart* syncPart = bunch->getSyncPart();
+
 	double z = OrbitUtils::get_z(ma_);
 	double a = OrbitUtils::get_a(ma_);
 	double density = OrbitUtils::get_rho(ma_);
@@ -190,25 +190,25 @@ void Foil::traverseFoilFullScatter(Bunch* bunch, Bunch* lostbunch){
 	length = thick_ / (1.0e5 * density);
 	length_ = length;
 	dlength = length * 1.0e-4;
-	
+
 	bunch->compress();
 	double m_size = 0.;
 	int nParts = bunch->getSize();
 	double** part_coord_arr = bunch->coordArr();
-	
+
 	for(int ip = 0; ip < nParts; ip++){
-	
+
 		int step = 0;
 		zrl = length;
 		foil_flag = checkFoilFlag(part_coord_arr[ip][0], part_coord_arr[ip][2]);
-		
+
 		while(zrl > 0){
 			//If in the foil, tally the hit and start tracking
 			if(foil_flag == 1) {
-				nHits++;	
+				nHits++;
 				directionfac = getDirection(part_coord_arr[ip], syncPart);
 				rl = zrl * directionfac;
-								
+
 				double beta = Foil::getBeta(part_coord_arr[ip], syncPart);
 				double p = Foil::getP(part_coord_arr[ip], syncPart);
 				double theta = 0.0136 / (beta * p) / sqrt(radlengthfac);
@@ -220,35 +220,35 @@ void Foil::traverseFoilFullScatter(Bunch* bunch, Bunch* lostbunch){
 				double totcross = ecross + icross + rcross;
 				meanfreepath = OrbitUtils::get_a(ma_) / ((nAvogadro * 1e3) * density  * (totcross * 1.0e-28));
 				stepsize = -meanfreepath * log(Random::ran1(idum));
-			
+
 				if(stepsize > rl){ //Take the step but no nuclear scattering event
 					stepsize = rl + dlength;
-					Foil::takeStep(bunch, lostbunch, part_coord_arr[ip], syncPart, z, a, density, 
+					Foil::takeStep(bunch, lostbunch, part_coord_arr[ip], syncPart, z, a, density,
 								   idum, stepsize, zrl, rl, foil_flag, ip);
-					
+
 				}
 				if(stepsize <= rl) { //Take the step and allow nuclear scatter
 					Foil::takeStep(bunch, lostbunch, part_coord_arr[ip], syncPart, z, a, density, idum, stepsize, zrl, rl, foil_flag, ip);
-				
+
 					//If it still exists after MCS and energy loss, nuclear scatter
 					if(foil_flag==1 && zrl > 0){
 						beta = Foil::getBeta(part_coord_arr[ip], syncPart);
 						p = Foil::getP(part_coord_arr[ip], syncPart);
 						theta = 0.0136 / (beta * p) / sqrt(radlengthfac);
 						pfac = Foil::getPFactor(part_coord_arr[ip], syncPart);
-						
+
 						ecross = OrbitUtils::get_elastic_crosssection((syncPart->getEnergy() + part_coord_arr[ip][5]), ma_);
 						icross = OrbitUtils::get_inelastic_crosssection((syncPart->getEnergy() + part_coord_arr[ip][5]), ma_);
 						rcross = MaterialInteractions::ruthScattJackson(stepsize, z, a, density, idum, beta, 0, pfac, thx, thy);
-						
+
 						totcross = ecross + icross + rcross;
-						
+
 						double e_frac = ecross/totcross;
 						double i_frac = icross/totcross;
 						double r_frac = rcross/totcross;
-						
+
 						choice = Random::ran1(idum);
-						
+
 						// Nuclear Elastic Scattering
 						if((choice >= 0.) && (choice <= e_frac))
 						{
@@ -265,28 +265,28 @@ void Foil::traverseFoilFullScatter(Bunch* bunch, Bunch* lostbunch){
 							part_coord_arr[ip][1] += dp_x * pfac;
 							part_coord_arr[ip][3] += dp_y * pfac;
 						}
-						
+
 						// Rutherford Coulomb scattering
 						if((choice > e_frac) && (choice <= (1 - i_frac)))
 						{
 							rcross = MaterialInteractions::ruthScattJackson(stepsize, z, a, density, idum, beta, 1, pfac, thx, thy);
-							
+
 							double xpfac = part_coord_arr[ip][1] / pfac;
 							double ypfac = part_coord_arr[ip][3] / pfac;
-							
+
 							double anglex = atan(xpfac) + thx;
 							double angley = atan(ypfac) + thy;
-							
+
 							part_coord_arr[ip][1] = tan(anglex) * pfac;
 							part_coord_arr[ip][3] = tan(angley) * pfac;
 						}
-						
+
 						// Nuclear Inelastic absorption
 						if( (choice > (1.-i_frac)) && (choice <= 1.))
 						{
 							loseParticle(bunch, lostbunch, ip, nLost, foil_flag, zrl);
 						}
-						
+
 					}
 				}
 			}
@@ -297,7 +297,7 @@ void Foil::traverseFoilFullScatter(Bunch* bunch, Bunch* lostbunch){
 			}
 		}
 	}
-	
+
 	//Update synchronous particle, compress bunch
 	bunch->compress();
 	double newtime = syncPart->getTime() + length/( syncPart->getBeta()*OrbitConst::c );
@@ -311,7 +311,7 @@ void Foil::traverseFoilFullScatter(Bunch* bunch, Bunch* lostbunch){
 //   Foil::checkFoilFlag
 //
 // DESCRIPTION
-//   Checks to see if a particle is located inside the foil region.  
+//   Checks to see if a particle is located inside the foil region.
 //	 Returns 1 if the particle is in the Foil, 0 if it isn't.
 //
 // PARAMETERS
@@ -340,7 +340,7 @@ int Foil::checkFoilFlag(double x, double y){
 //   Drift Particle
 //
 // DESCRIPTION
-//   Drifts a single particle. 
+//   Drifts a single particle.
 //
 // PARAMETERS
 //   arr = reference to the particle coordinate array
@@ -357,7 +357,7 @@ void Foil::driftParticle(double* arr, SyncPart* syncpart, double length)
     double KNL, phifac, dp_p;
     double gamma2i = 1.0 / (syncpart->getGamma() * syncpart->getGamma());
     double dp_p_coeff = 1.0 / (syncpart->getMomentum() * syncpart->getBeta());
-	
+
     dp_p = arr[5] * dp_p_coeff;
     KNL  = 1.0 / (1.0 + dp_p);
     arr[0] += KNL * length * arr[1];
@@ -388,15 +388,15 @@ void Foil::driftParticle(double* arr, SyncPart* syncpart, double length)
 ///////////////////////////////////////////////////////////////////////////
 
 double Foil::getDirection(double* coords, SyncPart* syncpart){
-	
+
 	double pfac = Foil::getPFactor(coords, syncpart);
-	
+
 	double xpfac = coords[1] / pfac;
 	double ypfac = coords[3] / pfac;
 	double directionfac = sqrt(1.0 + xpfac * xpfac + ypfac * ypfac);
-	
+
 	return directionfac;
-	
+
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -419,7 +419,7 @@ double Foil::getDirection(double* coords, SyncPart* syncpart){
 ///////////////////////////////////////////////////////////////////////////
 
 double Foil::getPFactor(double* coords, SyncPart* syncpart){
-	
+
 	double M = syncpart->getMass();
 	double T = syncpart->getEnergy();
 	double P_sync = syncpart->energyToMomentum(T);
@@ -428,9 +428,9 @@ double Foil::getPFactor(double* coords, SyncPart* syncpart){
 	double P_part = sqrt(E_part*E_part - M*M);
 	double dp = (P_part - P_sync)/P_sync;
 	double pfac = 1.0 + dp;
-	
+
 	return pfac;
-	
+
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -453,7 +453,7 @@ double Foil::getPFactor(double* coords, SyncPart* syncpart){
 ///////////////////////////////////////////////////////////////////////////
 
 double Foil::getBeta(double* coords, SyncPart* syncpart){
-	
+
 	double T = syncpart->getEnergy();
 	double M = syncpart->getMass();
 	double T_part = T + coords[5];
@@ -461,7 +461,7 @@ double Foil::getBeta(double* coords, SyncPart* syncpart){
 	double beta = sqrt((E_part*E_part - M * M))/E_part;
 
 	return beta;
-	
+
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -490,9 +490,9 @@ double Foil::getP(double* coords, SyncPart* syncpart){
 	double T_part = T + coords[5];
 	double E_part = T_part + M;
 	double p_part = sqrt((E_part*E_part - M * M));
-	
+
 	return p_part;
-	
+
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -522,19 +522,19 @@ double Foil::getP(double* coords, SyncPart* syncpart){
 //   Nothing
 //
 ///////////////////////////////////////////////////////////////////////////
-	
+
 void Foil::takeStep(Bunch* bunch, Bunch* lostbunch, double* coords, SyncPart* syncpart, double z, double a, double density, long& idum, double stepsize, double& zrl, double& rl, int& foil_flag, int ip){
 
 	double beta = Foil::getBeta(coords, syncpart);
 	double p = Foil::getP(coords, syncpart);
 	double pfac = Foil::getPFactor(coords, syncpart);
-	
+
 	MaterialInteractions::mcsJackson(stepsize, z, a, density, idum, beta, pfac, coords[0], coords[2], coords[1], coords[3]);
 	double dE = MaterialInteractions::ionEnergyLoss(beta, z, a);
 	dE = -dE * density * stepsize; //Factors for units m->cm and MeV->GeV
 	coords[5] += dE;
-	
-	if((coords[5] + syncpart->getEnergy()) < 0.02){ 
+
+	if((coords[5] + syncpart->getEnergy()) < 0.02){
 		Foil::loseParticle(bunch, lostbunch, ip, nLost, foil_flag, zrl);
 	}
 	else {
@@ -544,7 +544,7 @@ void Foil::takeStep(Bunch* bunch, Bunch* lostbunch, double* coords, SyncPart* sy
 		foil_flag = checkFoilFlag(coords[0], coords[2]);
 	}
 }
-	
+
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -567,21 +567,21 @@ void Foil::takeStep(Bunch* bunch, Bunch* lostbunch, double* coords, SyncPart* sy
 //   nothing.
 //
 ///////////////////////////////////////////////////////////////////////////
-	
+
 void Foil::loseParticle(Bunch* bunch, Bunch* lostbunch, int ip, int& nLost, int& foil_flag, double& zrl){
 
 	double** coords = bunch->coordArr();
 	lostbunch->addParticle(coords[ip][0], coords[ip][1], coords[ip][2], coords[ip][3], coords[ip][4], coords[ip][5]);
 	int lost_part_ind = lostbunch->getSize() - 1;
-	
+
 	if (bunch->hasParticleAttributes("ParticleIdNumber") > 0) {
 		if (lostbunch->hasParticleAttributes("ParticleIdNumber") <= 0) {
 			std::map<std::string,double> part_attr_dict;
 			lostbunch->addParticleAttributes("ParticleIdNumber",part_attr_dict);
-		}	
+		}
 		lostbunch->getParticleAttributes("ParticleIdNumber")->attValue(lost_part_ind, 0) = bunch->getParticleAttributes("ParticleIdNumber")->attValue(ip,0);
 	}
-	
+
 	if (bunch->hasParticleAttributes("ParticleInitialCoordinates") > 0) {
 		if (lostbunch->hasParticleAttributes("ParticleInitialCoordinates") <= 0) {
 			std::map<std::string,double> part_attr_dict;
@@ -603,13 +603,10 @@ void Foil::loseParticle(Bunch* bunch, Bunch* lostbunch, int ip, int& nLost, int&
 			lostbunch->getParticleAttributes("TurnNumber")->attValue(lostbunch->getSize() - 1, 0) = turn;
 		}
 	}
-	
+
 	bunch->deleteParticleFast(ip);
 	nLost++;
 	foil_flag = 0;
 	zrl = -1.;
-	
-}
-	
-	
 
+}

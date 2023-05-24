@@ -22,8 +22,8 @@
 // PARAMETERS
 //   Shape can be the intergers 1, 2, or 3. 1 is a circular aperture, 2 is
 //   an elipital aperture, and 3 is a rectangular aperture. a is either the
-//   radius of the circle or half the length of the aperture in the x 
-//   diminsion. b is half the length of the aperture in the y diminsion. 
+//   radius of the circle or half the length of the aperture in the x
+//   diminsion. b is half the length of the aperture in the y diminsion.
 //   c is the x offset and d is the y offset of the aperture.
 //
 // RETURNS
@@ -42,7 +42,7 @@ Aperture::Aperture(int shape, double a, double b, double c, double d, double pos
 }
 
 void Aperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
-	         
+
   //Removes particle if located outside aperture from main bunch and adds it to the lost bunch.
 
 	int j = 1, coll_flag = 0, lastArg, trackit;
@@ -51,53 +51,53 @@ void Aperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
 	double c = c_;
 	double d = d_;
 	int shape = shape_;
-       
+
 	bunch->compress();
 	if(lostbunch != NULL) lostbunch->compress();
 	double m_size = 0.;
 	int nParts = bunch->getSize();
 	double** coord = bunch->coordArr();
-	
-	
+
+
 	ParticleAttributes* lostPartAttr = NULL;
-	
+
 	ParticleAttributes* partIdNumbAttr = NULL;
 	ParticleAttributes* partIdNumbInitAttr = NULL;
-	
+
 	ParticleAttributes* partInitCoordsAttr = NULL;
 	ParticleAttributes* partInitCoordsInitAttr = NULL;
-	
+
 	ParticleAttributes* partMacroAttr = NULL;
-	ParticleAttributes* partMacroInitAttr = NULL;	
-	
+	ParticleAttributes* partMacroInitAttr = NULL;
+
 	ParticleAttributes* partTurnNumberAttr = NULL;
 	double turn = 0.;
-	
+
 	if(lostbunch != NULL) {
 		if(lostbunch->hasParticleAttributes("LostParticleAttributes") <= 0){
 			std::map<std::string,double> params_dict;
 			lostbunch->addParticleAttributes("LostParticleAttributes",params_dict);
 		}
 		lostPartAttr = lostbunch->getParticleAttributes("LostParticleAttributes");
-		
+
 		if(bunch->hasParticleAttributes("ParticleIdNumber") > 0){
 			partIdNumbInitAttr = bunch->getParticleAttributes("ParticleIdNumber");
 			if(lostbunch->hasParticleAttributes("ParticleIdNumber") <= 0){
 				std::map<std::string,double> params_dict;
 				lostbunch->addParticleAttributes("ParticleIdNumber",params_dict);
-			}	
+			}
 			partIdNumbAttr = lostbunch->getParticleAttributes("ParticleIdNumber");
 		}
-		
+
 		if(bunch->hasParticleAttributes("ParticleInitialCoordinates") > 0){
 			partInitCoordsInitAttr = bunch->getParticleAttributes("ParticleInitialCoordinates");
 			if(lostbunch->hasParticleAttributes("ParticleInitialCoordinates") <= 0){
 				std::map<std::string,double> params_dict;
 				lostbunch->addParticleAttributes("ParticleInitialCoordinates",params_dict);
 			}
-			partInitCoordsAttr = lostbunch->getParticleAttributes("ParticleInitialCoordinates");			
-		}		
-		
+			partInitCoordsAttr = lostbunch->getParticleAttributes("ParticleInitialCoordinates");
+		}
+
 		if(bunch->hasParticleAttributes("macrosize") > 0){
 			partMacroInitAttr = bunch->getParticleAttributes("macrosize");
 			if(lostbunch->hasParticleAttributes("macrosize") <= 0){
@@ -106,7 +106,7 @@ void Aperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
 			}
 			partMacroAttr = lostbunch->getParticleAttributes("macrosize");
 		}
-		
+
 		if (bunch->hasParticleAttributes("TurnNumber") > 0) {
 			if (lostbunch->hasParticleAttributes("TurnNumber") <= 0) {
 				std::map<std::string,double> part_attr_dict;
@@ -116,10 +116,10 @@ void Aperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
 			turn = 1.0*bunch->getBunchAttributeInt(attr_name_str);
 			partTurnNumberAttr = lostbunch->getParticleAttributes("TurnNumber");
 		}
-		
+
 		lostbunch->setMacroSize(bunch->getMacroSize());
 	}
-	
+
 	// shape = 1              ===circular aperture===
 	if(shape == 1){
 	  for (int count = 0; count < nParts; count++){
@@ -147,7 +147,7 @@ void Aperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
 	  	}
 	  }
 	}
-	
+
 	// shape = 2              ===elipital aperture===
 	if(shape == 2){
 	  for (int count = 0; count < nParts; count++){
@@ -175,7 +175,7 @@ void Aperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
 	  	}
 	  }
 	}
-	
+
 	// shape = 3              ===rectangular aperture===
 	if(shape == 3){
 	  for (int count = 0; count < nParts; count++){
@@ -203,7 +203,7 @@ void Aperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
 	  	}
 	  }
 	}
-				
+
 	//Update synchronous particle, compress bunch
 	bunch->compress();
 }
@@ -211,6 +211,3 @@ void Aperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
 void Aperture::setPosition(double position){
 	pos_ = position;
 }
-
-	
-

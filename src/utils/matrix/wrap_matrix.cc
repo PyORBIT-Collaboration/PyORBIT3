@@ -43,7 +43,7 @@ extern "C" {
 			PyObject* pyIn;
 			if(!PyArg_ParseTuple(	args,"O:__init__",&pyIn)){
 				error("PyMatrix - Matrix(matrix_parent) - constructor needs a parent matrix.");
-			}		
+			}
 			PyObject* pyORBIT_Matrix_Type = getOrbitUtilsType("Matrix");
 			if(!PyObject_IsInstance(pyIn,pyORBIT_Matrix_Type)){
 				error("PyMatrix - Matrix(matrix_parent) - constructor needs a parent matrix.");
@@ -58,7 +58,7 @@ extern "C" {
 			int n,m;
 			if(!PyArg_ParseTuple(	args,"ii:__init__",&n,&m)){
 				error("PyMatrix - Matrix(n,m) - a maririx size is needed.");
-			}		
+			}
 			self->cpp_obj = new Matrix(n,m);
 			((Matrix*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 		}
@@ -74,7 +74,7 @@ extern "C" {
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 
-	//Sets or returns the value of the matrix element with (i,j) raw and column. 
+	//Sets or returns the value of the matrix element with (i,j) raw and column.
   static PyObject* Matrix_get_set(PyObject *self, PyObject *args){
     //if nVars == 2 this is get value
     //if nVars == 3 this is set value
@@ -85,12 +85,12 @@ extern "C" {
 		Matrix* cpp_Matrix = (Matrix*) pyMatrix->cpp_obj;
 		if(!PyArg_ParseTuple(	args,"ii|d:set",&i,&j,&val)){
 			error("PyMatrix - get/set(i,j[,value]) - something is missing.");
-		}	
+		}
 		if(i >= cpp_Matrix->rows() || j >= cpp_Matrix->columns() || i < 0 || j < 0){
 			error("PyMatrix - get/set(i,j[,value]) - wrong i or j.");
-		}				
+		}
     if(nVars == 2 ||  nVars == 3){
-      if(nVars == 2){			
+      if(nVars == 2){
         val = cpp_Matrix->value(i,j);
       }
       else{
@@ -126,9 +126,9 @@ extern "C" {
 			error("PyMatrix. Cannot copy the matrix.");
 		}
 		Py_DECREF(mod);
-    return pyMatr;	
+    return pyMatr;
   }
-	
+
 	//  copyTo() - copy values of the Matrix into another one
   static PyObject* Matrix_copyTo(PyObject *self, PyObject *args){
     pyORBIT_Object* pyMatrix = (pyORBIT_Object*) self;
@@ -136,33 +136,33 @@ extern "C" {
 		PyObject *pyMatr;
 		if(!PyArg_ParseTuple(args,"O:copyTo",&pyMatr)){
 			error("PyMatrix - copyTo(matrix) - the target matrix is needed.");
-		}			
+		}
 		pyORBIT_Object* pyMatrix_target = (pyORBIT_Object*) pyMatr;
 		Matrix* cpp_Matrix_target = (Matrix*) pyMatrix_target->cpp_obj;
 		int res = cpp_Matrix->copyTo(cpp_Matrix_target);
-    return Py_BuildValue("i",res);	
+    return Py_BuildValue("i",res);
   }
-	
+
 	//  transpose() - transpose the matrix on the place
   static PyObject* Matrix_transpose(PyObject *self, PyObject *args){
 		((Matrix*) ((pyORBIT_Object*) self)->cpp_obj)->transpose();
 		Py_INCREF(Py_None);
-    return Py_None;	
-  }	
-	
+    return Py_None;
+  }
+
 	//  zero() - sets all elements of the matrix to 0
   static PyObject* Matrix_zero(PyObject *self, PyObject *args){
 		((Matrix*) ((pyORBIT_Object*) self)->cpp_obj)->zero();
 		Py_INCREF(Py_None);
-    return Py_None;	
-  }	
-	
+    return Py_None;
+  }
+
 	//  unit() - makes the matrix equals to a unit matrix
   static PyObject* Matrix_unit(PyObject *self, PyObject *args){
 		int res = ((Matrix*) ((pyORBIT_Object*) self)->cpp_obj)->unit();
-    return Py_BuildValue("i",res);;	
-  }		
-	
+    return Py_BuildValue("i",res);;
+  }
+
 	//  invert() - returns the inverted matrix, or None
   static PyObject* Matrix_invert(PyObject *self, PyObject *args){
 		PyObject* mod = PyImport_ImportModule("orbit_utils");
@@ -173,28 +173,28 @@ extern "C" {
 		if(res == 0){
 			Py_DECREF(pyMtrx);
 			Py_INCREF(Py_None);
-			return Py_None;				
+			return Py_None;
 		}
 		return pyMtrx;
-  }	
-	
-	//  add() - adds a number or matrix to the this matrix. Returns a new matrix 
+  }
+
+	//  add() - adds a number or matrix to the this matrix. Returns a new matrix
   static PyObject* Matrix_add(PyObject *self, PyObject *args){
 		PyObject *pyIn;
 		if(!PyArg_ParseTuple(args,"O:add",&pyIn)){
 			error("PyMatrix - add(number or matrix) - input parameter is needed.");
-		}			
+		}
 		if(PyNumber_Check(pyIn)){
 			double val;
 			if(!PyArg_ParseTuple(args,"d:add",&val)){
 				error("PyMatrix - add(number) - input parameter is needed.");
-			}		
+			}
 			PyObject* mod = PyImport_ImportModule("orbit_utils");
 			PyObject* pyMtrx = PyObject_CallMethod(mod,const_cast<char*>("Matrix"),const_cast<char*>("O"),self);
 			Matrix* cpp_mtrx = (Matrix*) ((pyORBIT_Object*) pyMtrx)->cpp_obj;
 			cpp_mtrx->add(val);
 			Py_DECREF(mod);
-			return pyMtrx;			
+			return pyMtrx;
 		}
 		PyObject* pyORBIT_Matrix_Type = getOrbitUtilsType("Matrix");
 		if(PyObject_IsInstance(pyIn,pyORBIT_Matrix_Type)){
@@ -204,25 +204,25 @@ extern "C" {
 			Py_DECREF(mod);
 			cpp_mtrx->add((Matrix*)(((pyORBIT_Object*) pyIn)->cpp_obj));
 			return pyMtrx;
-		}				
-		error("PyPhaseMaatrix - add(number or matrix) - input parameter is wrong.");	
+		}
+		error("PyPhaseMaatrix - add(number or matrix) - input parameter is wrong.");
 		Py_INCREF(Py_None);
-    return Py_None;		
+    return Py_None;
   }
-	
-	//  mult() - multiplies a number,matrix or vector to the this matrix. Returns a new matrix. 
+
+	//  mult() - multiplies a number,matrix or vector to the this matrix. Returns a new matrix.
   static PyObject* Matrix_mult(PyObject *self, PyObject *args){
     pyORBIT_Object* pyMatrix = (pyORBIT_Object*) self;
 		Matrix* cpp_Matrix = (Matrix*) pyMatrix->cpp_obj;
 		PyObject *pyIn;
 		if(!PyArg_ParseTuple(args,"O:mult",&pyIn)){
 			error("PyMatrix - mult(number,matrix, or vector) - input parameter is needed.");
-		}			
+		}
 		if(PyNumber_Check(pyIn)){
 			double val;
 			if(!PyArg_ParseTuple(args,"d:mult",&val)){
 				error("PyMatrix - mult(number) - input parameter is needed.");
-			}		
+			}
 			PyObject* mod = PyImport_ImportModule("orbit_utils");
 			PyObject* pyMtrx = PyObject_CallMethod(mod,const_cast<char*>("Matrix"),const_cast<char*>("O"),self);
 			Matrix* cpp_mtrx = (Matrix*) ((pyORBIT_Object*) pyMtrx)->cpp_obj;
@@ -238,7 +238,7 @@ extern "C" {
 			Py_DECREF(mod);
 			cpp_mtrx->mult((Matrix*)(((pyORBIT_Object*) pyIn)->cpp_obj));
 			return pyMtrx;
-		}		
+		}
 		PyObject* pyORBIT_PhaseVector_Type = getOrbitUtilsType("PhaseVector");
 		if(PyObject_IsInstance(pyIn,pyORBIT_PhaseVector_Type)){
 			PhaseVector* cpp_PhaseVector = (PhaseVector*) ((pyORBIT_Object*) pyIn)->cpp_obj;
@@ -251,11 +251,11 @@ extern "C" {
 			Py_DECREF(mod);
 			return pyVctr;
 		}
-		error("PyPhaseMaatrix - mult(number, matrix, or vector) - input parameter is wrong.");	
+		error("PyPhaseMaatrix - mult(number, matrix, or vector) - input parameter is wrong.");
 		Py_INCREF(Py_None);
-    return Py_None;	
-  }	
-	
+    return Py_None;
+  }
+
   //  det() - returns determinant of the matrix
   static PyObject* Matrix_det(PyObject *self, PyObject *args){
     pyORBIT_Object* pyMatrix = (pyORBIT_Object*) self;
@@ -263,26 +263,26 @@ extern "C" {
 		double det;
 		MatrixOperations::det(cpp_Matrix,det);
 		return Py_BuildValue("d",det);
-  } 
-  
-	//  track() - trackiplies a number,matrix or vector to the this matrix. Returns a new matrix. 
+  }
+
+	//  track() - trackiplies a number,matrix or vector to the this matrix. Returns a new matrix.
   static PyObject* Matrix_track(PyObject *self, PyObject *args){
     pyORBIT_Object* pyMatrix = (pyORBIT_Object*) self;
 		Matrix* cpp_Matrix = (Matrix*) pyMatrix->cpp_obj;
 		PyObject *pyIn;
 		if(!PyArg_ParseTuple(args,"O:track",&pyIn)){
 			error("PyMatrix - track(Bunch) - Bunch is needed.");
-		}			
+		}
 		PyObject* pyBunchType = wrap_orbit_bunch::getBunchType("Bunch");
 		if((!PyObject_IsInstance(pyIn,pyBunchType))){
 			error("PyMatrix - track(Bunch) - input parameter is not Bunch");
-		}		
+		}
 		Bunch* bunch = (Bunch*) ((pyORBIT_Object*) pyIn)->cpp_obj;
-		MatrixOperations::track(bunch,cpp_Matrix);	
+		MatrixOperations::track(bunch,cpp_Matrix);
 		Py_INCREF(Py_None);
-    return Py_None;	
-  }	
-	
+    return Py_None;
+  }
+
 	// defenition of the methods of the python Matrix wrapper class
 	// they will be vailable from python level
   static PyMethodDef MatrixClassMethods[] = {

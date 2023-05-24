@@ -25,26 +25,26 @@ extern "C" {
 		if(!PyArg_ParseTuple(	args,"d:bessj0",&x)){
 			error("bessj0(x) - parameter is needed.");
 		}
-		return Py_BuildValue("d",bessj0(x));	
+		return Py_BuildValue("d",bessj0(x));
 	}
-	
+
 	static PyObject* numrecipes_bessj1(PyObject* self, PyObject* args)
 	{
 		double x;
 		if(!PyArg_ParseTuple(	args,"d:bessj1",&x)){
 			error("bessj1(x) - parameter is needed.");
 		}
-		return Py_BuildValue("d",bessj1(x));	
-	}	
-	
+		return Py_BuildValue("d",bessj1(x));
+	}
+
 	static PyObject* numrecipes_bessj(PyObject* self, PyObject* args)
 	{
 		double x;
-		int n;		
+		int n;
 		if(!PyArg_ParseTuple(	args,"id:bessj_n_x",&n,&x)){
 			error("bessj(n,x) - parameters are needed.");
 		}
-		return Py_BuildValue("d",bessj(n,x));	
+		return Py_BuildValue("d",bessj(n,x));
 	}
 
 
@@ -54,29 +54,29 @@ extern "C" {
 		if(!PyArg_ParseTuple(	args,"d:bessi0",&x)){
 			error("bessi0(x) - parameter is needed.");
 		}
-		return Py_BuildValue("d",bessi0(x));	
+		return Py_BuildValue("d",bessi0(x));
 	}
-	
+
 	static PyObject* numrecipes_bessi1(PyObject* self, PyObject* args)
 	{
 		double x;
 		if(!PyArg_ParseTuple(	args,"d:bessi1",&x)){
 			error("bessi1(x) - parameter is needed.");
 		}
-		return Py_BuildValue("d",bessi1(x));	
-	}	
-	
+		return Py_BuildValue("d",bessi1(x));
+	}
+
 	static PyObject* numrecipes_bessi(PyObject* self, PyObject* args)
 	{
 		double x;
-		int n;		
+		int n;
 		if(!PyArg_ParseTuple(	args,"id:bessi_n_x",&n,&x)){
 			error("bessi(n,x) - parameters are needed.");
 		}
-		return Py_BuildValue("d",bessi(n,x));	
+		return Py_BuildValue("d",bessi(n,x));
 	}
-	
-	static PyMethodDef NumrecipesModuleMethods[] = { 
+
+	static PyMethodDef NumrecipesModuleMethods[] = {
 		{"bessi0", numrecipes_bessi0 , METH_VARARGS, "bessi0(x) - I0(x) First kind modified Bessel Function."},
 		{"bessi1", numrecipes_bessi1 , METH_VARARGS, "bessi1(x) - I1(x) First kind modified Bessel Function."},
 		{"bessi",  numrecipes_bessi  , METH_VARARGS, "bessi(n,x) - I(n,x) First kind modified Bessel Function."},
@@ -85,16 +85,16 @@ extern "C" {
 		{"bessj",  numrecipes_bessj  , METH_VARARGS, "bessj(n,x) - J(n,x) First kind Bessel Function."},
 		{NULL, NULL, 0, NULL}        /* Sentinel */
 	};
-  
-	
+
+
 	static struct PyModuleDef cModPyDem =
 	{
 		PyModuleDef_HEAD_INIT,
 		"num_recipes", "Bessel functions implementations from Numerical Recipes.",
 		-1,
 		NumrecipesModuleMethods
-	};   	
-	
+	};
+
 	//--------------------------------------------------
 	//Initialization functions of the numrecipes module
 	//--------------------------------------------------

@@ -26,16 +26,16 @@ from collimator import Collimator
 //   length: length in m
 //   ma:	 material number. (0=carbon, 1=aluminum, 2=iron, 3=copper, 4=tantalum, 5=tungstun,
 //           6=platinum, 7=lead, ma>=8 = black absorber)
-//   densityfac: density factor (for materials mixed with air or water). 1.0 for pure. 
+//   densityfac: density factor (for materials mixed with air or water). 1.0 for pure.
 //   shape:  shape of the collimator: 1=circle, 2=ellipse, 3=one sided
 //           flat, 4=two sided flat, 5=rectangular (outside is collimator),
 //           6=rectangular (inside is collimator).
-//   a:      depending on shape, either (shape = 1) radius, 
-//           (shape = 2) semimajor axis, (shape = 3) distance to 
-//           flat edge, (shape = 4) minimum edge, (shape=5 or 6) 
+//   a:      depending on shape, either (shape = 1) radius,
+//           (shape = 2) semimajor axis, (shape = 3) distance to
+//           flat edge, (shape = 4) minimum edge, (shape=5 or 6)
 //           minimum horizontal edge.
 //   b:      depending on shape, either (1) radius, (2) semimajor axis,
-//           (3) zero  (4) maximum edge (5) (shape=5 or 6) maximum 
+//           (3) zero  (4) maximum edge (5) (shape=5 or 6) maximum
 //           horizontal edge.
 //   c:      minimum vertical edge (used only in shapes 5 or 6)
 //   d:      maximum vertical edge (used only in shapes 5 or 6)

@@ -30,7 +30,7 @@ extern "C" {
 	  -1,
 	  spacechargeMethods
   };
-  
+
   PyMODINIT_FUNC initspacecharge(){
     //create new module
     PyObject* module = PyModule_Create(&cModPyDem);
@@ -49,13 +49,13 @@ extern "C" {
 		wrap_spacecharge::initSpaceChargeCalc2p5D(module);
 		wrap_spacecharge::initSpaceChargeForceCalc2p5D(module);
 		wrap_spacecharge::initSpaceChargeCalc2p5Drb(module);
-		wrap_spacecharge::initSpaceChargeCalcSliceBySlice2D(module);		
+		wrap_spacecharge::initSpaceChargeCalcSliceBySlice2D(module);
 		wrap_spacecharge::initSpaceChargeCalc3D(module);
 		wrap_lspacechargecalc::initLSpaceChargeCalc(module);
 		*/
 		return module;
   }
-	
+
 	PyObject* getSpaceChargeType(const char* name){
 		PyObject* mod = PyImport_ImportModule("spacecharge");
 		PyObject* pyType = PyObject_GetAttrString(mod,name);
@@ -63,7 +63,7 @@ extern "C" {
 		Py_DECREF(pyType);
 		return pyType;
 	}
-		
+
 #ifdef __cplusplus
 }
 #endif

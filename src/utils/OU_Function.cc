@@ -23,7 +23,7 @@
 using namespace OrbitUtils;
 
 Function::Function(): CppPyWrapper(NULL)
-{  
+{
 	x_arr = NULL;
 	y_arr = NULL;
 	err_arr = NULL;
@@ -32,7 +32,7 @@ Function::Function(): CppPyWrapper(NULL)
 
   //default value of the constant step size accuracy for x
   eps_const_step = 1.0e-11;
-  
+
   //MPI stuffs
   rank_MPI = 0;
   size_MPI = 1;
@@ -56,17 +56,17 @@ Function::~Function()
 void Function::resize()
 {
 	int sizeChunk_inner = int( size*0.1);
-	
+
 	if(sizeChunk_inner < sizeChunk) {
 		sizeChunk_inner = sizeChunk;
 	}
-	
+
   double* x_tmp = x_arr;
   double* y_tmp = y_arr;
   double* err_tmp = err_arr;
 
   maxSize += sizeChunk_inner;
-	
+
   x_arr = new double[maxSize];
   y_arr = new double[maxSize];
   err_arr = new double[maxSize];
@@ -76,7 +76,7 @@ void Function::resize()
     y_arr[i] = y_tmp[i];
     err_arr[i] = err_tmp[i];
   }
-	
+
   for(int i = size; i < maxSize; i++){
     x_arr[i] = 0.;
     y_arr[i] = 0.;
@@ -123,8 +123,8 @@ void Function::add(double x, double y, double err)
 		if(x_arr[size-1] < x_arr[size-2]){
 			//the x_arr sorting needed
 			double x_tmp = x_arr[size-1];
-			double y_tmp = y_arr[size-1];	
-			double err_tmp = err_arr[size-1];	
+			double y_tmp = y_arr[size-1];
+			double err_tmp = err_arr[size-1];
 			int ind = 0;
 			if(x_tmp > x_arr[0]){
 				int ind_start = 0;
@@ -143,7 +143,7 @@ void Function::add(double x, double y, double err)
 						finalize("ORBIT Utils Function class: The Function method  add(double x, double y) has unlimited loop. Check data.");
 					}
 				}
-			ind = ind_stop;				
+			ind = ind_stop;
 			}
 			for(int i = size-1; i > ind; i--){
 				x_arr[i] = x_arr[i-1];
@@ -151,8 +151,8 @@ void Function::add(double x, double y, double err)
 				err_arr[i] = err_arr[i-1];
 			}
 			x_arr[ind] = x_tmp;
-			y_arr[ind] = y_tmp; 			
-			err_arr[ind] = err_tmp; 			
+			y_arr[ind] = y_tmp;
+			err_arr[ind] = err_tmp;
 		}
 	}
 }
@@ -198,7 +198,7 @@ double Function::err(int ind)
 double* Function::xArr(){
 	return x_arr;
 }
-		
+
 double* Function::yArr(){
 	return y_arr;
 }
@@ -247,13 +247,13 @@ void Function::cleanMemory()
   xMax = -1.0e+300;
   yMin = 1.0e+300;
   yMax = -1.0e+300;
-	
+
   if(x_arr != NULL) delete [] x_arr;
   if(y_arr != NULL) delete [] y_arr;
   if(err_arr != NULL) delete [] err_arr;
-	
+
   maxSize = sizeChunk;
-	
+
   x_arr = new double[maxSize];
   y_arr = new double[maxSize];
   err_arr = new double[maxSize];
@@ -262,15 +262,15 @@ void Function::cleanMemory()
     x_arr[i] = 0.;
     y_arr[i] = 0.;
     err_arr[i] = 0.;
-  }	
+  }
 }
 
 double Function::getY(double x)
 {
   if(size < 1){
     finalize("ORBIT Utils Function class: The Function method  getY(double x)  (size<1)");
-  }	
-	
+  }
+
   if(x <= xMin) return y_arr[0];
   if(x >= xMax) return y_arr[size-1];
 
@@ -305,7 +305,7 @@ double Function::getY(double x)
 		if(count > 200){
 			finalize("ORBIT Utils Function class: The Function method  getY(double y) has unlimited loop. Check data.");
 		}
-  }	
+  }
 	ind = ind_start;
 
   yy = y_arr[ind] + (y_arr[ind+1] - y_arr[ind])*((x - x_arr[ind])/(x_arr[ind+1] - x_arr[ind]));
@@ -316,8 +316,8 @@ double Function::getYP(double x)
 {
   if(size < 2){
     finalize("ORBIT Utils Function class: The Function method  getYP(double x)  (size<2)");
-  }	
-	
+  }
+
   if(x <= xMin) return 0.;
   if(x >= xMax) return 0.;
 
@@ -352,7 +352,7 @@ double Function::getYP(double x)
 		if(count > 200){
 			finalize("ORBIT Utils Function class: The Function method  getYP(double y) has unlimited loop. Check data.");
 		}
-  }	
+  }
 	ind = ind_start;
 
   yp = (y_arr[ind+1] - y_arr[ind])/(x_arr[ind+1] - x_arr[ind]);
@@ -363,8 +363,8 @@ double Function::getYErr(double x)
 {
   if(size < 1){
     finalize("ORBIT Utils Function class: The Function method  getYerr(double x)  (size<1)");
-  }	
-	
+  }
+
   if(x <= xMin) return err_arr[0];
   if(x >= xMax) return err_arr[size-1];
 
@@ -395,7 +395,7 @@ double Function::getYErr(double x)
 		if(count > 200){
 			finalize("ORBIT Utils Function class: The Function method  getX(double y) has unlimited loop. Check data.");
 		}
-  }	
+  }
 	ind = ind_start;
 
   err = err_arr[ind] + (err_arr[ind+1] - err_arr[ind])*((x - x_arr[ind])/(x_arr[ind+1] - x_arr[ind]));
@@ -487,7 +487,7 @@ int Function::isStepConst()
 int Function::setInverse(Function* f_inv)
 {
   //check that inverse function can be made
-	
+
 	if(size < 2){
 		f_inv->clean();
 		if(size == 1){
@@ -496,18 +496,18 @@ int Function::setInverse(Function* f_inv)
 		}
 		return 0;
 	}
-	
+
 	//create x-arr if it is not ready
 	if(f_inv->getSize() < 2){
 		f_inv->clean();
 		for(int i = 0; i < size-1; i++){
-			double xx = getMinY() + i*(getMaxY() - getMinY())/(size - 1);		
+			double xx = getMinY() + i*(getMaxY() - getMinY())/(size - 1);
 			f_inv->add(xx,0.);
 		}
 		f_inv->add(getMaxY(),0.);
 		f_inv->setConstStep(1);
 	}
-	
+
 	if(y_arr[1] > y_arr[0]){
 		for(int i = 0; i < (size-1); i++){
 			if(y_arr[i] >= y_arr[i+1]){
@@ -524,26 +524,26 @@ int Function::setInverse(Function* f_inv)
 			}
 		}
 	}
-	
+
 	if(f_inv->getMaxX() > getMaxY()){
 		finalize("ORBIT Utils Function class: The Function method  setInverse(Function* f_inv) f_inv->getMaxX() > getMaxY()");
 		return 0;
 	}
-	
+
 	if(f_inv->getMinX() < getMinY()){
 		finalize("ORBIT Utils Function class: The Function method  setInverse(Function* f_inv) f_inv->getMinX() < getMinY()");
 		return 0;
 	}
-	
+
 	Function* f_tmp = new Function();
-	
+
 	int nP = f_inv->getSize();
-	
+
 	double xx = 0.;
 	double yy = 0.;
 	double coeff = 0.;
 	int ind = 0;
-	
+
 	for(int i = 0; i < nP; i++){
 		xx = f_inv->x(i);
 		if(y_arr[1] > y_arr[0]){
@@ -563,19 +563,19 @@ int Function::setInverse(Function* f_inv)
 		yy = x_arr[ind] + (x_arr[ind+1] - x_arr[ind])*coeff;
 		f_tmp->add(xx,yy);
 	}
-	
+
 	int inf_tmp = f_inv->isStepConst();
-	
+
 	nP = f_tmp->getSize();
 	f_inv->clean();
 	for(int i = 0; i < nP; i++){
 		f_inv->add(f_tmp->x(i),f_tmp->y(i));
 	}
 	f_inv->setConstStep(inf_tmp);
-	
+
 	//remove tmp Function
 	delete f_tmp;
-	
+
 	return 1;
 }
 
@@ -615,7 +615,7 @@ void Function::print(const char* fileName)
 
 //auxiliary method to create a normalized cumulative function
 //for probability distribution with y_min = 0 and y_max = 1.0
-//It returns 1 if it was a success and 0 otherwise 
+//It returns 1 if it was a success and 0 otherwise
 int Function::normalize()
 {
   if(size < 2){
@@ -631,7 +631,7 @@ int Function::normalize()
   if(y_arr[size-1] <= 0.){
   	return 0.;
   }
-  
+
   for(int i = 0; i < size; i++){
     y_arr[i] /= y_arr[size-1];
     err_arr[i] /= y_arr[size-1];
@@ -649,4 +649,3 @@ int Function::normalize()
   }
 	return 1;
 }
-

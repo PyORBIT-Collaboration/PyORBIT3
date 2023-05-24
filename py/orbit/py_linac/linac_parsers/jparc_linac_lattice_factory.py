@@ -3,8 +3,8 @@ The JPARC Linac Lattice Factory generates the Linac Accelerator Lattice from the
 inside of the XML input file. This structure of this file is very similar to SNS.
 The difference is the order of accelerator sequences. In JPARC file they are in  arbitrary order.
 The user will combine them on the application script level. The reason for this: JPARC linac
-has several different dump sequences, so the order check that exists in the SNS lattice factory 
-could fail for JPARC. It is responsibility of the user to check the order and names of the 
+has several different dump sequences, so the order check that exists in the SNS lattice factory
+could fail for JPARC. It is responsibility of the user to check the order and names of the
 sequences in the lattice.
 """
 

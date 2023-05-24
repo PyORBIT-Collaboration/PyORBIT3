@@ -78,4 +78,3 @@ namespace teapot_base
 }
 
 #endif  //TEAPOT_BASE_H
-

@@ -15,42 +15,42 @@ using namespace std;
 //
 //   RectangularApertureShape
 //
-// AUTHOR: 
+// AUTHOR:
 //   Andrei Shishlo October 2022
 //
 ///////////////////////////////////////////////////////////////////////////
 
-/** 
+/**
 	RectangularApertureShape is an implementation of BaseApertureShape class.
 */
-    
+
 class RectangularApertureShape: public BaseApertureShape
 {
 public:
-	
+
 	/** RectangularApertureShape constructor */
 	RectangularApertureShape();
-	
+
 	/** RectangularApertureShape decstructor */
 	virtual ~RectangularApertureShape();
-	
+
 	/** Return 1 if the particular macro-particle is inside this shape */
 	int inside(Bunch* bunch, int count);
-	
-	/** Sets the half size in X-direction in [m] */ 
+
+	/** Sets the half size in X-direction in [m] */
 	void setHalfX(double x_half_size);
-	
-	/** Returns the half size in X-direction in [m]  */ 
+
+	/** Returns the half size in X-direction in [m]  */
 	double getHalfX();
-	
-	/** Sets the half size in Y-direction in [m] */ 
+
+	/** Sets the half size in Y-direction in [m] */
 	void setHalfY(double y_half_size);
-	
-	/** Returns the half size in Y-direction in [m]  */ 
+
+	/** Returns the half size in Y-direction in [m]  */
 	double getHalfY();
-	
+
 protected:
-	
+
 	double x_half_size;
 	double y_half_size;
 

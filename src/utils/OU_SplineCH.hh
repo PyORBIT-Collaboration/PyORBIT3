@@ -10,7 +10,7 @@
 //    03/25/2010
 //
 // DESCRIPTION
-//    A cubic Hermite spline. 
+//    A cubic Hermite spline.
 //    http://en.wikipedia.org/wiki/Cubic_Hermite_spline
 //    y(t) = h00(t)*y0 + h10(t)*m0 + h01(t)*y1 + h11(t)*m1
 //    t = (x-x0)/(x1-x0)
@@ -26,7 +26,7 @@
 #ifndef ORBIT_UTILS_SPLINE_CMP_H
 #define ORBIT_UTILS_SPLINE_CMP_H
 
-#include <iostream> 
+#include <iostream>
 #include <fstream>
 #include <cstdlib>
 #include <cmath>
@@ -35,7 +35,7 @@
 #include "OU_Function.hh"
 
 namespace OrbitUtils{
-	
+
 	class  SplineCH : public CppPyWrapper
 	{
 	public:
@@ -43,28 +43,28 @@ namespace OrbitUtils{
 		//the public methods of the SplineCH class
 		//-----------------------------------------
 		SplineCH();
-		
+
 		virtual ~SplineCH();
-		
+
 		int compile(OrbitUtils::Function* f);
-		
+
 		int getSize();
-		
+
 		double x(int ind);
 		double y(int ind);
-				
+
 		double getY(double x);
 		double getYP(double x);
-		
+
 		void print(std::ostream& Out);
 		void print(const char* fileName);
-		
+
 	private:
 		//------------------------------------------
 		//the private methods of the SplineCH class
 		//------------------------------------------
 		void finalize(const char* message);
-		
+
 	private:
 		//------------------------------------------
 		//the private members of the SplineCH class
@@ -72,21 +72,21 @@ namespace OrbitUtils{
 
 		//number of pair of (x,y)
 		int size;
-		
-		//x and y array 
+
+		//x and y array
 		double* x_arr;
 		double* y_arr;
-		
+
 		//ranning derivative m array
 		double* m_arr;
-		
+
 		//MPI members
-		int iMPIini; 
-		int rank_MPI; 
+		int iMPIini;
+		int rank_MPI;
 		int size_MPI;
-		
+
 	};
-	
+
 }
 
 #endif

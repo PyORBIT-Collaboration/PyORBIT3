@@ -7,28 +7,28 @@
 
 using namespace std;
 
-/** 
+/**
   The MaterialInteractions class contains a set of routines for calculating common interactions of a particle with a
-  material, for instance scattering and energy loss in the material. Many of the routines only apply to ~GeV protons. 
+  material, for instance scattering and energy loss in the material. Many of the routines only apply to ~GeV protons.
   There are several material choices.
 */
 
-class MaterialInteractions 
+class MaterialInteractions
 {
 	public:
-		
+
 		/** Constructor */
 		MaterialInteractions();
-				
+
 		/** Destructor */
 		virtual ~MaterialInteractions();
-		
+
 		/** Routine to generate and apply random, uniformly distributed 2D momentum kicks */
 		static void momentumKick(double t, double p, double& dpx, double& dpy);
 
 		/** Routine to apply multiple coulomb scattering kicks following JD Jackson, Chapter 13 */
 		static void mcsJackson(double stepsize, double z, double a, double rho, long& idum, double beta, double pfac, double& x, double& y, double& px, double& py);
-		
+
 		/** Routine to apply Rutherford scattering following JD Jackson, Chapter 13 */
 		static double ruthScattJackson(double stepsize, double z, double a, double rho, long& idum, double beta, int trackit, double pfac, double& thetax, double& thetay);
 
@@ -40,8 +40,7 @@ class MaterialInteractions
 
 	private:
 
-		
+
 };
 
 #endif
-

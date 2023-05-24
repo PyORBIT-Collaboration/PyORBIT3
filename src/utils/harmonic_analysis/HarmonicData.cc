@@ -10,21 +10,21 @@
 //    04/17/2018
 //
 // DESCRIPTION
-//    Keeps the data y(x) for set of x(i), i=1,Ndata values where each x(i) 
+//    Keeps the data y(x) for set of x(i), i=1,Ndata values where each x(i)
 //    is a phase between -180 to +180 deg.
 //    It also has parameters of the fitting representation of this y(x) data:
-//    y_fit(x) = A0 + A1*cos((PI/180.)*(x + phase_shift_1)) + 
+//    y_fit(x) = A0 + A1*cos((PI/180.)*(x + phase_shift_1)) +
 //                    A2*cos((PI/180.)*(2*x + parse_shift_2)) +
 //                    ...
 //    with n_harm the maximal harmonic number in the y_fit function.
 //    This class has a method getSumDiff2 that returns
 //     sumDiff2 = sum((y(x(i))-y_fit(x(i)))**2, i= 1,Ndata)
 //
-//    The fast calculation of the sumDiff2 is the main purpose of this 
+//    The fast calculation of the sumDiff2 is the main purpose of this
 //    class. This value will be used for a fast preliminary analysis
 //    of the phase scan data of RF cavities with one or few RF gaps.
-//   
-//    This class is used for the harmonics analysis of the scan data for 
+//
+//    This class is used for the harmonics analysis of the scan data for
 //    the RF cavities when we measure the phase response from BPMs.
 //
 ///////////////////////////////////////////////////////////////////////////
@@ -37,7 +37,7 @@
 using namespace OrbitUtils;
 
 HarmonicData::HarmonicData(int order_in, Function* inFunc): CppPyWrapper(NULL)
-{  
+{
 	this->init(order_in,inFunc);
 }
 
@@ -56,15 +56,15 @@ void HarmonicData::init(int order_in, Function* inFunc)
 {
 	if(order_in < 0){
 		ORBIT_MPI_Finalize("Orbit Utilites HarmonicData::HarmonicData(order) - order should be >= 0. Stop.");
-	}	
-	
+	}
+
 	// param_arr = [A0,A1,phase1,A2,phase2, ...]
 	order = order_in;
 	param_arr = new double[2*order+1];
 	for (int i = 0; i < (2*order+1); i++){
 		param_arr[i] = 0.;
 	}
-	
+
 	dataFunc = new Function();
 	for(int ind = 0; ind < inFunc->getSize(); ind++){
 		dataFunc->add(inFunc->x(ind),inFunc->y(ind),inFunc->err(ind));
@@ -75,23 +75,23 @@ void HarmonicData::setOrder(int order_in)
 	if(order_in < 0){
 		ORBIT_MPI_Finalize("Orbit Utilites HarmonicData::setOrder(order) - order should be >= 0. Stop.");
 	}
-	
+
 	double* param_new_arr = new double[2*order_in+1];
 	for (int i = 0; i < (2*order_in+1); i++){
 		param_new_arr[i] = 0.;
 	}
-	
+
 	int min_order = order_in;
 	if(min_order > order){
 		min_order = order;
 	}
-	
+
 	for (int i = 0; i < (2*min_order+1); i++){
 		param_new_arr[i] = param_arr[i];
-	}	
+	}
 
 	delete [] param_arr;
-	
+
 	param_arr = param_new_arr;
 	order = order_in;
 }
@@ -106,7 +106,7 @@ void HarmonicData::setDataFunction(Function* inFunc)
 	dataFunc->clean();
 	for(int ind = 0; ind < inFunc->getSize(); ind++){
 		dataFunc->add(inFunc->x(ind),inFunc->y(ind),inFunc->err(ind));
-	}	
+	}
 }
 
 
@@ -160,8 +160,8 @@ void HarmonicData::clean()
 {
 	for (int i = 0; i < (2*order+1); i++){
 		param_arr[i] = 0.;
-	}	
-	
+	}
+
   dataFunc->clean();
 }
 

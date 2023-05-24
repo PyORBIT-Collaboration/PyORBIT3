@@ -14,7 +14,7 @@ namespace wrap_phase_aperture{
 extern "C" {
 #endif
 
-	/** 
+	/**
 	Constructor for python class wrapping c++ PhaseAperture instance.
       It never will be called directly.
 	*/
@@ -24,12 +24,12 @@ extern "C" {
 		self->cpp_obj = NULL;
 		return (PyObject *) self;
 	}
-	
+
   /** This is implementation of the __init__ method */
   static int PhaseAperture_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
 
 	  double frequency = 402.5e+6;
-	  
+
 	  //NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
 	  if(!PyArg_ParseTuple(	args,"d:arguments",&frequency)){
 	  	ORBIT_MPI_Finalize("PhaseAperture class constructor - cannot parse arguments! It should be (frequency)");
@@ -38,7 +38,7 @@ extern "C" {
 	  ((PhaseAperture*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
-  
+
   /** Performs the collimation tracking of the bunch */
   static PyObject* PhaseAperture_checkBunch(PyObject *self, PyObject *args){
 	  PhaseAperture* cpp_PhaseAperture = (PhaseAperture*)((pyORBIT_Object*) self)->cpp_obj;
@@ -66,12 +66,12 @@ extern "C" {
 				ORBIT_MPI_Finalize("PhaseAperture - checkBunch(Bunch* bunch) - method needs a Bunch.");
 			}
 			Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object*)pyBunch)->cpp_obj;
-			cpp_PhaseAperture->checkBunch(cpp_bunch, NULL);			
+			cpp_PhaseAperture->checkBunch(cpp_bunch, NULL);
 		}
 		Py_INCREF(Py_None);
 		return Py_None;
   }
-		
+
   /** Sets the min and max phases of the phase aperture class */
 	static PyObject* PhaseAperture_setMinMaxPhase(PyObject *self, PyObject *args){
 		PhaseAperture* cpp_PhaseAperture = (PhaseAperture*)((pyORBIT_Object*) self)->cpp_obj;
@@ -83,23 +83,23 @@ extern "C" {
 		cpp_PhaseAperture->setPhaseLimits(minPhase,maxPhase);
 		Py_INCREF(Py_None);
 		return Py_None;
-	}  
-  
+	}
+
   /** Returns the min and max phases of the phase aperture class */
 	static PyObject* PhaseAperture_getMinMaxPhase(PyObject *self, PyObject *args){
 		PhaseAperture* cpp_PhaseAperture = (PhaseAperture*)((pyORBIT_Object*) self)->cpp_obj;
 		double minPhase = cpp_PhaseAperture->getMinPhase();
 		double maxPhase = cpp_PhaseAperture->getMaxPhase();
 		return Py_BuildValue("(dd)",minPhase,maxPhase);
-	}  
-  
+	}
+
   /** Returns the RF frequency of the phase aperture class */
 	static PyObject* PhaseAperture_getRfFrequency(PyObject *self, PyObject *args){
 		PhaseAperture* cpp_PhaseAperture = (PhaseAperture*)((pyORBIT_Object*) self)->cpp_obj;
 		double frequency = cpp_PhaseAperture->getRfFrequency();
 		return Py_BuildValue("d",frequency);
-	} 
-  
+	}
+
  	/** Sets the RF frequency of the phase aperture class */
 	static PyObject* PhaseAperture_setRfFrequency(PyObject *self, PyObject *args){
 		PhaseAperture* cpp_PhaseAperture = (PhaseAperture*)((pyORBIT_Object*) self)->cpp_obj;
@@ -110,15 +110,15 @@ extern "C" {
 		cpp_PhaseAperture->setRfFrequency(frequency);
 		Py_INCREF(Py_None);
 		return Py_None;
-	} 
-  
+	}
+
   /** Returns the position of the element in the lattice */
 	static PyObject* PhaseAperture_getPosition(PyObject *self, PyObject *args){
 		PhaseAperture* cpp_PhaseAperture = (PhaseAperture*)((pyORBIT_Object*) self)->cpp_obj;
 		double position = cpp_PhaseAperture->getPosition();
 		return Py_BuildValue("d",position);
-	} 	
-	
+	}
+
 	/** Sets the position of the element in the lattice */
 	static PyObject* PhaseAperture_setPosition(PyObject *self, PyObject *args){
 		PhaseAperture* cpp_PhaseAperture = (PhaseAperture*)((pyORBIT_Object*) self)->cpp_obj;
@@ -130,7 +130,7 @@ extern "C" {
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
-	
+
   //-----------------------------------------------------
   //destructor for python PhaseAperture class (__del__ method).
   //-----------------------------------------------------
@@ -139,7 +139,7 @@ extern "C" {
 		delete ((PhaseAperture*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// definition of the methods of the python PhaseAperture wrapper class
 	// they will be vailable from python level
 	static PyMethodDef PhaseApertureClassMethods[] = {
@@ -149,15 +149,15 @@ extern "C" {
 		{ "setMinMaxPhase",  PhaseAperture_setMinMaxPhase, METH_VARARGS,"Sets the min and max phases of the phase aperture"},
 		{ "getMinMaxPhase",	PhaseAperture_getMinMaxPhase, METH_VARARGS,"Returns the min and max phases of the phase aperture"},
 		{ "getRfFrequency",	  PhaseAperture_getRfFrequency,	 METH_VARARGS,"Returns the RF frequency of the phase aperture"},
-		{ "setRfFrequency",		PhaseAperture_setRfFrequency,	 METH_VARARGS,"Sets the RF frequency of the phase aperture"},	
+		{ "setRfFrequency",		PhaseAperture_setRfFrequency,	 METH_VARARGS,"Sets the RF frequency of the phase aperture"},
    {NULL}
   };
 
 	static PyMemberDef PhaseApertureClassMembers [] = {
 		{NULL}
 	};
-	
-	
+
+
 	//new python PhaseAperture wrapper type definition
 	static PyTypeObject pyORBIT_PhaseAperture_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -198,8 +198,8 @@ extern "C" {
 		(initproc) PhaseAperture_init, /* tp_init */
 		0, /* tp_alloc */
 		PhaseAperture_new, /* tp_new */
-	};	
-	
+	};
+
 	//--------------------------------------------------
 	//Initialization PhaseAperture class
 	//--------------------------------------------------
@@ -208,7 +208,7 @@ extern "C" {
 		//check that the PhaseAperture wrapper is ready
 		if (PyType_Ready(&pyORBIT_PhaseAperture_Type) < 0) return;
 		Py_INCREF(&pyORBIT_PhaseAperture_Type);
-		PyModule_AddObject(module, "PhaseAperture", (PyObject *)&pyORBIT_PhaseAperture_Type);			
+		PyModule_AddObject(module, "PhaseAperture", (PyObject *)&pyORBIT_PhaseAperture_Type);
 	}
 
 #ifdef __cplusplus

@@ -10,7 +10,7 @@
 //    12/08/2011
 //
 // DESCRIPTION
-//    A subclass of the particle attributes class. 
+//    A subclass of the particle attributes class.
 //
 ///////////////////////////////////////////////////////////////////////////
 #ifndef LOSTPARTICLEATTRIBUTES_HH_
@@ -26,7 +26,7 @@
 class LostParticleAttributes : public ParticleAttributes
 {
 public:
-	
+
 	/** This Attribute class contains additional properties of lost particles.
 	*/
 	LostParticleAttributes(Bunch* bunch);

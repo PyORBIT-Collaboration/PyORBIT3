@@ -28,4 +28,3 @@ pq_coordinates::pq_coordinates(Bunch* bunch, int size_in):
 pq_coordinates::~pq_coordinates()
 {
 }
-

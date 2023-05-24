@@ -16,7 +16,7 @@ namespace wrap_collimator{
 extern "C" {
 #endif
 
-    /** 
+    /**
     Constructor for python class wrapping c++ Collimator instance.
       It never will be called directly.
     */
@@ -26,7 +26,7 @@ extern "C" {
         self->cpp_obj = NULL;
         return (PyObject *) self;
     }
-    
+
   /** This is implementation of the __init__ method */
   static int Collimator_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
 
@@ -41,7 +41,7 @@ extern "C" {
       ((Collimator*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
-  
+
   /** Performs the collimation tracking of the bunch */
   static PyObject* Collimator_collimateBunch(PyObject *self, PyObject *args){
       Collimator* cpp_Collimator = (Collimator*)((pyORBIT_Object*) self)->cpp_obj;
@@ -52,11 +52,11 @@ extern "C" {
     int nVars = PyTuple_Size(args);
     Bunch* cpp_lostbunch = NULL;
     PyObject* pyORBIT_Bunch_Type = wrap_orbit_bunch::getBunchType("Bunch");
-    
+
     if(nVars != 2 && nVars != 1){
         ORBIT_MPI_Finalize("Collimator - collimateBunch(Bunch* bunch [, Bunch* bunch]) - parameters are needed.");
     }
-    
+
     if(nVars == 2){
             if(!PyArg_ParseTuple(args,"OO:collimateBunch",&pyBunch, &pyLostBunch)){
                 ORBIT_MPI_Finalize("Collimator - collimateBunch(Bunch* bunch, Bunch* bunch) - parameter are needed.");
@@ -71,15 +71,15 @@ extern "C" {
             }
             if(!PyObject_IsInstance(pyBunch,pyORBIT_Bunch_Type)){
                 ORBIT_MPI_Finalize("Collimator - collimateBunch(Bunch* bunch) - method needs a Bunch.");
-            }           
+            }
         }
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object*)pyBunch)->cpp_obj;
         cpp_Collimator->collimateBunch(cpp_bunch, cpp_lostbunch);
         Py_INCREF(Py_None);
         return Py_None;
   }
-    
-    
+
+
     /** Sets the position of the element in the lattice */
     static PyObject* Collimator_setPosition(PyObject *self, PyObject *args){
         Collimator* cpp_Collimator = (Collimator*)((pyORBIT_Object*) self)->cpp_obj;
@@ -91,9 +91,9 @@ extern "C" {
         Py_INCREF(Py_None);
         return Py_None;
     }
-    
-        
-    
+
+
+
   //-----------------------------------------------------
   //destructor for python Collimator class (__del__ method).
   //-----------------------------------------------------
@@ -102,7 +102,7 @@ extern "C" {
         delete ((Collimator*)self->cpp_obj);
         self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-    
+
     // definition of the methods of the python Collimator wrapper class
     // they will be vailable from python level
     static PyMethodDef CollimatorClassMethods[] = {
@@ -114,8 +114,8 @@ extern "C" {
     static PyMemberDef CollimatorClassMembers [] = {
         {NULL}
     };
-    
-    
+
+
     //new python Collimator wrapper type definition
     static PyTypeObject pyORBIT_Collimator_Type = {
         PyVarObject_HEAD_INIT(NULL, 0)
@@ -156,10 +156,10 @@ extern "C" {
         (initproc) Collimator_init, /* tp_init */
         0, /* tp_alloc */
         Collimator_new, /* tp_new */
-    };  
-    
-    
-    
+    };
+
+
+
     //--------------------------------------------------
     //Initialization Collimator of the pyBunchCollimator class
     //--------------------------------------------------
@@ -179,7 +179,7 @@ extern "C" {
         PyObject* module = PyModule_Create(&cModPyColl);
         PyModule_AddObject(module, "Collimator", (PyObject *)&pyORBIT_Collimator_Type);
 
-        return module;         
+        return module;
     }
 
 #ifdef __cplusplus

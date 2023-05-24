@@ -36,7 +36,7 @@ extern "C" {
 
   //initializator for python MPI_Comm  class
   //this is implementation of the __init__ method
-  static int mpi_comm_init(pyORBIT_MPI_Comm *self, PyObject *args, PyObject *kwds){		
+  static int mpi_comm_init(pyORBIT_MPI_Comm *self, PyObject *args, PyObject *kwds){
     if(PyTuple_Size(args) != 0){
       error("MPI_Comm constructor cannot have an input parameter.");
     }
@@ -51,9 +51,9 @@ extern "C" {
 		}
 		pyMPI_Comm->comm = MPI_COMM_WORLD;
     Py_INCREF(Py_None);
-    return Py_None;		
-  }		
-	
+    return Py_None;
+  }
+
   //-----------------------------------------------------
   //destructor for python MPI_Comm class.
   //-----------------------------------------------------
@@ -66,7 +66,7 @@ extern "C" {
 		}
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python MPI_Comm wrapper class
 	// they will be vailable from python level
   static PyMethodDef MPI_CommClassMethods[] = {
@@ -80,7 +80,7 @@ extern "C" {
 	static PyMemberDef MPI_CommClassMembers[] = {
 		{NULL}
 	};
-	
+
 	//new python SyncPart wrapper type definition
 	static PyTypeObject pyORBIT_MPI_Comm_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -132,7 +132,7 @@ extern "C" {
 		Py_INCREF(&pyORBIT_MPI_Comm_Type);
 
 		//we put Py_INCREF(...) because PyModule_AddObject() steal the reference
-		
+
 		PyObject * comm_module = PyModule_New("mpi_comm");
 		PyModule_AddObject(comm_module, "MPI_Comm", (PyObject *)&pyORBIT_MPI_Comm_Type);
 		Py_INCREF(comm_module);
@@ -140,22 +140,22 @@ extern "C" {
 		pyORBIT_MPI_Comm* pyMPI_Comm_WORLD = PyObject_New(pyORBIT_MPI_Comm,&pyORBIT_MPI_Comm_Type);
 		pyMPI_Comm_WORLD->comm = MPI_COMM_WORLD;
 		Py_INCREF((PyObject *) pyMPI_Comm_WORLD);
-		
+
 		pyORBIT_MPI_Comm* pyMPI_Comm_SELF = PyObject_New(pyORBIT_MPI_Comm,&pyORBIT_MPI_Comm_Type);
 		pyMPI_Comm_SELF->comm = MPI_COMM_SELF;
-		Py_INCREF((PyObject *) pyMPI_Comm_SELF); 
-		
+		Py_INCREF((PyObject *) pyMPI_Comm_SELF);
+
 		pyORBIT_MPI_Comm* pyMPI_Comm_NULL = PyObject_New(pyORBIT_MPI_Comm,&pyORBIT_MPI_Comm_Type);
 		pyMPI_Comm_NULL->comm = MPI_COMM_NULL;
-		Py_INCREF((PyObject *) pyMPI_Comm_NULL); 
+		Py_INCREF((PyObject *) pyMPI_Comm_NULL);
 
     PyModule_AddObject(comm_module, "MPI_COMM_WORLD", (PyObject *) pyMPI_Comm_WORLD);
     PyModule_AddObject(comm_module, "MPI_COMM_SELF", (PyObject *) pyMPI_Comm_SELF);
     PyModule_AddObject(comm_module, "MPI_COMM_NULL", (PyObject *) pyMPI_Comm_NULL);
-		
+
 		PyModule_AddObject(module, "mpi_comm", comm_module);
 	}
-	
+
 	//-----------------------------------------------------------
 	//The function that will be exposed as C/C++ API for MPI_Comm
 	//-----------------------------------------------------------
@@ -164,21 +164,21 @@ extern "C" {
 		pyMPI_Comm->comm = MPI_COMM_WORLD;
 		return pyMPI_Comm;
 	}
-	
+
 	void freeMPI_Comm(pyORBIT_MPI_Comm* pyMPI_Comm){
 		Py_DECREF(pyMPI_Comm);
-	}	
-	
+	}
+
 	PyObject* getMPI_CommType(const char* name){
 		PyObject* mod = PyImport_ImportModule("orbit_mpi");
 		PyObject* mpi_comm_mod = PyObject_GetAttrString(mod,"mpi_comm");
 		PyObject* pyType = PyObject_GetAttrString(mpi_comm_mod,name);
-		Py_DECREF(mpi_comm_mod);		
+		Py_DECREF(mpi_comm_mod);
 		Py_DECREF(mod);
 		Py_DECREF(pyType);
 		return pyType;
-	}				
-	
+	}
+
 #ifdef __cplusplus
 }
 #endif

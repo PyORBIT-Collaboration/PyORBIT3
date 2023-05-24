@@ -11,7 +11,7 @@
 //    09/09/2011
 //
 // DESCRIPTION
-//    This class contains a standart c++ method for calculating 
+//    This class contains a standart c++ method for calculating
 //    a random number between 0 and 1.
 ///////////////////////////////////////////////////////////////////////////
 
@@ -22,4 +22,3 @@
 double Random::ran1(long& idum){
 	return ((double) std::rand() / (RAND_MAX));
 }
-

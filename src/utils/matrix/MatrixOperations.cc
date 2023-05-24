@@ -8,17 +8,17 @@
 using namespace OrbitUtils;
 
 int MatrixOperations::invert(double **a, int n){
-	
+
 	//   Taken from Nrecipes and slightly modified.
 	//   Get matrix A(nxn) and transform it into A^(-1).
-	//   Returns 0 if A^(-1) doesn't exist. Normally returns 1. 
-	
+	//   Returns 0 if A^(-1) doesn't exist. Normally returns 1.
+
 	int i,icol,irow,j,k,l,ll;
 	double big,dum,pivinv,temp;
-	
+
 	icol = 0;
 	irow = 0;
-	
+
 	// indexr and indexc track column permutation
 	int buff_index0 = -1;
 	int buff_index1 = -1;
@@ -26,7 +26,7 @@ int MatrixOperations::invert(double **a, int n){
 	int *indxc= BufferStore::getBufferStore()->getFreeIntArr(buff_index0,n);
 	int *indxr= BufferStore::getBufferStore()->getFreeIntArr(buff_index1,n);
 	int *ipiv = BufferStore::getBufferStore()->getFreeIntArr(buff_index2,n);
-	
+
 	for (j=0;j<n;j++) ipiv[j]=0;
 	for (i=0;i<n;i++) {
 		big=0.0;
@@ -43,7 +43,7 @@ int MatrixOperations::invert(double **a, int n){
  		    } else if (ipiv[k] > 1) {
 					BufferStore::getBufferStore()->setUnusedIntArr(buff_index0);
 					BufferStore::getBufferStore()->setUnusedIntArr(buff_index1);
-					BufferStore::getBufferStore()->setUnusedIntArr(buff_index2);					
+					BufferStore::getBufferStore()->setUnusedIntArr(buff_index2);
 					return 0;
 				};
 			}
@@ -61,7 +61,7 @@ int MatrixOperations::invert(double **a, int n){
 			if (a[icol][icol] == 0.0) {
 				BufferStore::getBufferStore()->setUnusedIntArr(buff_index0);
 				BufferStore::getBufferStore()->setUnusedIntArr(buff_index1);
-				BufferStore::getBufferStore()->setUnusedIntArr(buff_index2);					
+				BufferStore::getBufferStore()->setUnusedIntArr(buff_index2);
 				return 0;
 			}
 			pivinv=1.0/a[icol][icol];
@@ -97,14 +97,14 @@ int MatrixOperations::invert(Matrix* matrix){
 
 int MatrixOperations::mult(PhaseVector* v, Matrix* mtrx, PhaseVector* v_res){
 	int n = mtrx->rows();
-	int m = mtrx->columns();	
+	int m = mtrx->columns();
 	if(v->size() != n || v_res->size() != m){
 		ORBIT_MPI_Finalize("MatrixOperations:You try to multiply PhaseVector by Matrix with wrong size.");
 		return 0;
 	}
 	double* vArr = v->getArray();
 	double** arr = mtrx->getArray();
-	double* vArr_res = v_res->getArray();	
+	double* vArr_res = v_res->getArray();
 	for(int i = 0; i < m; i++){
 		vArr_res[i] = 0.;
 		for(int j = 0; j < n; j++){
@@ -123,7 +123,7 @@ int MatrixOperations::mult(Matrix* mtrx, PhaseVector* v, PhaseVector* v_res){
 	}
 	double* vArr = v->getArray();
 	double** arr = mtrx->getArray();
-	double* vArr_res = v_res->getArray();	
+	double* vArr_res = v_res->getArray();
 	for(int i = 0; i < n; i++){
 		vArr_res[i] = 0.;
 		for(int j = 0; j < m; j++){
@@ -142,28 +142,28 @@ int MatrixOperations::det(Matrix* mtrx_in, double& det){
 		return 0;
 	}
 	double** arr_in = mtrx_in->getArray();
-	
+
 	//this matrix will be destroyed
 	int buff_index0 = -1;
-	double* arr = BufferStore::getBufferStore()->getFreeDoubleArr(buff_index0,n*n);	
-	
+	double* arr = BufferStore::getBufferStore()->getFreeDoubleArr(buff_index0,n*n);
+
 	//this array is auxiliary
 	int buff_index1 = -1;
-	double* vv = BufferStore::getBufferStore()->getFreeDoubleArr(buff_index1,n);	
-	
+	double* vv = BufferStore::getBufferStore()->getFreeDoubleArr(buff_index1,n);
+
 	for(int i = 0; i < n; i++){
 		for(int j = 0; j < n; j++){
 			arr[j+n*i] = arr_in[i][j];
 		}
 	}
-	
+
 	int d_perm_count = +1;
 	double big = 0.;
 	double temp = 0.;
 	double sum = 0.;
-	
+
 	int i_max = -1;
-	
+
 	for(int i = 0; i < n; i++){
 		big = 0.;
 		for(int j = 0; j < n; j++){
@@ -175,9 +175,9 @@ int MatrixOperations::det(Matrix* mtrx_in, double& det){
 			det = 0.;
 			return 1;
 		}
-		vv[i]=1.0/big;			
+		vv[i]=1.0/big;
 	}
-	
+
 	for(int j = 0; j < n; j++){
 		for(int i = 0; i < j; i++){
 			sum = arr[j+n*i];
@@ -199,7 +199,7 @@ int MatrixOperations::det(Matrix* mtrx_in, double& det){
 				i_max = i;
 			}
 		}
-		
+
 		if(j != i_max){
 			for(int k = 0; k < n; k++){
 				temp = arr[k+n*i_max];
@@ -209,12 +209,12 @@ int MatrixOperations::det(Matrix* mtrx_in, double& det){
 			d_perm_count = - d_perm_count;
 			vv[i_max]=vv[j];
 		}
-		
+
 		if(arr[j+n*j] == 0.){
 			BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index0);
 			BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index1);
 			det = 0.;
-			return 1;			
+			return 1;
 		}
 		if(j != (n-1)){
 			temp = 1.0/arr[j+n*j];
@@ -223,7 +223,7 @@ int MatrixOperations::det(Matrix* mtrx_in, double& det){
 			}
 		}
 	}
-	
+
 	//now calculate det value
 	det = 0.;
 	for(int j = 0; j < n; j++){
@@ -231,7 +231,7 @@ int MatrixOperations::det(Matrix* mtrx_in, double& det){
 		if(temp < 0.) d_perm_count = - d_perm_count;
 		det += log(fabs(temp));
 	}
-	
+
 	if(fabs(det) > 100.0){
 		det = 300.0*det/fabs(det);
 	}
@@ -271,4 +271,3 @@ void MatrixOperations::track(Bunch* bunch,Matrix* mtrx){
 		}
 	}
 }
-

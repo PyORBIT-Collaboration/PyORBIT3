@@ -14,7 +14,7 @@ namespace wrap_energy_aperture{
 extern "C" {
 #endif
 
-	/** 
+	/**
 	Constructor for python class wrapping c++ EnergyAperture instance.
       It never will be called directly.
 	*/
@@ -24,14 +24,14 @@ extern "C" {
 		self->cpp_obj = NULL;
 		return (PyObject *) self;
 	}
-	
+
   /** This is implementation of the __init__ method */
-  static int EnergyAperture_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){	  
+  static int EnergyAperture_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
 	  self->cpp_obj =  new EnergyAperture();
 	  ((EnergyAperture*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
-  
+
   /** Performs the collimation tracking of the bunch */
   static PyObject* EnergyAperture_checkBunch(PyObject *self, PyObject *args){
 	  EnergyAperture* cpp_EnergyAperture = (EnergyAperture*)((pyORBIT_Object*) self)->cpp_obj;
@@ -59,12 +59,12 @@ extern "C" {
 				ORBIT_MPI_Finalize("EnergyAperture - checkBunch(Bunch* bunch) - method needs a Bunch.");
 			}
 			Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object*)pyBunch)->cpp_obj;
-			cpp_EnergyAperture->checkBunch(cpp_bunch, NULL);			
+			cpp_EnergyAperture->checkBunch(cpp_bunch, NULL);
 		}
 		Py_INCREF(Py_None);
 		return Py_None;
   }
-		
+
   /** Sets the min and max energy of the energy aperture class */
 	static PyObject* EnergyAperture_setMinMaxEnergy(PyObject *self, PyObject *args){
 		EnergyAperture* cpp_EnergyAperture = (EnergyAperture*)((pyORBIT_Object*) self)->cpp_obj;
@@ -76,23 +76,23 @@ extern "C" {
 		cpp_EnergyAperture->setEnergyLimits(minEnergy,maxEnergy);
 		Py_INCREF(Py_None);
 		return Py_None;
-	}  
-  
+	}
+
   /** Returns the min and max energy of the energy aperture class */
 	static PyObject* EnergyAperture_getMinMaxEnergy(PyObject *self, PyObject *args){
 		EnergyAperture* cpp_EnergyAperture = (EnergyAperture*)((pyORBIT_Object*) self)->cpp_obj;
 		double minEnergy = cpp_EnergyAperture->getMinEnergy();
 		double maxEnergy = cpp_EnergyAperture->getMaxEnergy();
 		return Py_BuildValue("(dd)",minEnergy,maxEnergy);
-	}  
+	}
 
   /** Returns the position of the element in the lattice */
 	static PyObject* EnergyAperture_getPosition(PyObject *self, PyObject *args){
 		EnergyAperture* cpp_EnergyAperture = (EnergyAperture*)((pyORBIT_Object*) self)->cpp_obj;
 		double position = cpp_EnergyAperture->getPosition();
 		return Py_BuildValue("d",position);
-	} 	
-	
+	}
+
 	/** Sets the position of the element in the lattice */
 	static PyObject* EnergyAperture_setPosition(PyObject *self, PyObject *args){
 		EnergyAperture* cpp_EnergyAperture = (EnergyAperture*)((pyORBIT_Object*) self)->cpp_obj;
@@ -104,7 +104,7 @@ extern "C" {
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
-	
+
   //-----------------------------------------------------
   //destructor for python EnergyAperture class (__del__ method).
   //-----------------------------------------------------
@@ -113,7 +113,7 @@ extern "C" {
 		delete ((EnergyAperture*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// definition of the methods of the python EnergyAperture wrapper class
 	// they will be vailable from python level
 	static PyMethodDef EnergyApertureClassMethods[] = {
@@ -128,8 +128,8 @@ extern "C" {
 	static PyMemberDef EnergyApertureClassMembers [] = {
 		{NULL}
 	};
-	
-	
+
+
 	//new python EnergyAperture wrapper type definition
 	static PyTypeObject pyORBIT_EnergyAperture_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -170,8 +170,8 @@ extern "C" {
 		(initproc) EnergyAperture_init, /* tp_init */
 		0, /* tp_alloc */
 		EnergyAperture_new, /* tp_new */
-	};	
-	
+	};
+
 	//--------------------------------------------------
 	//Initialization EnergyAperture class
 	//--------------------------------------------------
@@ -180,7 +180,7 @@ extern "C" {
 		//check that the EnergyAperture wrapper is ready
 		if (PyType_Ready(&pyORBIT_EnergyAperture_Type) < 0) return;
 		Py_INCREF(&pyORBIT_EnergyAperture_Type);
-		PyModule_AddObject(module, "EnergyAperture", (PyObject *)&pyORBIT_EnergyAperture_Type);			
+		PyModule_AddObject(module, "EnergyAperture", (PyObject *)&pyORBIT_EnergyAperture_Type);
 	}
 
 #ifdef __cplusplus

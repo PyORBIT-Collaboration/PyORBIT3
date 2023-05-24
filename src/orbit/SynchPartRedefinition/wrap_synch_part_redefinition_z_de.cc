@@ -16,7 +16,7 @@ namespace wrap_synch_part_redefinition{
 extern "C" {
 #endif
 
-	/** 
+	/**
 	    Constructor for python class wrapping c++ SynchPartRedefinitionZdE instance.
       It never will be called directly.
 	*/
@@ -26,14 +26,14 @@ extern "C" {
 		self->cpp_obj = NULL;
 		return (PyObject *) self;
 	}
-	
+
   /** This is implementation of the __init__ method */
   static int SynchPartRedefinitionZdE_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
 		self->cpp_obj =  new SynchPartRedefinitionZdE();
 	  ((SynchPartRedefinitionZdE*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
-  
+
  /** Performs the calculation of the z and dE averages of the bunch */
   static PyObject* SynchPartRedefinitionZdE_analyzeBunch(PyObject *self, PyObject *args){
 	  SynchPartRedefinitionZdE* cpp_SynchPartRedefinitionZdE = (SynchPartRedefinitionZdE*)((pyORBIT_Object*) self)->cpp_obj;
@@ -50,7 +50,7 @@ extern "C" {
 		Py_INCREF(Py_None);
 		return Py_None;
   }
-	
+
   /** Move the synch particle energy to the average energy. */
   static PyObject* SynchPartRedefinitionZdE_center_dE(PyObject *self, PyObject *args){
 	  SynchPartRedefinitionZdE* cpp_SynchPartRedefinitionZdE = (SynchPartRedefinitionZdE*)((pyORBIT_Object*) self)->cpp_obj;
@@ -66,8 +66,8 @@ extern "C" {
 		cpp_SynchPartRedefinitionZdE->centerE(cpp_bunch);
 		Py_INCREF(Py_None);
 		return Py_None;
-  } 
-  
+  }
+
    /** Move the synch particle's z position to the center of the bunch */
   static PyObject* SynchPartRedefinitionZdE_centerZ(PyObject *self, PyObject *args){
 	  SynchPartRedefinitionZdE* cpp_SynchPartRedefinitionZdE = (SynchPartRedefinitionZdE*)((pyORBIT_Object*) self)->cpp_obj;
@@ -83,8 +83,8 @@ extern "C" {
 		cpp_SynchPartRedefinitionZdE->centerZ(cpp_bunch);
 		Py_INCREF(Py_None);
 		return Py_None;
-  }  
-  
+  }
+
   /** Shift the synch particle energy. */
   static PyObject* SynchPartRedefinitionZdE_shift_dE(PyObject *self, PyObject *args){
 	  SynchPartRedefinitionZdE* cpp_SynchPartRedefinitionZdE = (SynchPartRedefinitionZdE*)((pyORBIT_Object*) self)->cpp_obj;
@@ -101,8 +101,8 @@ extern "C" {
 		cpp_SynchPartRedefinitionZdE->shiftE(cpp_bunch,delta_E);
 		Py_INCREF(Py_None);
 		return Py_None;
-  } 
-  
+  }
+
    /** Shift the synch particle's z position */
   static PyObject* SynchPartRedefinitionZdE_shiftZ(PyObject *self, PyObject *args){
 	  SynchPartRedefinitionZdE* cpp_SynchPartRedefinitionZdE = (SynchPartRedefinitionZdE*)((pyORBIT_Object*) self)->cpp_obj;
@@ -119,20 +119,20 @@ extern "C" {
 		cpp_SynchPartRedefinitionZdE->shiftZ(cpp_bunch,delta_z);
 		Py_INCREF(Py_None);
 		return Py_None;
-  }  
-  
+  }
+
 	/** Returns the average z postion */
 	static PyObject* SynchPartRedefinitionZdE_getAvg_Z(PyObject *self, PyObject *args){
 		SynchPartRedefinitionZdE* cpp_SynchPartRedefinitionZdE = (SynchPartRedefinitionZdE*)((pyORBIT_Object*) self)->cpp_obj;
 		return Py_BuildValue("d",cpp_SynchPartRedefinitionZdE->getAvg_Z());
 	}
-	
+
 	/** Returns the average dE value */
 	static PyObject* SynchPartRedefinitionZdE_getAvg_dE(PyObject *self, PyObject *args){
 		SynchPartRedefinitionZdE* cpp_SynchPartRedefinitionZdE = (SynchPartRedefinitionZdE*)((pyORBIT_Object*) self)->cpp_obj;
 		return Py_BuildValue("d",cpp_SynchPartRedefinitionZdE->getAvg_dE());
-	}	
-		
+	}
+
   //-----------------------------------------------------
   //destructor for python SynchPartRedefinitionZdE class (__del__ method).
   //-----------------------------------------------------
@@ -141,7 +141,7 @@ extern "C" {
 		delete ((SynchPartRedefinitionZdE*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python SynchPartRedefinitionZdE wrapper class
 	// they will be vailable from python level
   static PyMethodDef SynchPartRedefinitionZdEClassMethods[] = {
@@ -151,16 +151,16 @@ extern "C" {
 		{ "shift_dE",     SynchPartRedefinitionZdE_shift_dE,	    METH_VARARGS,"Shift enegry of the synch part."},
 		{ "shift_Z",       SynchPartRedefinitionZdE_shiftZ,	      METH_VARARGS,"Shift z-coord. the synch part."},
  		{ "getAvg_Z",			SynchPartRedefinitionZdE_getAvg_Z,    	METH_VARARGS,"Returns the average z postion."},
- 		{ "getAvg_dE",		SynchPartRedefinitionZdE_getAvg_dE,    	METH_VARARGS,"Returns the average dE value."},			
+ 		{ "getAvg_dE",		SynchPartRedefinitionZdE_getAvg_dE,    	METH_VARARGS,"Returns the average dE value."},
 		{NULL}
   };
-	
+
 	// defenition of the memebers of the python SynchPartRedefinitionZdE wrapper class
 	// they will be vailable from python level
 	static PyMemberDef SynchPartRedefinitionZdEClassMembers [] = {
 		{NULL}
 	};
-	
+
 	//new python SynchPartRedefinitionZdE wrapper type definition
 	static PyTypeObject pyORBIT_SynchPartRedefinitionZdE_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -201,8 +201,8 @@ extern "C" {
 		(initproc) SynchPartRedefinitionZdE_init, /* tp_init */
 		0, /* tp_alloc */
 		SynchPartRedefinitionZdE_new, /* tp_new */
-	};	
-	
+	};
+
 	//--------------------------------------------------
 	//Initialization SynchPartRedefinitionZdE of the pySynchPartRedefinitionZdE class
 	//--------------------------------------------------

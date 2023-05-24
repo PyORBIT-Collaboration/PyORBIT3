@@ -14,7 +14,7 @@ namespace wrap_aperture{
 extern "C" {
 #endif
 
-	/** 
+	/**
 	Constructor for python class wrapping c++ Aperture instance.
       It never will be called directly.
 	*/
@@ -24,7 +24,7 @@ extern "C" {
 		self->cpp_obj = NULL;
 		return (PyObject *) self;
 	}
-	
+
   /** This is implementation of the __init__ method */
   static int Aperture_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
 
@@ -34,7 +34,7 @@ extern "C" {
 	  double c = 0.;
 	  double d = 0.;
 	  double pos = 0.;
-	  
+
 	  //NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
 	  if(!PyArg_ParseTuple(	args,"iddddd:arguments",&shape,&a,&b,&c,&d,&pos)){
 	  	ORBIT_MPI_Finalize("Aperture class constructor - cannot parse arguments! It should be (shape,a,b,c,d,pos)");
@@ -43,7 +43,7 @@ extern "C" {
 	  ((Aperture*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
-  
+
   /** Performs the collimation tracking of the bunch */
   static PyObject* Aperture_checkBunch(PyObject *self, PyObject *args){
 	  Aperture* cpp_Aperture = (Aperture*)((pyORBIT_Object*) self)->cpp_obj;
@@ -71,12 +71,12 @@ extern "C" {
 				ORBIT_MPI_Finalize("Aperture - checkBunch(Bunch* bunch) - method needs a Bunch.");
 			}
 			Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object*)pyBunch)->cpp_obj;
-			cpp_Aperture->checkBunch(cpp_bunch, NULL);			
+			cpp_Aperture->checkBunch(cpp_bunch, NULL);
 		}
 		Py_INCREF(Py_None);
 		return Py_None;
   }
-		
+
 	/** Sets the position of the element in the lattice */
 	static PyObject* Aperture_setPosition(PyObject *self, PyObject *args){
 		Aperture* cpp_Aperture = (Aperture*)((pyORBIT_Object*) self)->cpp_obj;
@@ -88,7 +88,7 @@ extern "C" {
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
-	
+
   //-----------------------------------------------------
   //destructor for python Aperture class (__del__ method).
   //-----------------------------------------------------
@@ -97,7 +97,7 @@ extern "C" {
 		delete ((Aperture*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// definition of the methods of the python Aperture wrapper class
 	// they will be vailable from python level
 	static PyMethodDef ApertureClassMethods[] = {
@@ -109,8 +109,8 @@ extern "C" {
 	static PyMemberDef ApertureClassMembers [] = {
 		{NULL}
 	};
-	
-	
+
+
 	//new python Aperture wrapper type definition
 	static PyTypeObject pyORBIT_Aperture_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -151,8 +151,8 @@ extern "C" {
 		(initproc) Aperture_init, /* tp_init */
 		0, /* tp_alloc */
 		Aperture_new, /* tp_new */
-	};	
-	
+	};
+
 	//--------------------------------------------------
 	//Initialization Aperture class
 	//--------------------------------------------------
@@ -161,7 +161,7 @@ extern "C" {
 		//check that the Aperture wrapper is ready
 		if (PyType_Ready(&pyORBIT_Aperture_Type) < 0) return;
 		Py_INCREF(&pyORBIT_Aperture_Type);
-		PyModule_AddObject(module, "Aperture", (PyObject *)&pyORBIT_Aperture_Type);			
+		PyModule_AddObject(module, "Aperture", (PyObject *)&pyORBIT_Aperture_Type);
 	}
 
 #ifdef __cplusplus

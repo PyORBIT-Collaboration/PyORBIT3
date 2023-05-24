@@ -13,7 +13,7 @@ namespace wrap_py_base_aperture_shape{
 extern "C" {
 #endif
 
-	/** 
+	/**
 	Constructor for python class wrapping c++ PyBaseApertureShape instance.
       It never will be called directly.
 	*/
@@ -23,7 +23,7 @@ extern "C" {
 		self->cpp_obj = NULL;
 		return (PyObject *) self;
 	}
-	
+
   /** This is implementation of the __init__ method */
   static int PyBaseApertureShape_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
 	  self->cpp_obj =  new PyBaseApertureShape();
@@ -31,10 +31,10 @@ extern "C" {
     return 0;
   }
 
-	// Sets or returns the center of the shape in X-direction 
+	// Sets or returns the center of the shape in X-direction
   static PyObject* PyBaseApertureShape_centerX(PyObject *self, PyObject *args){
     pyORBIT_Object* pyPyBaseApertureShape= (pyORBIT_Object*) self;
-		PyBaseApertureShape* cpp_PyBaseApertureShape = (PyBaseApertureShape*) pyPyBaseApertureShape->cpp_obj;	
+		PyBaseApertureShape* cpp_PyBaseApertureShape = (PyBaseApertureShape*) pyPyBaseApertureShape->cpp_obj;
 		int nVars = PyTuple_Size(args);
 		if(nVars >= 1){
 			double center = 0.;
@@ -45,11 +45,11 @@ extern "C" {
     }
 		return Py_BuildValue("d",cpp_PyBaseApertureShape->getCenterX());
   }
-  
-	// Sets or returns the center of the shape in Y-direction 
+
+	// Sets or returns the center of the shape in Y-direction
   static PyObject* PyBaseApertureShape_centerY(PyObject *self, PyObject *args){
     pyORBIT_Object* pyPyBaseApertureShape= (pyORBIT_Object*) self;
-		PyBaseApertureShape* cpp_PyBaseApertureShape = (PyBaseApertureShape*) pyPyBaseApertureShape->cpp_obj;	
+		PyBaseApertureShape* cpp_PyBaseApertureShape = (PyBaseApertureShape*) pyPyBaseApertureShape->cpp_obj;
 		int nVars = PyTuple_Size(args);
 		if(nVars >= 1){
 			double center = 0.;
@@ -59,12 +59,12 @@ extern "C" {
 			cpp_PyBaseApertureShape->setCenterY(center);
     }
 		return Py_BuildValue("d",cpp_PyBaseApertureShape->getCenterY());
-  }	  
+  }
 
-	// name([name]) - sets or returns the name of the shape 
+	// name([name]) - sets or returns the name of the shape
   static PyObject* PyBaseApertureShape_name(PyObject *self, PyObject *args){
     pyORBIT_Object* pyPyBaseApertureShape= (pyORBIT_Object*) self;
-		PyBaseApertureShape* cpp_PyBaseApertureShape = (PyBaseApertureShape*) pyPyBaseApertureShape->cpp_obj;		
+		PyBaseApertureShape* cpp_PyBaseApertureShape = (PyBaseApertureShape*) pyPyBaseApertureShape->cpp_obj;
     const char* name = NULL;
     if(!PyArg_ParseTuple(	args,"|s:name",&name)){
       ORBIT_MPI_Finalize("PyBaseApertureShape.name(...) - call should be - name([name]). Stop.");
@@ -75,8 +75,8 @@ extern "C" {
 		}
 		return Py_BuildValue("s",cpp_PyBaseApertureShape->getName().c_str());
   }
-  
-	// typeName() - returns the type name of the shape 
+
+	// typeName() - returns the type name of the shape
   static PyObject* PyBaseApertureShape_typeName(PyObject *self, PyObject *args){
     pyORBIT_Object* pyPyBaseApertureShape= (pyORBIT_Object*) self;
 		PyBaseApertureShape* cpp_PyBaseApertureShape = (PyBaseApertureShape*) pyPyBaseApertureShape->cpp_obj;
@@ -85,16 +85,16 @@ extern "C" {
 			ORBIT_MPI_Finalize("PyBaseApertureShape.typeName() - has no parameters. Stop.");
     }
 		return Py_BuildValue("s",cpp_PyBaseApertureShape->getTypeName().c_str());
-  }  
-  
+  }
+
 	// Returns empty parameters dictionary - could be overloaded in Python subclass
   static PyObject* PyBaseApertureShape_getParamsDict(PyObject *self, PyObject *args){
     pyORBIT_Object* pyPyBaseApertureShape= (pyORBIT_Object*) self;
-		PyBaseApertureShape* cpp_PyBaseApertureShape = (PyBaseApertureShape*) pyPyBaseApertureShape->cpp_obj;	
+		PyBaseApertureShape* cpp_PyBaseApertureShape = (PyBaseApertureShape*) pyPyBaseApertureShape->cpp_obj;
 		PyObject* paramsDict = PyDict_New();
 		return paramsDict;
-  }  
-  
+  }
+
   //-----------------------------------------------------
   //destructor for python PyBaseApertureShape class (__del__ method).
   //-----------------------------------------------------
@@ -103,23 +103,23 @@ extern "C" {
 		delete ((PyBaseApertureShape*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// definition of the methods of the python PyBaseApertureShape wrapper class
 	// they will be vailable from python level
 	static PyMethodDef PyBaseApertureShapeClassMethods[] = {
-		{ "centerX",      PyBaseApertureShape_centerX,      METH_VARARGS,"Sets or returns the X-shift of the shape center."},	
-		{ "centerY",      PyBaseApertureShape_centerY,      METH_VARARGS,"Sets or returns the Y-shift of the shape center."},	
+		{ "centerX",      PyBaseApertureShape_centerX,      METH_VARARGS,"Sets or returns the X-shift of the shape center."},
+		{ "centerY",      PyBaseApertureShape_centerY,      METH_VARARGS,"Sets or returns the Y-shift of the shape center."},
 		{ "name",         PyBaseApertureShape_name,         METH_VARARGS,"Sets or returns the name of the shape."},
 		{ "typeName",     PyBaseApertureShape_typeName,     METH_VARARGS,"Returns the type of the shape."},
-		{ "getParamsDict",PyBaseApertureShape_getParamsDict,METH_VARARGS,"Returns empty parameters dictionary."},			
+		{ "getParamsDict",PyBaseApertureShape_getParamsDict,METH_VARARGS,"Returns empty parameters dictionary."},
 		{NULL}
   };
 
 	static PyMemberDef PyBaseApertureShapeClassMembers [] = {
 		{NULL}
 	};
-	
-	
+
+
 	//new python PyBaseApertureShape wrapper type definition
 	static PyTypeObject pyORBIT_PyBaseApertureShape_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -160,8 +160,8 @@ extern "C" {
 		(initproc) PyBaseApertureShape_init, /* tp_init */
 		0, /* tp_alloc */
 		PyBaseApertureShape_new, /* tp_new */
-	};	
-	
+	};
+
 	//--------------------------------------------------
 	//Initialization PyBaseApertureShape class
 	//--------------------------------------------------
@@ -170,7 +170,7 @@ extern "C" {
 		//check that the PyBaseApertureShape wrapper is ready
 		if (PyType_Ready(&pyORBIT_PyBaseApertureShape_Type) < 0) return;
 		Py_INCREF(&pyORBIT_PyBaseApertureShape_Type);
-		PyModule_AddObject(module, "PyBaseApertureShape", (PyObject *)&pyORBIT_PyBaseApertureShape_Type);			
+		PyModule_AddObject(module, "PyBaseApertureShape", (PyObject *)&pyORBIT_PyBaseApertureShape_Type);
 	}
 
 #ifdef __cplusplus

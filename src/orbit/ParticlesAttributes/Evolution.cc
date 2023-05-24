@@ -29,5 +29,3 @@ Evolution::Evolution(Bunch* bunch, int size_in):
 Evolution::~Evolution()
 {
 }
-
-

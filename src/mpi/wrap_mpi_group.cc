@@ -36,7 +36,7 @@ extern "C" {
 
   //initializator for python MPI_Group  class
   //this is implementation of the __init__ method
-  static int mpi_group_init(pyORBIT_MPI_Group *self, PyObject *args, PyObject *kwds){		
+  static int mpi_group_init(pyORBIT_MPI_Group *self, PyObject *args, PyObject *kwds){
     if(PyTuple_Size(args) != 0){
       error("MPI_Group constructor cannot have parameters.");
     }
@@ -52,8 +52,8 @@ extern "C" {
 		pyMPI_Group->group = MPI_GROUP_EMPTY;
     Py_INCREF(Py_None);
     return Py_None;
-  }	
-	
+  }
+
   //-----------------------------------------------------
   //destructor for python MPI_Group class.
   //-----------------------------------------------------
@@ -63,10 +63,10 @@ extern "C" {
 		MPI_Group group = self->group;
 		if(group != MPI_GROUP_NULL && group != MPI_GROUP_EMPTY){
 			ORBIT_MPI_Group_free(&group);
-		}		
+		}
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-		
+
 	// defenition of the methods of the python MPI_Group wrapper class
 	// they will be vailable from python level
   static PyMethodDef MPI_GroupClassMethods[] = {
@@ -80,7 +80,7 @@ extern "C" {
 	static PyMemberDef MPI_GroupClassMembers[] = {
 		{NULL}
 	};
-	
+
 	//new python SyncPart wrapper type definition
 	static PyTypeObject pyORBIT_MPI_Group_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -130,7 +130,7 @@ extern "C" {
   void init_orbit_mpi_group(PyObject* module){
 		if (PyType_Ready(&pyORBIT_MPI_Group_Type) < 0) return;
 		Py_INCREF(&pyORBIT_MPI_Group_Type);
-		
+
 		PyObject * group_module = PyModule_New("mpi_group");
 		PyModule_AddObject(group_module, "MPI_Group", (PyObject *)&pyORBIT_MPI_Group_Type);
 		Py_INCREF(group_module);
@@ -138,17 +138,17 @@ extern "C" {
 		pyORBIT_MPI_Group* pyMPI_Group_NULL = PyObject_New(pyORBIT_MPI_Group,&pyORBIT_MPI_Group_Type);
 		pyMPI_Group_NULL->group = MPI_GROUP_NULL;
 		Py_INCREF((PyObject *) pyMPI_Group_NULL);
-		
+
 		pyORBIT_MPI_Group* pyMPI_Group_EMPTY = PyObject_New(pyORBIT_MPI_Group,&pyORBIT_MPI_Group_Type);
 		pyMPI_Group_EMPTY->group = MPI_GROUP_EMPTY;
-		Py_INCREF((PyObject *) pyMPI_Group_EMPTY); 
+		Py_INCREF((PyObject *) pyMPI_Group_EMPTY);
 
     PyModule_AddObject(group_module, "MPI_GROUP_NULL", (PyObject *) pyMPI_Group_NULL);
     PyModule_AddObject(group_module, "MPI_GROUP_EMPTY", (PyObject *) pyMPI_Group_EMPTY);
-		
+
 		PyModule_AddObject(module, "mpi_group", group_module);
 	}
-	
+
 	//-----------------------------------------------------------
 	//The function that will be exposed as C/C++ API for MPI_Group
 	//-----------------------------------------------------------
@@ -157,10 +157,10 @@ extern "C" {
 		pyMPI_Group->group = MPI_GROUP_EMPTY;
     return pyMPI_Group;
 	}
-	
+
 	void freeMPI_Group(pyORBIT_MPI_Group* pyMPI_Group){
 		Py_DECREF(pyMPI_Group);
-	}	
+	}
 
 #ifdef __cplusplus
 }

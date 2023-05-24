@@ -4,7 +4,7 @@
 InjectParts parts class was modified on 2022.02.11 by A. Shishlo.
 It was already parallel from the last modification.
 The ParticleId and Initial coordinates were added as particle's attributes
-to the new and lost particles. To assign these particles' attributes user 
+to the new and lost particles. To assign these particles' attributes user
 should add them to the initial (empty) bunch before the injection starts.
 """
 

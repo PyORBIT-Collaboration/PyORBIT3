@@ -63,8 +63,8 @@
  } MPI_Status;
 
  // Request ( handler)
- typedef int MPI_Request; 
- 
+ typedef int MPI_Request;
+
  /* Define some null objects */
  #define MPI_COMM_NULL      ((MPI_Comm)0)
  #define MPI_OP_NULL        ((MPI_Op)0)
@@ -75,11 +75,11 @@
  #define MPI_GRAPH  1
  #define MPI_CART   2
 
- /* Results of the compare operations */   
- #define MPI_IDENT     0  
- #define MPI_CONGRUENT 1  
- #define MPI_SIMILAR   2  
- #define MPI_UNEQUAL   3 
+ /* Results of the compare operations */
+ #define MPI_IDENT     0
+ #define MPI_CONGRUENT 1
+ #define MPI_SIMILAR   2
+ #define MPI_UNEQUAL   3
 
  /* Names' lengths */
  #define MPI_MAX_PROCESSOR_NAME 256
@@ -90,7 +90,7 @@
  #define MPI_UNDEFINED      (-32766)
  #define MPI_UNDEFINED_RANK MPI_UNDEFINED
  #define MPI_SUCCESS              0
- #define MPI_ANY_SOURCE         (-2)   
+ #define MPI_ANY_SOURCE         (-2)
  #define MPI_ANY_TAG            (-1)
 
 #endif
@@ -110,32 +110,32 @@ extern "C" {
    PyObject_HEAD
    MPI_Comm comm;
  } pyORBIT_MPI_Comm;
- 
+
  typedef struct {
    PyObject_HEAD
    MPI_Group group;
- } pyORBIT_MPI_Group; 
- 
+ } pyORBIT_MPI_Group;
+
  typedef struct {
    PyObject_HEAD
    MPI_Status status;
  } pyORBIT_MPI_Status;
- 
+
  typedef struct {
    PyObject_HEAD
    MPI_Request request;
- } pyORBIT_MPI_Request;  
- 
+ } pyORBIT_MPI_Request;
+
  typedef struct {
    PyObject_HEAD
    MPI_Datatype datatype;
  } pyORBIT_MPI_Datatype;
- 
+
  typedef struct {
    PyObject_HEAD
    MPI_Op op;
- } pyORBIT_MPI_Op; 
- 
+ } pyORBIT_MPI_Op;
+
 #ifdef __cplusplus
 }
 #endif
@@ -154,12 +154,12 @@ double ORBIT_MPI_Wtick();
 
 //--------------------------------------------------------
 // MPI functions related to the MPI_Comm manipulations
-//--------------------------------------------------------	
+//--------------------------------------------------------
 int ORBIT_MPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm *comm_out);
 int ORBIT_MPI_Comm_group(MPI_Comm comm, MPI_Group *group );
 int ORBIT_MPI_Comm_dup(MPI_Comm comm, MPI_Comm *comm_out);
 int ORBIT_MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out);
-int ORBIT_MPI_Comm_remote_size(MPI_Comm comm, int *size);	
+int ORBIT_MPI_Comm_remote_size(MPI_Comm comm, int *size);
 int ORBIT_MPI_Comm_remote_group(MPI_Comm comm, MPI_Group *group);
 int ORBIT_MPI_Comm_test_inter(MPI_Comm comm, int *flag);
 int ORBIT_MPI_Comm_compare(MPI_Comm  comm1, MPI_Comm  comm2, int *result);
@@ -171,28 +171,28 @@ int ORBIT_MPI_Comm_free(MPI_Comm* comm);
 
 //--------------------------------------------------------
 // MPI functions related to the MPI_Group manipulations
-//--------------------------------------------------------	
+//--------------------------------------------------------
 int ORBIT_MPI_Group_incl(MPI_Group group, int n, int *ranks, MPI_Group *group_out );
 int ORBIT_MPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group *newgroup);
-int ORBIT_MPI_Group_union(MPI_Group group1, MPI_Group group2, MPI_Group *group_out);	
+int ORBIT_MPI_Group_union(MPI_Group group1, MPI_Group group2, MPI_Group *group_out);
 int ORBIT_MPI_Group_difference(MPI_Group group1, MPI_Group group2, MPI_Group *group_out);
 int ORBIT_MPI_Group_intersection(MPI_Group group1, MPI_Group group2, MPI_Group *group_out);
-int ORBIT_MPI_Group_compare(MPI_Group group1, MPI_Group group2, int *result);	
-int ORBIT_MPI_Group_translate_ranks(MPI_Group group_a, int n, int *ranks_a, MPI_Group group_b, int *ranks_b);	
+int ORBIT_MPI_Group_compare(MPI_Group group1, MPI_Group group2, int *result);
+int ORBIT_MPI_Group_translate_ranks(MPI_Group group_a, int n, int *ranks_a, MPI_Group group_b, int *ranks_b);
 int ORBIT_MPI_Group_size(MPI_Group group, int *size);
 int ORBIT_MPI_Group_rank(MPI_Group group, int *rank);
 int ORBIT_MPI_Group_free(MPI_Group* group);
 
 //--------------------------------------------------------
 // MPI functions related to the MPI_Intercomm manipulations
-//--------------------------------------------------------		
-int ORBIT_MPI_Intercomm_create(MPI_Comm local_comm, int local_leader, MPI_Comm peer_comm, 
-															 int remote_leader, int tag, MPI_Comm *comm_out);	
+//--------------------------------------------------------
+int ORBIT_MPI_Intercomm_create(MPI_Comm local_comm, int local_leader, MPI_Comm peer_comm,
+															 int remote_leader, int tag, MPI_Comm *comm_out);
 int ORBIT_MPI_Intercomm_merge(MPI_Comm comm, int high, MPI_Comm *comm_out);
 
 //--------------------------------------------------------
 // MPI functions related to the Graph manipulations
-//--------------------------------------------------------	
+//--------------------------------------------------------
 int ORBIT_MPI_Graph_create(MPI_Comm comm_old, int nnodes, int *index, int *edges, int reorder, MPI_Comm *comm_graph);
 int ORBIT_MPI_Graphdims_get(MPI_Comm comm, int *nnodes, int *nedges);
 int ORBIT_MPI_Graph_get(MPI_Comm comm, int maxindex, int maxedges, int *index, int *edges);
@@ -206,11 +206,11 @@ int ORBIT_MPI_Graph_neighbors(MPI_Comm comm, int rank, int maxneighbors, int *ne
 int ORBIT_MPI_Barrier(MPI_Comm comm);
 int ORBIT_MPI_Wait(MPI_Request  *request, MPI_Status *status);
 int ORBIT_MPI_Allreduce(void* buf_in, void* buf_out, int count, MPI_Datatype, MPI_Op, MPI_Comm);
-int ORBIT_MPI_Bcast(void* buf, int count, MPI_Datatype, int rank, MPI_Comm);	
+int ORBIT_MPI_Bcast(void* buf, int count, MPI_Datatype, int rank, MPI_Comm);
 int ORBIT_MPI_Send(void* buf, int count, MPI_Datatype, int dest,   int tag, MPI_Comm);
 int ORBIT_MPI_Recv(void* buf, int count, MPI_Datatype, int source, int tag, MPI_Comm, MPI_Status *);
 int ORBIT_MPI_Probe(int source, int tag, MPI_Comm comm, MPI_Status *status);
-int ORBIT_MPI_Get_count(MPI_Status *status, MPI_Datatype datatype, int *count);	
+int ORBIT_MPI_Get_count(MPI_Status *status, MPI_Datatype datatype, int *count);
 
 
 #endif   //end of ---ifndef ORBIT_MPI_INCLUDE---

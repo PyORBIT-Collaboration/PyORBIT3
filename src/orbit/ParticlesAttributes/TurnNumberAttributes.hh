@@ -11,11 +11,11 @@
 //
 // DESCRIPTION
 //    A subclass of a ParticleAttributes class
-//    
+//
 // The main purpose of this class to provide information about the turn
 // index in the lost bunch for ring simulations. This attribute should be
-// assigned to the tracking main bunch after its instantiating before 
-// tracking. During the tracking the collimation nodes will add this 
+// assigned to the tracking main bunch after its instantiating before
+// tracking. During the tracking the collimation nodes will add this
 // attribute to the lost bunch (if it does not exist yet) and will assign
 // turn value to the particles lost in this collimator.
 //
@@ -40,9 +40,9 @@ public:
 
 	/** Returns the turn number for the particle with particle_index in the bunch */
   int getTurn(int particle_index);
-	
+
 	/** Sets the turn number for the particle with particle_index in the bunch */
-	void setTurn(int particle_index, int turn);	
+	void setTurn(int particle_index, int turn);
 
 };
 

@@ -14,6 +14,7 @@ import math
 import random
 import sys
 from orbit.core import bunch
+
 BunchTwissAnalysis = bunch.BunchTwissAnalysis
 BunchTuneAnalysis = bunch.BunchTuneAnalysis
 from ..utils.consts import speed_of_light

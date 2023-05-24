@@ -39,22 +39,22 @@ extern "C" {
 	 double xMin = -1.0, yMin = -1.0 , xMax = +1.0 , yMax = +1.0;
 	 if(!PyArg_ParseTuple(args,"ii|dddd:__init__",&binX,&binY,&xMin,&xMax,&yMin,&yMax)){
 				ORBIT_MPI_Finalize("PyGrid2D - Grid2D(nX,nY[,xMin,xMax,yMin,yMax]) - constructor needs parameters.");
-		}		
-		self->cpp_obj = new Grid2D(binX,binY,xMin,xMax,yMin,yMax);	
+		}
+		self->cpp_obj = new Grid2D(binX,binY,xMin,xMax,yMin,yMax);
 		((Grid2D*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 		//std::cerr<<"The Grid2D __init__ has been called!"<<std::endl;
 		return 0;
   }
-		
+
   //setZero()
   static PyObject* Grid2D_setZero(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
 		Grid2D* cpp_Grid2D = (Grid2D*) pyGrid2D->cpp_obj;
 		cpp_Grid2D->setZero();
 		Py_INCREF(Py_None);
-		return Py_None;	
+		return Py_None;
 	}
-	
+
 	//getValue(double x, double y)
   static PyObject* Grid2D_getValue(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
@@ -76,9 +76,9 @@ extern "C" {
 		}
 		double val;
 		cpp_Grid2D->interpolateBilinear(x,y,val);
-		return Py_BuildValue("d",val);	
+		return Py_BuildValue("d",val);
 	}
-	
+
 	//setValue(double value, int ix, int iy)
   static PyObject* Grid2D_setValue(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
@@ -90,7 +90,7 @@ extern "C" {
 		}
 		cpp_Grid2D->setValue(val,ix,iy);
 		Py_INCREF(Py_None);
-		return Py_None;	
+		return Py_None;
 	}
 
 	//getValueOnGrid(int ix, int iy)
@@ -103,7 +103,7 @@ extern "C" {
 		}
 		return Py_BuildValue("d",cpp_Grid2D->getValueOnGrid(ix,iy));
 	}
-	
+
 	//setGridX(double min, double max, int n)
   static PyObject* Grid2D_setGridX(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
@@ -114,9 +114,9 @@ extern "C" {
 		}
 		cpp_Grid2D->setGridX(min,max);
 		Py_INCREF(Py_None);
-		return Py_None;	
+		return Py_None;
 	}
-	
+
 	//setGridY(double min, double max, int n)
   static PyObject* Grid2D_setGridY(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
@@ -127,9 +127,9 @@ extern "C" {
 		}
 		cpp_Grid2D->setGridY(min,max);
 		Py_INCREF(Py_None);
-		return Py_None;	
-	}	
-	
+		return Py_None;
+	}
+
 	//getGridX(ix)
   static PyObject* Grid2D_getGridX(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
@@ -137,10 +137,10 @@ extern "C" {
 		int ind = -1;
 		if(!PyArg_ParseTuple(args,"i:getGridX",&ind) || ind < 0 || ind >= cpp_Grid2D->getSizeX()){
 			ORBIT_MPI_Finalize("PyGrid2D - getGridX(ix) - parameter is needed. [0 - sizeX[");
-		}		
+		}
 		return Py_BuildValue("d",cpp_Grid2D->getGridX(ind));
-	}	
-	
+	}
+
 	//getGridY(iy)
   static PyObject* Grid2D_getGridY(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
@@ -148,24 +148,24 @@ extern "C" {
 		int ind = -1;
 		if(!PyArg_ParseTuple(args,"i:getGridY",&ind) || ind < 0 || ind >= cpp_Grid2D->getSizeY()){
 			ORBIT_MPI_Finalize("PyGrid2D - getGridY(iy) - parameter is needed. [0 - sizeY[");
-		}		
+		}
 		return Py_BuildValue("d",cpp_Grid2D->getGridY(ind));
-	}	
-	
+	}
+
 	//getSizeX()
   static PyObject* Grid2D_getSizeX(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
-		Grid2D* cpp_Grid2D = (Grid2D*) pyGrid2D->cpp_obj;	
+		Grid2D* cpp_Grid2D = (Grid2D*) pyGrid2D->cpp_obj;
 		return Py_BuildValue("i",cpp_Grid2D->getSizeX());
-	}	
-	
+	}
+
 	//getSizeY()
   static PyObject* Grid2D_getSizeY(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
-		Grid2D* cpp_Grid2D = (Grid2D*) pyGrid2D->cpp_obj;	
+		Grid2D* cpp_Grid2D = (Grid2D*) pyGrid2D->cpp_obj;
 		return Py_BuildValue("i",cpp_Grid2D->getSizeY());
-	}	
-	
+	}
+
   //It will synchronize through the MPI communicator
   static PyObject* Grid2D_synchronizeMPI(PyObject *self, PyObject *args){
      pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
@@ -176,76 +176,76 @@ extern "C" {
 		}
 		else {
 			PyObject* py_mpi_comm_type = wrap_orbit_mpi_comm::getMPI_CommType("MPI_Comm");
-			PyObject* pyMPIComm = PyTuple_GetItem(args,0);			
+			PyObject* pyMPIComm = PyTuple_GetItem(args,0);
 			if((!PyObject_IsInstance(pyMPIComm,py_mpi_comm_type))){
 				ORBIT_MPI_Finalize("Grid2D.synchronizeMPI(MPI_Comm) - input parameter is not MPI_Comm");
-			}					
+			}
 			cpp_Grid2D->synchronizeMPI((pyORBIT_MPI_Comm*) pyMPIComm);
 		}
 	 	Py_INCREF(Py_None);
-		return Py_None; 
-  }	
-	
-	
+		return Py_None;
+  }
+
+
 	//getMinX()
   static PyObject* Grid2D_getMinX(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
-		Grid2D* cpp_Grid2D = (Grid2D*) pyGrid2D->cpp_obj;	
+		Grid2D* cpp_Grid2D = (Grid2D*) pyGrid2D->cpp_obj;
 		return Py_BuildValue("d",cpp_Grid2D->getMinX());
-	}	
-	
+	}
+
 	//getMaxX()
   static PyObject* Grid2D_getMaxX(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
-		Grid2D* cpp_Grid2D = (Grid2D*) pyGrid2D->cpp_obj;	
+		Grid2D* cpp_Grid2D = (Grid2D*) pyGrid2D->cpp_obj;
 		return Py_BuildValue("d",cpp_Grid2D->getMaxX());
-	}	
-	
+	}
+
 	//getMinY()
   static PyObject* Grid2D_getMinY(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
-		Grid2D* cpp_Grid2D = (Grid2D*) pyGrid2D->cpp_obj;	
+		Grid2D* cpp_Grid2D = (Grid2D*) pyGrid2D->cpp_obj;
 		return Py_BuildValue("d",cpp_Grid2D->getMinY());
-	}	
-	
+	}
+
 	//getMaxY()
   static PyObject* Grid2D_getMaxY(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
-		Grid2D* cpp_Grid2D = (Grid2D*) pyGrid2D->cpp_obj;	
+		Grid2D* cpp_Grid2D = (Grid2D*) pyGrid2D->cpp_obj;
 		return Py_BuildValue("d",cpp_Grid2D->getMaxY());
-	}		
+	}
 
 	//getSum()
   static PyObject* Grid2D_getSum(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
-		Grid2D* cpp_Grid2D = (Grid2D*) pyGrid2D->cpp_obj;	
+		Grid2D* cpp_Grid2D = (Grid2D*) pyGrid2D->cpp_obj;
 		return Py_BuildValue("d",cpp_Grid2D->getSum());
-	}		
-	
+	}
+
 	//multiply()
   static PyObject* Grid2D_multiply(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
-		Grid2D* cpp_Grid2D = (Grid2D*) pyGrid2D->cpp_obj;	
+		Grid2D* cpp_Grid2D = (Grid2D*) pyGrid2D->cpp_obj;
 		double coeff;
 		if(!PyArg_ParseTuple(args,"d:multiply",&coeff)){
 			ORBIT_MPI_Finalize("PyGrid2D - multiply(coeff) - parameters are needed.");
 		}
 		cpp_Grid2D->multiply(coeff);
 		Py_INCREF(Py_None);
-    	return Py_None;	
-	}		
-	
+    	return Py_None;
+	}
+
 	//isInside(x,y)
   static PyObject* Grid2D_isInside(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
-		Grid2D* cpp_Grid2D = (Grid2D*) pyGrid2D->cpp_obj;	
+		Grid2D* cpp_Grid2D = (Grid2D*) pyGrid2D->cpp_obj;
 		double x,y;
 		if(!PyArg_ParseTuple(args,"dd:isInside",&x,&y)){
 			ORBIT_MPI_Finalize("PyGrid2D - isInside(x,y) - parameters are needed.");
-		}		
+		}
 		return Py_BuildValue("i",cpp_Grid2D->isInside(x,y));
-	}		
-	
+	}
+
 	//binBunch(Bunch* bunch, [ind0,ind1]), by default ind0 = 0, ind1 = 2 (XY) plane
   static PyObject* Grid2D_binBunch(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
@@ -267,9 +267,9 @@ extern "C" {
 			cpp_Grid2D->binBunch(cpp_bunch,ind0,ind1);
 		}
 		Py_INCREF(Py_None);
-    return Py_None;	
-	}		
-		
+    return Py_None;
+	}
+
 	//binBunchBilinear(Bunch* bunch, [ind0,ind1]), by default ind0 = 0, ind1 = 2 (XY) plane
   static PyObject* Grid2D_binBunchBilinear(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
@@ -291,9 +291,9 @@ extern "C" {
 			cpp_Grid2D->binBunchBilinear(cpp_bunch,ind0,ind1);
 		}
 		Py_INCREF(Py_None);
-    return Py_None;	
-	}	
-	
+    return Py_None;
+	}
+
 	//binValue(double value, double x, double y)
   static PyObject* Grid2D_binValue(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
@@ -304,8 +304,8 @@ extern "C" {
 		}
 		cpp_Grid2D->binValue(val,x,y);
 		Py_INCREF(Py_None);
-    return Py_None;	
-	}	
+    return Py_None;
+	}
 
 	//binValueBilinear(double value, double x, double y)
   static PyObject* Grid2D_binValueBilinear(PyObject *self, PyObject *args){
@@ -317,9 +317,9 @@ extern "C" {
 		}
 		cpp_Grid2D->binValueBilinear(val,x,y);
 		Py_INCREF(Py_None);
-    return Py_None;	
-	}		
-	
+    return Py_None;
+	}
+
 	//calcGradient(double x, double y)
   static PyObject* Grid2D_calcGradient(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
@@ -332,7 +332,7 @@ extern "C" {
 		cpp_Grid2D->calcGradient(x,y,ex,ey);
 		return Py_BuildValue("(dd)",ex,ey);
 	}
-	
+
 	//calcGradientBilinear(double x, double y)
   static PyObject* Grid2D_calcGradientBilinear(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid2D = (pyORBIT_Object*) self;
@@ -344,9 +344,9 @@ extern "C" {
 		}
 		cpp_Grid2D->calcGradientBilinear(x,y,ex,ey);
 		return Py_BuildValue("(dd)",ex,ey);
-	}	
-	
-	
+	}
+
+
   //-----------------------------------------------------
   //destructor for python Grid2D class (__del__ method).
   //-----------------------------------------------------
@@ -356,7 +356,7 @@ extern "C" {
 		delete cpp_Grid2D;
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python Grid2D wrapper class
 	// they will be vailable from python level
   static PyMethodDef Grid2DClassMethods[] = {
@@ -384,7 +384,7 @@ extern "C" {
 		{ "binBunchBilinear",     Grid2D_binBunchBilinear,     METH_VARARGS,"bins the Bunch instance into the 2D mesh bi-linearly (XY plane by default)"},
 		{ "calcGradient",         Grid2D_calcGradient,         METH_VARARGS,"returns gradient as (gx,gy) for point (x,y) calculated by 9-points weighting scheme"},
 		{ "calcGradientBilinear", Grid2D_calcGradientBilinear, METH_VARARGS,"returns gradient as (gx,gy) for point (x,y) calculated bi-linerly"},
-		{ "synchronizeMPI",       Grid2D_synchronizeMPI,       METH_VARARGS,"synchronize through the MPI communicator"},		
+		{ "synchronizeMPI",       Grid2D_synchronizeMPI,       METH_VARARGS,"synchronize through the MPI communicator"},
     {NULL}
   };
 
@@ -434,7 +434,7 @@ extern "C" {
 		(initproc) Grid2D_init, /* tp_init */
 		0, /* tp_alloc */
 		Grid2D_new, /* tp_new */
-	};	
+	};
 
 	//--------------------------------------------------
 	//Initialization function of the pyGrid2D class

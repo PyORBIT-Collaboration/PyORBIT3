@@ -36,7 +36,7 @@ extern "C" {
   //initializator for python MPI_Request  class
   //this is implementation of the __init__ method
   static int MPI_Request_init(pyORBIT_MPI_Request *self, PyObject *args, PyObject *kwds){
-    //pyORBIT_MPI_Request* pyMPI_Request = (pyORBIT_MPI_Request*) self;		
+    //pyORBIT_MPI_Request* pyMPI_Request = (pyORBIT_MPI_Request*) self;
     if(PyTuple_Size(args) != 0){
       error("MPI_Request constructor needs nothing.");
     }
@@ -48,10 +48,10 @@ extern "C" {
   //-----------------------------------------------------
   //this is implementation of the __del__ method
   static void MPI_Request_del(pyORBIT_MPI_Request* self){
-		//std::cerr<<"The MPI_Request __del__ has been called!"<<std::endl;	
+		//std::cerr<<"The MPI_Request __del__ has been called!"<<std::endl;
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-		
+
 	// defenition of the methods of the python MPI_Request wrapper class
 	// they will be vailable from python level
   static PyMethodDef MPI_RequestClassMethods[] = {
@@ -64,7 +64,7 @@ extern "C" {
 	static PyMemberDef MPI_RequestClassMembers[] = {
 		{NULL}
 	};
-	
+
 	//new python SyncPart wrapper type definition
 	static PyTypeObject pyORBIT_MPI_Request_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -114,11 +114,11 @@ extern "C" {
   void init_orbit_mpi_request(PyObject* module){
 		if (PyType_Ready(&pyORBIT_MPI_Request_Type) < 0) return;
 		Py_INCREF(&pyORBIT_MPI_Request_Type);
-		
+
 		PyObject * request_module = PyModule_New("mpi_request");
 		PyModule_AddObject(request_module, "MPI_Request", (PyObject *)&pyORBIT_MPI_Request_Type);
 		Py_INCREF(request_module);
-		
+
 		PyModule_AddObject(module, "mpi_request", request_module);
 	}
 

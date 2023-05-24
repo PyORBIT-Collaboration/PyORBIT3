@@ -23,7 +23,7 @@
 
 using namespace std;
 
-/** 
+/**
   This class represents a 2D rectangular grid.
 */
 

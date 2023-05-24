@@ -1,6 +1,6 @@
 """
-This module is a collection of the linac accelerator nodes which are the subclasses of 
-the AccNode class. We cannot use here TEAPOT nodes from the TEAPOT package 
+This module is a collection of the linac accelerator nodes which are the subclasses of
+the AccNode class. We cannot use here TEAPOT nodes from the TEAPOT package
 directly because we use the field as a parameter for quads and dipole correctors
 instead of k1 = 1/(B*rho)*(dB/dr).
 The abstract AbstractRF_Gap class is a parent class for all RF gap model classes.
@@ -394,9 +394,9 @@ class Quad(LinacMagnetNode):
             self.setLength(lengthStep, i)
         """
 		#=============================================
-		# This is an old TEAPOT-like implementation 
+		# This is an old TEAPOT-like implementation
 		# of the Quad slicing.
-		#=============================================		
+		#=============================================
 		lengthIN = (self.getLength()/(nParts - 1))/2.0
 		lengthOUT = (self.getLength()/(nParts - 1))/2.0
 		lengthStep = lengthIN + lengthOUT
@@ -448,7 +448,7 @@ class Quad(LinacMagnetNode):
         self.tracking_module.quad1(bunch, step / 4, kq)
         """
 		#=============================================
-		# This is an old TEAPOT-like implementation 
+		# This is an old TEAPOT-like implementation
 		# of the Quad tracking.
 		#=============================================
 		if(index == 0):

@@ -12,13 +12,13 @@
 //
 //   BaseAperture
 //
-// AUTHOR: 
+// AUTHOR:
 //   Andrei Shishlo October 2022
 //
-//   BaseAperture class defines actions with macro particles in a main bunch 
-//   and a lost bunch instances with respect of transverse coordinates of 
+//   BaseAperture class defines actions with macro particles in a main bunch
+//   and a lost bunch instances with respect of transverse coordinates of
 //   macro particles. It can keep macro particle in the main bunch or remove it
-//   after asking the BaseApertureShape class instance about the suitability 
+//   after asking the BaseApertureShape class instance about the suitability
 //   of particle's coordinates.
 //
 ///////////////////////////////////////////////////////////////////////////
@@ -50,15 +50,15 @@ BaseApertureShape* BaseAperture::getApertureShape(){
 void BaseAperture::setApertureShape(BaseApertureShape* apertureShapeIn){
 
 	nLost_ = 0;
-	
+
 	if(apertureShapeIn == NULL){
 		return;
 	}
-	
+
 	if( ((PyObject*) apertureShapeIn->getPyWrapper()) == NULL){
 		ORBIT_MPI_Finalize("BaseAperture class setApertureShape(...): BaseApertureShape Python class needed! Stop.");
-	}	
-	
+	}
+
 	if(apertureShape != NULL){
 		if( ((PyObject*) apertureShape->getPyWrapper()) != NULL){
 			Py_XDECREF( (PyObject*) apertureShape->getPyWrapper());
@@ -69,69 +69,69 @@ void BaseAperture::setApertureShape(BaseApertureShape* apertureShapeIn){
 	Py_INCREF((PyObject*) apertureShape->getPyWrapper());
 }
 
-/** 
-	Routine for transfering particles through a aperture 
+/**
+	Routine for transfering particles through a aperture
 */
 void BaseAperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
-	
+
 	nLost_ = 0;
-	
+
 	if(isActive != 1){
 		return;
 	}
-	
+
 	if(apertureShape == NULL){
 		return;
-	}	
+	}
 
 	bunch->compress();
 	if(lostbunch != NULL) lostbunch->compress();
 	double m_size = 0.;
 	int nParts = bunch->getSize();
 	double** coord = bunch->coordArr();
-	
-	
+
+
 	int nPartsGlobal = bunch->getSizeGlobal();
-	
+
 	ParticleAttributes* lostPartAttr = NULL;
-	
+
 	ParticleAttributes* partIdNumbAttr = NULL;
 	ParticleAttributes* partIdNumbInitAttr = NULL;
-	
+
 	ParticleAttributes* partInitCoordsAttr = NULL;
 	ParticleAttributes* partInitCoordsInitAttr = NULL;
-	
+
 	ParticleAttributes* partMacroAttr = NULL;
-	ParticleAttributes* partMacroInitAttr = NULL;	
-	
+	ParticleAttributes* partMacroInitAttr = NULL;
+
 	ParticleAttributes* partTurnNumberAttr = NULL;
 	double turn = 0.;
-	
+
 	if(lostbunch != NULL) {
 		if(lostbunch->hasParticleAttributes("LostParticleAttributes") <= 0){
 			std::map<std::string,double> params_dict;
 			lostbunch->addParticleAttributes("LostParticleAttributes",params_dict);
 		}
 		lostPartAttr = lostbunch->getParticleAttributes("LostParticleAttributes");
-		
+
 		if(bunch->hasParticleAttributes("ParticleIdNumber") > 0){
 			partIdNumbInitAttr = bunch->getParticleAttributes("ParticleIdNumber");
 			if(lostbunch->hasParticleAttributes("ParticleIdNumber") <= 0){
 				std::map<std::string,double> params_dict;
 				lostbunch->addParticleAttributes("ParticleIdNumber",params_dict);
-			}	
+			}
 			partIdNumbAttr = lostbunch->getParticleAttributes("ParticleIdNumber");
 		}
-		
+
 		if(bunch->hasParticleAttributes("ParticleInitialCoordinates") > 0){
 			partInitCoordsInitAttr = bunch->getParticleAttributes("ParticleInitialCoordinates");
 			if(lostbunch->hasParticleAttributes("ParticleInitialCoordinates") <= 0){
 				std::map<std::string,double> params_dict;
 				lostbunch->addParticleAttributes("ParticleInitialCoordinates",params_dict);
 			}
-			partInitCoordsAttr = lostbunch->getParticleAttributes("ParticleInitialCoordinates");			
-		}		
-		
+			partInitCoordsAttr = lostbunch->getParticleAttributes("ParticleInitialCoordinates");
+		}
+
 		if(bunch->hasParticleAttributes("macrosize") > 0){
 			partMacroInitAttr = bunch->getParticleAttributes("macrosize");
 			if(lostbunch->hasParticleAttributes("macrosize") <= 0){
@@ -140,7 +140,7 @@ void BaseAperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
 			}
 			partMacroAttr = lostbunch->getParticleAttributes("macrosize");
 		}
-		
+
 		if (bunch->hasParticleAttributes("TurnNumber") > 0) {
 			if (lostbunch->hasParticleAttributes("TurnNumber") <= 0) {
 				std::map<std::string,double> part_attr_dict;
@@ -150,7 +150,7 @@ void BaseAperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
 			turn = 1.0*bunch->getBunchAttributeInt(attr_name_str);
 			partTurnNumberAttr = lostbunch->getParticleAttributes("TurnNumber");
 		}
-		
+
 		lostbunch->setMacroSize(bunch->getMacroSize());
 	}
 
@@ -179,17 +179,17 @@ void BaseAperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
 			}
 			bunch->deleteParticleFast(count);
 		}
-	}	
-				
+	}
+
 	//compress bunch
 	bunch->compress();
-	
+
 	//Total particle loss across all CPUs in the bunch communicator
 	nLost_ = nPartsGlobal - bunch->getSizeGlobal();
 }
 
-/** 
-	Returns total particle loss across all CPUs in the bunch communicator 
+/**
+	Returns total particle loss across all CPUs in the bunch communicator
 */
 int BaseAperture::getNumberOfLost(){
 	return nLost_;
@@ -199,7 +199,7 @@ int BaseAperture::getNumberOfLost(){
 string BaseAperture::getName(){
 	return apertureName;
 }
-	
+
 /** Sets the aperture name */
 void BaseAperture::setName(string apertureNameIn){
 	apertureName = apertureNameIn;
@@ -218,7 +218,7 @@ double BaseAperture::getPosition(){
 void BaseAperture::setPosition(double position){
 	pos_ = position;
 }
-	
+
 /**
 	Sets the aperture in an active ( 1 )/ not active ( 0 ) state
 */

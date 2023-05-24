@@ -7,7 +7,7 @@
 //    04/22/2003
 //
 // DESCRIPTION
-//    The base class that provides capability to keep the reference to 
+//    The base class that provides capability to keep the reference to
 //    the Python class instance that is wrapping the c++ subclassing
 //    this class.
 //

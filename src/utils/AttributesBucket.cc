@@ -10,7 +10,7 @@
 //    12/14/2005
 //
 // DESCRIPTION
-//    A class for collection of int and double attributes in the dictionary. 
+//    A class for collection of int and double attributes in the dictionary.
 ///////////////////////////////////////////////////////////////////////////
 
 #include "AttributesBucket.hh"
@@ -81,7 +81,7 @@ void AttributesBucket::addTo(AttributesBucket* bckt){
 	for(int i = 0, n = names.size(); i < n; i++){
 		bckt->intVal(names[i],intVal(names[i]));
 	}
-	
+
 	names.clear();
 	bckt->getDoubleAttributeNames(names);
 	for(int i = 0, n = names.size(); i < n; i++){
@@ -93,5 +93,3 @@ void AttributesBucket::clear(){
 	intAttrMap.clear();
 	doubleAttrMap.clear();
 }
-
-

@@ -13,7 +13,7 @@ namespace wrap_convex_aperture_shape{
 extern "C" {
 #endif
 
-	/** 
+	/**
 	Constructor for python class wrapping c++ Circle, Ellipse, and Rectangular ApertureShape instances.
 	*/
 	static PyObject* ConvexApertureShape_new(PyTypeObject *type, PyObject *args, PyObject *kwds){
@@ -22,18 +22,18 @@ extern "C" {
 		self->cpp_obj = NULL;
 		return (PyObject *) self;
 	}
-	
+
   /** This is implementation of the __init__ method */
   static int ConvexApertureShape_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
   	self->cpp_obj = new ConvexApertureShape();
- 	  ((BaseApertureShape*) self->cpp_obj)->setPyWrapper((PyObject*) self);	  
+ 	  ((BaseApertureShape*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
 
-	// Sets or returns the center of the shape in X-direction 
+	// Sets or returns the center of the shape in X-direction
   static PyObject* ConvexApertureShape_centerX(PyObject *self, PyObject *args){
     pyORBIT_Object* pyConvexApertureShape = (pyORBIT_Object*) self;
-		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyConvexApertureShape->cpp_obj;	
+		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyConvexApertureShape->cpp_obj;
 		int nVars = PyTuple_Size(args);
 		if(nVars >= 1){
 			double center = 0.;
@@ -44,11 +44,11 @@ extern "C" {
     }
 		return Py_BuildValue("d",cpp_BaseApertureShape->getCenterX());
   }
-  
-	// Sets or returns the center of the shape in Y-direction 
+
+	// Sets or returns the center of the shape in Y-direction
   static PyObject* ConvexApertureShape_centerY(PyObject *self, PyObject *args){
     pyORBIT_Object* pyConvexApertureShape= (pyORBIT_Object*) self;
-		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyConvexApertureShape->cpp_obj;	
+		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyConvexApertureShape->cpp_obj;
 		int nVars = PyTuple_Size(args);
 		if(nVars >= 1){
 			double center = 0.;
@@ -58,12 +58,12 @@ extern "C" {
 			cpp_BaseApertureShape->setCenterY(center);
     }
 		return Py_BuildValue("d",cpp_BaseApertureShape->getCenterY());
-  }	  
+  }
 
-	// name([name]) - sets or returns the name of the shape 
+	// name([name]) - sets or returns the name of the shape
   static PyObject* ConvexApertureShape_name(PyObject *self, PyObject *args){
     pyORBIT_Object* pyConvexApertureShape= (pyORBIT_Object*) self;
-		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyConvexApertureShape->cpp_obj;		
+		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyConvexApertureShape->cpp_obj;
     const char* name = NULL;
     if(!PyArg_ParseTuple(	args,"|s:name",&name)){
       ORBIT_MPI_Finalize("ConvexApertureShape.name(...) - call should be - name([name]). Stop.");
@@ -74,8 +74,8 @@ extern "C" {
 		}
 		return Py_BuildValue("s",cpp_BaseApertureShape->getName().c_str());
   }
-  
-	// typeName() - returns the type name of the shape 
+
+	// typeName() - returns the type name of the shape
   static PyObject* ConvexApertureShape_typeName(PyObject *self, PyObject *args){
     pyORBIT_Object* pyConvexApertureShape= (pyORBIT_Object*) self;
 		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyConvexApertureShape->cpp_obj;
@@ -84,9 +84,9 @@ extern "C" {
 			ORBIT_MPI_Finalize("ConvexApertureShape.typeName() - has no parameters. Stop.");
     }
 		return Py_BuildValue("s",cpp_BaseApertureShape->getTypeName().c_str());
-  }  
-  
-	// Sets the convex shape points 
+  }
+
+	// Sets the convex shape points
   static PyObject* ConvexApertureShape_setPoints(PyObject *self, PyObject *args){
     pyORBIT_Object* pyConvexApertureShape= (pyORBIT_Object*) self;
 		ConvexApertureShape* cpp_ConvexApertureShape = (ConvexApertureShape*) pyConvexApertureShape->cpp_obj;
@@ -103,11 +103,11 @@ extern "C" {
   		PyObject* pXY_List = PyList_GetItem(pyPointList,ind);
   		double x = PyFloat_AS_DOUBLE(PyList_GetItem(pXY_List,0));
   		double y = PyFloat_AS_DOUBLE(PyList_GetItem(pXY_List,1));
-  		cpp_ConvexApertureShape->addPoint(x,y);	
+  		cpp_ConvexApertureShape->addPoint(x,y);
   	}
 		cpp_ConvexApertureShape->checkAllPoints();
     Py_INCREF(Py_None);
-		return Py_None;		
+		return Py_None;
   }
 
 	// Returns the convex shape points as array [[x,y],...]
@@ -125,8 +125,8 @@ extern "C" {
 			PyList_SET_ITEM(pyPointList,ind,pyXY_List);
 		}
     Py_INCREF(pyPointList);
-		return pyPointList;		
-  }  
+		return pyPointList;
+  }
 
   //-----------------------------------------------------
   //destructor for python ConvexApertureShape class (__del__ method).
@@ -135,12 +135,12 @@ extern "C" {
 		delete ((ConvexApertureShape*) self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// definition of the methods of the python ConvexApertureShape wrapper class
 	// they will be vailable from python level
 	static PyMethodDef ConvexApertureShapeClassMethods[] = {
-		{ "centerX",  ConvexApertureShape_centerX,  METH_VARARGS,"Sets or returns the X-shift of the shape center."},	
-		{ "centerY",  ConvexApertureShape_centerY,  METH_VARARGS,"Sets or returns the Y-shift of the shape center."},	
+		{ "centerX",  ConvexApertureShape_centerX,  METH_VARARGS,"Sets or returns the X-shift of the shape center."},
+		{ "centerY",  ConvexApertureShape_centerY,  METH_VARARGS,"Sets or returns the Y-shift of the shape center."},
 		{ "name",     ConvexApertureShape_name,     METH_VARARGS,"Sets or returns the name of the shape."},
 		{ "typeName", ConvexApertureShape_typeName, METH_VARARGS,"Returns the type of the shape."},
 		{ "setPoints",ConvexApertureShape_setPoints,METH_VARARGS,"Sets the convex shape points as [[x,y],...]"},
@@ -151,8 +151,8 @@ extern "C" {
 	static PyMemberDef ConvexApertureShapeClassMembers [] = {
 		{NULL}
 	};
-	
-	
+
+
 	//new python ConvexApertureShape wrapper type definition
 	static PyTypeObject pyORBIT_ConvexApertureShape_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -193,8 +193,8 @@ extern "C" {
 		(initproc) ConvexApertureShape_init, /* tp_init */
 		0, /* tp_alloc */
 		ConvexApertureShape_new, /* tp_new */
-	};	
-	
+	};
+
 	//--------------------------------------------------
 	//Initialization ConvexApertureShape class
 	//--------------------------------------------------
@@ -203,7 +203,7 @@ extern "C" {
 		//check that the ConvexApertureShape wrapper is ready
 		if (PyType_Ready(&pyORBIT_ConvexApertureShape_Type) < 0) return;
 		Py_INCREF(&pyORBIT_ConvexApertureShape_Type);
-		PyModule_AddObject(module, "ConvexApertureShape", (PyObject *)&pyORBIT_ConvexApertureShape_Type);			
+		PyModule_AddObject(module, "ConvexApertureShape", (PyObject *)&pyORBIT_ConvexApertureShape_Type);
 	}
 
 #ifdef __cplusplus

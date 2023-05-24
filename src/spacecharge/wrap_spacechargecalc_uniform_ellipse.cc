@@ -31,7 +31,7 @@ extern "C" {
 		self->cpp_obj = NULL;
 		return (PyObject *) self;
 	}
-	
+
   //initializator for python SpaceChargeCalcUnifEllipse class
   //this is implementation of the __init__ method SpaceChargeCalcUnifEllipse(nEllipses = 1])
   static int SpaceChargeCalcUnifEllipse_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
@@ -42,7 +42,7 @@ extern "C" {
 		self->cpp_obj = new SpaceChargeCalcUnifEllipse(nEllipses);
 		return 0;
 	}
-	
+
   //trackBunch(Bunch* bunch, double length)
   static PyObject* SpaceChargeCalcUnifEllipse_trackBunch(PyObject *self, PyObject *args){
 		pyORBIT_Object* pySpaceChargeCalcUnifEllipse = (pyORBIT_Object*) self;
@@ -56,7 +56,7 @@ extern "C" {
 		if(!PyObject_IsInstance(pyBunch,pyORBIT_Bunch_Type)){
 			ORBIT_MPI_Finalize("PySpaceChargeCalcUnifEllipse.trackBunch(pyBunch,length) - pyBunch is not Bunch.");
 		}
-		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object*)pyBunch)->cpp_obj;		
+		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object*)pyBunch)->cpp_obj;
 		cpp_SpaceChargeCalcUnifEllipse->trackBunch(cpp_bunch,length);
 		Py_INCREF(Py_None);
 		return Py_None;
@@ -69,11 +69,11 @@ extern "C" {
 		int index;
 		if(!PyArg_ParseTuple(args,"i:getEllipsFieldCalculator",&index)){
 			ORBIT_MPI_Finalize("PySpaceChargeCalcUnifEllipse.getEllipsFieldCalculator([index=0]) - method needs parameter.");
-		}		
+		}
 		UniformEllipsoidFieldCalculator* cpp_ellipseFieldCalc = cpp_SpaceChargeCalcUnifEllipse->getEllipsFieldCalculator(index);
 		if(cpp_ellipseFieldCalc == NULL) {
 			Py_INCREF(Py_None);
-			return Py_None;			
+			return Py_None;
 		}
 		if(cpp_ellipseFieldCalc->getPyWrapper() != NULL){
 			Py_INCREF(cpp_ellipseFieldCalc->getPyWrapper());
@@ -81,7 +81,7 @@ extern "C" {
 		}
 		//It will create a pyUniformEllipsoidFieldCalculator object
 		PyObject* mod = PyImport_ImportModule("spacecharge");
-		PyObject* pyUniformEllipsoidFieldCalculator = PyObject_CallMethod(mod,const_cast<char*>("UniformEllipsoidFieldCalculator"),const_cast<char*>(""));		
+		PyObject* pyUniformEllipsoidFieldCalculator = PyObject_CallMethod(mod,const_cast<char*>("UniformEllipsoidFieldCalculator"),const_cast<char*>(""));
 		//delete the c++ reference to the internal UniformEllipsoidFieldCalculator inside pyUniformEllipsoidFieldCalculator and assign the new one
 		delete ((UniformEllipsoidFieldCalculator*)((pyORBIT_Object*) pyUniformEllipsoidFieldCalculator)->cpp_obj);
 		((pyORBIT_Object*) pyUniformEllipsoidFieldCalculator)->cpp_obj = cpp_ellipseFieldCalc;
@@ -89,15 +89,15 @@ extern "C" {
 		Py_INCREF(cpp_ellipseFieldCalc->getPyWrapper());
 		Py_DECREF(mod);
 		return pyUniformEllipsoidFieldCalculator;
-  }		
-	
+  }
+
   //getNEllipses() - returns the number of ellipses inside the Space Charge calculator
   static PyObject* SpaceChargeCalcUnifEllipse_getNEllipses(PyObject *self, PyObject *args){
 		pyORBIT_Object* pySpaceChargeCalcUnifEllipse = (pyORBIT_Object*) self;
 		SpaceChargeCalcUnifEllipse* cpp_SpaceChargeCalcUnifEllipse = (SpaceChargeCalcUnifEllipse*) pySpaceChargeCalcUnifEllipse->cpp_obj;
 		return Py_BuildValue("i",cpp_SpaceChargeCalcUnifEllipse->getNEllipses());
-  }	
-	
+  }
+
 	//calculateField(x,y,z) - calculates the fileds from all ellipses
   static PyObject* SpaceChargeCalcUnifEllipse_calculateField(PyObject *self, PyObject *args){
 		pyORBIT_Object* pySpaceChargeCalcUnifEllipse = (pyORBIT_Object*) self;
@@ -108,8 +108,8 @@ extern "C" {
 		}
 		cpp_SpaceChargeCalcUnifEllipse->calculateField(x,y,z,ex,ey,ez);
 		return Py_BuildValue("(ddd)",ex,ey,ez);;
-  }		
-	
+  }
+
   //-----------------------------------------------------
   //destructor for python SpaceChargeCalcUnifEllipse class (__del__ method).
   //-----------------------------------------------------
@@ -119,8 +119,8 @@ extern "C" {
 			delete cpp_SpaceChargeCalcUnifEllipse;
 		}
 		self->ob_base.ob_type->tp_free((PyObject*)self);
-  }	
-  
+  }
+
   // defenition of the methods of the python SpaceChargeCalcUnifEllipse wrapper class
   // they will be vailable from python level
   static PyMethodDef SpaceChargeCalcUnifEllipseClassMethods[] = {
@@ -130,7 +130,7 @@ extern "C" {
 		{ "calculateField",            SpaceChargeCalcUnifEllipse_calculateField,           METH_VARARGS,"calculates the fileds ex,ey,ez from all ellipses"},
 		{NULL}
   };
-  
+
   // defenition of the memebers of the python SpaceChargeCalcUnifEllipse wrapper class
   // they will be vailable from python level
   static PyMemberDef SpaceChargeCalcUnifEllipseClassMembers [] = {
@@ -177,7 +177,7 @@ extern "C" {
 		(initproc) SpaceChargeCalcUnifEllipse_init, /* tp_init */
 		0, /* tp_alloc */
 		SpaceChargeCalcUnifEllipse_new, /* tp_new */
-	};	
+	};
 
 	//--------------------------------------------------
 	//Initialization function of the pySpaceChargeCalcUnifEllipse class

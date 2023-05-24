@@ -37,21 +37,21 @@ extern "C" {
    int binX, binY, binZ;
 	 if(!PyArg_ParseTuple(args,"iii:__init__",&binX,&binY,&binZ)){
 				ORBIT_MPI_Finalize("PyGrid3D - Grid3D(nX,nY,nZ) - constructor needs parameters.");
-		}		
-		self->cpp_obj = new Grid3D(binX,binY,binZ);	
+		}
+		self->cpp_obj = new Grid3D(binX,binY,binZ);
 		((Grid3D*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 		return 0;
   }
-		
+
   //setZero()
   static PyObject* Grid3D_setZero(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
 		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;
 		cpp_Grid3D->setZero();
 		Py_INCREF(Py_None);
-		return Py_None;	
+		return Py_None;
 	}
-	
+
 	//getValue(double x, double y, double z)
   static PyObject* Grid3D_getValue(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
@@ -62,7 +62,7 @@ extern "C" {
 		}
 		return Py_BuildValue("d",cpp_Grid3D->getValue(x,y,z));
 	}
-	
+
 	//setValue(double value, int ix, int iy)
   static PyObject* Grid3D_setValue(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
@@ -74,7 +74,7 @@ extern "C" {
 		}
 		cpp_Grid3D->setValue(val,ix,iy,iz);
 		Py_INCREF(Py_None);
-		return Py_None;	
+		return Py_None;
 	}
 
 	//getValueOnGrid(int ix, int iy, int iz)
@@ -87,7 +87,7 @@ extern "C" {
 		}
 		return Py_BuildValue("d",cpp_Grid3D->getValueOnGrid(ix,iy,iz));
 	}
-	
+
 	//setGridX(double min, double max)
   static PyObject* Grid3D_setGridX(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
@@ -98,9 +98,9 @@ extern "C" {
 		}
 		cpp_Grid3D->setGridX(min,max);
 		Py_INCREF(Py_None);
-		return Py_None;	
+		return Py_None;
 	}
-	
+
 	//setGridY(double min, double max, int n)
   static PyObject* Grid3D_setGridY(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
@@ -111,9 +111,9 @@ extern "C" {
 		}
 		cpp_Grid3D->setGridY(min,max);
 		Py_INCREF(Py_None);
-		return Py_None;	
-	}	
-	
+		return Py_None;
+	}
+
 	//setGridZ(double min, double max)
   static PyObject* Grid3D_setGridZ(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
@@ -124,9 +124,9 @@ extern "C" {
 		}
 		cpp_Grid3D->setGridZ(min,max);
 		Py_INCREF(Py_None);
-		return Py_None;	
-	}	
-	
+		return Py_None;
+	}
+
 	//getGridX(ix)
   static PyObject* Grid3D_getGridX(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
@@ -134,10 +134,10 @@ extern "C" {
 		int ind = -1;
 		if(!PyArg_ParseTuple(args,"i:getGridX",&ind) || ind < 0 || ind >= cpp_Grid3D->getSizeX()){
 			ORBIT_MPI_Finalize("PyGrid3D - getGridX(ix) - parameter is needed. [0 - sizeX[");
-		}		
+		}
 		return Py_BuildValue("d",cpp_Grid3D->getGridX(ind));
-	}	
-	
+	}
+
 	//getGridY(iy)
   static PyObject* Grid3D_getGridY(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
@@ -145,9 +145,9 @@ extern "C" {
 		int ind = -1;
 		if(!PyArg_ParseTuple(args,"i:getGridY",&ind) || ind < 0 || ind >= cpp_Grid3D->getSizeY()){
 			ORBIT_MPI_Finalize("PyGrid3D - getGridY(iy) - parameter is needed. [0 - sizeY[");
-		}		
+		}
 		return Py_BuildValue("d",cpp_Grid3D->getGridY(ind));
-	}	
+	}
 
 	//getGridZ(iy)
   static PyObject* Grid3D_getGridZ(PyObject *self, PyObject *args){
@@ -156,30 +156,30 @@ extern "C" {
 		int ind = -1;
 		if(!PyArg_ParseTuple(args,"i:getGridZ",&ind) || ind < 0 || ind >= cpp_Grid3D->getSizeZ()){
 			ORBIT_MPI_Finalize("PyGrid3D - getGridZ(iz) - parameter is needed. [0 - sizeZ[");
-		}		
+		}
 		return Py_BuildValue("d",cpp_Grid3D->getGridZ(ind));
-	}	
-	
+	}
+
 	//getSizeX()
   static PyObject* Grid3D_getSizeX(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
-		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;	
+		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;
 		return Py_BuildValue("i",cpp_Grid3D->getSizeX());
-	}	
-	
+	}
+
 	//getSizeY()
   static PyObject* Grid3D_getSizeY(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
-		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;	
+		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;
 		return Py_BuildValue("i",cpp_Grid3D->getSizeY());
-	}	
-	
+	}
+
 	//getSizeZ()
   static PyObject* Grid3D_getSizeZ(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
-		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;	
+		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;
 		return Py_BuildValue("i",cpp_Grid3D->getSizeZ());
-	}	
+	}
 
   //It will synchronize through the MPI communicator
   static PyObject* Grid3D_synchronizeMPI(PyObject *self, PyObject *args){
@@ -191,62 +191,62 @@ extern "C" {
 		}
 		else {
 			PyObject* py_mpi_comm_type = wrap_orbit_mpi_comm::getMPI_CommType("MPI_Comm");
-			PyObject* pyMPIComm = PyTuple_GetItem(args,0);			
+			PyObject* pyMPIComm = PyTuple_GetItem(args,0);
 			if((!PyObject_IsInstance(pyMPIComm,py_mpi_comm_type))){
 				ORBIT_MPI_Finalize("Grid3D.synchronizeMPI(MPI_Comm) - input parameter is not MPI_Comm");
-			}					
+			}
 			cpp_Grid3D->synchronizeMPI((pyORBIT_MPI_Comm*) pyMPIComm);
 		}
 	 	Py_INCREF(Py_None);
-		return Py_None; 
-  }	
-	
+		return Py_None;
+  }
+
 	//getMinX()
   static PyObject* Grid3D_getMinX(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
-		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;	
+		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;
 		return Py_BuildValue("d",cpp_Grid3D->getMinX());
-	}	
-	
+	}
+
 	//getMaxX()
   static PyObject* Grid3D_getMaxX(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
-		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;	
+		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;
 		return Py_BuildValue("d",cpp_Grid3D->getMaxX());
-	}	
-	
+	}
+
 	//getMinY()
   static PyObject* Grid3D_getMinY(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
-		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;	
+		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;
 		return Py_BuildValue("d",cpp_Grid3D->getMinY());
-	}	
-	
+	}
+
 	//getMaxY()
   static PyObject* Grid3D_getMaxY(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
-		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;	
+		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;
 		return Py_BuildValue("d",cpp_Grid3D->getMaxY());
-	}		
-	
+	}
+
 	//getMinZ()
   static PyObject* Grid3D_getMinZ(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
-		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;	
+		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;
 		return Py_BuildValue("d",cpp_Grid3D->getMinZ());
-	}	
-	
+	}
+
 	//getMaxZ()
   static PyObject* Grid3D_getMaxZ(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
-		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;	
+		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;
 		return Py_BuildValue("d",cpp_Grid3D->getMaxZ());
 	}
-	
+
 	//longWrapping([isWrapped]) set or return the longitudinal wrapping policy
   static PyObject* Grid3D_longWrapping(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
-		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;	
+		Grid3D* cpp_Grid3D = (Grid3D*) pyGrid3D->cpp_obj;
 		PyObject* pyIsWrapped = NULL;
 		if(!PyArg_ParseTuple(args,"|O:longWrapping",&pyIsWrapped)){
 			ORBIT_MPI_Finalize("PyGrid3D - longWrapping([True/False]) - parameter may be needed.");
@@ -257,8 +257,8 @@ extern "C" {
 			cpp_Grid3D->setLongWrapping(isWrapped);
 		}
 		return Py_BuildValue("i",cpp_Grid3D->getLongWrapping());
-	}	
-	
+	}
+
 	//binBunch(Bunch* bunch)
   static PyObject* Grid3D_binBunch(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
@@ -279,9 +279,9 @@ extern "C" {
 			cpp_Grid3D->binBunch(cpp_bunch);
 		}
 		Py_INCREF(Py_None);
-    return Py_None;	
-	}			
-	
+    return Py_None;
+	}
+
 	//binValue(double value, double x, double y, double z)
   static PyObject* Grid3D_binValue(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
@@ -292,9 +292,9 @@ extern "C" {
 		}
 		cpp_Grid3D->binValue(val,x,y,z);
 		Py_INCREF(Py_None);
-    return Py_None;	
-	}	
-	
+    return Py_None;
+	}
+
 	//calcGradient(double x, double y, double y)
   static PyObject* Grid3D_calcGradient(PyObject *self, PyObject *args){
     pyORBIT_Object* pyGrid3D = (pyORBIT_Object*) self;
@@ -317,7 +317,7 @@ extern "C" {
 		delete cpp_Grid3D;
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python Grid3D wrapper class
 	// they will be vailable from python level
   static PyMethodDef Grid3DClassMethods[] = {
@@ -344,7 +344,7 @@ extern "C" {
 		{ "binBunch",       Grid3D_binBunch,       METH_VARARGS,"bins the Bunch into the 3D mesh"},
 		{ "calcGradient",   Grid3D_calcGradient,   METH_VARARGS,"returns gradient as (gx,gy,gz) for point (x,y,z)"},
 		{ "longWrapping",   Grid3D_longWrapping,   METH_VARARGS,"set/get isWrapping variable defining long. wrapping policy"},
-		{ "synchronizeMPI", Grid3D_synchronizeMPI, METH_VARARGS,"synchronize through the MPI communicator"},		
+		{ "synchronizeMPI", Grid3D_synchronizeMPI, METH_VARARGS,"synchronize through the MPI communicator"},
     {NULL}
   };
 
@@ -394,7 +394,7 @@ extern "C" {
 		(initproc) Grid3D_init, /* tp_init */
 		0, /* tp_alloc */
 		Grid3D_new, /* tp_new */
-	};	
+	};
 
 	//--------------------------------------------------
 	//Initialization function of the pyGrid3D class

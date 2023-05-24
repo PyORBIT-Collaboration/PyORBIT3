@@ -36,7 +36,7 @@ extern "C" {
   //initializator for python MPI_Status  class
   //this is implementation of the __init__ method
   static int MPI_Status_init(pyORBIT_MPI_Status *self, PyObject *args, PyObject *kwds){
-    //pyORBIT_MPI_Status* pyMPI_Status = (pyORBIT_MPI_Status*) self;		
+    //pyORBIT_MPI_Status* pyMPI_Status = (pyORBIT_MPI_Status*) self;
     if(PyTuple_Size(args) != 0){
       error("MPI_Status constructor needs nothing.");
     }
@@ -48,10 +48,10 @@ extern "C" {
   //-----------------------------------------------------
   //this is implementation of the __del__ method
   static void MPI_Status_del(pyORBIT_MPI_Status* self){
-		//std::cerr<<"The MPI_Status __del__ has been called!"<<std::endl;	
+		//std::cerr<<"The MPI_Status __del__ has been called!"<<std::endl;
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-		
+
 	// defenition of the methods of the python MPI_Status wrapper class
 	// they will be vailable from python level
   static PyMethodDef MPI_StatusClassMethods[] = {
@@ -64,7 +64,7 @@ extern "C" {
 	static PyMemberDef MPI_StatusClassMembers[] = {
 		{NULL}
 	};
-	
+
 	//new python SyncPart wrapper type definition
 	static PyTypeObject pyORBIT_MPI_Status_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -114,11 +114,11 @@ extern "C" {
   void init_orbit_mpi_status(PyObject* module){
 		if (PyType_Ready(&pyORBIT_MPI_Status_Type) < 0) return;
 		Py_INCREF(&pyORBIT_MPI_Status_Type);
-		
+
 		PyObject * status_module = PyModule_New("mpi_status");
 		PyModule_AddObject(status_module, "MPI_Status", (PyObject *)&pyORBIT_MPI_Status_Type);
 		Py_INCREF(status_module);
-		
+
 		PyModule_AddObject(module, "mpi_status", status_module);
 	}
 

@@ -33,6 +33,3 @@ ParticleMacroSize::~ParticleMacroSize()
 double& ParticleMacroSize::macrosize(int particle_index){
   return attValue(particle_index,0);
 }
-
-
-

@@ -36,7 +36,7 @@ extern "C" {
   //initializator for python MPI_Op  class
   //this is implementation of the __init__ method
   static int MPI_Op_init(pyORBIT_MPI_Op *self, PyObject *args, PyObject *kwds){
-    //pyORBIT_MPI_Op* pyMPI_Op = (pyORBIT_MPI_Op*) self;		
+    //pyORBIT_MPI_Op* pyMPI_Op = (pyORBIT_MPI_Op*) self;
     if(PyTuple_Size(args) != 0){
       error("MPI_Op constructor needs nothing.");
     }
@@ -48,10 +48,10 @@ extern "C" {
   //-----------------------------------------------------
   //this is implementation of the __del__ method
   static void MPI_Op_del(pyORBIT_MPI_Op* self){
-		//std::cerr<<"The MPI_Op __del__ has been called!"<<std::endl;	
+		//std::cerr<<"The MPI_Op __del__ has been called!"<<std::endl;
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-		
+
 	// defenition of the methods of the python MPI_Op wrapper class
 	// they will be vailable from python level
   static PyMethodDef MPI_OpClassMethods[] = {
@@ -64,7 +64,7 @@ extern "C" {
 	static PyMemberDef MPI_OpClassMembers[] = {
 		{NULL}
 	};
-	
+
 	//new python SyncPart wrapper type definition
 	static PyTypeObject pyORBIT_MPI_Op_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -114,31 +114,31 @@ extern "C" {
   void init_orbit_mpi_op(PyObject* module){
 		if (PyType_Ready(&pyORBIT_MPI_Op_Type) < 0) return;
 		Py_INCREF(&pyORBIT_MPI_Op_Type);
-		
+
 		PyObject * op_module = PyModule_New("mpi_op");
 		PyModule_AddObject(op_module, "MPI_Op", (PyObject *)&pyORBIT_MPI_Op_Type);
 		Py_INCREF(op_module);
-		
+
 		pyORBIT_MPI_Op* pyMPI_Op_MAX = PyObject_New(pyORBIT_MPI_Op,&pyORBIT_MPI_Op_Type);
 		pyMPI_Op_MAX->op = MPI_MAX;
-		Py_INCREF((PyObject *) pyMPI_Op_MAX); 
-    PyModule_AddObject(op_module, "MPI_MAX", (PyObject *) pyMPI_Op_MAX);		
-		
+		Py_INCREF((PyObject *) pyMPI_Op_MAX);
+    PyModule_AddObject(op_module, "MPI_MAX", (PyObject *) pyMPI_Op_MAX);
+
 		pyORBIT_MPI_Op* pyMPI_Op_MIN = PyObject_New(pyORBIT_MPI_Op,&pyORBIT_MPI_Op_Type);
 		pyMPI_Op_MIN->op = MPI_MIN;
-		Py_INCREF((PyObject *) pyMPI_Op_MIN); 
-    PyModule_AddObject(op_module, "MPI_MIN", (PyObject *) pyMPI_Op_MIN);	
-		
+		Py_INCREF((PyObject *) pyMPI_Op_MIN);
+    PyModule_AddObject(op_module, "MPI_MIN", (PyObject *) pyMPI_Op_MIN);
+
 		pyORBIT_MPI_Op* pyMPI_Op_SUM = PyObject_New(pyORBIT_MPI_Op,&pyORBIT_MPI_Op_Type);
 		pyMPI_Op_SUM->op = MPI_SUM;
-		Py_INCREF((PyObject *) pyMPI_Op_SUM); 
-    PyModule_AddObject(op_module, "MPI_SUM", (PyObject *) pyMPI_Op_SUM);		
-		
+		Py_INCREF((PyObject *) pyMPI_Op_SUM);
+    PyModule_AddObject(op_module, "MPI_SUM", (PyObject *) pyMPI_Op_SUM);
+
 		pyORBIT_MPI_Op* pyMPI_Op_PROD = PyObject_New(pyORBIT_MPI_Op,&pyORBIT_MPI_Op_Type);
 		pyMPI_Op_PROD->op = MPI_PROD;
-		Py_INCREF((PyObject *) pyMPI_Op_PROD); 
-    PyModule_AddObject(op_module, "MPI_PROD", (PyObject *) pyMPI_Op_PROD);			
-		
+		Py_INCREF((PyObject *) pyMPI_Op_PROD);
+    PyModule_AddObject(op_module, "MPI_PROD", (PyObject *) pyMPI_Op_PROD);
+
 		PyModule_AddObject(module, "mpi_op", op_module);
 	}
 

@@ -14,7 +14,7 @@ extern "C" {
 
   namespace wrap_orbit_mpi_group{
     void init_orbit_mpi_group(PyObject* module);
-		
+
 		//The function that will be exposed as C/C++ API for MPI_Group
 		pyORBIT_MPI_Group* newMPI_Group();
 		void freeMPI_Group(pyORBIT_MPI_Group* pyMPI_Group);

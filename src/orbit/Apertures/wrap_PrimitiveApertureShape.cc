@@ -15,7 +15,7 @@ namespace wrap_py_base_aperture_shape{
 extern "C" {
 #endif
 
-	/** 
+	/**
 	Constructor for python class wrapping c++ Circle, Ellipse, and Rectangular ApertureShape instances.
 	*/
 	static PyObject* PrimitiveApertureShape_new(PyTypeObject *type, PyObject *args, PyObject *kwds){
@@ -24,7 +24,7 @@ extern "C" {
 		self->cpp_obj = NULL;
 		return (PyObject *) self;
 	}
-	
+
   /** This is implementation of the __init__ method */
   static int PrimitiveApertureShape_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
   	const char* name = NULL;
@@ -38,7 +38,7 @@ extern "C" {
   	if(typeName == "circle"){
   		self->cpp_obj =  new CircleApertureShape();
   		((CircleApertureShape*) self->cpp_obj)->setRadius(param1);
-  	} 
+  	}
   	if(typeName == "ellipse"){
   		self->cpp_obj =  new EllipseApertureShape();
   		if(param2 < 0.){
@@ -46,26 +46,26 @@ extern "C" {
   		}
   		((EllipseApertureShape*) self->cpp_obj)->setHalfAxisX(param1);
   		((EllipseApertureShape*) self->cpp_obj)->setHalfAxisY(param2);
-  	}   	
+  	}
   	if(typeName == "rectangular"){
   		self->cpp_obj =  new RectangularApertureShape();
   		if(param2 < 0.){
   			ORBIT_MPI_Finalize("PrimitiveApertureShape(rectangular, par1,par2) - par2 is not there or < 0. Stop.");
   		}
   		((RectangularApertureShape*) self->cpp_obj)->setHalfX(param1);
-  		((RectangularApertureShape*) self->cpp_obj)->setHalfY(param2);  		
-  	}   	
+  		((RectangularApertureShape*) self->cpp_obj)->setHalfY(param2);
+  	}
   	if(self->cpp_obj == NULL){
   		ORBIT_MPI_Finalize("PrimitiveApertureShape(shapeType, par1[,par2]) - shapeType should be circle,ellipse, or rectangular. Stop.");
   	}
-	  ((BaseApertureShape*) self->cpp_obj)->setPyWrapper((PyObject*) self);	  
+	  ((BaseApertureShape*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
 
-	// Sets or returns the center of the shape in X-direction 
+	// Sets or returns the center of the shape in X-direction
   static PyObject* PrimitiveApertureShape_centerX(PyObject *self, PyObject *args){
     pyORBIT_Object* pyPrimitiveApertureShape = (pyORBIT_Object*) self;
-		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyPrimitiveApertureShape->cpp_obj;	
+		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyPrimitiveApertureShape->cpp_obj;
 		int nVars = PyTuple_Size(args);
 		if(nVars >= 1){
 			double center = 0.;
@@ -76,11 +76,11 @@ extern "C" {
     }
 		return Py_BuildValue("d",cpp_BaseApertureShape->getCenterX());
   }
-  
-	// Sets or returns the center of the shape in Y-direction 
+
+	// Sets or returns the center of the shape in Y-direction
   static PyObject* PrimitiveApertureShape_centerY(PyObject *self, PyObject *args){
     pyORBIT_Object* pyPrimitiveApertureShape= (pyORBIT_Object*) self;
-		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyPrimitiveApertureShape->cpp_obj;	
+		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyPrimitiveApertureShape->cpp_obj;
 		int nVars = PyTuple_Size(args);
 		if(nVars >= 1){
 			double center = 0.;
@@ -90,12 +90,12 @@ extern "C" {
 			cpp_BaseApertureShape->setCenterY(center);
     }
 		return Py_BuildValue("d",cpp_BaseApertureShape->getCenterY());
-  }	  
+  }
 
-	// name([name]) - sets or returns the name of the shape 
+	// name([name]) - sets or returns the name of the shape
   static PyObject* PrimitiveApertureShape_name(PyObject *self, PyObject *args){
     pyORBIT_Object* pyPrimitiveApertureShape= (pyORBIT_Object*) self;
-		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyPrimitiveApertureShape->cpp_obj;		
+		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyPrimitiveApertureShape->cpp_obj;
     const char* name = NULL;
     if(!PyArg_ParseTuple(	args,"|s:name",&name)){
       ORBIT_MPI_Finalize("PrimitiveApertureShape.name(...) - call should be - name([name]). Stop.");
@@ -106,8 +106,8 @@ extern "C" {
 		}
 		return Py_BuildValue("s",cpp_BaseApertureShape->getName().c_str());
   }
-  
-	// typeName() - returns the type name of the shape 
+
+	// typeName() - returns the type name of the shape
   static PyObject* PrimitiveApertureShape_typeName(PyObject *self, PyObject *args){
     pyORBIT_Object* pyPrimitiveApertureShape= (pyORBIT_Object*) self;
 		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyPrimitiveApertureShape->cpp_obj;
@@ -116,12 +116,12 @@ extern "C" {
 			ORBIT_MPI_Finalize("PrimitiveApertureShape.typeName() - has no parameters. Stop.");
     }
 		return Py_BuildValue("s",cpp_BaseApertureShape->getTypeName().c_str());
-  }  
-  
-	// Returns the parameters of the shape like radius of the circle 
+  }
+
+	// Returns the parameters of the shape like radius of the circle
   static PyObject* PrimitiveApertureShape_getParamsDict(PyObject *self, PyObject *args){
     pyORBIT_Object* pyPrimitiveApertureShape= (pyORBIT_Object*) self;
-		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyPrimitiveApertureShape->cpp_obj;	
+		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyPrimitiveApertureShape->cpp_obj;
 		PyObject* paramsDict = PyDict_New();
 		std::string typeName = cpp_BaseApertureShape->getTypeName();
 		double param1 =  0.0;
@@ -131,7 +131,7 @@ extern "C" {
   		PyObject* pyRadius = Py_BuildValue("d",param1);
   		PyDict_SetItemString(paramsDict,"radius",pyRadius);
   		Py_DECREF(pyRadius);
-  	} 
+  	}
   	if(typeName == "ellipse"){
   		param1 = ((EllipseApertureShape*) cpp_BaseApertureShape)->getHalfAxisX();
   		param2 = ((EllipseApertureShape*) cpp_BaseApertureShape)->getHalfAxisY();
@@ -141,7 +141,7 @@ extern "C" {
   		PyObject* pyHalfY = Py_BuildValue("d",param2);
   		PyDict_SetItemString(paramsDict,"halfAxisY",pyHalfY);
   		Py_DECREF(pyHalfY);
-  	}   	
+  	}
   	if(typeName == "rectangular"){
   		param1 = ((RectangularApertureShape*) cpp_BaseApertureShape)->getHalfX();
   		param2 = ((RectangularApertureShape*) cpp_BaseApertureShape)->getHalfY();
@@ -150,7 +150,7 @@ extern "C" {
   		Py_DECREF(pyHalfX);
   		PyObject* pyHalfY = Py_BuildValue("d",param2);
   		PyDict_SetItemString(paramsDict,"halfSizeY",pyHalfY);
-  		Py_DECREF(pyHalfY);  		
+  		Py_DECREF(pyHalfY);
   	}
 		return paramsDict;
   }
@@ -163,13 +163,13 @@ extern "C" {
   		ORBIT_MPI_Finalize("PrimitiveApertureShape.setParams(par1[,par2]) - no right parameters. Stop.");
   	}
     pyORBIT_Object* pyPrimitiveApertureShape= (pyORBIT_Object*) self;
-		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyPrimitiveApertureShape->cpp_obj;	  	
+		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyPrimitiveApertureShape->cpp_obj;
   	std::string typeName = cpp_BaseApertureShape->getTypeName();
   	int settings_done = 0;
   	if(typeName == "circle"){
   		((CircleApertureShape*) cpp_BaseApertureShape)->setRadius(param1);
   		settings_done = 1;
-  	} 
+  	}
   	if(typeName == "ellipse"){
   		if(param2 < 0.){
   			ORBIT_MPI_Finalize("ellipse PrimitiveApertureShape.setParams(par1,par2) - par2 is not there or < 0. Stop.");
@@ -177,7 +177,7 @@ extern "C" {
   		((EllipseApertureShape*) cpp_BaseApertureShape)->setHalfAxisX(param1);
   		((EllipseApertureShape*) cpp_BaseApertureShape)->setHalfAxisY(param2);
   		settings_done = 1;
-  	}   	
+  	}
   	if(typeName == "rectangular"){
   		if(param2 < 0.){
   			ORBIT_MPI_Finalize("rectangular PrimitiveApertureShape.setParams(par1,par2) - par2 is not there or < 0. Stop.");
@@ -201,12 +201,12 @@ extern "C" {
 		delete ((BaseApertureShape*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// definition of the methods of the python PrimitiveApertureShape wrapper class
 	// they will be vailable from python level
 	static PyMethodDef PrimitiveApertureShapeClassMethods[] = {
-		{ "centerX",      PrimitiveApertureShape_centerX,      METH_VARARGS,"Sets or returns the X-shift of the shape center."},	
-		{ "centerY",      PrimitiveApertureShape_centerY,      METH_VARARGS,"Sets or returns the Y-shift of the shape center."},	
+		{ "centerX",      PrimitiveApertureShape_centerX,      METH_VARARGS,"Sets or returns the X-shift of the shape center."},
+		{ "centerY",      PrimitiveApertureShape_centerY,      METH_VARARGS,"Sets or returns the Y-shift of the shape center."},
 		{ "name",         PrimitiveApertureShape_name,         METH_VARARGS,"Sets or returns the name of the shape."},
 		{ "typeName",     PrimitiveApertureShape_typeName,     METH_VARARGS,"Returns the type of the shape."},
 		{ "getParamsDict",PrimitiveApertureShape_getParamsDict,METH_VARARGS,"Returns params. dict. like radius of the circle."},
@@ -217,8 +217,8 @@ extern "C" {
 	static PyMemberDef PrimitiveApertureShapeClassMembers [] = {
 		{NULL}
 	};
-	
-	
+
+
 	//new python PrimitiveApertureShape wrapper type definition
 	static PyTypeObject pyORBIT_PrimitiveApertureShape_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -259,8 +259,8 @@ extern "C" {
 		(initproc) PrimitiveApertureShape_init, /* tp_init */
 		0, /* tp_alloc */
 		PrimitiveApertureShape_new, /* tp_new */
-	};	
-	
+	};
+
 	//--------------------------------------------------
 	//Initialization PrimitiveApertureShape class
 	//--------------------------------------------------
@@ -269,7 +269,7 @@ extern "C" {
 		//check that the PrimitiveApertureShape wrapper is ready
 		if (PyType_Ready(&pyORBIT_PrimitiveApertureShape_Type) < 0) return;
 		Py_INCREF(&pyORBIT_PrimitiveApertureShape_Type);
-		PyModule_AddObject(module, "PrimitiveApertureShape", (PyObject *)&pyORBIT_PrimitiveApertureShape_Type);			
+		PyModule_AddObject(module, "PrimitiveApertureShape", (PyObject *)&pyORBIT_PrimitiveApertureShape_Type);
 	}
 
 #ifdef __cplusplus

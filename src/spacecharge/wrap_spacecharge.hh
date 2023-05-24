@@ -9,7 +9,7 @@ extern "C" {
 
 	PyMODINIT_FUNC initspacecharge(void);
 	PyObject* getSpaceChargeType(const char* name);
-	
+
 #ifdef __cplusplus
 }
 #endif  // __cplusplus

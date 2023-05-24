@@ -102,7 +102,7 @@ double ORBIT_MPI_Wtime(void){
 }
 
 /** A C wrapper around MPI_Wtick. */
-double ORBIT_MPI_Wtick(){  
+double ORBIT_MPI_Wtick(){
 	double tick = 0;
 #if USE_MPI > 0
   tick = MPI_Wtick();
@@ -125,7 +125,7 @@ int ORBIT_MPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm *comm_out){
   res = MPI_SUCCESS;
 #endif
 
-  return res;	
+  return res;
 }
 
 /** A C wrapper around . */
@@ -135,8 +135,8 @@ int ORBIT_MPI_Comm_group(MPI_Comm comm, MPI_Group *group ){
   res = MPI_Comm_group(comm, group);
 #else
   res  = MPI_SUCCESS;
-#endif		
-	return res;	
+#endif
+	return res;
 }
 
 /** A C wrapper around . */
@@ -146,8 +146,8 @@ int ORBIT_MPI_Comm_dup(MPI_Comm comm, MPI_Comm *comm_out){
   res = MPI_Comm_dup(comm, comm_out);
 #else
   res  = MPI_SUCCESS;
-#endif		
-	return res;	
+#endif
+	return res;
 }
 
 /** A C wrapper around . */
@@ -157,8 +157,8 @@ int ORBIT_MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *comm_out){
   res = MPI_Comm_split(comm, color, key, comm_out);
 #else
   res  = MPI_SUCCESS;
-#endif		
-	return res;	
+#endif
+	return res;
 }
 
 /** A C wrapper around . */
@@ -169,8 +169,8 @@ int ORBIT_MPI_Comm_remote_size(MPI_Comm comm, int *size){
 #else
   res  = MPI_SUCCESS;
 	*size = 0;
-#endif		
-	return res;	
+#endif
+	return res;
 }
 
 /** A C wrapper around . */
@@ -180,7 +180,7 @@ int ORBIT_MPI_Comm_remote_group(MPI_Comm comm, MPI_Group *group){
   res = MPI_Comm_remote_group(comm, group);
 #else
   res  = MPI_SUCCESS;
-#endif		
+#endif
 	return res;
 }
 
@@ -192,7 +192,7 @@ int ORBIT_MPI_Comm_test_inter(MPI_Comm comm, int *flag){
 #else
   res  = MPI_SUCCESS;
 	*flag = 0;
-#endif		
+#endif
 	return res;
 }
 
@@ -203,8 +203,8 @@ int ORBIT_MPI_Comm_compare(MPI_Comm  comm1, MPI_Comm  comm2, int *result){
   res = MPI_Comm_compare(comm1, comm2, result);
 #else
   res  = MPI_SUCCESS;
-#endif		
-	return res;	
+#endif
+	return res;
 }
 
 /** A C wrapper around MPI_Comm_set_name. */
@@ -214,8 +214,8 @@ int ORBIT_MPI_Comm_set_name(MPI_Comm com, char *name){
   res = MPI_Comm_set_name(com, name);
 #else
   res  = MPI_SUCCESS;
-#endif		
-	return res;	
+#endif
+	return res;
 }
 
 /** A C wrapper around MPI_Comm_get_name. */
@@ -227,8 +227,8 @@ int ORBIT_MPI_Comm_get_name(MPI_Comm comm, char *namep, int *reslen){
   res  = MPI_SUCCESS;
 	namep = ( char *) "no mpi";
 	*reslen = 6;
-#endif		
-	return res;	
+#endif
+	return res;
 }
 
 /** A C wrapper around MPI_Comm_size. */
@@ -265,8 +265,8 @@ int ORBIT_MPI_Comm_free(MPI_Comm* comm){
   res = MPI_Comm_free(comm);
 #else
   res  = MPI_SUCCESS;
-#endif		
-	return res;	
+#endif
+	return res;
 }
 
 //--------------------------------------------------------
@@ -280,10 +280,10 @@ int ORBIT_MPI_Group_incl(MPI_Group group, int n, int *ranks, MPI_Group *group_ou
   res = MPI_Group_incl(group, n, ranks, group_out);
 #else
   res  = MPI_SUCCESS;
-#endif		
-	return res;		
+#endif
+	return res;
 }
-  
+
 /** A C wrapper around MPI_Group_excl. */
 int ORBIT_MPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group *newgroup){
 	int res = 0;
@@ -291,8 +291,8 @@ int ORBIT_MPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group *newgroup
   res = MPI_Group_excl(group, n, ranks, newgroup);
 #else
   res  = MPI_SUCCESS;
-#endif		
-	return res;		
+#endif
+	return res;
 }
 
 /** A C wrapper around MPI_Group_union. */
@@ -302,8 +302,8 @@ int ORBIT_MPI_Group_union(MPI_Group group1, MPI_Group group2, MPI_Group *group_o
   res = MPI_Group_union(group1, group2, group_out);
 #else
   res  = MPI_SUCCESS;
-#endif		
-	return res;	
+#endif
+	return res;
 }
 
 /** A C wrapper around MPI_Group_difference. */
@@ -314,7 +314,7 @@ int ORBIT_MPI_Group_difference(MPI_Group group1, MPI_Group group2, MPI_Group *gr
 #else
   res  = MPI_SUCCESS;
 	*group_out = MPI_GROUP_EMPTY;
-#endif		
+#endif
 	return res;
 }
 
@@ -326,7 +326,7 @@ int ORBIT_MPI_Group_intersection(MPI_Group group1, MPI_Group group2, MPI_Group *
 #else
   res  = MPI_SUCCESS;
 	*group_out = MPI_GROUP_EMPTY;
-#endif		
+#endif
 	return res;
 }
 
@@ -338,8 +338,8 @@ int ORBIT_MPI_Group_compare(MPI_Group group1, MPI_Group group2, int *result){
 #else
   res  = MPI_SUCCESS;
 	*result = MPI_IDENT;
-#endif		
-	return res;		
+#endif
+	return res;
 }
 
 /** A C wrapper around MPI_Group_translate_ranks. */
@@ -349,7 +349,7 @@ int ORBIT_MPI_Group_translate_ranks(MPI_Group group_a, int n, int *ranks_a, MPI_
   res = MPI_Group_translate_ranks(group_a, n, ranks_a, group_b, ranks_b);
 #else
   res  = MPI_SUCCESS;
-#endif		
+#endif
 	return res;
 }
 
@@ -360,11 +360,11 @@ int ORBIT_MPI_Group_size(MPI_Group group, int *size){
   res = MPI_Group_size(group, size);
 #else
   res  = MPI_SUCCESS;
-	*size = 1; 
-#endif		
-	return res;		
+	*size = 1;
+#endif
+	return res;
 }
-	
+
 /** A C wrapper around MPI_Group_rank. */
 int ORBIT_MPI_Group_rank(MPI_Group group, int *rank){
   int res = 0;
@@ -372,9 +372,9 @@ int ORBIT_MPI_Group_rank(MPI_Group group, int *rank){
   res = MPI_Group_rank(group,rank);
 #else
   res  = MPI_SUCCESS;
-	*rank = 0; 
-#endif		
-	return res;		
+	*rank = 0;
+#endif
+	return res;
 }
 
 /** A C wrapper around MPI_Group_free(. */
@@ -384,24 +384,24 @@ int ORBIT_MPI_Group_free(MPI_Group* group){
   res = MPI_Group_free(group);
 #else
   res  = MPI_SUCCESS;
-#endif		
-	return res;	
+#endif
+	return res;
 }
 
 //--------------------------------------------------------
 // MPI functions related to the MPI_Intercomm manipulations
-//--------------------------------------------------------		
+//--------------------------------------------------------
 
 /** A C wrapper around MPI_Intercomm_create. */
-int ORBIT_MPI_Intercomm_create(MPI_Comm local_comm, int local_leader, MPI_Comm peer_comm, 
+int ORBIT_MPI_Intercomm_create(MPI_Comm local_comm, int local_leader, MPI_Comm peer_comm,
 	int remote_leader, int tag, MPI_Comm *comm_out){
 	int res = 0;
 #if USE_MPI > 0
   res = MPI_Intercomm_create(local_comm, local_leader, peer_comm, remote_leader, tag, comm_out);
 #else
   res  = MPI_SUCCESS;
-#endif		
-	return res;	
+#endif
+	return res;
 }
 
 /** A C wrapper around MPI_Intercomm_merge. */
@@ -411,16 +411,16 @@ int ORBIT_MPI_Intercomm_merge(MPI_Comm comm, int high, MPI_Comm *comm_out){
   res = MPI_Intercomm_merge(comm, high, comm_out);
 #else
   res  = MPI_SUCCESS;
-#endif		
-	return res;	
+#endif
+	return res;
 }
 
 //--------------------------------------------------------
 // MPI functions related to the MPI_Graph manipulations
-//--------------------------------------------------------	
+//--------------------------------------------------------
 
 /** A C wrapper around MPI_Graph_create. */
-int ORBIT_MPI_Graph_create(MPI_Comm comm_old, int nnodes, int *index, int *edges, 
+int ORBIT_MPI_Graph_create(MPI_Comm comm_old, int nnodes, int *index, int *edges,
 	                         int reorder, MPI_Comm *comm_graph){
   int res = 0;
 #if USE_MPI > 0
@@ -441,7 +441,7 @@ int ORBIT_MPI_Graphdims_get(MPI_Comm comm, int *nnodes, int *nedges){
 	*nnodes = 1;
 	*nedges = 1;
 #endif
-  return res;	
+  return res;
 }
 
 /** A C wrapper around MPI_Graph_get. */
@@ -452,7 +452,7 @@ int ORBIT_MPI_Graph_get(MPI_Comm comm, int maxindex, int maxedges, int *index, i
 #else
   res  = MPI_SUCCESS;
 #endif
-  return res;	
+  return res;
 }
 
 /** A C wrapper around MPI_Graph_map. */
@@ -463,7 +463,7 @@ int ORBIT_MPI_Graph_map(MPI_Comm comm_old, int nnodes, int *index, int *edges, i
 #else
   res  = MPI_SUCCESS;
 #endif
-  return res;	
+  return res;
 }
 
 /** A C wrapper around MPI_Graph_neighbors_count. */
@@ -474,7 +474,7 @@ int ORBIT_MPI_Graph_neighbors_count(MPI_Comm comm, int rank, int *nneighbors){
 #else
   res  = MPI_SUCCESS;
 #endif
-  return res;		
+  return res;
 }
 
 /** A C wrapper around MPI_Graph_neighbors. */
@@ -485,7 +485,7 @@ int ORBIT_MPI_Graph_neighbors(MPI_Comm comm, int rank, int maxneighbors, int *ne
 #else
   res  = MPI_SUCCESS;
 #endif
-  return res;	
+  return res;
 }
 
 //--------------------------------------------------------
@@ -571,7 +571,7 @@ int ORBIT_MPI_Probe(int source, int tag, MPI_Comm comm, MPI_Status *status){
 	status->MPI_SOURCE = source;
 	status->MPI_TAG = tag;
 #endif
-  return res;	
+  return res;
 }
 
 /** A C wrapper around MPI_Get_count. */
@@ -583,6 +583,5 @@ int ORBIT_MPI_Get_count(MPI_Status *status, MPI_Datatype datatype, int *count){
   res  = MPI_SUCCESS;
 	status->count = 0;
 #endif
-  return res;		
+  return res;
 }
-

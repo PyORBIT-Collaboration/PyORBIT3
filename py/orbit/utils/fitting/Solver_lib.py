@@ -1,7 +1,7 @@
 """
 This is a collection of classes for a general optimization problem.
 The Scorer function should be minimized by changing the input parameters
-that are inside the trial point class instance. The user can define 
+that are inside the trial point class instance. The user can define
 different search algorithms that are suitable for the particular problem.
 Also there are set of solver stoppers that will stop optimization process
 immediately (but stopper cannot interrupt processes inside the Scorer).

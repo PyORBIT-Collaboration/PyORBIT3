@@ -4,7 +4,7 @@
 static PyObject* mpi_graph_create(PyObject *self, PyObject *args) {
 	PyObject* pyO_old; PyObject* pyO_indexes; PyObject* pyO_edges; PyObject* pyO_new;
 	int reorder;
-	if(!PyArg_ParseTuple(args,"OOOiO:mpi_graph_create",&pyO_old,&pyO_indexes,&pyO_edges,&reorder,&pyO_new)){	
+	if(!PyArg_ParseTuple(args,"OOOiO:mpi_graph_create",&pyO_old,&pyO_indexes,&pyO_edges,&reorder,&pyO_new)){
 		error("MPI_Graph_create(MPI_Comm old, [...indexes],[...egdes],reorder,MPI_Comm graph) needs 6 parameters.");
 	}
 	pyORBIT_MPI_Comm* pyComm_old = (pyORBIT_MPI_Comm*) pyO_old;
@@ -32,35 +32,35 @@ static PyObject* mpi_graph_create(PyObject *self, PyObject *args) {
 	}
 	int res = ORBIT_MPI_Graph_create(pyComm_old->comm,nnodes,indexes,edges,reorder,&pyComm_new->comm);
 	BufferStore::getBufferStore()->setUnusedIntArr(buff_index0);
-	BufferStore::getBufferStore()->setUnusedIntArr(buff_index1);	
+	BufferStore::getBufferStore()->setUnusedIntArr(buff_index1);
 	return Py_BuildValue("i",res);
-}	
+}
 
 //this function will return a tuple with (nnodes, nedges)
 static PyObject* mpi_graphdims_get(PyObject *self, PyObject *args) {
 	PyObject* pyO;
-	if(!PyArg_ParseTuple(args,"O:mpi_graphdims_get",&pyO)){	
+	if(!PyArg_ParseTuple(args,"O:mpi_graphdims_get",&pyO)){
 		error("MPI_Graphdims_get(MPI_Comm comm) needs 1 parameter.");
 	}
 	int nnodes, nedges;
 	pyORBIT_MPI_Comm* pyComm = (pyORBIT_MPI_Comm*) pyO;
 	ORBIT_MPI_Graphdims_get(pyComm->comm, &nnodes, &nedges);
 	return Py_BuildValue("(ii)",nnodes,nedges);
-}	
+}
 
 //this function will return a tuple with (indexes[], edges[])
 static PyObject* mpi_graph_get(PyObject *self, PyObject *args) {
 	PyObject* pyO;
-	if(!PyArg_ParseTuple(args,"O:mpi_graph_get",&pyO)){	
+	if(!PyArg_ParseTuple(args,"O:mpi_graph_get",&pyO)){
 		error("MPI_Graph_get(MPI_Comm comm) needs 1 parameter.");
 	}
-	pyORBIT_MPI_Comm* pyComm = (pyORBIT_MPI_Comm*) pyO;	
+	pyORBIT_MPI_Comm* pyComm = (pyORBIT_MPI_Comm*) pyO;
 	int nnodes, nedges;
 	ORBIT_MPI_Graphdims_get(pyComm->comm, &nnodes, &nedges);
 	int buff_index0 = 0;
-	int buff_index1 = 0;	
+	int buff_index1 = 0;
 	int* indexes = BufferStore::getBufferStore()->getFreeIntArr(buff_index0,nnodes);
-	int* edges = BufferStore::getBufferStore()->getFreeIntArr(buff_index1,nedges);	
+	int* edges = BufferStore::getBufferStore()->getFreeIntArr(buff_index1,nedges);
 	ORBIT_MPI_Graph_get(pyComm->comm,nnodes,nedges,indexes,edges);
 	PyObject* pyArrInd = PyTuple_New(nnodes);
 	for(int i = 0; i < nnodes; i++){
@@ -75,14 +75,14 @@ static PyObject* mpi_graph_get(PyObject *self, PyObject *args) {
 		}
 	}
 	BufferStore::getBufferStore()->setUnusedIntArr(buff_index0);
-	BufferStore::getBufferStore()->setUnusedIntArr(buff_index1);	
+	BufferStore::getBufferStore()->setUnusedIntArr(buff_index1);
 	return Py_BuildValue("(OO)",pyArrInd,pyArrEdg);
-}		
-	
+}
+
 //this function will return a new rank of the calling process
 static PyObject* mpi_graph_map(PyObject *self, PyObject *args) {
 	PyObject* pyO_old; PyObject* pyO_indexes; PyObject* pyO_edges;
-	if(!PyArg_ParseTuple(args,"OOOiO:mpi_graph_map",&pyO_old,&pyO_indexes,&pyO_edges)){	
+	if(!PyArg_ParseTuple(args,"OOOiO:mpi_graph_map",&pyO_old,&pyO_indexes,&pyO_edges)){
 		error("MPI_Graph_map(MPI_Comm old, [...indexes],[...egdes]) needs 4 parameters.");
 	}
 	pyORBIT_MPI_Comm* pyComm_old = (pyORBIT_MPI_Comm*) pyO_old;
@@ -92,7 +92,7 @@ static PyObject* mpi_graph_map(PyObject *self, PyObject *args) {
 	int nnodes = PySequence_Size(pyO_indexes);
 	int edge_size = PySequence_Size(pyO_edges);
 	int buff_index0 = 0;
-	int buff_index1 = 0;	
+	int buff_index1 = 0;
 	int* indexes = BufferStore::getBufferStore()->getFreeIntArr(buff_index0,nnodes);
 	int* edges = BufferStore::getBufferStore()->getFreeIntArr(buff_index1,edge_size);
 	for(int i = 0; i < nnodes; i++){
@@ -112,15 +112,15 @@ static PyObject* mpi_graph_map(PyObject *self, PyObject *args) {
 		error("MPI_Graph_map(MPI_Comm old, [...indexes],[...egdes]), fatal error STOP.");
 	}
 	BufferStore::getBufferStore()->setUnusedIntArr(buff_index0);
-	BufferStore::getBufferStore()->setUnusedIntArr(buff_index1);	
+	BufferStore::getBufferStore()->setUnusedIntArr(buff_index1);
 	return Py_BuildValue("i",newrank);
-}		
+}
 
 //this function will return a number of neighbors
 static PyObject* mpi_graph_neighbors_count(PyObject *self, PyObject *args) {
 	PyObject* pyO;
 	int rank, nneighbors;
-	if(!PyArg_ParseTuple(args,"Oi:mpi_graph_neighbors_count",&pyO,&rank)){	
+	if(!PyArg_ParseTuple(args,"Oi:mpi_graph_neighbors_count",&pyO,&rank)){
 		error("MPI_Graph_neighbors_count(MPI_Comm comm, rank) needs 2 parameters.");
 	}
 	pyORBIT_MPI_Comm* pyComm = (pyORBIT_MPI_Comm*) pyO;
@@ -134,7 +134,7 @@ static PyObject* mpi_graph_neighbors_count(PyObject *self, PyObject *args) {
 static PyObject* mpi_graph_neighbors(PyObject *self, PyObject *args) {
 	PyObject* pyO;
 	int rank, nneighbors;
-	if(!PyArg_ParseTuple(args,"Oi:mpi_graph_neighbors",&pyO,&rank)){	
+	if(!PyArg_ParseTuple(args,"Oi:mpi_graph_neighbors",&pyO,&rank)){
 		error("MPI_Graph_neighbors(MPI_Comm comm, rank) needs 2 parameters.");
 	}
 	pyORBIT_MPI_Comm* pyComm = (pyORBIT_MPI_Comm*) pyO;
@@ -147,8 +147,7 @@ static PyObject* mpi_graph_neighbors(PyObject *self, PyObject *args) {
 		if(!PyTuple_SetItem(pyArr,i,Py_BuildValue("i",neighbors[i]))){
 			error(" MPI_Graph_neighbors(MPI_Comm comm, rank) cannot create a resulting tuple.");
 		}
-	}	
+	}
 	BufferStore::getBufferStore()->setUnusedIntArr(buff_index);
 	return pyArr;
 }
-

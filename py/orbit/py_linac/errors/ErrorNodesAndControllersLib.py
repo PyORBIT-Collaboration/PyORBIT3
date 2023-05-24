@@ -1,15 +1,15 @@
 """
 This module is a collection of Error Nodes and Controller Classes. Controller are not
-subclasses of AccNode, and they are not part of the lattice. They resemble the 
-Linac Cavities as controlling structure for RF gaps. The gaps are real nodes 
-in the lattice, and Cavities perform synchronisation of time arrivals and 
-field amplitudes in RF gaps. The Error Controller Classes keep references for 
+subclasses of AccNode, and they are not part of the lattice. They resemble the
+Linac Cavities as controlling structure for RF gaps. The gaps are real nodes
+in the lattice, and Cavities perform synchronisation of time arrivals and
+field amplitudes in RF gaps. The Error Controller Classes keep references for
 two error nodes: first at the entrance of error applied part of the lattice (or node)
 and the second at the exit. For example, if we apply offset to a part of the lattice,
 we will shift particles' coordinates transversly by some amount at the beginning
 of this part and back at the exit.
 
-The elementary operations are performed by functions from error_base 
+The elementary operations are performed by functions from error_base
 implemented in C++.
 
 /scr/orbit/Errors/errorbase.cc

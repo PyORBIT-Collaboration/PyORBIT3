@@ -10,9 +10,9 @@
 //   11/09/10
 //
 // DESCRIPTION
-//  This class calculates the space charge kicks for bunch. It represent the bunch as the set 
-//  of uniformly charged ellipses in the center of mass of the bunch system. 
-//  The space charge kick is transformed later into the lab system.   
+//  This class calculates the space charge kicks for bunch. It represent the bunch as the set
+//  of uniformly charged ellipses in the center of mass of the bunch system.
+//  The space charge kick is transformed later into the lab system.
 //
 /////////////////////////////////////////////////////////////////////////////
 #include "SpaceChargeCalcUnifEllipse.hh"
@@ -49,11 +49,11 @@ SpaceChargeCalcUnifEllipse::~SpaceChargeCalcUnifEllipse(){
 		} else {
 			delete ellipsoidCalc_arr[ie];
 		}
-	}	
+	}
 	delete [] ellipsoidCalc_arr;
-	
+
 	free(macroSizesEll_arr);
-	free(macroSizesEll_MPI_arr);	
+	free(macroSizesEll_MPI_arr);
 }
 
 
@@ -62,23 +62,23 @@ void SpaceChargeCalcUnifEllipse::trackBunch(Bunch* bunch, double length){
 	int nPartsGlobal = bunch->getSizeGlobal();
 	if(nPartsGlobal < 3) return;
 
-	SyncPart* syncPart = bunch->getSyncPart();	
+	SyncPart* syncPart = bunch->getSyncPart();
 	double beta = syncPart->getBeta();
 	double gamma = syncPart->getGamma();
-	
+
 	for(int ie = 0; ie < nEllipses; ie++){
 		ellipsoidCalc_arr[ie]->setQ(0.);
-	}	
-	
+	}
+
 	//analyse the bunch and make the ellipsoid filed sources
 	this->bunchAnalysis(bunch);
 
 	//if there is nothing we give up
 	if(total_macrosize == 0.) return;
-	
-	double trans_factor =  length*bunch->getClassicalRadius()*pow(bunch->getCharge(),2)/(pow(beta,2)*pow(gamma,2));	
+
+	double trans_factor =  length*bunch->getClassicalRadius()*pow(bunch->getCharge(),2)/(pow(beta,2)*pow(gamma,2));
 	double long_factor =  length*bunch->getClassicalRadius()*pow(bunch->getCharge(),2)*bunch->getMass();
-	
+
 	double x,y,z,ex,ey,ez;
 	for (int i = 0, n = bunch->getSize(); i < n; i++){
 		x = bunch->x(i) - x_center;
@@ -102,8 +102,8 @@ void SpaceChargeCalcUnifEllipse::bunchAnalysis(Bunch* bunch){
 	double* coord_avg_out = BufferStore::getBufferStore()->getFreeDoubleArr(buff_index1,7);
 	for (int i = 0; i < 7; i++){
 		coord_avg[i] = 0.;
-	}	
-	
+	}
+
 	//caluclate limits and averages
 	double** partArr=bunch->coordArr();
 	double* coordArr = NULL;
@@ -121,13 +121,13 @@ void SpaceChargeCalcUnifEllipse::bunchAnalysis(Bunch* bunch){
 			coord_avg[2] += m_size*coordArr[4];
 			coord_avg[3] += m_size*coordArr[0]*coordArr[0];
 			coord_avg[4] += m_size*coordArr[2]*coordArr[2];
-			coord_avg[5] += m_size*coordArr[4]*coordArr[4];	
+			coord_avg[5] += m_size*coordArr[4]*coordArr[4];
 			coord_avg[6] += m_size;
-		}	
+		}
 	} else {
 		double m_size = bunch->getMacroSize();
-		int nParts = bunch->getSize();	
-		coord_avg[6] = m_size*nParts;	
+		int nParts = bunch->getSize();
+		coord_avg[6] = m_size*nParts;
 		for(int ip = 0; ip < nParts; ip++){
 			coordArr = partArr[ip];
 			coord_avg[0] += coordArr[0];
@@ -135,19 +135,19 @@ void SpaceChargeCalcUnifEllipse::bunchAnalysis(Bunch* bunch){
 			coord_avg[2] += coordArr[4];
 			coord_avg[3] += coordArr[0]*coordArr[0];
 			coord_avg[4] += coordArr[2]*coordArr[2];
-			coord_avg[5] += coordArr[4]*coordArr[4];		
+			coord_avg[5] += coordArr[4]*coordArr[4];
 		}
 		for (int i = 0; i < 6; i++){
 			coord_avg[i] *= m_size;
-		}	
+		}
 	}
 
 	//calculates sum over all  CPUs
-	ORBIT_MPI_Allreduce(coord_avg,coord_avg_out,7,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local()->comm);	
-	
+	ORBIT_MPI_Allreduce(coord_avg,coord_avg_out,7,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local()->comm);
+
 	total_macrosize = coord_avg_out[6];
 	if(total_macrosize == 0.) return;
-	
+
 	//calculate the parameters of the biggest ellipse
 	x_center = coord_avg_out[0]/total_macrosize;
 	y_center = coord_avg_out[1]/total_macrosize;
@@ -161,13 +161,13 @@ void SpaceChargeCalcUnifEllipse::bunchAnalysis(Bunch* bunch){
 	a_ellips = sqrt(a2_ellips);
 	b_ellips = sqrt(b2_ellips);
 	c_ellips = sqrt(c2_ellips);
-	
+
 	//std::cout<<"debug a_ellips="<< a_ellips <<" b_ellips="<< b_ellips <<" c_ellips="<< c_ellips <<std::endl;
 	//free resources
 	OrbitUtils::BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index0);
-	OrbitUtils::BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index1);	
-	
-	//check if the beam size is not zero 
+	OrbitUtils::BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index1);
+
+	//check if the beam size is not zero
   if( x2_avg == 0. || y2_avg == 0.|| z2_avg == 0.){
 		int rank = 0;
 		ORBIT_MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -181,26 +181,26 @@ void SpaceChargeCalcUnifEllipse::bunchAnalysis(Bunch* bunch){
 		}
 		ORBIT_MPI_Finalize();
   }
-	
+
 	//relativistic factor gamma
-	double gamma = bunch->getSyncPart()->getGamma();		
-	
+	double gamma = bunch->getSyncPart()->getGamma();
+
 	//if we have only one ellipse we should not distribute anything
 	if(nEllipses == 1){
 	  macroSizesEll_arr[0] = total_macrosize;
 		double r_max = a_ellips;
 		if(r_max < b_ellips) r_max = b_ellips;
-		if(r_max < c_ellips*gamma) r_max = c_ellips*gamma;			
-    ellipsoidCalc_arr[0]->setEllipsoid(a_ellips,b_ellips,c_ellips*gamma,10.*r_max);	
+		if(r_max < c_ellips*gamma) r_max = c_ellips*gamma;
+    ellipsoidCalc_arr[0]->setEllipsoid(a_ellips,b_ellips,c_ellips*gamma,10.*r_max);
 		ellipsoidCalc_arr[0]->setQ(macroSizesEll_arr[0]);
 		return;
 	}
-	
+
 	//find the distribution of the macrosizes between nEllipses
 	for(int ie = 0; ie < nEllipses; ie++){
 		macroSizesEll_arr[ie] = 0.;
 	}
-	
+
 	double pos = 0.;
 	int pos_index = 0;
 	if(has_msize > 0){
@@ -214,7 +214,7 @@ void SpaceChargeCalcUnifEllipse::bunchAnalysis(Bunch* bunch){
 			if(pos_index < 0) pos_index = 0;
 			if(pos_index >= nEllipses) pos_index = nEllipses - 1;
 			macroSizesEll_arr[pos_index] += m_size;
-		}	
+		}
 	} else {
 		double m_size = bunch->getMacroSize();
 		int nParts = bunch->getSize();
@@ -225,39 +225,39 @@ void SpaceChargeCalcUnifEllipse::bunchAnalysis(Bunch* bunch){
 			if(pos_index < 0) pos_index = 0;
 			if(pos_index >= nEllipses) pos_index = nEllipses - 1;
 			macroSizesEll_arr[pos_index] += m_size;
-		}	
-	}	
+		}
+	}
 	//calculates sum over all  CPUs
 	ORBIT_MPI_Allreduce(macroSizesEll_arr,macroSizesEll_MPI_arr,nEllipses,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local()->comm);
 	for(int ie = 0; ie < nEllipses; ie++){
 		macroSizesEll_arr[ie] = macroSizesEll_MPI_arr[ie];
 		//std::cout<<"debug 0 ie ="<< ie <<" macrosize="<< macroSizesEll_MPI_arr[ie] << std::endl;
-	}	
+	}
 	//calculate the relative volume density in each region. This density is a sum of all elipsoids
 	for(int ie = 0; ie < nEllipses; ie++){
 		macroSizesEll_MPI_arr[ie] /= ((ie+2)*(ie+2)*(ie+2) - (ie+1)*(ie+1)*(ie+1));
-		//std::cout<<"debug 1 ie ="<< ie <<" macrosize="<< macroSizesEll_MPI_arr[ie] << std::endl;		
+		//std::cout<<"debug 1 ie ="<< ie <<" macrosize="<< macroSizesEll_MPI_arr[ie] << std::endl;
 	}
 	//calculate the density for each elipsoid
 	double rho_sum = 0.;
 	for(int ie = (nEllipses-1); ie >= 0; ie--){
 		macroSizesEll_MPI_arr[ie] -= rho_sum;
 		rho_sum += macroSizesEll_MPI_arr[ie];
-		//std::cout<<"debug 2 ie ="<< ie <<" macrosize="<< macroSizesEll_MPI_arr[ie] << " rho_sum="<< rho_sum <<std::endl;	
+		//std::cout<<"debug 2 ie ="<< ie <<" macrosize="<< macroSizesEll_MPI_arr[ie] << " rho_sum="<< rho_sum <<std::endl;
 	}
-	
+
 	//now set up the relative total charges in ellipsoids
 	double q_sum = 0.;
 	for(int ie = 0; ie < nEllipses; ie++){
 		macroSizesEll_MPI_arr[ie] = macroSizesEll_MPI_arr[ie]*(ie+1)*(ie+1)*(ie+1);
-		//std::cout<<"debug 3 ie ="<< ie <<" macrosize="<< macroSizesEll_MPI_arr[ie] << std::endl;	
+		//std::cout<<"debug 3 ie ="<< ie <<" macrosize="<< macroSizesEll_MPI_arr[ie] << std::endl;
 		q_sum += macroSizesEll_MPI_arr[ie];
-	}	
+	}
 	double q_coeff = total_macrosize/q_sum;
 	for(int ie = 0; ie < nEllipses; ie++){
 		macroSizesEll_arr[ie] = macroSizesEll_MPI_arr[ie]*q_coeff;
 	}
-		
+
 	//now we initialize the ellipses filed calculators
 	double r_max = a_ellips;
 	if(r_max < b_ellips) r_max = b_ellips;
@@ -273,7 +273,7 @@ void SpaceChargeCalcUnifEllipse::bunchAnalysis(Bunch* bunch){
 }
 
 /** Calculates the electric filed in the center of the bunch sytem. */
-void SpaceChargeCalcUnifEllipse::calculateField(double x,  double y,  double z, 
+void SpaceChargeCalcUnifEllipse::calculateField(double x,  double y,  double z,
 	                                            double& ex, double& ey, double& ez)
 {
 	ex = 0.;  ey = 0.; ez = 0.;
@@ -290,7 +290,7 @@ void SpaceChargeCalcUnifEllipse::calculateField(double x,  double y,  double z,
 	}
 }
 
-/** Returns the UniformEllipsoidFieldCalculator class instance with a particular index */ 
+/** Returns the UniformEllipsoidFieldCalculator class instance with a particular index */
 UniformEllipsoidFieldCalculator* SpaceChargeCalcUnifEllipse::getEllipsFieldCalculator(int ellipse_index)
 {
 	if(ellipse_index >= 0 && ellipse_index < nEllipses){
@@ -305,4 +305,3 @@ int SpaceChargeCalcUnifEllipse::getNEllipses()
 {
 	return nEllipses;
 }
-

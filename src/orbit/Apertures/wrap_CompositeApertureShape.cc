@@ -13,7 +13,7 @@ namespace wrap_py_composite_aperture_shape{
 extern "C" {
 #endif
 
-	/** 
+	/**
 	Constructor for python class wrapping c++ Circle, Ellipse, and Rectangular ApertureShape instances.
 	*/
 	static PyObject* CompositeApertureShape_new(PyTypeObject *type, PyObject *args, PyObject *kwds){
@@ -22,18 +22,18 @@ extern "C" {
 		self->cpp_obj = NULL;
 		return (PyObject *) self;
 	}
-	
+
   /** This is implementation of the __init__ method */
   static int CompositeApertureShape_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
   	self->cpp_obj = (pyORBIT_Object*) new CompositeApertureShape();
-	  ((BaseApertureShape*) self->cpp_obj)->setPyWrapper((PyObject*) self);	  
+	  ((BaseApertureShape*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
 
-	// name([name]) - sets or returns the name of the shape 
+	// name([name]) - sets or returns the name of the shape
   static PyObject* CompositeApertureShape_name(PyObject *self, PyObject *args){
     pyORBIT_Object* pyCompositeApertureShape= (pyORBIT_Object*) self;
-		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyCompositeApertureShape->cpp_obj;		
+		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyCompositeApertureShape->cpp_obj;
     const char* name = NULL;
     if(!PyArg_ParseTuple(	args,"|s:name",&name)){
       ORBIT_MPI_Finalize("CompositeApertureShape.name(...) - call should be - name([name]). Stop.");
@@ -44,8 +44,8 @@ extern "C" {
 		}
 		return Py_BuildValue("s",cpp_BaseApertureShape->getName().c_str());
   }
-  
-	// typeName() - returns the type name of the shape 
+
+	// typeName() - returns the type name of the shape
   static PyObject* CompositeApertureShape_typeName(PyObject *self, PyObject *args){
     pyORBIT_Object* pyCompositeApertureShape= (pyORBIT_Object*) self;
 		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyCompositeApertureShape->cpp_obj;
@@ -54,8 +54,8 @@ extern "C" {
 			ORBIT_MPI_Finalize("CompositeApertureShape.typeName() - has no parameters. Stop.");
     }
 		return Py_BuildValue("s",cpp_BaseApertureShape->getTypeName().c_str());
-  }  
-  
+  }
+
 	// addApertureShape() - adds the ApertureShape instance to composite
   static PyObject* CompositeApertureShape_addApertureShape(PyObject *self, PyObject *args){
     pyORBIT_Object* pyCompositeApertureShape= (pyORBIT_Object*) self;
@@ -68,7 +68,7 @@ extern "C" {
 		Py_INCREF(Py_None);
 		return Py_None;
   }
-  
+
 	// getApertureShapes() - returns the ApertureShape instances inside the composite
   static PyObject* CompositeApertureShape_getApertureShapes(PyObject *self, PyObject *args){
     pyORBIT_Object* pyCompositeApertureShape= (pyORBIT_Object*) self;
@@ -83,7 +83,7 @@ extern "C" {
 			}
 		}
     return resTuple;
-  }   
+  }
 
   //-----------------------------------------------------
   //destructor for python CompositeApertureShape class (__del__ method).
@@ -93,7 +93,7 @@ extern "C" {
 		delete ((BaseApertureShape*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// definition of the methods of the python CompositeApertureShape wrapper class
 	// they will be vailable from python level
 	static PyMethodDef CompositeApertureShapeClassMethods[] = {
@@ -107,8 +107,8 @@ extern "C" {
 	static PyMemberDef CompositeApertureShapeClassMembers [] = {
 		{NULL}
 	};
-	
-	
+
+
 	//new python CompositeApertureShape wrapper type definition
 	static PyTypeObject pyORBIT_CompositeApertureShape_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -149,8 +149,8 @@ extern "C" {
 		(initproc) CompositeApertureShape_init, /* tp_init */
 		0, /* tp_alloc */
 		CompositeApertureShape_new, /* tp_new */
-	};	
-	
+	};
+
 	//--------------------------------------------------
 	//Initialization CompositeApertureShape class
 	//--------------------------------------------------
@@ -159,7 +159,7 @@ extern "C" {
 		//check that the CompositeApertureShape wrapper is ready
 		if (PyType_Ready(&pyORBIT_CompositeApertureShape_Type) < 0) return;
 		Py_INCREF(&pyORBIT_CompositeApertureShape_Type);
-		PyModule_AddObject(module, "CompositeApertureShape", (PyObject *)&pyORBIT_CompositeApertureShape_Type);			
+		PyModule_AddObject(module, "CompositeApertureShape", (PyObject *)&pyORBIT_CompositeApertureShape_Type);
 	}
 
 #ifdef __cplusplus

@@ -10,7 +10,7 @@ extern "C" {
 	  PyMODINIT_FUNC initlinac(void);
 	  PyObject* getLinacType(char* name);
 	}
-	
+
 #ifdef __cplusplus
 }
 #endif  // __cplusplus

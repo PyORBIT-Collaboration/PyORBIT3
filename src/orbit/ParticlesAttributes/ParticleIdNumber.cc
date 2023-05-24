@@ -42,6 +42,3 @@ void ParticleIdNumber::setIdNumber(int particle_index, int id)
 {
 	attValue(particle_index,0) = 1.0*id;
 }
-
-
-

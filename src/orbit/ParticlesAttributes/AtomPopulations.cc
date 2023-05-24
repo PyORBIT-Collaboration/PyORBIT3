@@ -29,4 +29,3 @@ AtomPopulations::AtomPopulations(Bunch* bunch, int size_in):
 AtomPopulations::~AtomPopulations()
 {
 }
-

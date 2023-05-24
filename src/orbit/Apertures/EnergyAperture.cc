@@ -11,9 +11,9 @@
 //   Constructs an aperture for the energy (relative to synch. part.) variable.
 //
 // PARAMETERS
-//   The class will remove particles (and put them into lost_bunch) from 
-//   the bunch whose energy (relative to synch. part.) is outside the specified min and 
-//   max values. This class mostly is intended to be used in linacs. 
+//   The class will remove particles (and put them into lost_bunch) from
+//   the bunch whose energy (relative to synch. part.) is outside the specified min and
+//   max values. This class mostly is intended to be used in linacs.
 //   The energy is in GeV.
 //
 ///////////////////////////////////////////////////////////////////////////
@@ -52,14 +52,14 @@ void EnergyAperture::setEnergyLimits(double minEnergy, double maxEnergy){
  Returns the min limit of the particles' energy.
  */
 double EnergyAperture::getMinEnergy(){
-	return minEnergy_; 
+	return minEnergy_;
 }
 
 /**
  Returns the max limit of the particles' energy.
  */
 double EnergyAperture::getMaxEnergy(){
-	return maxEnergy_; 
+	return maxEnergy_;
 }
 
 /**
@@ -87,26 +87,26 @@ void EnergyAperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
 	double m_size = 0.;
 	int nParts = bunch->getSize();
 	double** coord = bunch->coordArr();
-	
+
 	ParticleAttributes* lostPartAttr = NULL;
-	
+
 	ParticleAttributes* partIdNumbAttr = NULL;
 	ParticleAttributes* partIdNumbInitAttr = NULL;
 
 	ParticleAttributes* partInitCoordsAttr = NULL;
 	ParticleAttributes* partInitCoordsInitAttr = NULL;
-	
+
 	ParticleAttributes* partMacroAttr = NULL;
-	ParticleAttributes* partMacroInitAttr = NULL;	
-	
+	ParticleAttributes* partMacroInitAttr = NULL;
+
 	if(lostbunch != NULL) {
 		if(lostbunch->hasParticleAttributes("LostParticleAttributes") <= 0){
 			std::map<std::string,double> params_dict;
 			lostbunch->addParticleAttributes("LostParticleAttributes",params_dict);
 		}
 		lostPartAttr = lostbunch->getParticleAttributes("LostParticleAttributes");
-		
-		
+
+
 		if(bunch->hasParticleAttributes("ParticleIdNumber") > 0){
 			partIdNumbInitAttr = bunch->getParticleAttributes("ParticleIdNumber");
 			if(lostbunch->hasParticleAttributes("ParticleIdNumber") <= 0){
@@ -115,16 +115,16 @@ void EnergyAperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
 			}
 			partIdNumbAttr = lostbunch->getParticleAttributes("ParticleIdNumber");
 		}
-		
+
 		if(bunch->hasParticleAttributes("ParticleInitialCoordinates") > 0){
 			partInitCoordsInitAttr = bunch->getParticleAttributes("ParticleInitialCoordinates");
 			if(lostbunch->hasParticleAttributes("ParticleInitialCoordinates") <= 0){
 				std::map<std::string,double> params_dict;
 				lostbunch->addParticleAttributes("ParticleInitialCoordinates",params_dict);
 			}
-			partInitCoordsAttr = lostbunch->getParticleAttributes("ParticleInitialCoordinates");			
-		}		
-		
+			partInitCoordsAttr = lostbunch->getParticleAttributes("ParticleInitialCoordinates");
+		}
+
 		if(bunch->hasParticleAttributes("macrosize") > 0){
 			partMacroInitAttr = bunch->getParticleAttributes("macrosize");
 			if(lostbunch->hasParticleAttributes("macrosize") <= 0){
@@ -132,11 +132,11 @@ void EnergyAperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
 				lostbunch->addParticleAttributes("macrosize",params_dict);
 			}
 			partMacroAttr = lostbunch->getParticleAttributes("macrosize");
-		}	
-		
+		}
+
 		lostbunch->setMacroSize(bunch->getMacroSize());
 	}
-	
+
 	double dE = 0.;
 	for (int count = 0; count < nParts; count++){
 		dE = coord[count][5];
@@ -160,10 +160,7 @@ void EnergyAperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
 			bunch->deleteParticleFast(count);
 		}
 	}
-	
+
 	//Update synchronous particle, compress bunch
 	bunch->compress();
 }
-
-	
-

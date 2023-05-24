@@ -46,4 +46,3 @@ namespace teapot_base
 }  //end of namespace teapot_base
 
 #endif  //TEAPOT_BASE_MATRIX_GENERATOR_H
-

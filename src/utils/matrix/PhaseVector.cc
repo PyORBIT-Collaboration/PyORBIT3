@@ -110,4 +110,3 @@ int PhaseVector::copyTo(PhaseVector* vIn){
 	}
 	return 1;
 }
-

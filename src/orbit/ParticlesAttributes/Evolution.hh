@@ -46,7 +46,7 @@ public:
 	  * User can specify the number of variables that he wants to reserve.
 		*/
 	Evolution(Bunch* bunch, int size_in);
-	
+
   ~Evolution();
 
 };

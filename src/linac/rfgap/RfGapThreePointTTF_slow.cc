@@ -3,14 +3,14 @@
    by using the second order polynomial approximation of the field on the axis.
    The model includes non-linearity in transverse direction.
    The field is defined by three points at positions -dz, 0., and +dz.
-	 
+
    The transformation coefficients are defined for each particle separately,
    so the name of the class has the word slow in the name.
-   
+
    The description of the models can be found in
-   A. Shishlo, J. Holmes, 
-   "Physical Models for Particle Tracking Simulations in the RF Gap", 
-   ORNL Tech. Note ORNL/TM-2015/247, June 2015	 
+   A. Shishlo, J. Holmes,
+   "Physical Models for Particle Tracking Simulations in the RF Gap",
+   ORNL Tech. Note ORNL/TM-2015/247, June 2015
 */
 
 #include "Bunch.hh"
@@ -34,21 +34,21 @@ RfGapThreePointTTF_slow::~RfGapThreePointTTF_slow()
 {
 }
 
-/** 
-    Tracks the Bunch trough the RF gap as whole using the TTF T and S calculated 
+/**
+    Tracks the Bunch trough the RF gap as whole using the TTF T and S calculated
     from polynomial (2nd order) approximation of the axis RF field. It is a thin
-    element, and the phase is defined for the center of the gap. The field is defined 
+    element, and the phase is defined for the center of the gap. The field is defined
     for 3 points -dz,0, and +dz. Fields are in eV/m, the RF frequency in Hz, and phase
-    is in radians. The tracking through the drift -dz and +dz should be done outside of 
+    is in radians. The tracking through the drift -dz and +dz should be done outside of
     this class.
-*/	
+*/
 void RfGapThreePointTTF_slow::trackBunch(Bunch* bunch, double dz, double Em, double E0, double Ep, double rf_frequency, double phase){
 	//energy and mass of particles in GeV and Em,E0, Ep in V/m
 	// if E0 == 0. then there will be no acceleration at all. So bunch will be the same.
 	if(E0 == 0.) return;
 	Em = Em/1.0e+9;
 	E0 = E0/1.0e+9;
-	Ep = Ep/1.0e+9;	
+	Ep = Ep/1.0e+9;
 	//field approximation is E(z)= E0*(1+a*z + b*z^2)
 	double dz2 = dz*dz;
 	double dz3 = dz2*dz;
@@ -70,13 +70,13 @@ void RfGapThreePointTTF_slow::trackBunch(Bunch* bunch, double dz, double Em, dou
 	//calculate params in the middle of the gap
 	syncPart->setMomentum(syncPart->energyToMomentum(eKin_in + delta_eKin/2.0));
 	double gamma_gap = syncPart->getGamma();
-	double beta_gap = syncPart->getBeta();	
+	double beta_gap = syncPart->getBeta();
 	double kappa_gap = 2.0*OrbitConst::PI*rf_frequency/(OrbitConst::c*beta_gap);
 	// T,S,Tp,Sp for kappa = kappa_gap, we assume a small energy spread
   ttf_t = Tttf(dz,a_param,b_param,kappa_gap);
   ttf_s = Sttf(dz,a_param,b_param,kappa_gap);
   double ttf_tp = Tpttf(dz,a_param,b_param,kappa_gap);
-  double ttf_sp = Spttf(dz,a_param,b_param,kappa_gap);		
+  double ttf_sp = Spttf(dz,a_param,b_param,kappa_gap);
 	//the TTF RF gap has the phase correction to simplectic tracking. The delta time in seconds
 	double delta_phase = charge*E0L*kappa_gap*(ttf_tp*sin(phase) + ttf_sp*cos(phase))
 	                     /(mass*beta_gap*beta_gap*gamma_gap*gamma_gap*gamma_gap);
@@ -85,7 +85,7 @@ void RfGapThreePointTTF_slow::trackBunch(Bunch* bunch, double dz, double Em, dou
 	//now move to the end of the gap
 	delta_eKin = charge*E0L*(ttf_t*cos(phase) - ttf_s*sin(phase));
 	double eKin_out = eKin_in + delta_eKin;
-	syncPart->setMomentum(syncPart->energyToMomentum(eKin_out));	
+	syncPart->setMomentum(syncPart->energyToMomentum(eKin_out));
 	double gamma_out = syncPart->getGamma();
 	double beta_out = syncPart->getBeta();
 	double kappa_out = 2.0*OrbitConst::PI*rf_frequency/(OrbitConst::c*beta_out);
@@ -94,16 +94,16 @@ void RfGapThreePointTTF_slow::trackBunch(Bunch* bunch, double dz, double Em, dou
 	double sin_phRf, cos_phRf;
 	double dE, Ekin, p2, p, p_z, beta_z, gamma, kappa;
 	double xp,yp;
-	// (wave momentum)/beta   phase_coeff - phase coeff   trans_coeff -  transverse coeff 
+	// (wave momentum)/beta   phase_coeff - phase coeff   trans_coeff -  transverse coeff
 	double Kr, kappa_Kr, phase_coeff, trans_coeff;
 	for(int i = 0, n = bunch->getSize(); i < n; i++){
-		
+
 		xp = bunch->xp(i);
 		yp = bunch->yp(i);
-		
+
  		dE = bunch->dE(i);
 		Ekin = eKin_in + dE;
-		p2 = Ekin*(Ekin+2.0*mass); 
+		p2 = Ekin*(Ekin+2.0*mass);
 		p = sqrt(p2);
 		p_z = sqrt(p2 - p_s*p_s*(xp*xp+yp*yp));
 		beta_z = p_z/(Ekin+mass);
@@ -115,22 +115,22 @@ void RfGapThreePointTTF_slow::trackBunch(Bunch* bunch, double dz, double Em, dou
 		trans_coeff = charge*E0L/(mass*beta_z*beta_z*gamma*gamma);
 		ttf_tp = Tpttf(dz,a_param,b_param,kappa);
 		ttf_sp = Spttf(dz,a_param,b_param,kappa);
-		
+
     x = bunch->x(i);
     y = bunch->y(i);
     r = sqrt(x * x + y * y);
     I0 = bessi0(Kr * r);
-    I1 = bessi1(Kr * r);		
+    I1 = bessi1(Kr * r);
 		phase_in = bunch->z(i)*kappa;
 		phase_rf = phase - phase_in;
 		sin_phRf = sin(phase_rf);
 		cos_phRf = cos(phase_rf);
 		//longitudinal-energy part
-		bunch->dE(i) = dE  + charge*E0L*I0*(ttf_t*cos_phRf - ttf_s*sin_phRf) - delta_eKin;	
+		bunch->dE(i) = dE  + charge*E0L*I0*(ttf_t*cos_phRf - ttf_s*sin_phRf) - delta_eKin;
 		phase_out = phase_in + phase_coeff*(I0*(ttf_tp*sin_phRf + ttf_sp*cos_phRf) +
 			                     r*kappa_Kr*I1*(ttf_t*sin_phRf + ttf_s*cos_phRf));
 		phase_out -= delta_phase;
-		//transverse focusing 
+		//transverse focusing
 		if(r == 0.){
 			d_rp = 0.;
 		}
@@ -138,27 +138,27 @@ void RfGapThreePointTTF_slow::trackBunch(Bunch* bunch, double dz, double Em, dou
 			d_rp = - trans_coeff*I1*(ttf_t*sin_phRf + ttf_s*cos_phRf)/r;
 		}
 		bunch->xp(i) = xp*prime_coeff + d_rp*bunch->x(i);
-		bunch->yp(i) = yp*prime_coeff + d_rp*bunch->y(i);	
-		
+		bunch->yp(i) = yp*prime_coeff + d_rp*bunch->y(i);
+
 		xp = bunch->xp(i);
-		yp = bunch->yp(i);		
+		yp = bunch->yp(i);
 		dE = bunch->dE(i);
 		Ekin = eKin_out + dE;
-		p2 = Ekin*(Ekin+2.0*mass); 
+		p2 = Ekin*(Ekin+2.0*mass);
 		p = sqrt(p2);
 		p_z = sqrt(p2 - p_s*p_s*(xp*xp+yp*yp));
 		beta_z = p_z/(Ekin+mass);
-		kappa = 2.0*OrbitConst::PI*rf_frequency/(OrbitConst::c*beta_z);		
-		
+		kappa = 2.0*OrbitConst::PI*rf_frequency/(OrbitConst::c*beta_z);
+
 		bunch->z(i) = phase_out/kappa;
 
 	}
 	//std::cout << "=====debug from C++ =============="<<std::endl;
 	//bunch->print(std::cout);
-}	
-	
-/** 
-   It calculates the symmetrical TTF for 3-point approximation of the field. 
+}
+
+/**
+   It calculates the symmetrical TTF for 3-point approximation of the field.
    This TTF as functions of the kappa variable = 2*pi*f/(c*beta).
 */
 double RfGapThreePointTTF_slow::Tttf(double dz, double a, double b, double kappa)
@@ -170,8 +170,8 @@ double RfGapThreePointTTF_slow::Tttf(double dz, double a, double b, double kappa
   return ttf;
 }
 
-/** 
-   It calculates the asymmetrical TTF for 3-point approximation of the field. 
+/**
+   It calculates the asymmetrical TTF for 3-point approximation of the field.
    This TTF as functions of the kappa variable = 2*pi*f/(c*beta).
 */
 double RfGapThreePointTTF_slow::Sttf(double dz, double a, double b, double kappa)
@@ -183,8 +183,8 @@ double RfGapThreePointTTF_slow::Sttf(double dz, double a, double b, double kappa
 }
 
 
-/** 
-   It calculates the derivative of the symmetrical TTF for 3-point approximation of the field. 
+/**
+   It calculates the derivative of the symmetrical TTF for 3-point approximation of the field.
    This TTF as functions of the kappa variable = 2*pi*f/(c*beta).
 */
 double RfGapThreePointTTF_slow::Tpttf(double dz, double a, double b, double kappa)
@@ -197,8 +197,8 @@ double RfGapThreePointTTF_slow::Tpttf(double dz, double a, double b, double kapp
   return ttfp;
 }
 
-/** 
-   It calculates the derivative of the asymmetrical TTF for 3-point approximation of the field. 
+/**
+   It calculates the derivative of the asymmetrical TTF for 3-point approximation of the field.
    This TTF as functions of the kappa variable = 2*pi*f/(c*beta).
 */
 double RfGapThreePointTTF_slow::Spttf(double dz, double a, double b, double kappa)
@@ -208,4 +208,3 @@ double RfGapThreePointTTF_slow::Spttf(double dz, double a, double b, double kapp
   ttfp = ttfp/(2*dz+(2.0/3.0)*b*dz*dz*dz);
   return ttfp;
 }
-

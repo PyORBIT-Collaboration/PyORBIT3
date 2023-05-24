@@ -35,17 +35,17 @@ extern "C" {
   //initializator for python  BaseRfGap class
   //this is implementation of the __init__ method
   static int BaseRfGap_slow_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
-		self->cpp_obj = new BaseRfGap_slow();	
+		self->cpp_obj = new BaseRfGap_slow();
 		((BaseRfGap_slow*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 		return 0;
   }
-			
+
 	//trackBunch(Bunch* bunch)
   static PyObject* BaseRfGap_slow_trackBunch(PyObject *self, PyObject *args){
     pyORBIT_Object* pyBaseRfGap_slow = (pyORBIT_Object*) self;
 		BaseRfGap_slow* cpp_BaseRfGap_slow = (BaseRfGap_slow*) pyBaseRfGap_slow->cpp_obj;
 		PyObject* pyBunch;
-	  double frequency, e0tl, phase;		
+	  double frequency, e0tl, phase;
 		if(!PyArg_ParseTuple(args,"Oddd:trackBunch",&pyBunch,&frequency,&e0tl,&phase)){
 			ORBIT_MPI_Finalize("PyBaseRfGap_slow - trackBunch(Bunch* bunch, freq, E0TL, phase) - parameters are needed.");
 		}
@@ -56,9 +56,9 @@ extern "C" {
 		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object*)pyBunch)->cpp_obj;
 		cpp_BaseRfGap_slow->trackBunch(cpp_bunch,frequency,e0tl,phase);
 		Py_INCREF(Py_None);
-    return Py_None;	
-	}		
-	
+    return Py_None;
+	}
+
   //-----------------------------------------------------
   //destructor for python BaseRfGap_slow class (__del__ method).
   //-----------------------------------------------------
@@ -68,7 +68,7 @@ extern "C" {
 		delete cpp_BaseRfGap_slow;
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python BaseRfGap_slow wrapper class
 	// they will be vailable from python level
   static PyMethodDef BaseRfGap_slowClassMethods[] = {
@@ -122,7 +122,7 @@ extern "C" {
 		(initproc) BaseRfGap_slow_init, /* tp_init */
 		0, /* tp_alloc */
 		BaseRfGap_slow_new, /* tp_new */
-	};	
+	};
 
 	//--------------------------------------------------
 	//Initialization function of the pyBaseRfGap class

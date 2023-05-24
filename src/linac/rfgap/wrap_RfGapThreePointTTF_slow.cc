@@ -37,17 +37,17 @@ extern "C" {
   //initializator for python  RfGapThreePointTTF_slow class
   //this is implementation of the __init__ method
   static int RfGapThreePointTTF_slow_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
-		self->cpp_obj = new RfGapThreePointTTF_slow();	
+		self->cpp_obj = new RfGapThreePointTTF_slow();
   	((RfGapThreePointTTF_slow*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 		return 0;
   }
-			
+
 	//trackBunch(Bunch* bunch)
   static PyObject* RfGapThreePointTTF_slow_trackBunch(PyObject *self, PyObject *args){
     pyORBIT_Object* pyRfGapThreePointTTF_slow = (pyORBIT_Object*) self;
 		RfGapThreePointTTF_slow* cpp_RfGapThreePointTTF_slow = (RfGapThreePointTTF_slow*) pyRfGapThreePointTTF_slow->cpp_obj;
 		PyObject* pyBunch;
-	  double dz, Em, E0, Ep, rf_frequency, phase;		
+	  double dz, Em, E0, Ep, rf_frequency, phase;
 		if(!PyArg_ParseTuple(args,"Odddddd:trackBunch",&pyBunch,&dz,&Em,&E0,&Ep,&rf_frequency,&phase)){
 			ORBIT_MPI_Finalize("PyRfGapThreePointTTF_slow - trackBunch(Bunch* bunch, dz, Em, E0, Ep, frequency, phase) - parameters are needed.");
 		}
@@ -58,67 +58,67 @@ extern "C" {
 		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object*)pyBunch)->cpp_obj;
 		cpp_RfGapThreePointTTF_slow->trackBunch(cpp_bunch,dz,Em,E0,Ep,rf_frequency,phase);
 		Py_INCREF(Py_None);
-    return Py_None;	
-	}		
-	
+    return Py_None;
+	}
+
 	//getT_TTF() returns the symmetrical part of the three-point transit time factor
   static PyObject* RfGapThreePointTTF_slow_getT_TTF(PyObject *self, PyObject *args){
     pyORBIT_Object* pyRfGapThreePointTTF_slow = (pyORBIT_Object*) self;
-    RfGapThreePointTTF_slow* cpp_RfGapThreePointTTF_slow = (RfGapThreePointTTF_slow*) pyRfGapThreePointTTF_slow->cpp_obj;    
+    RfGapThreePointTTF_slow* cpp_RfGapThreePointTTF_slow = (RfGapThreePointTTF_slow*) pyRfGapThreePointTTF_slow->cpp_obj;
     double dz, a, b, kappa;
 		if(!PyArg_ParseTuple(args,"dddd:getT_TTF",&dz,&a,&b,&kappa)){
 			ORBIT_MPI_Finalize("PyRfGapThreePointTTF_slow - getT_TTF(dz,a,b,kappa) - parameters are needed.");
-		}		
+		}
 		double ttf = cpp_RfGapThreePointTTF_slow->Tttf(dz,a,b,kappa);
    return  Py_BuildValue("d",ttf);
-	}	
-	
+	}
+
 	//getS_TTF() returns the asymmetrical part of the three-point transit time factor
   static PyObject* RfGapThreePointTTF_slow_getS_TTF(PyObject *self, PyObject *args){
     pyORBIT_Object* pyRfGapThreePointTTF_slow = (pyORBIT_Object*) self;
-    RfGapThreePointTTF_slow* cpp_RfGapThreePointTTF_slow = (RfGapThreePointTTF_slow*) pyRfGapThreePointTTF_slow->cpp_obj;    
+    RfGapThreePointTTF_slow* cpp_RfGapThreePointTTF_slow = (RfGapThreePointTTF_slow*) pyRfGapThreePointTTF_slow->cpp_obj;
     double dz, a, b, kappa;
 		if(!PyArg_ParseTuple(args,"dddd:getS_TTF",&dz,&a,&b,&kappa)){
 			ORBIT_MPI_Finalize("PyRfGapThreePointTTF_slow - getS_TTF(dz,a,b,kappa) - parameters are needed.");
-		}		
+		}
 		double ttf = cpp_RfGapThreePointTTF_slow->Sttf(dz,a,b,kappa);
    return  Py_BuildValue("d",ttf);
-	}	
-	
+	}
+
 	//getTp_TTF() returns the symmetrical part of the three-point transit time factor
   static PyObject* RfGapThreePointTTF_slow_getTp_TTF(PyObject *self, PyObject *args){
     pyORBIT_Object* pyRfGapThreePointTTF_slow = (pyORBIT_Object*) self;
-    RfGapThreePointTTF_slow* cpp_RfGapThreePointTTF_slow = (RfGapThreePointTTF_slow*) pyRfGapThreePointTTF_slow->cpp_obj;    
+    RfGapThreePointTTF_slow* cpp_RfGapThreePointTTF_slow = (RfGapThreePointTTF_slow*) pyRfGapThreePointTTF_slow->cpp_obj;
     double dz, a, b, kappa;
 		if(!PyArg_ParseTuple(args,"dddd:getTp_TTF",&dz,&a,&b,&kappa)){
 			ORBIT_MPI_Finalize("PyRfGapThreePointTTF_slow - getTp_TTF(dz,a,b,kappa) - parameters are needed.");
-		}		
+		}
 		double ttf = cpp_RfGapThreePointTTF_slow->Tpttf(dz,a,b,kappa);
    return  Py_BuildValue("d",ttf);
-	}	
-	
+	}
+
 	//getSp_TTF() returns the asymmetrical part of the three-point transit time factor
   static PyObject* RfGapThreePointTTF_slow_getSp_TTF(PyObject *self, PyObject *args){
     pyORBIT_Object* pyRfGapThreePointTTF_slow = (pyORBIT_Object*) self;
-    RfGapThreePointTTF_slow* cpp_RfGapThreePointTTF_slow = (RfGapThreePointTTF_slow*) pyRfGapThreePointTTF_slow->cpp_obj;    
+    RfGapThreePointTTF_slow* cpp_RfGapThreePointTTF_slow = (RfGapThreePointTTF_slow*) pyRfGapThreePointTTF_slow->cpp_obj;
     double dz, a, b, kappa;
 		if(!PyArg_ParseTuple(args,"dddd:getSp_TTF",&dz,&a,&b,&kappa)){
 			ORBIT_MPI_Finalize("PyRfGapThreePointTTF_slow - getSp_TTF(dz,a,b,kappa) - parameters are needed.");
-		}		
+		}
 		double ttf = cpp_RfGapThreePointTTF_slow->Spttf(dz,a,b,kappa);
    return  Py_BuildValue("d",ttf);
-	}	
-	
+	}
+
   //-----------------------------------------------------
   //destructor for python RfGapThreePointTTF_slow class (__del__ method).
   //-----------------------------------------------------
   static void RfGapThreePointTTF_slow_del(pyORBIT_Object* self){
 		//std::cerr<<"The RfGapThreePointTTF_slow __del__ has been called!"<<std::endl;
-		RfGapThreePointTTF_slow* cpp_RfGapThreePointTTF_slow = (RfGapThreePointTTF_slow*) self->cpp_obj;	
+		RfGapThreePointTTF_slow* cpp_RfGapThreePointTTF_slow = (RfGapThreePointTTF_slow*) self->cpp_obj;
 		delete cpp_RfGapThreePointTTF_slow;
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python RfGapThreePointTTF_slow wrapper class
 	// they will be vailable from python level
   static PyMethodDef RfGapThreePointTTF_slowClassMethods[] = {
@@ -176,7 +176,7 @@ extern "C" {
 		(initproc) RfGapThreePointTTF_slow_init, /* tp_init */
 		0, /* tp_alloc */
 		RfGapThreePointTTF_slow_new, /* tp_new */
-	};	
+	};
 
 	//--------------------------------------------------
 	//Initialization function of the pyRfGapThreePointTTF_slow class

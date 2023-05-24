@@ -37,11 +37,11 @@ extern "C" {
   //initializator for python  RfGapTTF_slow class
   //this is implementation of the __init__ method
   static int RfGapTTF_slow_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
-		self->cpp_obj = new RfGapTTF_slow();	
+		self->cpp_obj = new RfGapTTF_slow();
 		((RfGapTTF_slow*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 		return 0;
   }
-			
+
 	//trackBunch(Bunch* bunch)
   static PyObject* RfGapTTF_slow_trackBunch(PyObject *self, PyObject *args){
     pyORBIT_Object* pyRfGapTTF_slow = (pyORBIT_Object*) self;
@@ -51,7 +51,7 @@ extern "C" {
 		PyObject* pyPolyTP;
 		PyObject* pyPolyS;
 		PyObject* pyPolySP;
-	  double frequency, E0L, phase;		
+	  double frequency, E0L, phase;
 		if(!PyArg_ParseTuple(args,"OdddOOOO:trackBunch",&pyBunch,&frequency,&E0L,&phase,&pyPolyT,&pyPolyS,&pyPolyTP,&pyPolySP)){
 			ORBIT_MPI_Finalize("PyRfGapTTF_slow - trackBunch(Bunch* bunch, frequency, E0L, phase, TTFs TSTpSp) - parameters are needed.");
 		}
@@ -62,36 +62,36 @@ extern "C" {
 		PyObject* pyORBIT_Polynomial_Type = wrap_orbit_utils::getOrbitUtilsType("Polynomial");
 		if(!PyObject_IsInstance(pyPolyT,pyORBIT_Polynomial_Type)){
 			ORBIT_MPI_Finalize("PyRfGapTTF_slow - trackBunch(...) - the last parameters should be a Polynomial.");
-		}			
+		}
 		if(!PyObject_IsInstance(pyPolyS,pyORBIT_Polynomial_Type)){
 			ORBIT_MPI_Finalize("PyRfGapTTF_slow - trackBunch(...) - the last parameters should be a Polynomial.");
-		}			
+		}
 		if(!PyObject_IsInstance(pyPolyTP,pyORBIT_Polynomial_Type)){
 			ORBIT_MPI_Finalize("PyRfGapTTF_slow - trackBunch(...) - the last parameters should be a Polynomial.");
-		}			
+		}
 		if(!PyObject_IsInstance(pyPolySP,pyORBIT_Polynomial_Type)){
 			ORBIT_MPI_Finalize("PyRfGapTTF_slow - trackBunch(...) - the last parameters should be a Polynomial.");
-		}			
+		}
 		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object*)pyBunch)->cpp_obj;
 		Polynomial* cpp_polyT = (Polynomial*) ((pyORBIT_Object*)pyPolyT)->cpp_obj;
 		Polynomial* cpp_polyS = (Polynomial*) ((pyORBIT_Object*)pyPolyS)->cpp_obj;
 		Polynomial* cpp_polyTp = (Polynomial*) ((pyORBIT_Object*)pyPolyTP)->cpp_obj;
-		Polynomial* cpp_polySp = (Polynomial*) ((pyORBIT_Object*)pyPolySP)->cpp_obj;		
+		Polynomial* cpp_polySp = (Polynomial*) ((pyORBIT_Object*)pyPolySP)->cpp_obj;
 		cpp_RfGapTTF_slow->trackBunch(cpp_bunch,frequency,E0L,phase,cpp_polyT,cpp_polyS,cpp_polyTp,cpp_polySp);
 		Py_INCREF(Py_None);
-    return Py_None;	
-	}		
-		
+    return Py_None;
+	}
+
   //-----------------------------------------------------
   //destructor for python RfGapTTF_slow class (__del__ method).
   //-----------------------------------------------------
   static void RfGapTTF_slow_del(pyORBIT_Object* self){
 		//std::cerr<<"The RfGapTTF_slow __del__ has been called!"<<std::endl;
-		RfGapTTF_slow* cpp_RfGapTTF_slow = (RfGapTTF_slow*) self->cpp_obj;	
+		RfGapTTF_slow* cpp_RfGapTTF_slow = (RfGapTTF_slow*) self->cpp_obj;
 		delete cpp_RfGapTTF_slow;
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python RfGapTTF_slow wrapper class
 	// they will be vailable from python level
   static PyMethodDef RfGapTTF_slowClassMethods[] = {
@@ -145,7 +145,7 @@ extern "C" {
 		(initproc) RfGapTTF_slow_init, /* tp_init */
 		0, /* tp_alloc */
 		RfGapTTF_slow_new, /* tp_new */
-	};	
+	};
 
 	//--------------------------------------------------
 	//Initialization function of the pyRfGapTTF_slow class

@@ -54,7 +54,7 @@ def Replace_BaseRF_Gap_to_AxisField_Nodes(accLattice, z_step, dir_location="", a
 		node = accLattice.getNodes()[node_ind]
 		#if(not isinstance(node,Quad)): continue
 		(pos_start,pos_end) = node_pos_dict[node]
-		print "debug ind=",node_ind," node=",node.getName()," (pos_start,pos_end)=",(pos_start,pos_end)	
+		print "debug ind=",node_ind," node=",node.getName()," (pos_start,pos_end)=",(pos_start,pos_end)
 	"""
     # -----------------------------------------------------------------------------
     # ---- rf_length_tolerance RF fields should not overlap more than this value

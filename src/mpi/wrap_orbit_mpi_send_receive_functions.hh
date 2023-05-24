@@ -11,8 +11,8 @@ static PyObject* mpi_barrier(PyObject *self, PyObject *args){
 	if(res != MPI_SUCCESS){
 		error("MPI_ Barrier(MPI_Comm comm)- fatal error. STOP.");
 	}
-	return Py_BuildValue("i",res);	
-}	
+	return Py_BuildValue("i",res);
+}
 
 static PyObject* mpi_wait(PyObject *self, PyObject *args){
 	PyObject* pyO_request; PyObject* pyO_status;
@@ -25,8 +25,8 @@ static PyObject* mpi_wait(PyObject *self, PyObject *args){
 	if(res != MPI_SUCCESS){
 		error("MPI_ Wait(MPI_Request,MPI_Status)- fatal error. STOP.");
 	}
-	return Py_BuildValue("i",res);	
-}	
+	return Py_BuildValue("i",res);
+}
 
 static PyObject* mpi_allreduce(PyObject *self, PyObject *args){
 	PyObject* pyO_arr; PyObject* pyO_datatype; PyObject* pyO_op;  PyObject* pyO_comm;
@@ -39,7 +39,7 @@ static PyObject* mpi_allreduce(PyObject *self, PyObject *args){
 	//check the data type
 	if(pyDatatype->datatype != MPI_INT && pyDatatype->datatype != MPI_DOUBLE){
 		error("MPI_Allreduce(...)  data type could be INT or DOUBLE. STOP.");
-	}	
+	}
 	//check if it is not sequence
 	int is_seq = 0;
 	if(PySequence_Check(pyO_arr) == 1){
@@ -58,7 +58,7 @@ static PyObject* mpi_allreduce(PyObject *self, PyObject *args){
 			double val_out = 0.;
 			ORBIT_MPI_Allreduce(&val,&val_out,1,MPI_DOUBLE,pyOp->op,pyComm->comm);
 			return Py_BuildValue("d",val_out);
-		}		
+		}
 		error("MPI_Allreduce(...) - use only INT or DOUBLE data types");
 	}
 	//it IS A SEQUENCE
@@ -67,38 +67,38 @@ static PyObject* mpi_allreduce(PyObject *self, PyObject *args){
 	//data is an INT array
 	if(pyDatatype->datatype == MPI_INT){
 		int buff_index0 = 0;
-		int buff_index1 = 0;		
+		int buff_index1 = 0;
 		int* arr =  BufferStore::getBufferStore()->getFreeIntArr(buff_index0,size);
 		int* arr_out =  BufferStore::getBufferStore()->getFreeIntArr(buff_index1,size);
 		for(int i = 0; i < size; i++){
 			arr[i]= (int) PyLong_AsLong(PySequence_Fast_GET_ITEM(pyO_arr, i));
-		}			
+		}
 		ORBIT_MPI_Allreduce(arr,arr_out,size,MPI_INT,pyOp->op,pyComm->comm);
 		for(int i = 0; i < size; i++){
 			if(PyTuple_SetItem(pyRes,i,Py_BuildValue("i",arr_out[i])) != 0){
 				error("MPI_Allreduce(...)  cannot create a resulting tuple.");
-			}			
+			}
 		}
 		BufferStore::getBufferStore()->setUnusedIntArr(buff_index0);
-		BufferStore::getBufferStore()->setUnusedIntArr(buff_index1);		
+		BufferStore::getBufferStore()->setUnusedIntArr(buff_index1);
 	}
 	//data is an DOUBLE array
 	if(pyDatatype->datatype == MPI_DOUBLE){
 		int buff_index0 = 0;
-		int buff_index1 = 0;	
+		int buff_index1 = 0;
 		double* arr =  BufferStore::getBufferStore()->getFreeDoubleArr(buff_index0,size);
 		double* arr_out =  BufferStore::getBufferStore()->getFreeDoubleArr(buff_index1,size);
 		for(int i = 0; i < size; i++){
 			arr[i]= PyFloat_AsDouble(PySequence_Fast_GET_ITEM(pyO_arr, i));
-		}			
+		}
 		ORBIT_MPI_Allreduce(arr,arr_out,size,MPI_DOUBLE,pyOp->op,pyComm->comm);
 		for(int i = 0; i < size; i++){
 			if(PyTuple_SetItem(pyRes,i,Py_BuildValue("d",arr_out[i])) != 0){
 				error("MPI_Allreduce(...)  cannot create a resulting tuple.");
-			}			
+			}
 		}
 		BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index0);
-		BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index1);		
+		BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index1);
 	}
 	return pyRes;
 }
@@ -112,7 +112,7 @@ static PyObject* mpi_bcast(PyObject *self, PyObject *args){
 	pyORBIT_MPI_Comm* pyComm = (pyORBIT_MPI_Comm*) pyO_comm;
 	pyORBIT_MPI_Datatype* pyDatatype = (pyORBIT_MPI_Datatype*) pyO_datatype;
 	int rank_local = -1;
-	ORBIT_MPI_Comm_rank(pyComm->comm,&rank_local);	
+	ORBIT_MPI_Comm_rank(pyComm->comm,&rank_local);
 	//check if it is not sequence
 	int is_seq = 0;
 	if(rank_local == rank && PySequence_Check(pyO_arr) == 1){
@@ -136,7 +136,7 @@ static PyObject* mpi_bcast(PyObject *self, PyObject *args){
 			}
 			ORBIT_MPI_Bcast(&val,1,MPI_DOUBLE,rank,pyComm->comm);
 			return Py_BuildValue("d",val);
-		}		
+		}
 		error("MPI_Bcast(...) - use only INT and DOUBLE data type as scalar");
 	}
 	//it IS A SEQUENCE
@@ -157,13 +157,13 @@ static PyObject* mpi_bcast(PyObject *self, PyObject *args){
 				if(arr[i] < 0){
 					error("MPI_Bcast([...data],MPI_Datatype type,int rank,MPI_Comm out) [...data] is not good.");
 				}
-			}			
+			}
 		}
 		ORBIT_MPI_Bcast(arr,size,MPI_INT,rank,pyComm->comm);
 		for(int i = 0; i < size; i++){
 			if(PyTuple_SetItem(pyRes,i,Py_BuildValue("i",arr[i])) != 0){
 				error("MPI_Bcast(...)  cannot create a resulting tuple.");
-			}			
+			}
 		}
 		BufferStore::getBufferStore()->setUnusedIntArr(buff_index);
 	}
@@ -175,13 +175,13 @@ static PyObject* mpi_bcast(PyObject *self, PyObject *args){
 		if(rank_local == rank){
 			for(int i = 0; i < size; i++){
 				arr[i]= PyFloat_AsDouble(PySequence_Fast_GET_ITEM(pyO_arr, i));
-			}			
+			}
 		}
 		ORBIT_MPI_Bcast(arr,size,MPI_DOUBLE,rank,pyComm->comm);
 		for(int i = 0; i < size; i++){
 			if(PyTuple_SetItem(pyRes,i,Py_BuildValue("d",arr[i])) != 0){
 				error("MPI_Bcast(...)  cannot create a resulting tuple.");
-			}			
+			}
 		}
 		BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index);
 	}
@@ -208,7 +208,7 @@ static PyObject* mpi_bcast(PyObject *self, PyObject *args){
 	}
 
 	return pyRes;
-}	
+}
 
 static PyObject* mpi_send(PyObject *self, PyObject *args){
 	PyObject* pyO_arr; PyObject* pyO_datatype; PyObject* pyO_comm;
@@ -239,7 +239,7 @@ static PyObject* mpi_send(PyObject *self, PyObject *args){
 				error("MPI_Send(...) - use fatal error. Stop");
 			}
 			return Py_BuildValue("i",res);
-		}		
+		}
 		error("MPI_Send(...) - use only INT and DOUBLE data type as scalar");
 	}
 	//it IS A SEQUENCE
@@ -251,7 +251,7 @@ static PyObject* mpi_send(PyObject *self, PyObject *args){
 		int* arr =  BufferStore::getBufferStore()->getFreeIntArr(buff_index,size);
 		for(int i = 0; i < size; i++){
 			arr[i]= (int) PyLong_AsLong(PySequence_Fast_GET_ITEM(pyO_arr, i));
-		}			
+		}
 		res = ORBIT_MPI_Send(arr,size,MPI_INT,dest,tag,pyComm->comm);
 		BufferStore::getBufferStore()->setUnusedIntArr(buff_index);
 	}
@@ -260,7 +260,7 @@ static PyObject* mpi_send(PyObject *self, PyObject *args){
 		double* arr =  BufferStore::getBufferStore()->getFreeDoubleArr(buff_index,size);
 		for(int i = 0; i < size; i++){
 			arr[i]= PyFloat_AsDouble(PySequence_Fast_GET_ITEM(pyO_arr, i));
-		}			
+		}
 		res = ORBIT_MPI_Send(arr,size,MPI_DOUBLE,dest,tag,pyComm->comm);
 		BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index);
 	}
@@ -273,7 +273,7 @@ static PyObject* mpi_send(PyObject *self, PyObject *args){
 		error("MPI_Send(...)  data type could be INT[], DOUBLE[], or CHAR(string). STOP.");
 	}
 	return Py_BuildValue("i",res);
-}	
+}
 
 static PyObject* mpi_recv(PyObject *self, PyObject *args){
 	PyObject* pyO_datatype; PyObject* pyO_comm;
@@ -281,7 +281,7 @@ static PyObject* mpi_recv(PyObject *self, PyObject *args){
 	if(!PyArg_ParseTuple(	args,"OiiO:mpi_recv",&pyO_datatype,&source,&tag,&pyO_comm)){
 		error("MPI_Recv(MPI_Datatype type,int source, int tag,MPI_Comm comm) - needs 4 params.");
 	}
-	pyORBIT_MPI_Datatype* pyDatatype = (pyORBIT_MPI_Datatype*) pyO_datatype;	
+	pyORBIT_MPI_Datatype* pyDatatype = (pyORBIT_MPI_Datatype*) pyO_datatype;
 	pyORBIT_MPI_Comm* pyComm = (pyORBIT_MPI_Comm*) pyO_comm;
 	MPI_Status status;
 	int rank = -1;
@@ -309,7 +309,7 @@ static PyObject* mpi_recv(PyObject *self, PyObject *args){
 			res = ORBIT_MPI_Recv(&val,1,MPI_DOUBLE,source,tag,pyComm->comm,&status);
 			if(res != MPI_SUCCESS){
 				error("MPI_Recv(...) - fatal error. STOP.");
-			}			
+			}
 			return Py_BuildValue("d",val);
 		}
 		if(pyDatatype->datatype == MPI_CHAR){
@@ -317,7 +317,7 @@ static PyObject* mpi_recv(PyObject *self, PyObject *args){
 			res = ORBIT_MPI_Recv(&val,1,MPI_CHAR,source,tag,pyComm->comm,&status);
 			if(res != MPI_SUCCESS){
 				error("MPI_Recv(...) - fatal error. STOP.");
-			}			
+			}
 			return Py_BuildValue("s#",&val,1);
 		}
 		error("MPI_Recv(...) - data could be INT, DOUBLE, or CHAR(string). STOP.");
@@ -334,7 +334,7 @@ static PyObject* mpi_recv(PyObject *self, PyObject *args){
 		for(int i = 0; i < size; i++){
 			if(PyTuple_SetItem(pyRes,i,Py_BuildValue("i",arr[i])) != 0){
 				error("MPI_Recv(...)  cannot create a resulting tuple.");
-			}	
+			}
 		}
 		BufferStore::getBufferStore()->setUnusedIntArr(buff_index);
 	}
@@ -349,7 +349,7 @@ static PyObject* mpi_recv(PyObject *self, PyObject *args){
 		for(int i = 0; i < size; i++){
 			if(PyTuple_SetItem(pyRes,i,Py_BuildValue("d",arr[i])) != 0){
 				error("MPI_Recv(...)  cannot create a resulting tuple.");
-			}			
+			}
 		}
 		BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index);
 	}
@@ -367,8 +367,4 @@ static PyObject* mpi_recv(PyObject *self, PyObject *args){
 		error("MPI_Recv(...)  data type could be INT, DOUBLE, or CHAR(string). STOP.");
 	}
 	return pyRes;
-}	
-
-
-
-
+}

@@ -18,7 +18,7 @@
 #include <cmath>
 
 namespace OrbitUtils{
-	
+
 	double bessj0(double x);
 	double bessj1(double x);
 	double bessj(int n, double x);
@@ -26,11 +26,9 @@ namespace OrbitUtils{
 	double bessi0(double x);
 	double bessi1(double x);
 	double bessi(int n, double x);
-	
+
 	double BSign(double X, double Y);
 
 }
 
 #endif
-
-	 

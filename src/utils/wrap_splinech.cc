@@ -20,7 +20,7 @@ namespace wrap_splinech{
 extern "C" {
 #endif
 
-	/** 
+	/**
 	    Constructor for python class wrapping c++ SplineCH instance.
       It never will be called directly.
 	*/
@@ -30,56 +30,56 @@ extern "C" {
 		self->cpp_obj = NULL;
 		return (PyObject *) self;
 	}
-	
+
   /** This is implementation of the __init__ method */
   static int SplineCH_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
-	  self->cpp_obj =  new SplineCH();	  
+	  self->cpp_obj =  new SplineCH();
 	  ((SplineCH*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
-  
+
 	/** It will caluclate the SplineCH instance for the function */
   static PyObject* SplineCH_compile(PyObject *self, PyObject *args){
 	  SplineCH* cpp_SplineCH = (SplineCH*)((pyORBIT_Object*) self)->cpp_obj;
 	  PyObject* pyF;
 		Function* f = NULL;
-		int inf = -1;		
+		int inf = -1;
 		if(!PyArg_ParseTuple(	args,"O:",&pyF))
 			error("pySplineCH compile(Function F) - parameter is needed");
 		else {
 			PyObject* pyORBIT_Function_Type = getOrbitUtilsType("Function");
 			if(!PyObject_IsInstance(pyF,pyORBIT_Function_Type)){
 				error("pySplineCH - compile(Function F) - Function parameter is needed.");
-			}			
+			}
 			f= (Function*) ((pyORBIT_Object*) pyF)->cpp_obj;
 			inf = cpp_SplineCH->compile(f);
-		}		
+		}
 		return Py_BuildValue("i",inf);
   }
-	
+
  	/** It will return the number of (x,y) pairs in the SplineCH instance */
   static PyObject* SplineCH_getSize(PyObject *self, PyObject *args){
 	  SplineCH* cpp_SplineCH = (SplineCH*)((pyORBIT_Object*) self)->cpp_obj;
 		return Py_BuildValue("i",cpp_SplineCH->getSize());
   }
-	
+
  	/** It will return x for a particular index ind */
   static PyObject* SplineCH_x(PyObject *self, PyObject *args){
 	  SplineCH* cpp_SplineCH = (SplineCH*)((pyORBIT_Object*) self)->cpp_obj;
 		int ind = -1;
 		if(!PyArg_ParseTuple(	args,"i:",&ind)){
 			error("pySplineCH x(index) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("d",cpp_SplineCH->x(ind));
   }
-	
+
  	/** It will return y for a particular index ind */
   static PyObject* SplineCH_y(PyObject *self, PyObject *args){
 	  SplineCH* cpp_SplineCH = (SplineCH*)((pyORBIT_Object*) self)->cpp_obj;
 		int ind = -1;
 		if(!PyArg_ParseTuple(	args,"i:",&ind)){
 			error("pySplineCH y(index) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("d",cpp_SplineCH->y(ind));
   }
 
@@ -89,20 +89,20 @@ extern "C" {
 		double val = 0.;
 		if(!PyArg_ParseTuple(	args,"d:",&val)){
 			error("pySplineCH getY(x) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("d",cpp_SplineCH->getY(val));
   }
-	
+
  	/** It will return y for a specified x value */
   static PyObject* SplineCH_getYP(PyObject *self, PyObject *args){
 	  SplineCH* cpp_SplineCH = (SplineCH*)((pyORBIT_Object*) self)->cpp_obj;
 		double val = 0.;
 		if(!PyArg_ParseTuple(	args,"d:",&val)){
 			error("pySplineCH getYP(x) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("d",cpp_SplineCH->getYP(val));
   }
-	
+
   //Prints SplineCH into the std::cout stream or file
   static PyObject* SplineCH_dump(PyObject *self, PyObject *args){
 		SplineCH* cpp_SplineCH = (SplineCH*)((pyORBIT_Object*) self)->cpp_obj;
@@ -126,8 +126,8 @@ extern "C" {
     }
     Py_INCREF(Py_None);
     return Py_None;
-  }	
-	
+  }
+
 
   //-----------------------------------------------------
   //destructor for python SplineCH class (__del__ method).
@@ -137,7 +137,7 @@ extern "C" {
 		delete ((SplineCH*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python SplineCH wrapper class
 	// they will be vailable from python level
   static PyMethodDef SplineCHClassMethods[] = {
@@ -150,13 +150,13 @@ extern "C" {
  		{ "dump",				   SplineCH_dump,    	    METH_VARARGS,"Prints SplineCH into the std::cout stream or file"},
     {NULL}
   };
-	
+
 	// defenition of the memebers of the python SplineCH wrapper class
 	// they will be vailable from python level
 	static PyMemberDef SplineCHClassMembers [] = {
 		{NULL}
 	};
-	
+
 	//new python SplineCH wrapper type definition
 	static PyTypeObject pyORBIT_SplineCH_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -197,10 +197,10 @@ extern "C" {
 		(initproc) SplineCH_init, /* tp_init */
 		0, /* tp_alloc */
 		SplineCH_new, /* tp_new */
-	};	
-	
-	
-	
+	};
+
+
+
 	//--------------------------------------------------
 	//Initialization function of the pySplineCH class
 	//--------------------------------------------------

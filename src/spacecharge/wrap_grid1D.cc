@@ -274,7 +274,7 @@ static PyObject* Grid1D_binBunchSmoothed(PyObject *self, PyObject *args)
   PyObject* pyBunch;
   //if args = (pyBunch) use cpp_Grid1D->binBunchSmoothed(cpp_bunch, ind = 4); - longitudinal coordinate
   //if args = (pyBunch,axis_ind) use cpp_Grid1D->binBunchSmoothed(cpp_bunch,ind);
-  int axis_ind = 4;  
+  int axis_ind = 4;
   if(!PyArg_ParseTuple(args,"O|i:binBunchSmoothed",&pyBunch, &axis_ind))
   {
     ORBIT_MPI_Finalize("PyGrid1D - binBunchSmoothed(Bunch* bunch,axis_ind = 4) - parameters are needed.");
@@ -300,7 +300,7 @@ static PyObject* Grid1D_binBunchByParticle(PyObject *self, PyObject *args)
   PyObject* pyBunch;
   //if args = (pyBunch) use cpp_Grid1D->binBunchByParticle(cpp_bunch, ind = 4); - longitudinal coordinate
   //if args = (pyBunch,axis_ind) use cpp_Grid1D->binBunchByParticle(cpp_bunch,ind);
-  int axis_ind = 4;  
+  int axis_ind = 4;
   if(!PyArg_ParseTuple(args, "O|i:binBunchByParticle", &pyBunch, &axis_ind))
   {
     ORBIT_MPI_Finalize("PyGrid1D - binBunchByParticle(Bunch* bunch,axis_ind = 4) - parameters are needed.");
@@ -326,7 +326,7 @@ static PyObject* Grid1D_binBunchSmoothedByParticle(PyObject *self, PyObject *arg
   PyObject* pyBunch;
   //if args = (pyBunch) use cpp_Grid1D->(cpp_bunch, ind = 4); - longitudinal coordinate
   //if args = (pyBunch,axis_ind) use cpp_Grid1D->(cpp_bunch,ind);
-  int axis_ind = 4;  
+  int axis_ind = 4;
   if(!PyArg_ParseTuple(args,"O|i:binBunchSmoothedByParticle",&pyBunch,&axis_ind))
   {
     ORBIT_MPI_Finalize("PyGrid1D - binBunchSmoothedByParticle(Bunch* bunch,axis_ind = 4) - parameters are needed.");
@@ -382,14 +382,14 @@ static PyObject* Grid1D_binValueSmoothed(PyObject *self, PyObject *args)
 static PyObject* Grid1D_isInside(PyObject *self, PyObject *args)
 {
   pyORBIT_Object* pyGrid1D = (pyORBIT_Object*) self;
-  Grid1D* cpp_Grid1D = (Grid1D*) pyGrid1D->cpp_obj;	
+  Grid1D* cpp_Grid1D = (Grid1D*) pyGrid1D->cpp_obj;
   double z;
   if(!PyArg_ParseTuple(args,"d:isInside",&z))
   {
     ORBIT_MPI_Finalize("PyGrid1D - isInside(z) - parameters are needed.");
-  }		
+  }
   return Py_BuildValue("i",cpp_Grid1D->isInside(z));
-}		
+}
 
 
 //calcGradient(double z)
@@ -476,7 +476,7 @@ static PyMethodDef Grid1DClassMethods[] =
   {"getSizeZ",                   Grid1D_getSizeZ,                   METH_VARARGS, "returns the size of grid in Z dir."},
   {"getStepZ",                   Grid1D_getStepZ,                   METH_VARARGS, "returns the step in Z dir."},
   {"getGridZ",                   Grid1D_getGridZ,                   METH_VARARGS, "returns the z-grid point with index ind"},
-  {"getSum",                     Grid1D_getSum,                     METH_VARARGS, "returns the sum of all grid point values."},  
+  {"getSum",                     Grid1D_getSum,                     METH_VARARGS, "returns the sum of all grid point values."},
   {"setZero",                    Grid1D_setZero,                    METH_VARARGS, "sets all points on the grid to zero"},
   {"setValue",                   Grid1D_setValue,                   METH_VARARGS, "sets value for (iz) point"},
   {"multiply",                   Grid1D_multiply,                   METH_VARARGS, "multiply all elements of Grid1D by constant coefficient"},

@@ -15,42 +15,42 @@ using namespace std;
 //
 //   EllipseApertureShape
 //
-// AUTHOR: 
+// AUTHOR:
 //   Andrei Shishlo October 2022
 //
 ///////////////////////////////////////////////////////////////////////////
 
-/** 
+/**
 	EllipseApertureShape is an implementation of BaseApertureShape class.
 */
-    
+
 class EllipseApertureShape: public BaseApertureShape
 {
 public:
-	
+
 	/** EllipseApertureShape constructor */
 	EllipseApertureShape();
-	
+
 	/** EllipseApertureShape decstructor */
 	virtual ~EllipseApertureShape();
-	
+
 	/** Return 1 if the particular macro-particle is inside this shape */
 	int inside(Bunch* bunch, int count);
-	
-	/** Sets the half axis of ellipse in X-direction in [m] */ 
+
+	/** Sets the half axis of ellipse in X-direction in [m] */
 	void setHalfAxisX(double x_half_axis);
-	
-	/** Returns the half axis of ellipse in X-direction in [m]  */ 
+
+	/** Returns the half axis of ellipse in X-direction in [m]  */
 	double getHalfAxisX();
-	
-	/** Sets the half axis of ellipse in Y-direction in [m] */ 
+
+	/** Sets the half axis of ellipse in Y-direction in [m] */
 	void setHalfAxisY(double y_half_axis);
-	
-	/** Returns the half axis of ellipse in Y-direction in [m]  */ 
+
+	/** Returns the half axis of ellipse in Y-direction in [m]  */
 	double getHalfAxisY();
-	
+
 protected:
-	
+
 	double x_half_axis;
 	double y_half_axis;
 

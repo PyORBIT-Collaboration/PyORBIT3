@@ -31,7 +31,7 @@ def addErrorNode(lattice, position, Error_Node):
         z += node.getLength()
 
     """
-	Check that between start and end there are only non-modified 
+	Check that between start and end there are only non-modified
 	drift elements. If space charge was added first - that is a problem.
 	The collimation should be added first.
 	"""

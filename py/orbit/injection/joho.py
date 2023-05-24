@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-This is not a parallel version! 
+This is not a parallel version!
 """
 
 

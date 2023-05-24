@@ -12,7 +12,7 @@
 // DESCRIPTION
 //    Source code for the synchronous particle class. It keeps info
 //    about energy, momentum etc. of the synchronous macro-particle
-//    The synchronous particle bears the coordinate system with z-axis 
+//    The synchronous particle bears the coordinate system with z-axis
 //    directing along pz vector, and x-axis perpendicular to z. The y-axis
 //    ort direction is defined as ny = [nz*nx].
 //
@@ -87,7 +87,7 @@ void SyncPart::init()
 	pxyz[0] = 0.;
 	pxyz[1] = 0.;
 	pxyz[2] = 0.;
-	
+
 	x_normal[0] = 1.;
 	x_normal[1] = 0.;
 	x_normal[2] = 0.;
@@ -205,18 +205,18 @@ double SyncPart::getGamma(){
 void SyncPart::setNormalX(double x, double y, double z){
 	x_normal[0] = x;
 	x_normal[1] = y;
-	x_normal[2] = z;	
+	x_normal[2] = z;
 	updateKinematics();
 }
 
 double SyncPart::getNormalXX(){
 	return x_normal[0];
 }
-	
+
 double SyncPart::getNormalXY(){
 	return x_normal[1];
 }
-	
+
 double SyncPart::getNormalXZ(){
 	return x_normal[2];
 }
@@ -224,11 +224,11 @@ double SyncPart::getNormalXZ(){
 double SyncPart::getNormalYX(){
 	return y_normal[0];
 }
-	
+
 double SyncPart::getNormalYY(){
 	return y_normal[1];
 }
-	
+
 double SyncPart::getNormalYZ(){
 	return y_normal[2];
 }
@@ -374,7 +374,7 @@ void SyncPart::readSyncPart(const char* fileName){
           int nT = StringUtils::Tokenize(str,v_str);
           if(nT > 5 &&
 						( v_str[1] == "SYNC_PART_COORDS" ||
-							v_str[1] == "SYNC_PART_MOMENTUM" || 
+							v_str[1] == "SYNC_PART_MOMENTUM" ||
 							v_str[1] == "SYNC_PART_X_AXIS" )
 						){
             def_found_ind = 1;
@@ -446,7 +446,7 @@ void SyncPart::readSyncPart(const char* fileName){
 				sscanf( v_str[4].c_str(),"%lf",&val_arr[2]);
 				setNormalX(val_arr[0],val_arr[1],val_arr[2]);
       }
-			
+
 			//set time
       if(v_str.size() > 3 && v_str[1] == "SYNC_PART_TIME"){
         double val = 0.;
@@ -536,4 +536,3 @@ void SyncPart::print(std::ostream& Out)
   if(rank_MPI == 0){Out.flush();}
   // ===== MPI end =====
 }
-

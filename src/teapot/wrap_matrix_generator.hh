@@ -18,4 +18,3 @@ namespace wrap_teapotbase_matrix_generator
 #endif
 
 #endif
-

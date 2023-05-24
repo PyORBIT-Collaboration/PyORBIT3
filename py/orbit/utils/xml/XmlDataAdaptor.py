@@ -1,14 +1,14 @@
 """
 XmlDataAdaptor is a DataAdaptor that specifically supports (reading/writing)
-(from/to) XML. XmlDataAdaptor uses xml.dom.minidom package. In particular, 
-you can use the methods of DataAdaptor for all data manipulation.  
+(from/to) XML. XmlDataAdaptor uses xml.dom.minidom package. In particular,
+you can use the methods of DataAdaptor for all data manipulation.
 
 To create a new, empty XML document simply invoke:
 <code> document_adaptor = XmlDataAdaptor(name); </code>
 
-You can populate the document by adding child nodes.  You can only add a single node to the 
-top document node, but otherwise you can add and nest as many nodes as needed. Each 
-such node is returned as a DataAdaptor.  For example, to add a node to the top 
+You can populate the document by adding child nodes.  You can only add a single node to the
+top document node, but otherwise you can add and nest as many nodes as needed. Each
+such node is returned as a DataAdaptor.  For example, to add a node to the top
 document node, invoke:
 <code> childAdaptor = document_adaptor.createChild("nodeName") </code>
 
@@ -22,7 +22,7 @@ You can write an XML document to a file.
 For example, to write an XML document to a file invoke:
 <code> document_adaptor.writeToFile("file_path"); </code>
 
-You can read an XML document from a string of XML text, a URL or a file.  You may 
+You can read an XML document from a string of XML text, a URL or a file.  You may
 specify whether or not to use DTD validation.
 For example, to read an XML document from a file invoke:
 <code> document_adaptor = XmlDataAdaptor.adaptorForFile("file_path"); </code>
@@ -38,7 +38,7 @@ You can test if a node defines an attribute:
 You can read the value of an attribute:
 <code> double_value = adaptor.doubleValue("attr2"); </code>
 
-There are several more methods available for DataAdaptor and XmlDataAdaptor, but 
+There are several more methods available for DataAdaptor and XmlDataAdaptor, but
 the examples listed above should provide an overview and foundation.
 
 @author  shishlo

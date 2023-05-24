@@ -14,7 +14,7 @@ namespace wrap_base_aperture{
 extern "C" {
 #endif
 
-	/** 
+	/**
 	Constructor for python class wrapping c++ BaseAperture instance.
       It never will be called directly.
 	*/
@@ -24,14 +24,14 @@ extern "C" {
 		self->cpp_obj = NULL;
 		return (PyObject *) self;
 	}
-	
+
   /** This is implementation of the __init__ method */
-  static int BaseAperture_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){  	
+  static int BaseAperture_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
 	  self->cpp_obj =  new BaseAperture();
 	  ((BaseAperture*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
-  
+
   /** Sets the pyBaseApertureShape object for inside(...) method */
   static PyObject* BaseAperture_setApertureShape(PyObject *self, PyObject *args){
 	  BaseAperture* cpp_BaseAperture = (BaseAperture*)((pyORBIT_Object*) self)->cpp_obj;
@@ -41,9 +41,9 @@ extern "C" {
 		}
 		cpp_BaseAperture->setApertureShape((BaseApertureShape*) ((pyORBIT_Object*) pyBaseApertureShape)->cpp_obj);
 		Py_INCREF(Py_None);
-		return Py_None;	  
+		return Py_None;
 	}
-	
+
   /** Returns the pyBaseApertureShape object for inside(...) method */
   static PyObject* BaseAperture_getApertureShape(PyObject *self, PyObject *args){
 	  BaseAperture* cpp_BaseAperture = (BaseAperture*)((pyORBIT_Object*) self)->cpp_obj;
@@ -54,9 +54,9 @@ extern "C" {
 	  }
 	  PyObject* pyBaseApertureShape = baseApertureShape->getPyWrapper();
 		Py_INCREF(pyBaseApertureShape);
-		return pyBaseApertureShape;	  
-	}	
-  
+		return pyBaseApertureShape;
+	}
+
   /** Performs the collimation tracking of the bunch */
   static PyObject* BaseAperture_checkBunch(PyObject *self, PyObject *args){
 	  BaseAperture* cpp_BaseAperture = (BaseAperture*)((pyORBIT_Object*) self)->cpp_obj;
@@ -84,16 +84,16 @@ extern "C" {
 				ORBIT_MPI_Finalize("BaseAperture - checkBunch(Bunch* bunch) - method needs a Bunch. Stop.");
 			}
 			Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object*)pyBunch)->cpp_obj;
-			cpp_BaseAperture->checkBunch(cpp_bunch, NULL);			
+			cpp_BaseAperture->checkBunch(cpp_bunch, NULL);
 		}
 		Py_INCREF(Py_None);
 		return Py_None;
   }
-  
+
 	// name([name]) - sets or returns the name of the aperture
   static PyObject* BaseAperture_name(PyObject *self, PyObject *args){
     pyORBIT_Object* pyBaseAperture= (pyORBIT_Object*) self;
-		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyBaseAperture->cpp_obj;		
+		BaseApertureShape* cpp_BaseApertureShape = (BaseApertureShape*) pyBaseAperture->cpp_obj;
     const char* name = NULL;
     if(!PyArg_ParseTuple(	args,"|s:name",&name)){
       ORBIT_MPI_Finalize("BaseAperture.name(...) - call should be - name([name]). Stop.");
@@ -103,8 +103,8 @@ extern "C" {
       cpp_BaseApertureShape->setName(name_str);
 		}
 		return Py_BuildValue("s",cpp_BaseApertureShape->getName().c_str());
-  }  
-		
+  }
+
 	/** Sets/Returns the position of the element in the lattice */
 	static PyObject* BaseAperture_position(PyObject *self, PyObject *args){
 		BaseAperture* cpp_BaseAperture = (BaseAperture*)((pyORBIT_Object*) self)->cpp_obj;
@@ -119,14 +119,14 @@ extern "C" {
 		position = cpp_BaseAperture->getPosition();
 		return Py_BuildValue("d",position);
 	}
-	
+
 	/** Returns the number of lost particles at this aperture across all CPUs */
 	static PyObject* BaseAperture_getNumberOfLost(PyObject *self, PyObject *args){
 		BaseAperture* cpp_BaseAperture = (BaseAperture*)((pyORBIT_Object*) self)->cpp_obj;
 		int nLostParts = cpp_BaseAperture->getNumberOfLost();
 		return Py_BuildValue("i",nLostParts);
-	}	
-	
+	}
+
 	/** Sets or returns the aperture state 1 - is active, 0 - switched off*/
 	static PyObject* BaseAperture_setOnOff(PyObject *self, PyObject *args){
 		BaseAperture* cpp_BaseAperture = (BaseAperture*)((pyORBIT_Object*) self)->cpp_obj;
@@ -142,10 +142,10 @@ extern "C" {
 			cpp_BaseAperture->setOnOff(isActive);
 		}
 		isActive = cpp_BaseAperture->getOnOff();
-		return Py_BuildValue("b",isActive);	
-	}	
-	
-	
+		return Py_BuildValue("b",isActive);
+	}
+
+
   //-----------------------------------------------------
   //destructor for python BaseAperture class (__del__ method).
   //-----------------------------------------------------
@@ -154,7 +154,7 @@ extern "C" {
 		delete ((BaseAperture*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// definition of the methods of the python BaseAperture wrapper class
 	// they will be vailable from python level
 	static PyMethodDef BaseApertureClassMethods[] = {
@@ -171,8 +171,8 @@ extern "C" {
 	static PyMemberDef BaseApertureClassMembers [] = {
 		{NULL}
 	};
-	
-	
+
+
 	//new python BaseAperture wrapper type definition
 	static PyTypeObject pyORBIT_BaseAperture_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -213,8 +213,8 @@ extern "C" {
 		(initproc) BaseAperture_init, /* tp_init */
 		0, /* tp_alloc */
 		BaseAperture_new, /* tp_new */
-	};	
-	
+	};
+
 	//--------------------------------------------------
 	//Initialization BaseAperture class
 	//--------------------------------------------------
@@ -223,7 +223,7 @@ extern "C" {
 		//check that the BaseAperture wrapper is ready
 		if (PyType_Ready(&pyORBIT_BaseAperture_Type) < 0) return;
 		Py_INCREF(&pyORBIT_BaseAperture_Type);
-		PyModule_AddObject(module, "BaseAperture", (PyObject *)&pyORBIT_BaseAperture_Type);			
+		PyModule_AddObject(module, "BaseAperture", (PyObject *)&pyORBIT_BaseAperture_Type);
 	}
 
 #ifdef __cplusplus

@@ -16,7 +16,7 @@ namespace wrap_bunch_tune_analysis{
 extern "C" {
 #endif
 
-	/** 
+	/**
 	    Constructor for python class wrapping c++ BunchTuneAnalysis instance.
       It never will be called directly.
 	*/
@@ -26,14 +26,14 @@ extern "C" {
 		self->cpp_obj = NULL;
 		return (PyObject *) self;
 	}
-	
+
   /** This is implementation of the __init__ method */
   static int BunchTuneAnalysis_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
 		self->cpp_obj =  new BunchTuneAnalysis();
 	  ((BunchTuneAnalysis*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
-  
+
  /** Performs the Tune analysis of the bunch */
   static PyObject* BunchTuneAnalysis_analyzeBunch(PyObject *self, PyObject *args){
 	  BunchTuneAnalysis* cpp_BunchTuneAnalysis = (BunchTuneAnalysis*)((pyORBIT_Object*) self)->cpp_obj;
@@ -67,9 +67,9 @@ extern "C" {
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
-	
-	
-	
+
+
+
   //--------------------------------------------------------------
   //destructor for python BunchTuneAnalysis class (__del__ method).
   //---------------------------------------------------------------
@@ -78,7 +78,7 @@ extern "C" {
 		delete ((BunchTuneAnalysis*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python BunchTuneAnalysis wrapper class
 	// they will be vailable from python level
   static PyMethodDef BunchTuneAnalysisClassMethods[] = {
@@ -86,13 +86,13 @@ extern "C" {
 		{ "assignTwiss", BunchTuneAnalysis_assignTwiss, METH_VARARGS,"Assigns Twiss at location of tune calculator."},
 		{NULL}
   };
-	
+
 	// defenition of the memebers of the python BunchTwissAnalysis wrapper class
 	// they will be vailable from python level
 	static PyMemberDef BunchTuneAnalysisClassMembers [] = {
 		{NULL}
 	};
-	
+
 	//new python BunchTwissAnalysis wrapper type definition
 	static PyTypeObject pyORBIT_BunchTuneAnalysis_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -133,9 +133,9 @@ extern "C" {
 		(initproc) BunchTuneAnalysis_init, /* tp_init */
 		0, /* tp_alloc */
 		BunchTuneAnalysis_new, /* tp_new */
-	};	
-	
-		
+	};
+
+
 	//--------------------------------------------------
 	//Initialization BunchTwissAnalysis of the pyBunchTwissAnalysis class
 	//--------------------------------------------------

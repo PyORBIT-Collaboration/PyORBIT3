@@ -18,4 +18,3 @@ namespace wrap_linac_tracking
 #endif
 
 #endif // WRAP_LINAC_TRACKING_H check
-

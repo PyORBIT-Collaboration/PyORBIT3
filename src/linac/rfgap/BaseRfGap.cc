@@ -3,8 +3,8 @@ This class represents a simple RF gap.
 For this RF gap model we need the E0TL parameter only.
 
 The description of the models can be found in
-A. Shishlo, J. Holmes, 
-"Physical Models for Particle Tracking Simulations in the RF Gap", 
+A. Shishlo, J. Holmes,
+"Physical Models for Particle Tracking Simulations in the RF Gap",
 ORNL Tech. Note ORNL/TM-2015/247, June 2015
 */
 
@@ -30,8 +30,8 @@ BaseRfGap::~BaseRfGap()
 {
 }
 
-/** 
- Tracks the Bunch through the RF gap. This type of model includes the transverse 
+/**
+ Tracks the Bunch through the RF gap. This type of model includes the transverse
  non-linearity.
 */
 
@@ -47,7 +47,7 @@ void BaseRfGap::trackBunch(Bunch* bunch, double frequency, double E0TL, double p
   double mass          = bunch->getMass();
   double charge        = bunch->getCharge();
   double eKin_in       = syncPart->getEnergy();
-  //double chargeE0TLsin = charge * E0TL * sin(phase);	
+  //double chargeE0TLsin = charge * E0TL * sin(phase);
   double delta_eKin    = charge * E0TL * cos(phase);
 
   //calculate params in the middle of the gap
@@ -96,7 +96,7 @@ void BaseRfGap::trackBunch(Bunch* bunch, double frequency, double E0TL, double p
 		if(r == 0.){
 			d_rp = 0.;
 		}
-		else{    
+		else{
 			d_rp = kappa *sin(phase + d_phi) * 2.0 * I1 / (kr * r);
 		}
 		//the transverse non-linear part is removed

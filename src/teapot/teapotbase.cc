@@ -160,7 +160,7 @@ void drift(Bunch* bunch, double length)
     double KNL, phifac, dp_p;
 
     SyncPart* syncPart = bunch->getSyncPart();
-    
+
     double v = OrbitConst::c * syncPart->getBeta();
     syncPart->setTime(syncPart->getTime() + length / v);
 
@@ -182,7 +182,7 @@ void drift(Bunch* bunch, double length)
         arr[i][4] -= length * phifac;
     }
 }
-	
+
 ///////////////////////////////////////////////////////////////////////////
 // NAME
 //   wrapbunch
@@ -198,12 +198,12 @@ void drift(Bunch* bunch, double length)
 //   Nothing
 //
 ///////////////////////////////////////////////////////////////////////////
-	
+
 void wrapbunch(Bunch* bunch, double length)
 {
 	//coordinate array [part. index][x,xp,y,yp,z,dE]
 	double** arr = bunch->coordArr();
-	
+
 	for(int i = 0; i < bunch->getSize(); i++)
 		{
 			if(arr[i][4] < -length/2.0) arr[i][4] += length;
@@ -323,7 +323,7 @@ void multpi(Bunch* bunch, int i, int pole, double kl, int skew, int useCharge)
 //
 // PARAMETERS
 //   bunch =  reference to the macro-particle bunch
-//   pole = multipole number 
+//   pole = multipole number
 //   pole = 0 for dipole, pole = 1 for quad, pole = 2 for sextupole, pole = 3 for octupole
 //   kl = integrated strength of the kick [m^(-pole)]
 //   skew = 0 - normal, 1 - skew
@@ -345,7 +345,7 @@ void multp(Bunch* bunch, int pole, double kl, int skew, int useCharge)
     double** arr = bunch->coordArr();
 
     kl1 = klc / factorial[pole];
-    
+
     for(int i = 0; i < bunch->getSize(); i++)
     {
         z = std::complex<double>(arr[i][0], arr[i][2]);
@@ -739,7 +739,7 @@ void quad2(Bunch* bunch, double length)
 //   quad3
 //
 // DESCRIPTION
-//   Quadrupole element 3: non-linear transport 
+//   Quadrupole element 3: non-linear transport
 //   with the longitudinal field component
 //
 //  It is empty here in the TEAPOT package!
@@ -1356,7 +1356,7 @@ void soln(Bunch* bunch, double length, double B, int useCharge)
     	drift(bunch,length);
     	return;
     }
-    
+
     double charge = +1.0;
     if(useCharge == 1) charge = bunch->getCharge();
     double Bc = B * charge;
@@ -1370,7 +1370,7 @@ void soln(Bunch* bunch, double length, double B, int useCharge)
     {
 	   syncPart->setTime( syncPart->getTime() + length/v);
     }
-    
+
     double gamma2i = 1.0 / (syncPart->getGamma() * syncPart->getGamma());
     double dp_p_coeff = 1.0 / (syncPart->getMomentum() * syncPart->getBeta());
     double dp_p;

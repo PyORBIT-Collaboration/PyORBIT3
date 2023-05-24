@@ -26,7 +26,7 @@ public:
 
   /** Constructor with lattice length */
   Grid1D(int zSize, double length);
-	
+
   /** Constructor with grid size and spatial limits */
   Grid1D(int zSize, double zMin, double zMax);
 
@@ -36,7 +36,7 @@ public:
   /** Sets z-grid */
   void setGridZ(double zMin, double zMax);
 
-  /** Returns the reference to the 1D array */	
+  /** Returns the reference to the 1D array */
   double* getArr();
 
   /** Returns the min z grid point value */
@@ -56,14 +56,14 @@ public:
 
   /** Returns the grid point for index */
   double getGridZ(int index);
-  
+
   /** Returns 1 if (z) is inside the grid region, and 0 otherwise */
   int isInside(double z);
 
   /** Sets arr_ at all grid points to zero */
   void setZero();
-  
-  /** Multiply all elements of Grid1D by constant coefficient */ 
+
+  /** Multiply all elements of Grid1D by constant coefficient */
   void multiply(double coeff);
 
   /** Sets value of arr_ at one point on the grid */
@@ -80,25 +80,25 @@ public:
 
   /** Bins the Bunch to the grid incorporating macrosize */
   void binBunch(Bunch* bunch);
-  
+
   /** Bins the Bunch to the grid along any axis */
-  void binBunch(Bunch* bunch, int axis_ind); 
+  void binBunch(Bunch* bunch, int axis_ind);
 
   /** Bins the Bunch to the grid using a smoothing algorithm
       and incorporating macrosize */
   void binBunchSmoothed(Bunch* bunch);
-  
+
   /** Bins the Bunch to the grid along any axis using a smoothing algorithm
       and incorporating macrosize */
-  void binBunchSmoothed(Bunch* bunch, int axis_ind);  
+  void binBunchSmoothed(Bunch* bunch, int axis_ind);
 
-  /** Bins the Bunch to the grid giving each macroparticle 
+  /** Bins the Bunch to the grid giving each macroparticle
       unit weight */
   void binBunchByParticle(Bunch* bunch);
-  
-  /** Bins the Bunch along the particular coordinate to the grid giving each macro-particle 
+
+  /** Bins the Bunch along the particular coordinate to the grid giving each macro-particle
       unit weight */
-  void binBunchByParticle(Bunch* bunch, int axis_ind);  
+  void binBunchByParticle(Bunch* bunch, int axis_ind);
 
   /** Bins the Bunch to the grid using a smoothing algorithm
       and giving each macroparticle unit weight */
@@ -106,8 +106,8 @@ public:
 
    /** Bins the Bunch  along the particular coordinate to the grid using a smoothing algorithm
       and giving each macroparticle unit weight */
-  void binBunchSmoothedByParticle(Bunch* bunch, int axis_ind); 
-  
+  void binBunchSmoothedByParticle(Bunch* bunch, int axis_ind);
+
   /** Bins moment of the Bunch to the grid giving
       each macroparticle unit weight */
   void binBunchMoment(int propindex, Bunch* bunch, double* Moment);
@@ -142,45 +142,45 @@ private:
   /** Memory allocation and step calculation for dx_ and dy_ */
   void init();
 
-	/** 
+	/**
 			The grid is considered as periodic. The 1st bin is also the next to the last.
 			Returns the grid indices and binning/interpolating coefficients for a given z.
 			The indices bracket the point of interpolation:
 			0 <= iZ0, iZp <= nBins - 1
-			The coefficients WZ0 and WZp correspond to iZ0 and iZp 
+			The coefficients WZ0 and WZp correspond to iZ0 and iZp
 		*/
   void getIndAndWZ(double z,
                    int& ind0  , int& indp,
                    double& Wz0, double& Wzp);
 
-  /** 
-      This is method for interpolation. The grid point responsibility is defined 
-      differently for binning and interpolation.   
+  /**
+      This is method for interpolation. The grid point responsibility is defined
+      differently for binning and interpolation.
       Returns the grid index and fractional position for particular z.
       The central index is the central point in smoothed three
       point interpolation:
       0 <= ind <= nBins - 1
-      The fraction satisfies -0.5 <= frac <= 0.5 
+      The fraction satisfies -0.5 <= frac <= 0.5
     */
   void getIndAndWZSmoothed(double z,
                            int& indm   , int& ind0   , int& indp   ,
                            double& Wzm , double& Wz0 , double& Wzp ,
                            double& dWzm, double& dWz0, double& dWzp);
-  
-  
-  /** 
-      This is method for binning. The grid point responsibility is defined 
-      differently for binning and interpolation.   
+
+
+  /**
+      This is method for binning. The grid point responsibility is defined
+      differently for binning and interpolation.
       Returns the grid index and fractional position for particular z.
       The central index is the central point in smoothed three
       point interpolation:
       0 <= ind <= nBins - 1
-      The fraction satisfies -0.5 <= frac <= 0.5 
+      The fraction satisfies -0.5 <= frac <= 0.5
     */
   void getBinIndAndWZSmoothed(double z,
                            int& indm   , int& ind0   , int& indp   ,
                            double& Wzm , double& Wz0 , double& Wzp ,
-                           double& dWzm, double& dWz0, double& dWzp);  
+                           double& dWzm, double& dWz0, double& dWzp);
 
 protected:
 

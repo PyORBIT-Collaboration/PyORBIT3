@@ -27,14 +27,14 @@ public:
   //the public methods of the ParticleMacroSize class
   //--------------------------------------
 
-	
+
 	/** This Attribute describe complex coefficients of Wave functions.
 	  * User can specify the number of variables that he wants to reserve.
 		*/
 	WaveFunctionAmplitudes(Bunch* bunch, int size_in);
-	
+
   ~WaveFunctionAmplitudes();
-	
+
 };
 
 ///////////////////////////////////////////////////////////////////////////

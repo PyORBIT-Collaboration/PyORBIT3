@@ -21,7 +21,7 @@ namespace wrap_plynomial{
 extern "C" {
 #endif
 
-	/** 
+	/**
 	    Constructor for python class wrapping c++ Polynomial instance.
       It never will be called directly.
 	*/
@@ -31,22 +31,22 @@ extern "C" {
 		self->cpp_obj = NULL;
 		return (PyObject *) self;
 	}
-	
+
   /** This is implementation of the __init__ method */
   static int Polynomial_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
-	  self->cpp_obj =  new Polynomial(0);	
+	  self->cpp_obj =  new Polynomial(0);
 	  ((Polynomial*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     int nVars = PyTuple_Size(args);
-		int order = -1; 
+		int order = -1;
 		if(nVars == 1){
 			if(!PyArg_ParseTuple(args,"i:",&order)){
 				error("pyPolynomial.Polynomial([order]) - constructor parameter is needed");
-			}			
+			}
 			((Polynomial*)self->cpp_obj)->setOrder(order);
-		}		
+		}
     return 0;
   }
-  
+
 	/** It will set or return order of the Polynomial instance */
   static PyObject* Polynomial_order(PyObject *self, PyObject *args){
 	  Polynomial* cpp_Polynomial = (Polynomial*)((pyORBIT_Object*) self)->cpp_obj;
@@ -61,52 +61,52 @@ extern "C" {
 		cpp_Polynomial->setOrder(order);
 		return Py_BuildValue("i",order);
   }
-	
+
  	/** It will set or return the coefficient of the Polynomial instance with index=index*/
   static PyObject* Polynomial_coefficient(PyObject *self, PyObject *args){
 	  Polynomial* cpp_Polynomial = (Polynomial*)((pyORBIT_Object*) self)->cpp_obj;
 		int index = -1;
 		double val = 0.;
-    int nVars = PyTuple_Size(args);		
+    int nVars = PyTuple_Size(args);
 		if(nVars == 1){
 			if(!PyArg_ParseTuple(args,"i:",&index)){
 				error("pyPolynomial.coefficient(index) - a parameter is needed");
 			}
-			return Py_BuildValue("d",cpp_Polynomial->getCoef(index));		
+			return Py_BuildValue("d",cpp_Polynomial->getCoef(index));
 		}
 		if(nVars == 2){
 			if(!PyArg_ParseTuple(args,"id:",&index,&val)){
 				error("pyPolynomial.coefficient(index,val) - parameters are needed");
-			}	
+			}
 			cpp_Polynomial->setCoef(index,val);
 			Py_INCREF(Py_None);
 			return Py_None;
 		}
 		error("pyPolynomial.coef(index[,val]) - parameters are needed");
 		Py_INCREF(Py_None);
-		return Py_None;		
+		return Py_None;
   }
-	
+
  	/** It will return the polynomial value for x */
   static PyObject* Polynomial_value(PyObject *self, PyObject *args){
 	  Polynomial* cpp_Polynomial = (Polynomial*)((pyORBIT_Object*) self)->cpp_obj;
 		double x;
 		if(!PyArg_ParseTuple(	args,"d:",&x)){
 			error("pyPolynomial.value(x) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("d",cpp_Polynomial->value(x));
   }
-	
+
  	/** It will return the polynomial derivative for x */
   static PyObject* Polynomial_derivative(PyObject *self, PyObject *args){
 	  Polynomial* cpp_Polynomial = (Polynomial*)((pyORBIT_Object*) self)->cpp_obj;
 		double x;
 		if(!PyArg_ParseTuple(	args,"d:",&x)){
 			error("pyPolynomial.derivative(x) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("d",cpp_Polynomial->derivative(x));
   }
-	
+
  	/** It will put the derivativeTo into the other polynomial */
   static PyObject* Polynomial_derivativeTo(PyObject *self, PyObject *args){
 	  Polynomial* cpp_Polynomial = (Polynomial*)((pyORBIT_Object*) self)->cpp_obj;
@@ -118,14 +118,14 @@ extern "C" {
 			PyObject* pyORBIT_Polynomial_Type = getOrbitUtilsType("Polynomial");
 			if(!PyObject_IsInstance(pyP,pyORBIT_Polynomial_Type)){
 				error("pyPolynomial.derivativeTo(polinomial)- parameter is needed");
-			}			
+			}
 			p = (Polynomial*) ((pyORBIT_Object*) pyP)->cpp_obj;
 			cpp_Polynomial->derivativeTo(p);
-		}		
+		}
 		Py_INCREF(pyP);
 		return pyP;
   }
-	
+
  	/** It will put the copy into the other polynomial */
   static PyObject* Polynomial_copyTo(PyObject *self, PyObject *args){
 	  Polynomial* cpp_Polynomial = (Polynomial*)((pyORBIT_Object*) self)->cpp_obj;
@@ -137,14 +137,14 @@ extern "C" {
 			PyObject* pyORBIT_Polynomial_Type = getOrbitUtilsType("Polynomial");
 			if(!PyObject_IsInstance(pyP,pyORBIT_Polynomial_Type)){
 				error("pyPolynomial.copyTo(polinomial)- parameter is needed");
-			}			
+			}
 			p = (Polynomial*) ((pyORBIT_Object*) pyP)->cpp_obj;
 			cpp_Polynomial->copyTo(p);
-		}		
+		}
 		Py_INCREF(pyP);
 		return pyP;
   }
-	
+
  	/** It sets/returns the min good value for x for this polynomial reprsentation */
   static PyObject* Polynomial_minX(PyObject *self, PyObject *args){
 	  Polynomial* cpp_Polynomial = (Polynomial*)((pyORBIT_Object*) self)->cpp_obj;
@@ -153,7 +153,7 @@ extern "C" {
 			cpp_Polynomial->setMinX(x_min);
 		}
 		return Py_BuildValue("d",cpp_Polynomial->getMinX());
-  }  
+  }
 
  	/** It sets/returns the max good value for x for this polynomial reprsentation */
   static PyObject* Polynomial_maxX(PyObject *self, PyObject *args){
@@ -163,8 +163,8 @@ extern "C" {
 			cpp_Polynomial->setMaxX(x_max);
 		}
 		return Py_BuildValue("d",cpp_Polynomial->getMaxX());
-  }  
-  
+  }
+
   //-----------------------------------------------------
   //destructor for python Polynomial class (__del__ method).
   //-----------------------------------------------------
@@ -173,7 +173,7 @@ extern "C" {
 		delete ((Polynomial*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python Polynomial wrapper class
 	// they will be vailable from python level
   static PyMethodDef PolynomialClassMethods[] = {
@@ -187,13 +187,13 @@ extern "C" {
 		{ "maxX",		 	     Polynomial_maxX,        METH_VARARGS,"maxX(x_min) or maxX() sets or returns max good value for x"},
     {NULL}
   };
-	
+
 	// defenition of the memebers of the python Polynomial wrapper class
 	// they will be vailable from python level
 	static PyMemberDef PolynomialClassMembers [] = {
 		{NULL}
 	};
-	
+
 	//new python Polynomial wrapper type definition
 	static PyTypeObject pyORBIT_Polynomial_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -234,8 +234,8 @@ extern "C" {
 		(initproc) Polynomial_init, /* tp_init */
 		0, /* tp_alloc */
 		Polynomial_new, /* tp_new */
-	};	
-	
+	};
+
 	//--------------------------------------------------
 	//Initialization plynomial of the pyPolynomial class
 	//--------------------------------------------------
@@ -243,7 +243,7 @@ extern "C" {
 		if (PyType_Ready(&pyORBIT_Polynomial_Type) < 0) return;
 		Py_INCREF(&pyORBIT_Polynomial_Type);
 		PyModule_AddObject(module, "Polynomial", (PyObject *)&pyORBIT_Polynomial_Type);
-		
+
 	}
 
 #ifdef __cplusplus

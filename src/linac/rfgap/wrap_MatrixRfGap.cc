@@ -34,17 +34,17 @@ extern "C" {
   //initializator for python  MatrixRfGap class
   //this is implementation of the __init__ method
   static int MatrixRfGap_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
-		self->cpp_obj = new MatrixRfGap();	
+		self->cpp_obj = new MatrixRfGap();
 		((MatrixRfGap*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 		return 0;
   }
-			
+
 	//trackBunch(Bunch* bunch)
   static PyObject* MatrixRfGap_trackBunch(PyObject *self, PyObject *args){
     pyORBIT_Object* pyMatrixRfGap = (pyORBIT_Object*) self;
 		MatrixRfGap* cpp_MatrixRfGap = (MatrixRfGap*) pyMatrixRfGap->cpp_obj;
 		PyObject* pyBunch;
-	  double frequency, e0tl, phase, ampl;		
+	  double frequency, e0tl, phase, ampl;
 		if(!PyArg_ParseTuple(args,"Oddd:trackBunch",&pyBunch,&frequency,&e0tl,&phase)){
 			ORBIT_MPI_Finalize("PyMatrixRfGap - trackBunch(Bunch* bunch, freq, E0TL, phase) - parameters are needed.");
 		}
@@ -55,9 +55,9 @@ extern "C" {
 		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object*)pyBunch)->cpp_obj;
 		cpp_MatrixRfGap->trackBunch(cpp_bunch,frequency,e0tl,phase);
 		Py_INCREF(Py_None);
-    return Py_None;	
-	}		
-	
+    return Py_None;
+	}
+
   //-----------------------------------------------------
   //destructor for python MatrixRfGap class (__del__ method).
   //-----------------------------------------------------
@@ -67,7 +67,7 @@ extern "C" {
 		delete cpp_MatrixRfGap;
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python MatrixRfGap wrapper class
 	// they will be vailable from python level
   static PyMethodDef MatrixRfGapClassMethods[] = {
@@ -121,7 +121,7 @@ extern "C" {
 		(initproc) MatrixRfGap_init, /* tp_init */
 		0, /* tp_alloc */
 		MatrixRfGap_new, /* tp_new */
-	};	
+	};
 
 	//--------------------------------------------------
 	//Initialization function of the pyMatrixRfGap class

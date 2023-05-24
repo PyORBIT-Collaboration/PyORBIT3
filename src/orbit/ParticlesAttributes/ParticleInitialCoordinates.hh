@@ -11,12 +11,12 @@
 //
 // DESCRIPTION
 //    A subclass of a ParticleAttributes class that keeps the initial
-//    coordinates of the particles. This attributes will be used for 
+//    coordinates of the particles. This attributes will be used for
 //    different purposes like:
 //    1. calculations of the acceptance phase space region for particles that
-//       reached a particular point at the lattice. The initial coordinates 
+//       reached a particular point at the lattice. The initial coordinates
 //       should be put into these attributes before tracking.
-//    2. Calculation of the transport matrix between the origin (place were 
+//    2. Calculation of the transport matrix between the origin (place were
 //       initial coordinates were saved in these attributes) and the another
 //       point in the lattice.
 //
@@ -36,13 +36,13 @@
 class ParticleInitialCoordinates : public ParticleAttributes
 {
 public:
-	
-	/** 
+
+	/**
 	   A subclass of a ParticleAttributes class that keeps the initial
 	   coordinates of the particles.
 	*/
 	ParticleInitialCoordinates(Bunch* bunch);
-	
+
   ~ParticleInitialCoordinates();
 
 };

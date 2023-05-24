@@ -25,16 +25,16 @@
 using namespace OrbitUtils;
 
 Polynomial::Polynomial(int order_in): CppPyWrapper(NULL)
-{  
+{
 	if(order_in < 0){
 		ORBIT_MPI_Finalize("Orbit Utilites Polynomial::Polynomial(order) - order should be >= 0. Stop.");
-	}	
+	}
 	order = order_in;
 	coef_arr = new double[order+1];
 	for (int i = 0; i < (order+1); i++){
 		coef_arr[i] = 0.;
 	}
-	
+
 	x_min = -DBL_MAX;
 	x_max = DBL_MAX;
 }
@@ -48,18 +48,18 @@ void Polynomial::setOrder(int order_in)
 {
 	if(order_in < 0){
 		ORBIT_MPI_Finalize("Orbit Utilites Polynomial::setOrder(order) - order should be >= 0. Stop.");
-	}	
+	}
 	double* coef_new_arr = new double[order_in+1];
 	for (int i = 0; i < (order_in+1); i++){
 		coef_new_arr[i] = 0.;
-	}	
+	}
 	int min_order = order_in;
 	if(min_order > order){
 		min_order = order;
 	}
 	for (int i = 0; i < (min_order+1); i++){
 		coef_new_arr[i] = coef_arr[i];
-	}	
+	}
 
 	delete [] coef_arr;
 	coef_arr = coef_new_arr;
@@ -94,7 +94,7 @@ double Polynomial::value(double x)
 	for (int i = 0; i < (order+1); i++){
 		sum = sum + coef_arr[i]*t;
 		t = t*x;
-	}	
+	}
 	return sum;
 }
 
@@ -105,7 +105,7 @@ double Polynomial::derivative(double x)
 	for (int i = 1; i < (order+1); i++){
 		sum = sum + coef_arr[i]*i*t;
 		t = t*x;
-	}		
+	}
 	return sum;
 }
 
@@ -119,7 +119,7 @@ void Polynomial::derivativeTo(Polynomial* derivP)
 	derivP->setOrder(order - 1);
 	for (int i = 1; i < (order+1); i++){
 		derivP->setCoef(i-1,getCoef(i)*i);
-	}	
+	}
 }
 
 void Polynomial::copyTo(Polynomial* p)
@@ -127,7 +127,7 @@ void Polynomial::copyTo(Polynomial* p)
 	p->setOrder(order);
 	for (int i = 0; i < (order+1); i++){
 		p->setCoef(i,getCoef(i));
-	}	
+	}
 }
 
 double Polynomial::getMinX(){

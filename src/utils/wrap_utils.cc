@@ -19,7 +19,7 @@
 namespace wrap_orbit_utils{
 
   void error(const char* msg){ ORBIT_MPI_Finalize(msg); }
-	
+
   static PyMethodDef UtilsModuleMethods[] = { {NULL,NULL} };
 
 #ifdef __cplusplus
@@ -47,7 +47,7 @@ extern "C" {
 		//wrap_statmoments2d::initstatmoments2d(module);
 		wrap_utils_bunch::initBunchExtremaCalculator(module);
 		wrap_gl_integrator::initGLIntegrator(module);
-		wrap_polynomial::initPolynomial(module);		
+		wrap_polynomial::initPolynomial(module);
 		//this call creates the module orbit_utils.numrecipes with functions
 		wrap_numrecipes::initNumrecipes(module);
 		wrap_utils_bunch_functions::initBunchUtilsFunctions(module);
@@ -63,12 +63,11 @@ extern "C" {
 		Py_DECREF(pyType);
 		return pyType;
 	}
-	
-	
+
+
 #ifdef __cplusplus
 }
 #endif
 
 //end of namespace wrap_orbit_utils
 }
-

@@ -10,7 +10,7 @@
 //    01/23/2013
 //
 // DESCRIPTION
-//    The integrator for the Gauss-Legendre schema. 
+//    The integrator for the Gauss-Legendre schema.
 //
 ///////////////////////////////////////////////////////////////////////////
 #include "orbit_mpi.hh"
@@ -25,7 +25,7 @@
 using namespace OrbitUtils;
 
 GaussLegendreIntegrator::GaussLegendreIntegrator(): CppPyWrapper(NULL)
-{  
+{
 	n_int_points = 1024;
 	x0 = 0.;
 	x1 = 1.;
@@ -35,7 +35,7 @@ GaussLegendreIntegrator::GaussLegendreIntegrator(): CppPyWrapper(NULL)
 }
 
 GaussLegendreIntegrator::GaussLegendreIntegrator(int nPoints): CppPyWrapper(NULL)
-{  
+{
 	n_int_points = nPoints;
 	x0 = 0.;
 	x1 = 1.;
@@ -45,7 +45,7 @@ GaussLegendreIntegrator::GaussLegendreIntegrator(int nPoints): CppPyWrapper(NULL
 }
 
 GaussLegendreIntegrator::GaussLegendreIntegrator(int nPoints, double x_from, double x_to): CppPyWrapper(NULL)
-{  
+{
 	n_int_points = nPoints;
 	x0 = x_from;
 	x1 = x_to;
@@ -101,4 +101,3 @@ double GaussLegendreIntegrator::integral(SplineCH* spline)
 	}
 	return sum;
 }
-

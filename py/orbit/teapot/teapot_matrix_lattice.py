@@ -1,8 +1,8 @@
 """
 The TEAPOT MATRIX_Lattice is a subclass of a MAXTRIX_Lattice class. The Matrix lattice is generated
 by using the TEAPOT lattice. The matrices are the linear part of the TEAPOT elements
-tracking. The number of transport matrices in the lattice is equal to the sum of 
-all parts of TEAPOT elements. The RF cavities in the Matrix lattice are the 
+tracking. The number of transport matrices in the lattice is equal to the sum of
+all parts of TEAPOT elements. The RF cavities in the Matrix lattice are the
 TEAPOT RF Cavity class instances.
 """
 import os

@@ -28,4 +28,3 @@ WaveFunctionAmplitudes::WaveFunctionAmplitudes(Bunch* bunch, int size_in):
 WaveFunctionAmplitudes::~WaveFunctionAmplitudes()
 {
 }
-

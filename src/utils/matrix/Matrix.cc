@@ -10,7 +10,7 @@
 //    03/12/2008
 //
 // DESCRIPTION
-//    A class for plain NxM matrices with double values. 
+//    A class for plain NxM matrices with double values.
 //
 ///////////////////////////////////////////////////////////////////////////
 
@@ -26,11 +26,11 @@ Matrix::Matrix(int n_in, int m_in): CppPyWrapper(NULL)
 {
 	n = n_in;
 	m = m_in;
-		
+
 	a = (double** ) malloc (sizeof(double*)*n);
 	for(int i=0; i < n; i++){
 		a[i] = (double* ) malloc (sizeof(double)*m);
-	}	
+	}
 	zero();
 }
 
@@ -41,7 +41,7 @@ Matrix::Matrix(Matrix* mtrx): CppPyWrapper(NULL)
 	a = (double** ) malloc (sizeof(double*)*n);
 	for(int i=0; i < n; i++){
 		a[i] = (double* ) malloc (sizeof(double)*m);
-	}	
+	}
 	mtrx->copyTo(this);
 }
 
@@ -107,13 +107,13 @@ void Matrix::transpose(){
   double** arr = new double*[m];
 	for(int i=0; i < m; i++){
 		arr[i] = new double[n];
-	}		
+	}
 	//copy
 	for(int i = 0; i < n; i++){
 		for(int j = 0; j < m; j++){
 			arr[j][i] = a[i][j];
 		}
-	} 
+	}
 	//remove old arrays
 	for(int i=0; i < n; i++){
     delete [] a[i];
@@ -190,5 +190,3 @@ int Matrix::mult(Matrix* mtrx){
 	BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index);
 	return 1;
 }
-
-

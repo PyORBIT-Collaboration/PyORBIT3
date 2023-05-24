@@ -3,6 +3,7 @@
 ##
 
 from orbit.core import teapot_base as TPB
+
 MatrixGenerator = TPB.MatrixGenerator
 
 __all__ = []

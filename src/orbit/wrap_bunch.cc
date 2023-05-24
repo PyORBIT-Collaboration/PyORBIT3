@@ -52,7 +52,7 @@ namespace wrap_orbit_bunch{
 		//the references should be decreased because they were created as "new reference"
 		Py_DECREF(pySyncPart);
 		Py_DECREF(mod);
-    return 0;		
+    return 0;
   }
 
   //---------------------------------------------------------------
@@ -73,16 +73,16 @@ namespace wrap_orbit_bunch{
   //
   // set and get MPI Communicators
   //
-  //----------------------------------------------------------------	
-	
+  //----------------------------------------------------------------
+
 	//returns the local MPI Comm for this bunch
 	static PyObject* Bunch_getMPIComm(PyObject *self, PyObject *args){
 		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
-		PyObject* pyMPIComm = (PyObject*) cpp_bunch->getMPI_Comm_Local();	
+		PyObject* pyMPIComm = (PyObject*) cpp_bunch->getMPI_Comm_Local();
 		Py_INCREF(pyMPIComm);
     return pyMPIComm;
-  }	
-	
+  }
+
 	//sets a new local MPI Comm for this bunch
 	static PyObject* Bunch_setMPIComm(PyObject *self, PyObject *args){
 		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
@@ -99,8 +99,8 @@ namespace wrap_orbit_bunch{
 		}
 		Py_INCREF(Py_None);
     return Py_None;
-  }	
-	
+  }
+
   //---------------------------------------------------------------
   //
   // add and remove particles, compress etc.
@@ -117,7 +117,7 @@ namespace wrap_orbit_bunch{
 
     //NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
     if(!PyArg_ParseTuple(	args,"dddddd:coordinates",&x,&xp,&y,&yp,&z,&zp)){
-      error("PyBunch - addParticle - cannot parse arguments! It should be (x,xp,y,yp,z,zp)");	
+      error("PyBunch - addParticle - cannot parse arguments! It should be (x,xp,y,yp,z,zp)");
     }
     int ind = cpp_bunch->addParticle(x,xp,y,yp,z,zp);
     return Py_BuildValue("i",ind);
@@ -138,7 +138,7 @@ namespace wrap_orbit_bunch{
 
     cpp_bunch->deleteParticle(ind);
     int size = cpp_bunch->getSize();
-		
+
     return Py_BuildValue("i",size);
   }
 
@@ -189,7 +189,7 @@ namespace wrap_orbit_bunch{
   //  (index, value) - sets the new value to the x-coordinate
   //this is implementation of the x(int index)  method
   static PyObject* Bunch_x(PyObject *self, PyObject *args){
-		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;		
+		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     //if nVars == 1 get coordinate
     //if nVars == 2 set coordinate
     int nVars = PyTuple_Size(args);
@@ -228,7 +228,7 @@ namespace wrap_orbit_bunch{
   //  (index, value) - sets the new value to the y-coordinate
   //this is implementation of the y(int index)  method
   static PyObject* Bunch_y(PyObject *self, PyObject *args){
-		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;		
+		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     //if nVars == 1 get coordinate
     //if nVars == 2 set coordinate
     int nVars = PyTuple_Size(args);
@@ -267,7 +267,7 @@ namespace wrap_orbit_bunch{
   //  (index, value) - sets the new value to the z(phi)-coordinate
   //this is implementation of the (z or phi)(int index)  method
   static PyObject* Bunch_z(PyObject *self, PyObject *args){
-		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;		
+		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     //if nVars == 1 get coordinate
     //if nVars == 2 set coordinate
     int nVars = PyTuple_Size(args);
@@ -307,7 +307,7 @@ namespace wrap_orbit_bunch{
   //  (index, value) - sets the new value to the px-coordinate
   //this is implementation of the px(int index)  method
   static PyObject* Bunch_px(PyObject *self, PyObject *args){
-		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;		
+		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     //if nVars == 1 get coordinate
     //if nVars == 2 set coordinate
     int nVars = PyTuple_Size(args);
@@ -346,7 +346,7 @@ namespace wrap_orbit_bunch{
   //  (index, value) - sets the new value to the py-coordinate
   //this is implementation of the py(int index)  method
   static PyObject* Bunch_py(PyObject *self, PyObject *args){
-		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;		
+		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     //if nVars == 1 get coordinate
     //if nVars == 2 set coordinate
     int nVars = PyTuple_Size(args);
@@ -385,7 +385,7 @@ namespace wrap_orbit_bunch{
   //  (index, value) - sets the new value to the pz(dE)-coordinate
   //this is implementation of the (pz or dE)(int index)  method
   static PyObject* Bunch_pz(PyObject *self, PyObject *args){
-		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;		
+		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     //if nVars == 1 get coordinate
     //if nVars == 2 set coordinate
     int nVars = PyTuple_Size(args);
@@ -423,7 +423,7 @@ namespace wrap_orbit_bunch{
   //  (index) - returns flag
   //this is implementation of the flag(int index)  method
   static PyObject* Bunch_flag(PyObject *self, PyObject *args){
-		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;		
+		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     //if nVars == 1 get flag
     int nVars = PyTuple_Size(args);
     int index = 0;
@@ -439,20 +439,20 @@ namespace wrap_orbit_bunch{
       error("PyBunch. You should call bunch.flag(index)");
     }
     Py_INCREF(Py_None);
-    return Py_None;		
+    return Py_None;
   }
 
 	//Wraps long. coords in the bunch
 	//ringwrap(ring_length)
   static PyObject* Bunch_ringwrap(PyObject *self, PyObject *args) {
-		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;	
+		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     double ring_length = 0.;
-		
+
 		//NO NEW OBJECT CREATED BY PyArg_ParseTuple! //NO NEED OF Py_DECREF()
 		if(!PyArg_ParseTuple(	args,"d:py",&ring_length)){
 			error("PyBunch - ringwrap(ring_length) - pyBunch object needed");
 		}
-		
+
 		cpp_bunch->ringwrap(ring_length);
     Py_INCREF(Py_None);
     return Py_None;
@@ -470,7 +470,7 @@ namespace wrap_orbit_bunch{
   //  mass(value) - sets the new value
   //this is implementation of the getMass() and setMass  methods of the Bunch class
   static PyObject* Bunch_mass(PyObject *self, PyObject *args){
-		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;		
+		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     //if nVars == 0 get mass
     //if nVars == 1 set mass
     int nVars = PyTuple_Size(args);
@@ -495,7 +495,7 @@ namespace wrap_orbit_bunch{
     }
 
     Py_INCREF(Py_None);
-    return Py_None;		
+    return Py_None;
   }
 
   //Sets or returns classicalRadius of the macro-particle in MeV
@@ -504,8 +504,8 @@ namespace wrap_orbit_bunch{
   //  classicalRadius(value) - sets the new value
   //this is implementation of the getClassicalRadius() and
   //setClassicalRadius() methods of the Bunch class
-  static PyObject* Bunch_classicalRadius(PyObject *self, PyObject *args){	
-		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;		
+  static PyObject* Bunch_classicalRadius(PyObject *self, PyObject *args){
+		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     //if nVars == 0 this is get classicalRadius
     //if nVars == 1 this is set classicalRadius
     int nVars = PyTuple_Size(args);
@@ -530,7 +530,7 @@ namespace wrap_orbit_bunch{
     }
 
     Py_INCREF(Py_None);
-    return Py_None;		
+    return Py_None;
   }
 
   //Sets or returns charge of the macro-particle in e-charge
@@ -539,13 +539,13 @@ namespace wrap_orbit_bunch{
   //  charge(value) - sets the new value
   //this is implementation of the getCharge() and setCharge  methods of the Bunch class
   static PyObject* Bunch_charge(PyObject *self, PyObject *args){
-		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;		
+		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     //if nVars == 0 get charge
     //if nVars == 1 set charge
     int nVars = PyTuple_Size(args);
-		
+
     double val = 0.;
-		
+
     if(nVars == 0 ||  nVars == 1){
       if(nVars == 0){
         val = cpp_bunch->getCharge();
@@ -562,9 +562,9 @@ namespace wrap_orbit_bunch{
     else{
       error("PyBunch. You should call charge() or charge(value)");
     }
-		
+
     Py_INCREF(Py_None);
-    return Py_None;			
+    return Py_None;
 	}
 
   //Sets or returns macroSize of the macro-particle
@@ -573,7 +573,7 @@ namespace wrap_orbit_bunch{
   //  macroSize(value) - sets the new value
   //this is implementation of the getMacroSize() and setMacroSize  methods of the Bunch class
   static PyObject* Bunch_macroSize(PyObject *self, PyObject *args){
-		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;		
+		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     //if nVars == 0 get macroSize
     //if nVars == 1 set macroSize
     int nVars = PyTuple_Size(args);
@@ -598,7 +598,7 @@ namespace wrap_orbit_bunch{
     }
 
     Py_INCREF(Py_None);
-    return Py_None;			
+    return Py_None;
   }
 
   //---------------------------------------------------------------
@@ -628,7 +628,7 @@ namespace wrap_orbit_bunch{
   // getBunchAttributeDouble(name)
   // setBunchAttributeDouble(name,value) Bunch methods
   static PyObject* Bunch_bunchAttrDouble(PyObject *self, PyObject *args){
-		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;		
+		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     //if nVars == 1 this is get attribute
     //if nVars == 2 this is set attribute
     int nVars = PyTuple_Size(args);
@@ -712,7 +712,7 @@ namespace wrap_orbit_bunch{
 
   //Returns a list (tuple) of  ther double bunch attribute names
   static PyObject* Bunch_bunchAttrDoubleNames(PyObject *self, PyObject *args){
-		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;		
+		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     std::vector<std::string> names;
     cpp_bunch->getDoubleBunchAttributeNames(names);
 		//create tuple with names
@@ -728,7 +728,7 @@ namespace wrap_orbit_bunch{
 
   //Returns a list (tuple) of  ther integer bunch attribute names
   static PyObject* Bunch_bunchAttrIntNames(PyObject *self, PyObject *args){
-		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;		
+		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     std::vector<std::string> names;
     cpp_bunch->getIntBunchAttributeNames(names);
 		//create tuple with names
@@ -739,7 +739,7 @@ namespace wrap_orbit_bunch{
 				error("PyBunch - bunchAttrIntNames() - cannot create tuple with bunch attr names");
 			}
 		}
-    return resTuple;		
+    return resTuple;
   }
 
   //Returns 0 or 1. The result is 1 if the bunch has an attribute with a particular name
@@ -858,7 +858,7 @@ namespace wrap_orbit_bunch{
 			for (pos = param_dict.begin(); pos != param_dict.end(); ++pos) {
 					std::string key = pos->first;
 					double val = pos->second;
-					PyDict_SetItemString(py_param_dict,key.c_str(),Py_BuildValue("d",val));				
+					PyDict_SetItemString(py_param_dict,key.c_str(),Py_BuildValue("d",val));
 			}
 		}
     return resDict;
@@ -929,8 +929,8 @@ namespace wrap_orbit_bunch{
 		}
     return resTuple;
   }
-	
-  //Returns a dictionary with the bunch particles attribute names as keys and 
+
+  //Returns a dictionary with the bunch particles attribute names as keys and
 	//dictionaries with parameter:value for each attribute
   static PyObject* Bunch_readPartAttrDicts(PyObject *self, PyObject *args){
 		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
@@ -1001,11 +1001,11 @@ namespace wrap_orbit_bunch{
     int attr_index = 0;
     double val = 0.;
 
-    if(nVars == 3 ||  nVars == 4){        
+    if(nVars == 3 ||  nVars == 4){
        if(!PyArg_ParseTuple(	args,"sii|d:partAttrValue",&attr_name,&part_index ,&attr_index,&val)){
           error("PyBunch - partAttrValue(attr_name,part_index,atr_index,[val]) - params. are needed");
        }
-			 std::string attr_name_str(attr_name);			 
+			 std::string attr_name_str(attr_name);
 			 int bunch_size = cpp_bunch->getSize();
 			 int attr_size = cpp_bunch->getParticleAttributes(attr_name_str)->getAttSize();
 			 if(part_index >=  bunch_size || attr_size <= attr_index){
@@ -1038,14 +1038,14 @@ namespace wrap_orbit_bunch{
   //returns the number of macro-particles in the bunch
   //this is implementation of the "getSize()" method
   static PyObject* Bunch_getSize(PyObject *self, PyObject *args){
-		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;		
+		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     return Py_BuildValue("i",cpp_bunch->getSize());
   }
 
   //returns the number of macro-particles in the bunch in all CPUs
   //this is implementation of the "getSizeGlobal()" method
   static PyObject* Bunch_getSizeGlobal(PyObject *self, PyObject *args){
-		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;	
+		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     return Py_BuildValue("i",cpp_bunch->getSizeGlobal());
   }
 
@@ -1053,7 +1053,7 @@ namespace wrap_orbit_bunch{
   //    that was calculated in the previous call of getSizeGlobal()
   //this is implementation of the "getSizeGlobalFromMemory()" method
   static PyObject* Bunch_getSizeGlobalFromMemory(PyObject *self, PyObject *args){
-		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;	
+		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     return Py_BuildValue("i",cpp_bunch->getSizeGlobalFromMemory());
   }
 
@@ -1128,7 +1128,7 @@ namespace wrap_orbit_bunch{
           error("PyBunch - readBunch(fileName,nParts) - file name, and number of particles are needed");
         }
 				cpp_bunch->initBunchAttributes(file_name);
-				cpp_bunch->readParticleAttributes(file_name);				
+				cpp_bunch->readParticleAttributes(file_name);
         cpp_bunch->readBunchCoords(file_name,nParts);
       }
     }
@@ -1152,7 +1152,7 @@ namespace wrap_orbit_bunch{
     Py_INCREF(Py_None);
     return Py_None;
   }
-	
+
   //Copy bunch all info including particles coordinates and attributes to another bunch
   static PyObject* Bunch_copyBunchTo(PyObject *self, PyObject *args){
 		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
@@ -1171,7 +1171,7 @@ namespace wrap_orbit_bunch{
   static PyObject* Bunch_addParticlesTo(PyObject *self, PyObject *args){
 		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     PyObject* pyBunch_Target;
-		
+
 		//NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
 		if(!PyArg_ParseTuple(	args,"O:addParticlesTo",&pyBunch_Target)){
 			error("PyBunch - addParticlesTo(pyBunch) - target pyBunch object is needed");
@@ -1190,7 +1190,7 @@ namespace wrap_orbit_bunch{
 		Bunch* cpp_bunch = (Bunch*) self->cpp_obj;
 		delete cpp_bunch;
 		self->ob_base.ob_type->tp_free((PyObject*)self);
-  }	
+  }
 
   static PyMethodDef BunchClassMethods[] = {
     //--------------------------------------------------------
@@ -1255,13 +1255,13 @@ namespace wrap_orbit_bunch{
     // class Bunch wrapper                        STOP
     //--------------------------------------------------------
   };
-	
+
 	// defenition of the memebers of the python Bunch wrapper class
 	// they will be vailable from python level
 	static PyMemberDef BunchClassMembers [] = {
 		{NULL}
 	};
-	
+
 	//new python Bunch wrapper type definition
 	static PyTypeObject pyORBIT_Bunch_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -1302,8 +1302,8 @@ namespace wrap_orbit_bunch{
 		(initproc) Bunch_init, /* tp_init */
 		0, /* tp_alloc */
 		Bunch_new, /* tp_new */
-	};	
-	
+	};
+
   static PyMethodDef BunchModuleMethods[] = { {NULL,NULL} };
 
 
@@ -1339,8 +1339,8 @@ extern "C" {
 		Py_DECREF(mod);
 		Py_DECREF(pyType);
 		return pyType;
-	}	
-	
+	}
+
 
 #ifdef __cplusplus
 }

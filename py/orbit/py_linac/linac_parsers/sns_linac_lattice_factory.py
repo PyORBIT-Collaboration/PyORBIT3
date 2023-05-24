@@ -1,7 +1,7 @@
 """
 The SNS Linac Lattice Factory generates the Linac Accelerator Lattice from the information
 inside of the XML input file. This structure of this file is specific for the SNS.
-Users from other facilities can use the same XML files with the same structure, but if they 
+Users from other facilities can use the same XML files with the same structure, but if they
 need something else they can create their own Factory for different structure.
 Here we use XmlDataAdaptor to parse the XML file.
 The SNS Linac Lattice Factory uses a predefined set of Linac Acc Elements.

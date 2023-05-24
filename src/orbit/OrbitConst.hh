@@ -42,7 +42,7 @@ public:
 
   //elementary charge (CGS system)
   const static double elementary_charge_CGS;
-	
+
 	//elementary charge (MKS system)
 	const static double elementary_charge_MKS;
 
@@ -55,7 +55,7 @@ public:
 
   //coeffitient to get volts from our potentials
   const static double coeff_Phi_to_Volts;
-  
+
   //magnetic permeability
   const static double permeability;
 

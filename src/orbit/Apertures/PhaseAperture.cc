@@ -11,10 +11,10 @@
 //   Constructs an aperture for the longitudinal direction.
 //
 // PARAMETERS
-//   The class will remove particles (and put them into lost_bunch) from 
-//   the bunch whose longitudinal phase is outside the specified min and 
-//   max phases. This class mostly is intended to be used in linacs. 
-//   The user have to specify the RF frequency to translate the longitudinal 
+//   The class will remove particles (and put them into lost_bunch) from
+//   the bunch whose longitudinal phase is outside the specified min and
+//   max phases. This class mostly is intended to be used in linacs.
+//   The user have to specify the RF frequency to translate the longitudinal
 //   position from meters to the phase in degrees.
 //
 ///////////////////////////////////////////////////////////////////////////
@@ -55,14 +55,14 @@ void PhaseAperture::setPhaseLimits(double minPhase, double maxPhase){
  Returns the min limit of the particles' phases. Phase is in degrees.
  */
 double PhaseAperture::getMinPhase(){
-	return minPhase_; 
+	return minPhase_;
 }
 
 /**
  Returns the max limit of the particles' phases. Phase is in degrees.
  */
 double PhaseAperture::getMaxPhase(){
-	return maxPhase_; 
+	return maxPhase_;
 }
 
 /**
@@ -104,38 +104,38 @@ void PhaseAperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
 	double m_size = 0.;
 	int nParts = bunch->getSize();
 	double** coord = bunch->coordArr();
-	
+
 	ParticleAttributes* lostPartAttr = NULL;
-	
+
 	ParticleAttributes* partIdNumbAttr = NULL;
 	ParticleAttributes* partIdNumbInitAttr = NULL;
-	
+
 	ParticleAttributes* partMacroAttr = NULL;
-	ParticleAttributes* partMacroInitAttr = NULL;	
-	
+	ParticleAttributes* partMacroInitAttr = NULL;
+
 	ParticleAttributes* partInitCoordsAttr = NULL;
 	ParticleAttributes* partInitCoordsInitAttr = NULL;
-	
+
 	ParticleAttributes* partTurnNumberAttr = NULL;
 	double turn = 0.;
-	
+
 	if(lostbunch != NULL) {
 		if(lostbunch->hasParticleAttributes("LostParticleAttributes") <= 0){
 			std::map<std::string,double> params_dict;
 			lostbunch->addParticleAttributes("LostParticleAttributes",params_dict);
 		}
 		lostPartAttr = lostbunch->getParticleAttributes("LostParticleAttributes");
-		
-		
+
+
 		if(bunch->hasParticleAttributes("ParticleIdNumber") > 0){
 			partIdNumbInitAttr = bunch->getParticleAttributes("ParticleIdNumber");
 			if(lostbunch->hasParticleAttributes("ParticleIdNumber") <= 0){
 				std::map<std::string,double> params_dict;
 				lostbunch->addParticleAttributes("ParticleIdNumber",params_dict);
 			}
-			partIdNumbAttr = lostbunch->getParticleAttributes("ParticleIdNumber");			
+			partIdNumbAttr = lostbunch->getParticleAttributes("ParticleIdNumber");
 		}
-		
+
 		if(bunch->hasParticleAttributes("macrosize") > 0){
 			partMacroInitAttr = bunch->getParticleAttributes("macrosize");
 			if(lostbunch->hasParticleAttributes("macrosize") <= 0){
@@ -143,27 +143,27 @@ void PhaseAperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
 				lostbunch->addParticleAttributes("macrosize",params_dict);
 			}
 			partMacroAttr = lostbunch->getParticleAttributes("macrosize");
-		}	
-		
+		}
+
 		if(bunch->hasParticleAttributes("ParticleInitialCoordinates") > 0){
 			partInitCoordsInitAttr = bunch->getParticleAttributes("ParticleInitialCoordinates");
 			if(lostbunch->hasParticleAttributes("ParticleInitialCoordinates") <= 0){
 				std::map<std::string,double> params_dict;
 				lostbunch->addParticleAttributes("ParticleInitialCoordinates",params_dict);
-			}	
+			}
 			partInitCoordsAttr = lostbunch->getParticleAttributes("ParticleInitialCoordinates");
 		}
-		
+
 		if (bunch->hasParticleAttributes("TurnNumber") > 0) {
 			if (lostbunch->hasParticleAttributes("TurnNumber") <= 0) {
 				std::map<std::string,double> part_attr_dict;
 				lostbunch->addParticleAttributes("TurnNumber",part_attr_dict);
 			}
 			std::string attr_name_str("TurnNumber");
-			turn = 1.0*bunch->getBunchAttributeInt(attr_name_str);				
+			turn = 1.0*bunch->getBunchAttributeInt(attr_name_str);
 			partTurnNumberAttr = lostbunch->getParticleAttributes("TurnNumber");
-		}		
-			
+		}
+
 		lostbunch->setMacroSize(bunch->getMacroSize());
 	}
 
@@ -172,7 +172,7 @@ void PhaseAperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
 	double z_to_phase_coeff = - 360./lambda;
 	double z = 0.;
 	double phase = 0.;
-	
+
 	for (int count = 0; count < nParts; count++){
 		z = coord[count][4];
 		phase = z*z_to_phase_coeff;
@@ -194,15 +194,12 @@ void PhaseAperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
 				}
 				if(partTurnNumberAttr != NULL){
 					partTurnNumberAttr->attValue(lostbunch->getSize() - 1, 0) = turn;
-				}				
+				}
 			}
 			bunch->deleteParticleFast(count);
 		}
 	}
-	
+
 	//Update synchronous particle, compress bunch
 	bunch->compress();
 }
-
-	
-

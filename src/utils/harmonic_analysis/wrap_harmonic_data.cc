@@ -21,7 +21,7 @@ namespace wrap_harmonicdata{
 extern "C" {
 #endif
 
-	/** 
+	/**
 	    Constructor for python class wrapping c++ HarmonicData instance.
       It never will be called directly.
 	*/
@@ -31,12 +31,12 @@ extern "C" {
 		self->cpp_obj = NULL;
 		return (PyObject *) self;
 	}
-	
+
   /** This is implementation of the __init__ method */
   static int HarmonicData_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
     int nVars = PyTuple_Size(args);
 		if(nVars == 2){
-			int order = -1; 
+			int order = -1;
 			PyObject* pyF;
 			if(!PyArg_ParseTuple(args,"iO:",&order,&pyF)){
 				error("HarmonicData(order,pyFunction) - constructor parameters are needed");
@@ -65,7 +65,7 @@ extern "C" {
 		((HarmonicData*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
-  
+
 	/** It will set or return order of the HarmonicData instance */
   static PyObject* HarmonicData_order(PyObject *self, PyObject *args){
 	  HarmonicData* cpp_HarmonicData = (HarmonicData*)((pyORBIT_Object*) self)->cpp_obj;
@@ -80,13 +80,13 @@ extern "C" {
 		cpp_HarmonicData->setOrder(order);
 		return Py_BuildValue("i",order);
   }
-	
+
  	/** It will return number of point in the initial data y(x) */
   static PyObject* HarmonicData_dataSize(PyObject *self, PyObject *args){
 	  HarmonicData* cpp_HarmonicData = (HarmonicData*)((pyORBIT_Object*) self)->cpp_obj;
 		return Py_BuildValue("i",cpp_HarmonicData->dataSize());
-  } 
-  
+  }
+
 	/** It will set the new initial data for fitting in HarmonicData instance */
   static PyObject* HarmonicData_setDataFunction(PyObject *self, PyObject *args){
 	  HarmonicData* cpp_HarmonicData = (HarmonicData*)((pyORBIT_Object*) self)->cpp_obj;
@@ -103,72 +103,72 @@ extern "C" {
     Py_INCREF(Py_None);
     return Py_None;
   }
-  
+
  	/** It will set or return the parameters of the HarmonicData instance with index=index*/
   static PyObject* HarmonicData_parameter(PyObject *self, PyObject *args){
 	  HarmonicData* cpp_HarmonicData = (HarmonicData*)((pyORBIT_Object*) self)->cpp_obj;
 		int index = -1;
 		double val = 0.;
-    int nVars = PyTuple_Size(args);		
+    int nVars = PyTuple_Size(args);
 		if(nVars == 1){
 			if(!PyArg_ParseTuple(args,"i:",&index)){
 				error("pyHarmonicData.parameter(index) - a parameter is needed");
 			}
-			return Py_BuildValue("d",cpp_HarmonicData->getParam(index));		
+			return Py_BuildValue("d",cpp_HarmonicData->getParam(index));
 		}
 		if(nVars == 2){
 			if(!PyArg_ParseTuple(args,"id:",&index,&val)){
 				error("pyHarmonicData.parameter(index,val) - parameters are needed");
-			}	
+			}
 			cpp_HarmonicData->setParam(index,val);
 			Py_INCREF(Py_None);
 			return Py_None;
 		}
 		error("pyHarmonicData.parameter(index[,val]) - parameters are needed");
 		Py_INCREF(Py_None);
-		return Py_None;		
+		return Py_None;
   }
-	
+
  	/** It will return the y data value for given x index */
   static PyObject* HarmonicData_valueY(PyObject *self, PyObject *args){
 	  HarmonicData* cpp_HarmonicData = (HarmonicData*)((pyORBIT_Object*) self)->cpp_obj;
 		int ind;
 		if(!PyArg_ParseTuple(	args,"i:",&ind)){
 			error("pyHarmonicData.valueY(indX) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("d",cpp_HarmonicData->valueY(ind));
   }
-  
+
  	/** It will return the error of y data value for given x index */
   static PyObject* HarmonicData_valueErr(PyObject *self, PyObject *args){
 	  HarmonicData* cpp_HarmonicData = (HarmonicData*)((pyORBIT_Object*) self)->cpp_obj;
 		int ind;
 		if(!PyArg_ParseTuple(	args,"i:",&ind)){
 			error("pyHarmonicData.valueErr(indX) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("d",cpp_HarmonicData->valueErr(ind));
-  }  
-  
+  }
+
  	/** It will return the x data value for given x index */
   static PyObject* HarmonicData_valueX(PyObject *self, PyObject *args){
 	  HarmonicData* cpp_HarmonicData = (HarmonicData*)((pyORBIT_Object*) self)->cpp_obj;
 		int ind;
 		if(!PyArg_ParseTuple(	args,"i:",&ind)){
 			error("pyHarmonicData.valueX(indX) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("d",cpp_HarmonicData->valueX(ind));
-  }  
-  
+  }
+
  	/** It will return the fit Y hramonic value for given x value */
   static PyObject* HarmonicData_fitValueY(PyObject *self, PyObject *args){
 	  HarmonicData* cpp_HarmonicData = (HarmonicData*)((pyORBIT_Object*) self)->cpp_obj;
 		double x;
 		if(!PyArg_ParseTuple(	args,"d:",&x)){
 			error("pyHarmonicData.fitValueY(x) - parameter is needed");
-		}	
+		}
 		return Py_BuildValue("d",cpp_HarmonicData->fitValueY(x));
-  }  
-	
+  }
+
  	/** It clean all data and fitted parameters in the HarmonicData */
   static PyObject* HarmonicData_clean(PyObject *self, PyObject *args){
 	  HarmonicData* cpp_HarmonicData = (HarmonicData*)((pyORBIT_Object*) self)->cpp_obj;
@@ -176,13 +176,13 @@ extern "C" {
     Py_INCREF(Py_None);
     return Py_None;
   }
-  
+
  	/** It calculates the sum of squares of diff between fit and initial data  */
   static PyObject* HarmonicData_sumDiff2(PyObject *self, PyObject *args){
 	  HarmonicData* cpp_HarmonicData = (HarmonicData*)((pyORBIT_Object*) self)->cpp_obj;
 		return Py_BuildValue("d",cpp_HarmonicData->sumDiff2());
-  }  
-	
+  }
+
   //-----------------------------------------------------
   //destructor for python HarmonicData class (__del__ method).
   //-----------------------------------------------------
@@ -191,14 +191,14 @@ extern "C" {
 		delete ((HarmonicData*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python HarmonicData wrapper class
 	// they will be vailable from python level
   static PyMethodDef HarmonicDataClassMethods[] = {
 		{ "order",				  HarmonicData_order,    	  METH_VARARGS,"Sets or returns order of the HarmonicData."},
 		{ "dataSize",       HarmonicData_dataSize,    METH_VARARGS,"Returns the number of points in the initial data y(x)."},
-		{ "setDataFunction",HarmonicData_setDataFunction,    METH_VARARGS,"Sets the new function with data for fitting."},		
-		{ "parameter",	    HarmonicData_parameter,   METH_VARARGS,"Sets or gets the harmonic parameter with index - parameter(index[,val])"},	
+		{ "setDataFunction",HarmonicData_setDataFunction,    METH_VARARGS,"Sets the new function with data for fitting."},
+		{ "parameter",	    HarmonicData_parameter,   METH_VARARGS,"Sets or gets the harmonic parameter with index - parameter(index[,val])"},
 		{ "valueY",		 	    HarmonicData_valueY,      METH_VARARGS,"Returns the Y value of the initial data point with indexX."},
 		{ "valueErr",		 	  HarmonicData_valueErr,    METH_VARARGS,"Returns the error of Y value of the initial data point with indexX."},
 		{ "valueX",		 	    HarmonicData_valueX,      METH_VARARGS,"Returns the X value of the initial data point with indexX."},
@@ -207,13 +207,13 @@ extern "C" {
 		{ "sumDiff2",		 	  HarmonicData_sumDiff2,    METH_VARARGS,"Calculates the sum of squares of diff between fit and initial data"},
     {NULL}
   };
-	
+
 	// defenition of the memebers of the python HarmonicData wrapper class
 	// they will be vailable from python level
 	static PyMemberDef HarmonicDataClassMembers [] = {
 		{NULL}
 	};
-	
+
 	//new python HarmonicData wrapper type definition
 	static PyTypeObject pyORBIT_HarmonicData_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -254,8 +254,8 @@ extern "C" {
 		(initproc) HarmonicData_init, /* tp_init */
 		0, /* tp_alloc */
 		HarmonicData_new, /* tp_new */
-	};	
-	
+	};
+
 	//--------------------------------------------------
 	//Initialization plynomial of the pyHarmonicData class
 	//--------------------------------------------------

@@ -16,7 +16,7 @@ namespace wrap_foil{
 extern "C" {
 #endif
 
-	/** 
+	/**
 	Constructor for python class wrapping c++ Foil instance.
       It never will be called directly.
 	*/
@@ -26,21 +26,21 @@ extern "C" {
 		self->cpp_obj = NULL;
 		return (PyObject *) self;
 	}
-	
+
   /** This is implementation of the __init__ method */
   static int Foil_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
 
 	  double xmin = 0.; double xmax = 0.; double ymin = 0.; double ymax = 0.; double thick = 0.;
-	  
+
 	  //NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
 	  if(!PyArg_ParseTuple(	args,"ddddd:arguments",&xmin,&xmax,&ymin,&ymax,&thick)){
-		  error("PyBunch - addParticle - cannot parse arguments! It should be (xmin, xmax, ymin, ymax, thick)");	
+		  error("PyBunch - addParticle - cannot parse arguments! It should be (xmin, xmax, ymin, ymax, thick)");
 	  }
 		self->cpp_obj =  new Foil(xmin, xmax, ymin, ymax, thick);
 	  ((Foil*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
-  
+
   /** Performs the full model foil scattering of the bunch */
   static PyObject* Foil_traverseFoilFullScatter(PyObject *self, PyObject *args){
 	  Foil* cpp_Foil = (Foil*)((pyORBIT_Object*) self)->cpp_obj;
@@ -53,7 +53,7 @@ extern "C" {
 		if(!PyObject_IsInstance(pyBunch,pyORBIT_Bunch_Type) || !PyObject_IsInstance(pyLostBunch,pyORBIT_Bunch_Type)){
 			ORBIT_MPI_Finalize("Foil - traverseFoilFullScatter(Bunch* bunch, Bunch* bunch) - method needs a Bunch.");
 		}
-	  
+
 		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object*)pyBunch)->cpp_obj;
 		Bunch* cpp_lostbunch = (Bunch*) ((pyORBIT_Object*)pyLostBunch)->cpp_obj;
 		cpp_Foil->traverseFoilFullScatter(cpp_bunch, cpp_lostbunch);
@@ -73,15 +73,15 @@ extern "C" {
 		if(!PyObject_IsInstance(pyBunch,pyORBIT_Bunch_Type)){
 			ORBIT_MPI_Finalize("Foil - traverseFoilSimpleScatter(Bunch* bunch) - method needs a Bunch.");
 		}
-		
+
 		Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object*)pyBunch)->cpp_obj;
 		cpp_Foil->traverseFoilSimpleScatter(cpp_bunch);
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
-	
-		
-	
+
+
+
   //-----------------------------------------------------
   //destructor for python Foil class (__del__ method).
   //-----------------------------------------------------
@@ -90,7 +90,7 @@ extern "C" {
 		delete ((Foil*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// definition of the methods of the python Foil wrapper class
 	// they will be vailable from python level
 	static PyMethodDef FoilClassMethods[] = {
@@ -102,8 +102,8 @@ extern "C" {
 	static PyMemberDef FoilClassMembers [] = {
 		{NULL}
 	};
-	
-	
+
+
 	//new python Foil wrapper type definition
 	static PyTypeObject pyORBIT_Foil_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -144,10 +144,10 @@ extern "C" {
 		(initproc) Foil_init, /* tp_init */
 		0, /* tp_alloc */
 		Foil_new, /* tp_new */
-	};	
-	
-	
-	
+	};
+
+
+
 	//--------------------------------------------------
 	//Initialization Foil of the pyBunchFoil class
 	//--------------------------------------------------
@@ -166,8 +166,8 @@ extern "C" {
 		Py_INCREF(&pyORBIT_Foil_Type);
 		//create new module
 		PyObject* module = PyModule_Create(&cModPyFoil);
-		PyModule_AddObject(module, "Foil", (PyObject *)&pyORBIT_Foil_Type);	
-		return module;		
+		PyModule_AddObject(module, "Foil", (PyObject *)&pyORBIT_Foil_Type);
+		return module;
 	}
 
 #ifdef __cplusplus

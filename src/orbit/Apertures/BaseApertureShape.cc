@@ -11,7 +11,7 @@
 //
 //   BaseApertureShape
 //
-// AUTHOR: 
+// AUTHOR:
 //   Andrei Shishlo October 2022
 //
 //   BaseApertureShape defines the interface for BaseApertureShape subclasses.
@@ -69,7 +69,7 @@ string BaseApertureShape::getName()
 {
 	return shapeName;
 }
-	
+
 /** Sets the shape name */
 void BaseApertureShape::setName(string shapeNameIn)
 {
@@ -81,5 +81,3 @@ string BaseApertureShape::getTypeName()
 {
 	return typeName;
 }
-	
-

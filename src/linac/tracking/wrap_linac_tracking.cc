@@ -35,7 +35,7 @@ extern "C"
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
-	
+
 	//Tracking a bunch through a linac quad1 element (linear part of quad tracking) wrapper
 	static PyObject* wrap_linac_quad1(PyObject *self, PyObject *args)
 	{
@@ -52,7 +52,7 @@ extern "C"
 		linac_tracking::linac_quad1(cpp_bunch, length, kq, useCharge);
 		Py_INCREF(Py_None);
 		return Py_None;
-	}   		
+	}
 
 	//Tracking a bunch through a linac quad2 element (non linear part of quad tracking) wrapper
 	static PyObject* wrap_linac_quad2(PyObject *self, PyObject *args)
@@ -68,8 +68,8 @@ extern "C"
 		linac_tracking::linac_quad2(cpp_bunch, length);
 		Py_INCREF(Py_None);
 		return Py_None;
-	}   
-	
+	}
+
 	//Tracking a bunch through a linac quad3 element (non-linear part of quad tracking) wrapper
 	static PyObject* wrap_linac_quad3(PyObject *self, PyObject *args)
 	{
@@ -86,8 +86,8 @@ extern "C"
 		linac_tracking::linac_quad3(cpp_bunch, length, kq, useCharge);
 		Py_INCREF(Py_None);
 		return Py_None;
-	} 	
-	
+	}
+
 	//Tracking a bunch through a linac kicker element with different kick for different energies
 	static PyObject* wrap_linac_kick(PyObject *self, PyObject *args)
 	{
@@ -103,34 +103,34 @@ extern "C"
 		linac_tracking::kick(cpp_bunch, kx, ky, kE, useCharge);
 		Py_INCREF(Py_None);
 		return Py_None;
-	} 	
-	
+	}
+
 	static PyMethodDef linactrackingMethods[] =
 	{
 		{"drift",            wrap_linac_drift,          METH_VARARGS, "Tracking a bunch through a linac drift "},
 		{"quad1",            wrap_linac_quad1,          METH_VARARGS, "Tracking a bunch through a linear part of a linac quad"},
 		{"quad2",            wrap_linac_quad2,          METH_VARARGS, "Tracking a bunch through a non-linear part of a linac quad"},
 		{"quad3",            wrap_linac_quad3,          METH_VARARGS, "Tracking a bunch through a non-linear part of a linac quad: long.field"},
-		{"kick",             wrap_linac_kick,           METH_VARARGS, "Tracking a bunch through a kicker"},		
+		{"kick",             wrap_linac_kick,           METH_VARARGS, "Tracking a bunch through a kicker"},
 		{ NULL, NULL }
 	};
-	
+
   static struct PyModuleDef linacTrackingModDef =
   {
   	PyModuleDef_HEAD_INIT,
   	"linac_tracking", "Linac bunch tracking C++ classes",
   	-1,
   	linactrackingMethods
-  };	
-	
-	
+  };
+
+
 	void initlinactracking(PyObject* module)
 	{
 		PyObject* module_tr = PyModule_Create(&linacTrackingModDef);
 		Py_INCREF(module_tr);
-		PyModule_AddObject(module,const_cast<char*>("linac_tracking"), module_tr);		
+		PyModule_AddObject(module,const_cast<char*>("linac_tracking"), module_tr);
 	}
-  
+
 #ifdef __cplusplus
 }
 #endif

@@ -41,16 +41,16 @@ extern "C" {
 		PyObject* pyIn;
 		if(!PyArg_ParseTuple(args,"O:__init__",&pyIn)){
 			error("PyPhaseVector - PhaseVector(vector or size) - constructor needs a parameter.");
-		}		
+		}
 		if(PyNumber_Check(pyIn)){
 			int size;
 			if(!PyArg_ParseTuple(args,"i:__init__",&size)){
 				error("PyPhaseVector - __init__(size) - input parameter is needed.");
-			}		
+			}
 			self->cpp_obj = new PhaseVector(size);
 			((PhaseVector*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 			return 0;
-		}			
+		}
 		PyObject* pyORBIT_PhaseVector_Type = getOrbitUtilsType("PhaseVector");
 		if(!PyObject_IsInstance(pyIn,pyORBIT_PhaseVector_Type)){
 			error("PyPhaseVector - PhaseVector(vector_parent) - constructor needs a parent matrix.");
@@ -71,7 +71,7 @@ extern "C" {
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 
-	//Sets or returns the value of the phase vector element with particular index. 
+	//Sets or returns the value of the phase vector element with particular index.
   static PyObject* PhaseVector_get_set(PyObject *self, PyObject *args){
     //if nVars == 1 this is get value
     //if nVars == 2 this is set value
@@ -82,12 +82,12 @@ extern "C" {
 		PhaseVector* cpp_PhaseVector = (PhaseVector*) pyPhaseVector->cpp_obj;
 		if(!PyArg_ParseTuple(	args,"i|d:set",&i,&val)){
 			error("PyPhaseVector - get/set(i[,value]) - something is missing.");
-		}	
+		}
 		if(i >= cpp_PhaseVector->size() || i < 0){
 			error("PyPhaseVector - get/set(i[,value]) - wrong i or j.");
-		}		
+		}
     if(nVars == 1 ||  nVars == 2){
-      if(nVars == 1){			
+      if(nVars == 1){
         val = cpp_PhaseVector->value(i);
       }
       else{
@@ -122,9 +122,9 @@ extern "C" {
 			error("PyPhaseVector. Cannot copy the vector.");
 		}
 		Py_DECREF(mod);
-    return pyVctr;	
+    return pyVctr;
   }
-	
+
 	//  copyTo() - copy values of the PhaseVector into another one
   static PyObject* PhaseVector_copyTo(PyObject *self, PyObject *args){
     pyORBIT_Object* pyPhaseVector = (pyORBIT_Object*) self;
@@ -132,26 +132,26 @@ extern "C" {
 		PyObject *pyMatr;
 		if(!PyArg_ParseTuple(args,"O:copyTo",&pyMatr)){
 			error("PyPhaseVector - copyTo(matrix) - the target vector is needed.");
-		}			
+		}
 		pyORBIT_Object* pyPhaseVector_target = (pyORBIT_Object*) pyMatr;
 		PhaseVector* cpp_PhaseVector_target = (PhaseVector*) pyPhaseVector_target->cpp_obj;
 		int res = cpp_PhaseVector->copyTo(cpp_PhaseVector_target);
-    return Py_BuildValue("i",res);	
+    return Py_BuildValue("i",res);
   }
-		
+
 	//  zero() - sets all elements of the vector to 0
   static PyObject* PhaseVector_zero(PyObject *self, PyObject *args){
 		((PhaseVector*) ((pyORBIT_Object*) self)->cpp_obj)->zero();
 		Py_INCREF(Py_None);
-    return Py_None;	
-  }	
-	
+    return Py_None;
+  }
+
 	//  norm() - returns norm of the vector
   static PyObject* PhaseVector_norm(PyObject *self, PyObject *args){
 		double val = ((PhaseVector*) ((pyORBIT_Object*) self)->cpp_obj)->norm();
-    return Py_BuildValue("d",val);;	
-  }		
-		
+    return Py_BuildValue("d",val);;
+  }
+
 	//  add() - adds a number or vector to the this vector, returns a new vector
   static PyObject* PhaseVector_add(PyObject *self, PyObject *args){
     pyORBIT_Object* pyPhaseVector = (pyORBIT_Object*) self;
@@ -164,14 +164,14 @@ extern "C" {
 			double val;
 			if(!PyArg_ParseTuple(args,"d:add",&val)){
 				error("Py PhaseVector- add(number) - input parameter is needed.");
-			}	
+			}
 			PyObject* mod = PyImport_ImportModule("orbit_utils");
 			PyObject* pyVctr = PyObject_CallMethod(mod,const_cast<char*>("PhaseVector"),const_cast<char*>("O"),self);
 			PhaseVector* cpp_vctr = (PhaseVector*) ((pyORBIT_Object*) pyVctr)->cpp_obj;
 			cpp_vctr->add(val);
 			Py_DECREF(mod);
 			return pyVctr;
-		}			
+		}
 		PyObject* pyORBIT_PhaseVector_Type = getOrbitUtilsType("PhaseVector");
 		if(PyObject_IsInstance(pyIn,pyORBIT_PhaseVector_Type)){
 			PhaseVector* cpp_PhaseVector_In = (PhaseVector*) ((pyORBIT_Object*) pyIn)->cpp_obj;
@@ -184,32 +184,32 @@ extern "C" {
 			cpp_vctr->add(cpp_PhaseVector_In);
 			Py_DECREF(mod);
 			return pyVctr;
-		}	
-		error("PyPhaseVector - add(number or vector) - input parameter is wrong.");	
+		}
+		error("PyPhaseVector - add(number or vector) - input parameter is wrong.");
 		Py_INCREF(Py_None);
-    return Py_None;			
+    return Py_None;
   }
-	
-	//  mult() - mults the vector to number or a matrix. will return the new vector 
+
+	//  mult() - mults the vector to number or a matrix. will return the new vector
   static PyObject* PhaseVector_mult(PyObject *self, PyObject *args){
     pyORBIT_Object* pyPhaseVector = (pyORBIT_Object*) self;
 		PhaseVector* cpp_PhaseVector = (PhaseVector*) pyPhaseVector->cpp_obj;
 		PyObject *pyIn;
 		if(!PyArg_ParseTuple(args,"O:mult",&pyIn)){
 			error("PyPhaseVector - mult(number or vector or matrix) - input parameter is needed.");
-		}			
+		}
 		if(PyNumber_Check(pyIn)){
 			double val;
 			if(!PyArg_ParseTuple(args,"d:mult",&val)){
 				error("Py PhaseVector- mult(number) - input parameter is needed.");
-			}	
+			}
 			PyObject* mod = PyImport_ImportModule("orbit_utils");
 			PyObject* pyVctr = PyObject_CallMethod(mod,const_cast<char*>("PhaseVector"),const_cast<char*>("O"),self);
 			PhaseVector* cpp_vctr = (PhaseVector*) ((pyORBIT_Object*) pyVctr)->cpp_obj;
 			cpp_vctr->mult(val);
 			Py_DECREF(mod);
 			return pyVctr;
-		}		
+		}
 		PyObject* pyORBIT_PhaseVector_Type = getOrbitUtilsType("PhaseVector");
 		if(PyObject_IsInstance(pyIn,pyORBIT_PhaseVector_Type)){
 			PhaseVector* cpp_PhaseVector_In = (PhaseVector*) ((pyORBIT_Object*) pyIn)->cpp_obj;
@@ -229,10 +229,10 @@ extern "C" {
 			MatrixOperations::mult(cpp_PhaseVector,cpp_Matrix,(PhaseVector*) ((pyORBIT_Object*)pyVctr)->cpp_obj);
 			Py_DECREF(mod);
 			return pyVctr;
-		}		
-		error("PyPhaseVector - mult(number or vector or matrix) - input parameter is wrong.");	
+		}
+		error("PyPhaseVector - mult(number or vector or matrix) - input parameter is wrong.");
 		Py_INCREF(Py_None);
-    return Py_None;		
+    return Py_None;
   }
 
  	/**  vct_mult() - vector multiplication of two vectors of 3D. It will return the new vector */
@@ -242,7 +242,7 @@ extern "C" {
 		PyObject *pyIn;
 		if(!PyArg_ParseTuple(args,"O:mult",&pyIn)){
 			error("PyPhaseVector - vct_mult(vector) - input parameter is needed.");
-		}	
+		}
 		PyObject* pyORBIT_PhaseVector_Type = getOrbitUtilsType("PhaseVector");
 		if(PyObject_IsInstance(pyIn,pyORBIT_PhaseVector_Type)){
 			PhaseVector* cpp_PhaseVector_In = (PhaseVector*) ((pyORBIT_Object*) pyIn)->cpp_obj;
@@ -259,11 +259,11 @@ extern "C" {
 			v3[2] =  v1[0]*v2[1] - v2[0]*v1[1];
 			Py_DECREF(mod);
 			return pyVctr;
-		}	
-		error("PyPhaseVector - vct_mult(vector) - input parameter is not a PhaseVector.");	
+		}
+		error("PyPhaseVector - vct_mult(vector) - input parameter is not a PhaseVector.");
 		Py_INCREF(Py_None);
-    return Py_None;		
-  }		
+    return Py_None;
+  }
 
 	// defenition of the methods of the python PhaseVector wrapper class
 	// they will be vailable from python level
@@ -327,7 +327,7 @@ extern "C" {
 		(initproc) PhaseVector_init, /* tp_init */
 		0, /* tp_alloc */
 		PhaseVector_new, /* tp_new */
-	};	
+	};
 
 	//--------------------------------------------------
 	//Initialization function of the pyPhaseVector class

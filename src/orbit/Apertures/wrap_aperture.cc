@@ -21,9 +21,9 @@ namespace wrap_aperture{
 #ifdef __cplusplus
 extern "C" {
 #endif
-	
-  static PyMethodDef ApertureModuleMethods[] = { {NULL,NULL} };	
-  
+
+  static PyMethodDef ApertureModuleMethods[] = { {NULL,NULL} };
+
 	//--------------------------------------------------
 	//Initialization aperture module
 	//--------------------------------------------------

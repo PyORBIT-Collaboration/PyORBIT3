@@ -22,7 +22,7 @@ namespace wrap_gl_integrator{
 extern "C" {
 #endif
 
-	/** 
+	/**
 	    Constructor for python class wrapping c++ GaussLegendreIntegrator instance.
       It never will be called directly.
 	*/
@@ -32,51 +32,51 @@ extern "C" {
 		self->cpp_obj = NULL;
 		return (PyObject *) self;
 	}
-	
+
   /** This is implementation of the __init__ method */
   static int GaussLegendreIntegrator_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
     //if nVars == 0 call constructor without arguments
     //if nVars == 1 call constructor with nPoints - integration points
 		//if nVars == 3 call constructor with nPoints and x_min x_max - integration points and limits
-    int nVars = PyTuple_Size(args);		
+    int nVars = PyTuple_Size(args);
 		if(nVars == 0){
-			self->cpp_obj =  new GaussLegendreIntegrator();	
+			self->cpp_obj =  new GaussLegendreIntegrator();
 		}
 		if(nVars == 1){
 			int nPoints = -1;
 			if(!PyArg_ParseTuple(args,"i:",&nPoints)){
 				error("GaussLegendreIntegrator(nPoints) - parameter is needed");
-			}				
-			self->cpp_obj =  new GaussLegendreIntegrator(nPoints);	
-		}		
+			}
+			self->cpp_obj =  new GaussLegendreIntegrator(nPoints);
+		}
 		if(nVars == 3){
 			int nPoints = -1;
 			double x_min = 0.;
 			double x_max = 1.;
 			if(!PyArg_ParseTuple(args,"idd:",&nPoints,&x_min,&x_max)){
 				error("GaussLegendreIntegrator(nPoints,x_min,x_max) - parameters are needed");
-			}				
-			self->cpp_obj =  new GaussLegendreIntegrator(nPoints,x_min,x_max);	
-		}		
+			}
+			self->cpp_obj =  new GaussLegendreIntegrator(nPoints,x_min,x_max);
+		}
 		if(self->cpp_obj == NULL){
 			error("GaussLegendreIntegrator([nPoints[,x_min,x_max]]) - constructor signature.");
 		}
 	  ((GaussLegendreIntegrator*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
-  
+
 	/** It will set the number of integration points */
   static PyObject* GaussLegendreIntegrator_setnPoints(PyObject *self, PyObject *args){
 	  GaussLegendreIntegrator* cpp_GaussLegendreIntegrator = (GaussLegendreIntegrator*)((pyORBIT_Object*) self)->cpp_obj;
 		int nPoints = -1;
 		if(!PyArg_ParseTuple(args,"i:",&nPoints)){
 			error("gaussLegendreIntegrator.setnPoints(nPoints) - parameter is needed");
-		}	
+		}
 		cpp_GaussLegendreIntegrator->setnPoints(nPoints);
     Py_INCREF(Py_None);
-    return Py_None;		
+    return Py_None;
   }
-	
+
  	/** It will set the  limits of integration */
   static PyObject* GaussLegendreIntegrator_setLimits(PyObject *self, PyObject *args){
 	  GaussLegendreIntegrator* cpp_GaussLegendreIntegrator = (GaussLegendreIntegrator*)((pyORBIT_Object*) self)->cpp_obj;
@@ -84,26 +84,26 @@ extern "C" {
 		double x_max = 1.;
 		if(!PyArg_ParseTuple(args,"dd:",&x_min,&x_max)){
 			error("gaussLegendreIntegrator.setLimits(x_min,x_max) - parameters are needed");
-		}				
+		}
 		cpp_GaussLegendreIntegrator->setLimits(x_min,x_max);
     Py_INCREF(Py_None);
-    return Py_None;		 
+    return Py_None;
   }
-	
+
  	/** It returns the number of integration points */
   static PyObject* GaussLegendreIntegrator_getnPoints(PyObject *self, PyObject *args){
 	  GaussLegendreIntegrator* cpp_GaussLegendreIntegrator = (GaussLegendreIntegrator*)((pyORBIT_Object*) self)->cpp_obj;
 		return Py_BuildValue("i",cpp_GaussLegendreIntegrator->getnPoints());
   }
-	
+
  	/** It returns the  limits of integration as tuple */
   static PyObject* GaussLegendreIntegrator_getLimits(PyObject *self, PyObject *args){
 	  GaussLegendreIntegrator* cpp_GaussLegendreIntegrator = (GaussLegendreIntegrator*)((pyORBIT_Object*) self)->cpp_obj;
 		double x_min = cpp_GaussLegendreIntegrator->getPointsAndWeightFunc()->getMinX();
-		double x_max = cpp_GaussLegendreIntegrator->getPointsAndWeightFunc()->getMaxX();		
+		double x_max = cpp_GaussLegendreIntegrator->getPointsAndWeightFunc()->getMaxX();
 		return Py_BuildValue("(dd)",x_min,x_max);
-  }	
-	
+  }
+
  	/** It return the list of [x_point,weight] pairs for integration */
   static PyObject* GaussLegendreIntegrator_getPointsAndWeights(PyObject *self, PyObject *args){
 	  GaussLegendreIntegrator* cpp_GaussLegendreIntegrator = (GaussLegendreIntegrator*)((pyORBIT_Object*) self)->cpp_obj;
@@ -116,11 +116,11 @@ extern "C" {
 			y = f->y(i);
 			if(PyTuple_SetItem(pyRes,i,Py_BuildValue("(dd)",x,y)) != 0){
 					error("gaussLegendreIntegrator.getPointsAndWeights()  cannot create a resulting tuple.");
-			}			
+			}
 		}
 		return pyRes;
-  }		
-	
+  }
+
  	/** It return the integral for the Function or SplineCH instance */
   static PyObject* GaussLegendreIntegrator_integral(PyObject *self, PyObject *args){
 	  GaussLegendreIntegrator* cpp_GaussLegendreIntegrator = (GaussLegendreIntegrator*)((pyORBIT_Object*) self)->cpp_obj;
@@ -143,11 +143,11 @@ extern "C" {
 				spline = (SplineCH*) ((pyORBIT_Object*) pyF)->cpp_obj;
 				sum = cpp_GaussLegendreIntegrator->integral(spline);
 				return Py_BuildValue("d",sum);
-			}			
-		}	
-		error("gaussLegendreIntegrator.integral(Function F or SplineCH Spline) - parameter is needed");	
+			}
+		}
+		error("gaussLegendreIntegrator.integral(Function F or SplineCH Spline) - parameter is needed");
     Py_INCREF(Py_None);
-    return Py_None;			
+    return Py_None;
   }
 
   //-----------------------------------------------------
@@ -158,7 +158,7 @@ extern "C" {
 		delete ((GaussLegendreIntegrator*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python GaussLegendreIntegrator wrapper class
 	// they will be vailable from python level
   static PyMethodDef GaussLegendreIntegratorClassMethods[] = {
@@ -170,13 +170,13 @@ extern "C" {
  		{ "integral",				       GaussLegendreIntegrator_integral,    	      METH_VARARGS,"Returns  the integral for Function or SplineCH instance"},
     {NULL}
   };
-	
+
 	// defenition of the memebers of the python GaussLegendreIntegrator wrapper class
 	// they will be vailable from python level
 	static PyMemberDef GaussLegendreIntegratorClassMembers [] = {
 		{NULL}
 	};
-	
+
 	//new python GaussLegendreIntegrator wrapper type definition
 	static PyTypeObject pyORBIT_GaussLegendreIntegrator_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
@@ -217,9 +217,9 @@ extern "C" {
 		(initproc) GaussLegendreIntegrator_init, /* tp_init */
 		0, /* tp_alloc */
 		GaussLegendreIntegrator_new, /* tp_new */
-	};	
-	
-	
+	};
+
+
 	//--------------------------------------------------
 	//Initialization function of the pyGaussLegendreIntegrator class
 	//--------------------------------------------------

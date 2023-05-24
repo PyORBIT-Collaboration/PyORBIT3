@@ -29,6 +29,3 @@ part_time::part_time(Bunch* bunch, int size_in):
 part_time::~part_time()
 {
 }
-
-
-

@@ -60,7 +60,7 @@ public:
 
   Bunch();
   virtual ~Bunch();
-  
+
   double& x(int index);
   double& y(int index);
   double& z(int index);
@@ -73,7 +73,7 @@ public:
   double& xp(int index);
   double& yp(int index);
 
-  //only flag == 0 means that particle is dead. 
+  //only flag == 0 means that particle is dead.
   int flag(int index);
 
   //returns the pointer to the 6D coordinates array
@@ -189,7 +189,7 @@ public:
 	void setMPI_Comm_Local(pyORBIT_MPI_Comm* pyComm_Local);
 	int getMPI_Size();
 	int getMPI_Rank();
-	
+
 protected:
 
   //Initializes the different data that are the same for the all bunches.
@@ -203,8 +203,8 @@ private:
   friend class ParticleAttributes;
 
   //methods related to the particles attribute buckets
-  void addParticleAttributes(ParticleAttributes* attr);	
-	
+  void addParticleAttributes(ParticleAttributes* attr);
+
   void resize();
   void FinalizeExecution();
   void attrInit(int particle_index);
@@ -277,10 +277,10 @@ protected:
   int size_MPI;
 
 	pyORBIT_MPI_Comm* pyComm_Local;
-	
+
 	//reference to the python wrapping class instance
 	PyObject* py_wrapper;
-	
+
 };
 
 ///////////////////////////////////////////////////////////////////////////

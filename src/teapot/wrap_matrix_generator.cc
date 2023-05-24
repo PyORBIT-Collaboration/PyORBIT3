@@ -78,7 +78,7 @@ extern "C"
         if(nVars == 1 ||  nVars == 2)
         {
             if(nVars == 1)
-            {			
+            {
                 val = cpp_MatrixGenerator->step(i);
             }
             else
@@ -277,4 +277,3 @@ extern "C"
 
 //end of namespace wrap_teapotbase_matrix_generator
 }
-
