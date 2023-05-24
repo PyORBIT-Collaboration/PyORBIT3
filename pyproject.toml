@@ -1,4 +1,8 @@
+[build-system]
+requires = ["setuptools>=42", "setuptools_scm[toml]>=6.2", "wheel"]   # PEP 508 specifications.
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "PyORBIT"
-version = "3.0"
+dynamic = ["version"]
 description = "Acceleratop Physics Simulation Code"
