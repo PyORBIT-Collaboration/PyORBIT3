@@ -13,7 +13,7 @@ from orbit.utils import orbitFinalize
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import the base DirectForce AccNode class
-from orbit.space_charge.scAccNodes import SC_Base_AccNode
+from ..scAccNodes import SC_Base_AccNode
 
 
 class DirectForce2p5D_AccNode(SC_Base_AccNode):
