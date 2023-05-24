@@ -1,0 +1,37 @@
+#image: registry.esss.lu.se/ics-docker/miniconda
+image: python:3.10-slim
+.pip_install_default: &pip_install_default
+    - apt update
+    - apt install git -y
+    - pip install scipy matplotlib h5py
+.pip_install_sphinx: &pip_install_sphinx
+    - pip install sphinx==3.2.1 sphinxcontrib-blockdiag blockdiag sphinxcontrib-restbuilder sphinx_rtd_theme numpy m2r2
+    - pip install git+https://github.com/sphinx-contrib/confluencebuilder.git --user
+variables:
+  TWINE_REPOSITORY_URL: https://artifactory.esss.lu.se/artifactory/api/pypi/ics-pypi
+
+stages:
+    - test
+    - deploy
+
+style_check:
+  stage: test
+  tags:
+    - docker
+  image: registry.esss.lu.se/ics-docker/pre-commit
+  script:
+    - pre-commit run --all-files
+
+
+release-pypi:
+  tags:
+    - docker
+  stage: deploy
+  image: python:3.8
+  before_script:
+    - pip install twine
+  script:
+    - python setup.py check sdist bdist_wheel
+    - twine upload dist/*
+  only:
+    - tags
