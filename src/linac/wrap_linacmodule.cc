@@ -26,33 +26,33 @@ static struct PyModuleDef linacModDef =
 extern "C" {
 #endif
   namespace wrap_linac{
-  	
-   PyMODINIT_FUNC  initlinac(){
-		 //create new module
-		 PyObject* module = PyModule_Create(&linacModDef);
-		 //add the other classes init
-		 wrap_linac::initBaseRfGap(module);
-		 wrap_linac::initBaseRfGap_slow(module);
-		 wrap_linac::initMatrixRfGap(module);
-		 wrap_linac::initRfGapTTF(module);	
-		 wrap_linac::initRfGapTTF_slow(module);
-		 //wrap_linac::initSuperFishFieldSource(module);
-		 wrap_linac::initRfGapThreePointTTF(module);
-		 wrap_linac::initRfGapThreePointTTF_slow(module);
-		 //initialization of the linac tracking module
-		 wrap_linac_tracking::initlinactracking(module);
-		 return module;
-	 }
-	 
-	 PyObject* getLinacType(char* name){
-		 PyObject* mod = PyImport_ImportModule("linac");
-		 PyObject* pyType = PyObject_GetAttrString(mod,name);
-		 Py_DECREF(mod);
-		 Py_DECREF(pyType);
-		 return pyType;
-	 }
-	}
-		
+
+    PyMODINIT_FUNC initlinac(){
+        //create new module
+        PyObject* module = PyModule_Create(&linacModDef);
+        //add the other classes init
+        wrap_linac::initBaseRfGap(module);
+        wrap_linac::initBaseRfGap_slow(module);
+        wrap_linac::initMatrixRfGap(module);
+        wrap_linac::initRfGapTTF(module);
+        wrap_linac::initRfGapTTF_slow(module);
+        //wrap_linac::initSuperFishFieldSource(module);
+        wrap_linac::initRfGapThreePointTTF(module);
+        wrap_linac::initRfGapThreePointTTF_slow(module);
+        //initialization of the linac tracking module
+        wrap_linac_tracking::initlinactracking(module);
+        return module;
+    }
+
+    PyObject* getLinacType(char* name){
+        PyObject* mod = PyImport_ImportModule("linac");
+        PyObject* pyType = PyObject_GetAttrString(mod,name);
+        Py_DECREF(mod);
+        Py_DECREF(pyType);
+        return pyType;
+    }
+  }
+
 #ifdef __cplusplus
 }
 #endif
