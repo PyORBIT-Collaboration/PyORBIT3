@@ -7,6 +7,8 @@
 #include "wrap_teapotbase.hh"
 #include "wrap_utils.hh"
 #include "wrap_aperture.hh"
+#include "wrap_foil.hh"
+#include "wrap_collimator.hh"
 
 // Define the module methods for the orbit module
 static PyMethodDef OrbitMethods[] = {
@@ -70,3 +72,10 @@ PyMODINIT_FUNC PyInit_aperture(void) {
     return wrap_aperture::initaperture();
 }
 
+PyMODINIT_FUNC PyInit_collimator(void) {
+    return wrap_collimator::initcollimator();
+}
+
+PyMODINIT_FUNC PyInit_foil(void) {
+    return wrap_foil::initfoil();
+}
