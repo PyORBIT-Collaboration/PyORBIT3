@@ -22,12 +22,22 @@ style_check:
   script:
     - pre-commit run --all-files
 
+test-build:
+  tags:
+    - docker
+  stage: test 
+  image: centos/python-38-centos7
+  before_script:
+    - pip install build twine
+  script:
+    - python -m build
+
 
 release-pypi:
   tags:
     - docker
   stage: deploy
-  image: python:3.8
+  image: centos/python-38-centos7
   before_script:
     - pip install build twine
   script:
