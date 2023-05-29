@@ -1,8 +1,6 @@
 #image: registry.esss.lu.se/ics-docker/miniconda
-image: python:3.10-slim
+image: registry.esss.lu.se/ess-bp/dockers/miniconda
 .pip_install_default: &pip_install_default
-    - apt update
-    - apt install git -y
     - pip install scipy matplotlib h5py
 .pip_install_sphinx: &pip_install_sphinx
     - pip install sphinx==3.2.1 sphinxcontrib-blockdiag blockdiag sphinxcontrib-restbuilder sphinx_rtd_theme numpy m2r2
@@ -25,19 +23,19 @@ style_check:
 test-build:
   tags:
     - docker
-  stage: test 
-  image: centos/python-38-centos7
+  stage: test
   before_script:
     - pip install build twine
   script:
     - python -m build
+  only:
+    - main
 
 
 release-pypi:
   tags:
     - docker
   stage: deploy
-  image: centos/python-38-centos7
   before_script:
     - pip install build twine
   script:

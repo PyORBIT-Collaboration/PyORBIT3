@@ -6,3 +6,5 @@ build-backend = "setuptools.build_meta"
 name = "PyORBIT"
 dynamic = ["version"]
 description = "Acceleratop Physics Simulation Code"
+
+[tool.setuptools_scm]
