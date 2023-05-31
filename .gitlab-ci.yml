@@ -24,8 +24,6 @@ test-build:
   tags:
     - docker
   stage: test
-  before_script:
-    - pip install build twine
   script:
     - python -m build
   only:
@@ -36,8 +34,6 @@ release-pypi:
   tags:
     - docker
   stage: deploy
-  before_script:
-    - pip install build twine
   script:
     - python -m build
     - python -m twine upload dist/*
