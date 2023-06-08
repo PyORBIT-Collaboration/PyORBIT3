@@ -1,104 +1,36 @@
-![Build](../../actions/workflows/compilation.yml/badge.svg)
+# PyOrbit3 package installation
 
-# Py-ORBIT  Installation
+## 0. Required software
+Current version doesn't support MPI or FFT based space charge calculation.
+One needs compilers and python development packages, depending on  Linux flavor the package can be called **python-dev** or **python-devel**.
 
-Installation procedure requires building from source.
-All installation steps happen in command line (terminal).
+This guide was tested on following configurations
 
-## 1. Installing required libraries
+| CPU           | Architecture | OS           | Python  | Compiler     |
+|---------------|--------------|--------------|---------|--------------|
+| Intel i7-7700 | x86_64       | RHEL 8.7     | 3.9.13  | gcc-8.5      |
+|               | x86_64       | Arch         | 3.10.10 | gcc-12.2.1   |
+| Apple M2      | arm64        | macOS 13.3.1 | 3.9.6   | clang-14.0.3 |
 
-### Ubuntu (and other distributions using apt-get: Debian, Mint etc)
-```shell
-sudo apt-get update
-sudo apt-get install build-essential
-sudo apt-get install python-dev libmpich-dev mpich  zlib1g-dev libfftw3-dev
+
+## 1. Installation
+
+If you already have configured the ESS index url (e.g. Jupyter), you can omit the index url in the command below.
+
+```
+pip install --index-url https://artifactory.esss.lu.se/artifactory/api/pypi/pypi-virtual/simple pyorbit
 ```
 
-### RedHat (and other distributions using yum: Fedora, CentOS etc)
-```shell
-sudo yum update
-sudo yum group install "Development Tools"
-sudo yum install python-devel mpich mpich-devel zlib-devel fftw-devel
+## 3. Run simple test to make sure that import works
+```python
+from orbit.core import orbit_mpi, bunch, teapot_base, linac, spacecharge, orbit_utils, aperture
 ```
-The latest linux distributions are phasing out python 2. Some modifications to package names might be needed. For example: CentOS 8 (RedHat 8) needs you to replace **python-devel** with **python2-devel** and add **python2** to your package list in above *yum* command.
+The above should give no errors. It's important to `import orbit` first.
 
-### Mac 
-We recommend to use [MacPorts](https://www.macports.org).
-  
-Sync with package repository
+## 4. Run SNS linac example
+The python part of PyOrbit should be in PYTHONPATH
 
-`sudo port -v selfupdate`
-
-After syncing run:
-```shell
-sudo port install fftw-3 mpich
+```bash
+cd ../pyorbit_linac_model
+python pyorbit3_sns_linac_mebt_hebt2_test.py
 ```
-Select mpich to enable mpicc
-
-```shell
-sudo port select mpi mpich-mp-fortran
-```
-
-The latest versions of Mac OS (macOS Mojave) don't include python 2 installed by default.
-In this situation install it from MacPorts as well:
-
-```shell
-sudo port install python27
-sudo port select --set python python27
-```
-
-### Building the whole environment from source
-If you don't want to use standard libraries supplied by your distribution, you can build the whole environment from scratch. It is also possible to do this without having a root account. The process is described in detail [here](BuildFromSource.md).
-
-## 2. Clone the source code
-```shell
-git clone https://github.com/PyORBIT-Collaboration/py-orbit.git
-```
-Your source is now in the *py-orbit* directory.
-## 3. Setup environment variables
-*setupEnevironment.sh* will try to figure out all paths.
-This should be sufficient for common Linux distributions. If you built the environment from source, use *customEnvironment.sh* instead.
-```shell
-cd py-orbit
-source setupEnvironment.sh
-```
-
-
-## 4. Build the code
-
-```shell 
-make clean
-make
-```
-If make failed, it usually means that some of the libraries aren't set up properly.
-
-
-
-# Running Examples
-
-Setup the environment variables (needs to be done once per teminal session). If you built the environment from source, use *customEnvironment.sh* instead.
-Alternatively you can place `source <path-to-pyORBIT-installation>/setupEnvironment.sh` in your *.bashrc*.
-```shell
-source setupEnvironment.sh
-cd examples/AccLattice_Tests
-./START.sh lattice_test.py 2
-```
-This will launch *lattice_test* example on two MPI nodes. Other examples are availabale in [Examples](../../../examples) repository.
-
-# Structure
-**./src**		- source code for the core ORBIT C++ classes, including
-		  wrappers, etc.
-
-**./py**		- python modules and wrapper classes for the core ORBIT
-		  classes.
-
-**./ext**		- source code for external modules. Compilations of this
-		  code should be placed into **./lib**.
-
-**./lib**  	- .so shared libraries to be used under pyORBIT interpreter.
-
-**./examples**		- pyORBIT examples.
-
-**./conf**		- configuration information.
-
-**./bin**		-  pyORBIT executables.

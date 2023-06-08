@@ -1319,7 +1319,8 @@ extern "C" {
 	  BunchModuleMethods
   };
 
-  PyMODINIT_FUNC PyInit_bunch(void) {
+  /* The name of the function was changed to avoid collision with PyImport magic naming */
+  PyMODINIT_FUNC initbunch(void) {
   	//check that the Bunch wrapper is ready
   	if(PyType_Ready(&pyORBIT_Bunch_Type) < 0) return NULL;
   	Py_INCREF(&pyORBIT_Bunch_Type);

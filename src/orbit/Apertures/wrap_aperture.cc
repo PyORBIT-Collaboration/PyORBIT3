@@ -34,9 +34,9 @@ extern "C" {
 	  "aperture", "Aperture classes collection",
 	  -1,
 	  ApertureModuleMethods
-  };	
-	
-	PyMODINIT_FUNC PyInit_aperture(){
+  };
+	/* The name of the function was changed to avoid collision with PyImport magic naming */
+	PyMODINIT_FUNC initaperture(){
 		//create new module
 		PyObject* module = PyModule_Create(&cModPyDem);
 		wrap_aperture::initTAperture(module);

@@ -23,7 +23,8 @@ extern "C" {
 #endif
 
   namespace wrap_orbit_bunch{
-    PyMODINIT_FUNC PyInit_bunch(void);
+    /* The name of the function was changed to avoid collision with PyImport magic naming */
+    PyMODINIT_FUNC initbunch(void);
 		PyObject* getBunchType(const char* name);
   }
 

@@ -8,7 +8,8 @@ extern "C" {
 #endif
 
   namespace wrap_aperture{
-    PyMODINIT_FUNC PyInit_aperture();
+  /* The name of the function was changed to avoid collision with PyImport magic naming */
+    PyMODINIT_FUNC initaperture();
   }
 
 #ifdef __cplusplus
