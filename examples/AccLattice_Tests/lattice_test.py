@@ -52,9 +52,10 @@ nElems = [0]
 def funcEntrance(paramsDict):
     nLevel[0] += 1
     node = paramsDict["node"]
-    if("print" in paramsDict and paramsDict["print"] == True):
+    if "print" in paramsDict and paramsDict["print"] == True:
         print(Blanks(nLevel[0]), "ENTER level=", nLevel[0], " node=", node.getName())
         nElems[0] += 1
+
 
 def funcExit(paramsDict):
     node = paramsDict["node"]

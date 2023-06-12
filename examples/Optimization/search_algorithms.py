@@ -12,8 +12,9 @@
 import os
 import math
 import sys
-import time	
-	
+import time
+import orbit.core
+
 from orbit.utils.fitting.Solver_lib import Solver, Scorer, SolveStopperFactory, VariableProxy, TrialPoint
 
 from orbit.utils.fitting.BisectionSearch1D import BisectionSearchAlgorithm

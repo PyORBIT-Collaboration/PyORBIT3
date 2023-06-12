@@ -9,8 +9,3 @@ collect2: error: ld returned 1 exit status
 export PYTHON3_ROOT_LIB="-L/home/operator-mcr/.conda/envs/pyorbit/lib/ -lpython3.10"
 
 export PYTHON3_ROOT_INC=/home/operator-mcr/.conda/envs/pyorbit/include/python3.10
-
-
-
-
-
