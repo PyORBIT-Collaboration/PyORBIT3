@@ -9,6 +9,7 @@
 import sys
 import math
 import random
+import orbit.core
 
 from bunch import Bunch
 from spacecharge import Grid1D

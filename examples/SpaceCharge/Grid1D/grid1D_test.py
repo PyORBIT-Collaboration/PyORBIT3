@@ -6,8 +6,9 @@
 
 import sys
 import math
+import orbit.core
 
-from orbit.space_charge import Grid1D
+from spacecharge import Grid1D
 
 
 print("Start.")
