@@ -7,6 +7,7 @@ import os
 # libmain contains python package def, we don't want it in C++ sources
 
 src = []
+
 for f in Path("src").rglob("*.cc"):
     excludes = ["main/main.cc"]
     include = True
@@ -22,12 +23,14 @@ for folder in os.walk("src"):
     if folder[0] not in excludes:
         include.append(folder[0])
         print(folder[0])
-
+E
 extension_mod = Extension(
     "_orbit",
     sources=src,
+    libraries=["fftw3"],
     include_dirs=include,
     extra_compile_args=["-DUSE_MPI=0"],
+    extra_link_args=["-lfftw3", "-lm"],
 )
 
 packages = ["orbit.core"]
