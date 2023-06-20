@@ -23,16 +23,14 @@ for folder in os.walk("src"):
     if folder[0] not in excludes:
         include.append(folder[0])
         print(folder[0])
-
-# HARDCODED PATHS FOR NOW! MUST CHANGE
+E
 extension_mod = Extension(
     "_orbit",
     sources=src,
     libraries=["fftw3"],
-    include_dirs=["/Users/christianzlatanov/anaconda3/envs/pyorbit/include"] + include,
-    library_dirs=["/Users/christianzlatanov/anaconda3/envs/pyorbit/lib"],
+    include_dirs=include,
     extra_compile_args=["-DUSE_MPI=0"],
-    extra_link_args=["-Wl,-rpath,/Users/christianzlatanov/anaconda3/envs/pyorbit/lib", "-lfftw3", "-lm"],
+    extra_link_args=["-lfftw3", "-lm"],
 )
 
 packages = ["orbit.core"]
