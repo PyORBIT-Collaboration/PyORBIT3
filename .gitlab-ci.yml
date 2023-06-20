@@ -1,38 +1,10 @@
-#image: registry.esss.lu.se/ics-docker/miniconda
-image: registry.esss.lu.se/ess-bp/dockers/miniconda
-.pip_install_default: &pip_install_default
-    - pip install scipy matplotlib h5py
-.pip_install_sphinx: &pip_install_sphinx
-    - pip install sphinx==3.2.1 sphinxcontrib-blockdiag blockdiag sphinxcontrib-restbuilder sphinx_rtd_theme numpy m2r2
-    - pip install git+https://github.com/sphinx-contrib/confluencebuilder.git --user
-variables:
-  TWINE_REPOSITORY_URL: https://artifactory.esss.lu.se/artifactory/api/pypi/ics-pypi
 
-stages:
-    - test
-    - deploy
+include:
+  - remote: "https://gitlab.esss.lu.se/ics-infrastructure/gitlab-ci-yml/raw/master/PreCommit.gitlab-ci.yml"
+  - remote: "https://gitlab.esss.lu.se/ics-infrastructure/gitlab-ci-yml/raw/master/ArtifactoryPyPI.gitlab-ci.yml"
+  - remote: "https://gitlab.esss.lu.se/ics-infrastructure/gitlab-ci-yml/raw/master/SonarScanner.gitlab-ci.yml"
 
-style_check:
-  stage: test
-  tags:
-    - docker
-  image: registry.esss.lu.se/ics-docker/pre-commit
-  script:
-    - pre-commit run --all-files
-
-test-build:
-  tags:
-    - docker
-  stage: test
-  script:
-    - python -m build
-
-release-pypi:
-  tags:
-    - docker
-  stage: deploy
-  script:
-    - python -m build
-    - python -m twine upload dist/*
-  only:
-    - tags
+build-pypi-package:
+  image: continuumio/miniconda3:23.3.1-0
+  before_script:
+    - conda install -c conda-forge gcc gxx fftw mpich
