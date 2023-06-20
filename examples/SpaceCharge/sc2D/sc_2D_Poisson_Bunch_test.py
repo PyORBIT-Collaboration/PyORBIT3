@@ -10,6 +10,7 @@
 
 import sys
 import math
+import orbit.core
 
 from bunch import Bunch
 
