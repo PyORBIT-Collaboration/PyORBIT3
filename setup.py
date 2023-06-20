@@ -23,7 +23,7 @@ for folder in os.walk("src"):
     if folder[0] not in excludes:
         include.append(folder[0])
         print(folder[0])
-E
+
 extension_mod = Extension(
     "_orbit",
     sources=src,
