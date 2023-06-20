@@ -26,9 +26,6 @@ test-build:
   stage: test
   script:
     - python -m build
-  only:
-    - main
-
 
 release-pypi:
   tags:
