@@ -6,17 +6,17 @@ by Ron F. Holsinger in collaboration with Klaus Halbach.
 These programs are provided as a service to the accelerator
 community by the Los Alamos Accelerator Code Group (LAACG).
 
-(c) Copyright 1985-2005, by the Regents of the University of California.        
-This software was produced under U. S. Government contract W-7405-ENG-36        
-by Los Alamos National Laboratory, which is operated by the University          
-of California for the U. S. Department of Energy.  Neither the Government       
-nor the University makes any warranty, express or implied, or assumes           
-any liability or responsibility for its use, or represents that use of          
-this software would not infringe privately owned rights.                        
-Unpublished - rights reserved under Copyright Laws of the United States.        
+(c) Copyright 1985-2005, by the Regents of the University of California.
+This software was produced under U. S. Government contract W-7405-ENG-36
+by Los Alamos National Laboratory, which is operated by the University
+of California for the U. S. Department of Energy.  Neither the Government
+nor the University makes any warranty, express or implied, or assumes
+any liability or responsibility for its use, or represents that use of
+this software would not infringe privately owned rights.
+Unpublished - rights reserved under Copyright Laws of the United States.
 
 
-Program SF7  7.17  released 1-13-2006 
+Program SF7  7.17  released 1-13-2006
 
 Program file: C:\LANL\SF7.EXE
 SF.INI file: c:\USER\SHISHLO\SNS_Physics\Cavities_Filed_Calculations\MEBT\sfish\SF.INI  4-04-2003  16:43:54
@@ -30,8 +30,8 @@ Electromagnetic fields for a rectangular area with corners at:
 (Zmax,Rmax) = (5.048,1.8)
 Z and R increments:   200    50
 
-      Z             R              Ez            Er            |E|           H 
-    (cm)          (cm)           (MV/m)        (MV/m)        (MV/m)        (A/m) 
+      Z             R              Ez            Er            |E|           H
+    (cm)          (cm)           (MV/m)        (MV/m)        (MV/m)        (A/m)
    0.00000       0.00000      3.194619E+00  0.000000E+00  3.194619E+00  0.000000E+00
   2.524000E-02   0.00000      3.193861E+00  0.000000E+00  3.193861E+00  0.000000E+00
   5.048000E-02   0.00000      3.191586E+00  0.000000E+00  3.191586E+00  0.000000E+00

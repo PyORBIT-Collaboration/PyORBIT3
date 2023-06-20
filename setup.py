@@ -7,6 +7,7 @@ import os
 # libmain contains python package def, we don't want it in C++ sources
 
 src = []
+
 for f in Path("src").rglob("*.cc"):
     excludes = ["main/main.cc"]
     include = True
@@ -23,11 +24,15 @@ for folder in os.walk("src"):
         include.append(folder[0])
         print(folder[0])
 
+# HARDCODED PATHS FOR NOW! MUST CHANGE
 extension_mod = Extension(
     "_orbit",
     sources=src,
-    include_dirs=include,
+    libraries=["fftw3"],
+    include_dirs=["/Users/christianzlatanov/anaconda3/envs/pyorbit/include"] + include,
+    library_dirs=["/Users/christianzlatanov/anaconda3/envs/pyorbit/lib"],
     extra_compile_args=["-DUSE_MPI=0"],
+    extra_link_args=["-Wl,-rpath,/Users/christianzlatanov/anaconda3/envs/pyorbit/lib", "-lfftw3", "-lm"],
 )
 
 packages = ["orbit.core"]

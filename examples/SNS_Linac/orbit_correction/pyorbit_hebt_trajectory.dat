@@ -1,4 +1,4 @@
- Node   position   x[mm]   xp[mrad]   y[mm]   yp[mrad]  
+ Node   position   x[mm]   xp[mrad]   y[mm]   yp[mrad]
                          HEBT1_START  0.00000    1.0000  1.0000  -1.0000  -1.0000
            HEBT1:HEBT1_START:1:drift  0.37375    1.3738  1.0000  -1.3738  -1.0000
            HEBT1:HEBT1_START:2:drift  0.74750    1.7475  1.0000  -1.7475  -1.0000
