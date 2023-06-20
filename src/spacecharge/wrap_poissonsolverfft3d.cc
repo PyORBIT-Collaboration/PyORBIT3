@@ -20,7 +20,7 @@ extern "C" {
 	//---------------------------------------------------------
 	//Python PoissonSolverFFT3D class definition
 	//---------------------------------------------------------
-	
+
 	//constructor for python class wrapping PoissonSolverFFT3D instance
 	//It never will be called directly
 	static PyObject* PoissonSolverFFT3D_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
@@ -31,7 +31,7 @@ extern "C" {
 		//std::cerr<<"The PoissonSolverFFT3D new has been called!"<<std::endl;
 		return (PyObject *) self;
 	}
-	
+
 	//initializator for python  PoissonSolverFFT3D class
 	//this is implementation of the __init__ method
 	static int PoissonSolverFFT3D_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
@@ -41,14 +41,14 @@ extern "C" {
 		double zMin = -1.0, zMax = +1.0;
 		if(!PyArg_ParseTuple(args,"iii|dddddd:__init__",&xSize,&ySize,&zSize,&xMin,&xMax,&yMin,&yMax,&zMin,&zMax)){
 			ORBIT_MPI_Finalize("PyPoissonSolverFFT3D - PoissonSolverFFT3D(nX,nY,nZ,[,xMin,xMax,yMin,yMax,zMin,zMax]) - constructor needs parameters.");
-		}	
+		}
 		self->cpp_obj = new PoissonSolverFFT3D(xSize,ySize,zSize,xMin,xMax,yMin,yMax,zMin,zMax);
 		((PoissonSolverFFT3D*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 		//std::cerr<<"The PoissonSolverFFT3D __init__ has been called!"<<std::endl;
 		return 0;
 	}
-  
- 	//set or get the number of neighboring bunches to account in the potential 
+
+ 	//set or get the number of neighboring bunches to account in the potential
 	static PyObject* PoissonSolverFFT3D_numExtBunches(PyObject *self, PyObject *args){
 		int nBunches = -1;
 		if(!PyArg_ParseTuple(args,"|i:numExtBunches",&nBunches)){
@@ -61,7 +61,7 @@ extern "C" {
 		}
 		return Py_BuildValue("i",cpp_PoissonSolverFFT3D->getNumberOfExternalBunches());
 	}
-	
+
  	//set or get the distance between neighboring bunches
 	static PyObject* PoissonSolverFFT3D_distBetweenBunches(PyObject *self, PyObject *args){
 		double lambda = -1.0;
@@ -74,16 +74,16 @@ extern "C" {
 			cpp_PoissonSolverFFT3D->setSpacingOfExternalBunches(lambda);
 		}
 		return Py_BuildValue("d",cpp_PoissonSolverFFT3D->getSpacingOfExternalBunches());
-	}	
-		
-	//get grid size in X 
+	}
+
+	//get grid size in X
 	static PyObject* PoissonSolverFFT3D_getSizeX(PyObject *self, PyObject *args){
 		pyORBIT_Object* pyPoissonSolverFFT3D = (pyORBIT_Object*) self;
 		PoissonSolverFFT3D* cpp_PoissonSolverFFT3D = (PoissonSolverFFT3D*) pyPoissonSolverFFT3D->cpp_obj;
 		return Py_BuildValue("i",cpp_PoissonSolverFFT3D->getSizeX());
 	}
-	
-	//get grid size in Y 
+
+	//get grid size in Y
 	static PyObject* PoissonSolverFFT3D_getSizeY(PyObject *self, PyObject *args){
 		pyORBIT_Object* pyPoissonSolverFFT3D = (pyORBIT_Object*) self;
 		PoissonSolverFFT3D* cpp_PoissonSolverFFT3D = (PoissonSolverFFT3D*) pyPoissonSolverFFT3D->cpp_obj;
@@ -95,7 +95,7 @@ extern "C" {
 		pyORBIT_Object* pyPoissonSolverFFT3D = (pyORBIT_Object*) self;
 		PoissonSolverFFT3D* cpp_PoissonSolverFFT3D = (PoissonSolverFFT3D*) pyPoissonSolverFFT3D->cpp_obj;
 		return Py_BuildValue("i",cpp_PoissonSolverFFT3D->getSizeZ());
-	}	
+	}
 
 	// getMaxX()
 	static PyObject* PoissonSolverFFT3D_getMaxX(PyObject *self, PyObject *args){
@@ -103,62 +103,62 @@ extern "C" {
 		PoissonSolverFFT3D* cpp_PoissonSolverFFT3D = (PoissonSolverFFT3D*) pyPoissonSolverFFT3D->cpp_obj;
 		return Py_BuildValue("d",cpp_PoissonSolverFFT3D->getMaxX());
 	}
-	
+
 	// getMaxY()
 	static PyObject* PoissonSolverFFT3D_getMaxY(PyObject *self, PyObject *args){
 		pyORBIT_Object* pyPoissonSolverFFT3D = (pyORBIT_Object*) self;
 		PoissonSolverFFT3D* cpp_PoissonSolverFFT3D = (PoissonSolverFFT3D*) pyPoissonSolverFFT3D->cpp_obj;
 		return Py_BuildValue("d",cpp_PoissonSolverFFT3D->getMaxY());
 	}
-	
+
 	// getMaxZ()
 	static PyObject* PoissonSolverFFT3D_getMaxZ(PyObject *self, PyObject *args){
 		pyORBIT_Object* pyPoissonSolverFFT3D = (pyORBIT_Object*) self;
 		PoissonSolverFFT3D* cpp_PoissonSolverFFT3D = (PoissonSolverFFT3D*) pyPoissonSolverFFT3D->cpp_obj;
 		return Py_BuildValue("d",cpp_PoissonSolverFFT3D->getMaxZ());
 	}
-	
+
 	// getMinX()
 	static PyObject* PoissonSolverFFT3D_getMinX(PyObject *self, PyObject *args){
 		pyORBIT_Object* pyPoissonSolverFFT3D = (pyORBIT_Object*) self;
 		PoissonSolverFFT3D* cpp_PoissonSolverFFT3D = (PoissonSolverFFT3D*) pyPoissonSolverFFT3D->cpp_obj;
 		return Py_BuildValue("d",cpp_PoissonSolverFFT3D->getMinX());
 	}
-	
+
 	// getMinY()
 	static PyObject* PoissonSolverFFT3D_getMinY(PyObject *self, PyObject *args){
 		pyORBIT_Object* pyPoissonSolverFFT3D = (pyORBIT_Object*) self;
 		PoissonSolverFFT3D* cpp_PoissonSolverFFT3D = (PoissonSolverFFT3D*) pyPoissonSolverFFT3D->cpp_obj;
 		return Py_BuildValue("d",cpp_PoissonSolverFFT3D->getMinY());
-	}	
-	
+	}
+
 	// getMinZ()
 	static PyObject* PoissonSolverFFT3D_getMinZ(PyObject *self, PyObject *args){
 		pyORBIT_Object* pyPoissonSolverFFT3D = (pyORBIT_Object*) self;
 		PoissonSolverFFT3D* cpp_PoissonSolverFFT3D = (PoissonSolverFFT3D*) pyPoissonSolverFFT3D->cpp_obj;
 		return Py_BuildValue("d",cpp_PoissonSolverFFT3D->getMinZ());
-	}	
+	}
 
 	// getStepX()
 	static PyObject* PoissonSolverFFT3D_getStepX(PyObject *self, PyObject *args){
 		pyORBIT_Object* pyPoissonSolverFFT3D = (pyORBIT_Object*) self;
 		PoissonSolverFFT3D* cpp_PoissonSolverFFT3D = (PoissonSolverFFT3D*) pyPoissonSolverFFT3D->cpp_obj;
 		return Py_BuildValue("d",cpp_PoissonSolverFFT3D->getStepX());
-	}	
-	
+	}
+
 	// getStepY()
 	static PyObject* PoissonSolverFFT3D_getStepY(PyObject *self, PyObject *args){
 		pyORBIT_Object* pyPoissonSolverFFT3D = (pyORBIT_Object*) self;
 		PoissonSolverFFT3D* cpp_PoissonSolverFFT3D = (PoissonSolverFFT3D*) pyPoissonSolverFFT3D->cpp_obj;
 		return Py_BuildValue("d",cpp_PoissonSolverFFT3D->getStepY());
-	}		
-	
+	}
+
 	// getStepZ()
 	static PyObject* PoissonSolverFFT3D_getStepZ(PyObject *self, PyObject *args){
 		pyORBIT_Object* pyPoissonSolverFFT3D = (pyORBIT_Object*) self;
 		PoissonSolverFFT3D* cpp_PoissonSolverFFT3D = (PoissonSolverFFT3D*) pyPoissonSolverFFT3D->cpp_obj;
 		return Py_BuildValue("d",cpp_PoissonSolverFFT3D->getStepZ());
-	}			
+	}
 
 	// updateGreenFunction()
 	static PyObject* PoissonSolverFFT3D_updateGreenFunction(PyObject *self, PyObject *args){
@@ -167,7 +167,7 @@ extern "C" {
 		cpp_PoissonSolverFFT3D->updateGreenFunction();
 		Py_INCREF(Py_None);
     return Py_None;
-	}			
+	}
 
 	//findPotential(Grid3D* rhoGrid3D,Grid3D* phiGrid3D)
   static PyObject* PoissonSolverFFT3D_findPotential(PyObject *self, PyObject *args){
@@ -175,20 +175,20 @@ extern "C" {
 		PoissonSolverFFT3D* cpp_PoissonSolverFFT3D = (PoissonSolverFFT3D*) pyPoissonSolverFFT3D->cpp_obj;
 		PyObject* pyRhoG;
 		PyObject* pyPhiG;
-		if(!PyArg_ParseTuple(args,"OO:__init__",&pyRhoG,&pyPhiG)){		
+		if(!PyArg_ParseTuple(args,"OO:__init__",&pyRhoG,&pyPhiG)){
 			ORBIT_MPI_Finalize("PyPoissonSolverFFT3D.findPotential(Grid3D rhoGrid3D,Grid3D phiGrid3D) - method needs parameters.");
-		}	
+		}
 		PyObject* pyORBIT_Grid3D_Type = getSpaceChargeType("Grid3D");
 		if(!PyObject_IsInstance(pyRhoG,pyORBIT_Grid3D_Type) || !PyObject_IsInstance(pyPhiG,pyORBIT_Grid3D_Type)){
 			ORBIT_MPI_Finalize("PyPoissonSolverFFT3D.findPotential(Grid3D rhoGrid3D,Grid3D phiGrid3D) - method needs parameters.");
-		}			
+		}
 		Grid3D* grid3D_rho = (Grid3D*)(((pyORBIT_Object*) pyRhoG)->cpp_obj);
 		Grid3D* grid3D_phi = (Grid3D*)(((pyORBIT_Object*) pyPhiG)->cpp_obj);
 		cpp_PoissonSolverFFT3D->findPotential(grid3D_rho,grid3D_phi);
 		Py_INCREF(Py_None);
     return Py_None;
-	}		
-	
+	}
+
   //-----------------------------------------------------
   //destructor for python PoissonSolverFFT3D class (__del__ method).
   //-----------------------------------------------------
@@ -201,7 +201,7 @@ extern "C" {
 		self->ob_base.ob_type->tp_free((PyObject*)self);
 		//std::cerr<<"The PoissonSolverFFT3D __del__ has been called! 1"<<std::endl;
   }
-	
+
 	// defenition of the methods of the python PoissonSolverFFT3D wrapper class
 	// they will be vailable from python level
   static PyMethodDef PoissonSolverFFT3DClassMethods[] = {
@@ -270,7 +270,7 @@ extern "C" {
 		(initproc) PoissonSolverFFT3D_init, /* tp_init */
 		0, /* tp_alloc */
 		PoissonSolverFFT3D_new, /* tp_new */
-	};	
+	};
 
 	//--------------------------------------------------
 	//Initialization function of the pyPoissonSolverFFT3D class

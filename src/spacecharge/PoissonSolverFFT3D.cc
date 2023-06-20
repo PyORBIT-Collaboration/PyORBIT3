@@ -11,7 +11,7 @@ PoissonSolverFFT3D::PoissonSolverFFT3D(int xSize, int ySize, int zSize): Poisson
 }
 
 PoissonSolverFFT3D::PoissonSolverFFT3D(int xSize, int ySize, int zSize,
-	                     double xMin, double xMax, 
+	                     double xMin, double xMax,
 											 double  yMin, double yMax,
 											 double  zMin, double zMax): PoissonSolver3D(xSize,ySize,zSize,xMin,xMax,yMin,yMax,zMin,zMax)
 {
@@ -20,7 +20,7 @@ PoissonSolverFFT3D::PoissonSolverFFT3D(int xSize, int ySize, int zSize,
 
 
 void PoissonSolverFFT3D::init(int xSize, int ySize, int zSize,
-                              double xMin, double xMax, 
+                              double xMin, double xMax,
 											        double yMin, double yMax,
 															double  zMin, double zMax)
 {
@@ -30,7 +30,7 @@ void PoissonSolverFFT3D::init(int xSize, int ySize, int zSize,
   xSize2_ = 2*xSize;
   ySize2_ = 2*ySize;
   zSize2_ = 2*zSize;
-  
+
   nBunches_ = 0;
   lambda_ = DBL_MAX;
 
@@ -38,8 +38,8 @@ void PoissonSolverFFT3D::init(int xSize, int ySize, int zSize,
 		int rank = 0;
 		ORBIT_MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 		if(rank == 0){
-			std::cerr << "PoissonSolverFFT3D::PoissonSolverFFT3D - CONSTRUCTOR \n" 
-         				<< "The grid size too small (should be more than 3)! \n" 
+			std::cerr << "PoissonSolverFFT3D::PoissonSolverFFT3D - CONSTRUCTOR \n"
+         				<< "The grid size too small (should be more than 3)! \n"
 								<< "number x bins ="<< xSize_ <<" \n"
 								<< "number y bins ="<< ySize_ <<" \n"
 								<< "number z bins ="<< zSize_ <<" \n"
@@ -55,7 +55,7 @@ void PoissonSolverFFT3D::init(int xSize, int ySize, int zSize,
 			greensF_[ix][iy] =  new double [zSize2_];
 		}
   }
-	
+
   in_        = (double *) fftw_malloc(sizeof(double)*xSize2_ * ySize2_ * zSize2_);
   in_res_    = (double *) fftw_malloc(sizeof(double)*xSize2_ * ySize2_ * zSize2_);
   out_green_ = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) *xSize2_ * ySize2_ * (zSize2_/2+1));
@@ -67,7 +67,7 @@ void PoissonSolverFFT3D::init(int xSize, int ySize, int zSize,
   planForward_greenF_ = fftw_plan_dft_r2c_3d(xSize2_ , ySize2_ , zSize2_ , in_,  out_green_, FFTW_ESTIMATE);
   planForward_        = fftw_plan_dft_r2c_3d(xSize2_ , ySize2_ , zSize2_ , in_,  out_,       FFTW_ESTIMATE);
   planBackward_       = fftw_plan_dft_c2r_3d(xSize2_ , ySize2_ , zSize2_ , out_res_, in_res_,FFTW_ESTIMATE);
-  
+
   //define FFT of the Green fuction
   _defineGreenF();
 }
@@ -75,14 +75,14 @@ void PoissonSolverFFT3D::init(int xSize, int ySize, int zSize,
 // Destructor
 PoissonSolverFFT3D::~PoissonSolverFFT3D()
 {
-	
+
 	//std::cerr<<"debug PoissonSolverFFT3D::~PoissonSolverFFT3D() start! "<<std::endl;
   //delete Green function and FFT input and output arrays
 
   for(int ix = 0; ix < xSize2_ ; ix++) {
-		for(int iy = 0; iy < ySize2_ ; iy++) {	
+		for(int iy = 0; iy < ySize2_ ; iy++) {
 			delete [] greensF_[ix][iy];
-		}   
+		}
 		delete [] greensF_[ix];
 	}
   delete [] greensF_;
@@ -92,7 +92,7 @@ PoissonSolverFFT3D::~PoissonSolverFFT3D()
   fftw_free(out_green_);
   fftw_free(out_);
   fftw_free(out_res_);
-	
+
   fftw_destroy_plan(planForward_greenF_);
   fftw_destroy_plan(planForward_);
   fftw_destroy_plan(planBackward_);
@@ -103,26 +103,26 @@ void PoissonSolverFFT3D::setNumberOfExternalBunches(int nBunches){
 		nBunches = nBunches + 1;
 	}
 	nBunches_ = nBunches;
-}	
+}
 
 void PoissonSolverFFT3D::setSpacingOfExternalBunches(double lambda){
 	lambda_ = lambda;
-}	
+}
 
 int PoissonSolverFFT3D::getNumberOfExternalBunches(){
 	return nBunches_;
-}	
+}
 
 double PoissonSolverFFT3D::getSpacingOfExternalBunches(){
 	return lambda_;
-}	
+}
 
 void PoissonSolverFFT3D::setGridX(double xMin, double xMax){
 	xMin_ = xMin;
 	xMax_ = xMax;
 	dx_ = (xMax_ - xMin_)/(xSize_ -1);
 	_defineGreenF();
-}	
+}
 
 void PoissonSolverFFT3D::setGridY(double yMin, double yMax){
 	yMin_ = yMin;
@@ -141,13 +141,13 @@ void PoissonSolverFFT3D::setGridZ(double zMin, double zMax){
 void PoissonSolverFFT3D::setGridXYZ(double xMin, double xMax, double yMin, double yMax, double zMin, double zMax){
 	xMin_ = xMin;
 	xMax_ = xMax;
-	dx_ = (xMax_ - xMin_)/(xSize_ -1);	
+	dx_ = (xMax_ - xMin_)/(xSize_ -1);
 	yMin_ = yMin;
 	yMax_ = yMax;
 	dy_ = (yMax_ - yMin_)/(ySize_ -1);
 	zMin_ = zMin;
 	zMax_ = zMax;
-	dz_ = (zMax_ - zMin_)/zSize_;	
+	dz_ = (zMax_ - zMin_)/zSize_;
 	_defineGreenF();
 }
 
@@ -163,23 +163,23 @@ void PoissonSolverFFT3D::_defineGreenF()
   double externalPhi,rTransZ_tmp;
   double rTransY2, rTransX2, rTransZ2;
   int i, j, k, iY , iX, iZ;
-	
+
 	for (iZ = 0; iZ <= zSize2_/2; iZ++)
 	{
 		rTransZ = iZ * dz_;
 		rTransZ2 = rTransZ*rTransZ;
-		
+
 		for (iY = 0; iY <= ySize2_/2; iY++)
 		{
 			rTransY = iY * dy_;
 			rTransY2 = rTransY*rTransY;
-			
+
 			for (iX = 0; iX <= xSize2_/2; iX++)
 			{
-				rTransX = iX * dx_;	
+				rTransX = iX * dx_;
 				rTransX2 = rTransX*rTransX;
 				rTot = sqrt(rTransX2 + rTransY2 + rTransZ2);
-				
+
 				externalPhi = 0.;
 				if(nBunches_ != 0){
 					for (int iBunch = -nBunches_/2; iBunch <= nBunches_/2; iBunch++){
@@ -193,7 +193,7 @@ void PoissonSolverFFT3D::_defineGreenF()
 						if(rTotExt > 1.0e-10) externalPhi += 1.0/rTotExt;
 					}
 				}
-				
+
 				if(iX != 0 || iY != 0 || iZ != 0){
 					greensF_[iX][iY][iZ] = 1./rTot + externalPhi;
 				}
@@ -201,13 +201,13 @@ void PoissonSolverFFT3D::_defineGreenF()
 					greensF_[iX][iY][iZ] = externalPhi;
 				}
 			}
-			
+
 			for (iX = xSize2_/2+1; iX < xSize2_; iX++)
 			{
 				greensF_[iX][iY][iZ] = greensF_[xSize2_-iX][iY][iZ];
 			}
 		}
-		
+
 		for (iY = ySize2_/2+1; iY < ySize2_; iY++)
 		{
 			for (iX = 0; iX < xSize2_; iX++)
@@ -216,7 +216,7 @@ void PoissonSolverFFT3D::_defineGreenF()
 			}
 		}
 	}
-	
+
 	for (iZ = zSize2_/2+1; iZ < zSize2_; iZ++)
 	{
 		for (iX = 0; iX < xSize2_; iX++)
@@ -225,25 +225,25 @@ void PoissonSolverFFT3D::_defineGreenF()
 				greensF_[iX][iY][iZ] = greensF_[iX][iY][zSize2_-iZ];
 			}
 		}
-	}		
+	}
 	//   Calculate the FFT of the Greens Function:
-	
+
 	for (i = 0; i < xSize2_; i++)
 		for (j = 0; j < ySize2_; j++)
 		  for (k = 0; k < zSize2_; k++)
 		  {
         in_[k + zSize2_*j + zSize2_*ySize2_*i] = greensF_[i][j][k];
 		  }
-    
+
 		fftw_execute(planForward_greenF_);
-		
+
 		for (i = 0; i < xSize2_; i++)
 			for (j = 0; j < ySize2_; j++)
 			  for (k = 0; k < zSize2_; k++)
 			  {
 				  in_[k + zSize2_*j + zSize2_*ySize2_*i] = 0.0;
 			  }
-			
+
 }
 
 void PoissonSolverFFT3D::findPotential(Grid3D* rhoGrid,Grid3D*  phiGrid)
@@ -263,8 +263,8 @@ void PoissonSolverFFT3D::findPotential(Grid3D* rhoGrid,Grid3D*  phiGrid)
 		int rank = 0;
 		ORBIT_MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 		if(rank == 0){
-			std::cerr << "PoissonSolverFFT3D:findPotential" << std::endl 
-			          << "The grid sizes or shape are different "<< std::endl 
+			std::cerr << "PoissonSolverFFT3D:findPotential" << std::endl
+			          << "The grid sizes or shape are different "<< std::endl
 								<< "number x bins ="<< xSize_ << std::endl
 								<< "number y bins ="<< ySize_ << std::endl
 								<< "number z bins ="<< zSize_ << std::endl
@@ -295,16 +295,16 @@ void PoissonSolverFFT3D::findPotential(Grid3D* rhoGrid,Grid3D*  phiGrid)
 								std::cerr << "debug dx_/dy_ =" << dx_/dy_ << " rhoGrid->getStepX()/rhoGrid->getStepY() ="<< rhoGrid->getStepX()/rhoGrid->getStepY() <<std::endl;
 								std::cerr << "debug dz_/dy_ =" << dx_/dy_ << " rhoGrid->getStepZ()/rhoGrid->getStepY() ="<< rhoGrid->getStepZ()/rhoGrid->getStepY() <<std::endl;
 								std::cerr << "debug dx_/dy_ =" << dx_/dy_ << " phiGrid->getStepX()/phiGrid->getStepY() ="<< rhoGrid->getStepX()/rhoGrid->getStepY() <<std::endl;
-								std::cerr << "debug dz_/dy_ =" << dx_/dy_ << " phiGrid->getStepZ()/phiGrid->getStepY() ="<< rhoGrid->getStepZ()/rhoGrid->getStepY() <<std::endl;			
+								std::cerr << "debug dz_/dy_ =" << dx_/dy_ << " phiGrid->getStepZ()/phiGrid->getStepY() ="<< rhoGrid->getStepZ()/rhoGrid->getStepY() <<std::endl;
 		}
 		ORBIT_MPI_Finalize();
-  }		
+  }
 
 	double*** rhosc = rhoGrid->getArr3D();
 	double*** phisc = phiGrid->getArr3D();
 
 	double scale_coeff = dx_/rhoGrid->getStepX();
-		
+
   int i, j, k, index;
 
   //define the the rho for FFT
@@ -316,8 +316,8 @@ void PoissonSolverFFT3D::findPotential(Grid3D* rhoGrid,Grid3D*  phiGrid)
   }
 
 	fftw_execute(planForward_);
-	
-  //do convolution with the FFT of the Green's function 
+
+  //do convolution with the FFT of the Green's function
 	double gr_re = 0.;
 	double gr_im = 0.;
   for (i = 0; i < xSize2_; i++)
@@ -334,9 +334,9 @@ void PoissonSolverFFT3D::findPotential(Grid3D* rhoGrid,Grid3D*  phiGrid)
 
   //do backward FFT
 	fftw_execute(planBackward_);
-	
+
   //set the potential
-  double denom =  scale_coeff/ (xSize2_*ySize2_*zSize2_);	
+  double denom =  scale_coeff/ (xSize2_*ySize2_*zSize2_);
   for (i = 0; i < xSize_; i++)
   for (j = 0; j < ySize_; j++)
 	for (k = 0; k < zSize_; k++)
@@ -344,4 +344,3 @@ void PoissonSolverFFT3D::findPotential(Grid3D* rhoGrid,Grid3D*  phiGrid)
     phisc[k][i][j] = denom * in_res_[k + zSize2_*(j + ySize2_*i)];
   }
 }
-

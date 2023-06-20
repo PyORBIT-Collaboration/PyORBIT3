@@ -17,49 +17,49 @@ PoissonSolver3D::PoissonSolver3D(int xSize, int ySize, int zSize): CppPyWrapper(
 	zMin_ = -1.0;
 	zMax_ = +1.0;
 	dx_ = (xMax_ - xMin_)/(xSize_ -1);
-	dy_ = (yMax_ - yMin_)/(ySize_ -1);	
-	
-	/** 
+	dy_ = (yMax_ - yMin_)/(ySize_ -1);
+
+	/**
 		Sets the limits for the z-grid. The z-grid is different
 		from x and y. We redefined it to allow the periodicity
 		along the longitudinal coordinate in the beam.
-	*/	
-	
-	dz_ = (zMax_ - zMin_)/zSize_;	
+	*/
+
+	dz_ = (zMax_ - zMin_)/zSize_;
 }
 
 // Constructor
 PoissonSolver3D::PoissonSolver3D(int xSize, int ySize, int zSize,
-	                               double xMin, double xMax, 
+	                               double xMin, double xMax,
 																  double yMin, double yMax,
 																  double zMin, double zMax): CppPyWrapper(NULL)
 {
 	xSize_ = xSize;
 	ySize_ = ySize;
-	zSize_ = zSize;	
+	zSize_ = zSize;
 	xMin_ = xMin;
 	xMax_ = xMax;
 	yMin_ = yMin;
 	yMax_ = yMax;
 	zMin_ = zMin;
-	zMax_ = zMax;	
+	zMax_ = zMax;
 	dx_ = (xMax_ - xMin_)/(xSize_ -1);
-	dy_ = (yMax_ - yMin_)/(ySize_ -1);	
-	
-	/** 
+	dy_ = (yMax_ - yMin_)/(ySize_ -1);
+
+	/**
 		Sets the limits for the z-grid. The z-grid is different
 		from x and y. We redefined it to allow the periodicity
 		along the longitudinal coordinate in the beam.
-	*/	
-	
-	dz_ = (zMax_ - zMin_)/zSize_;		
+	*/
+
+	dz_ = (zMax_ - zMin_)/zSize_;
 }
 
 // Destructor
 PoissonSolver3D::~PoissonSolver3D(){};
 
 /** Returns the number of points in x direction */
-int PoissonSolver3D::getSizeX(){return xSize_;}; 
+int PoissonSolver3D::getSizeX(){return xSize_;};
 
 /** Returns the number of points in y direction */
 int PoissonSolver3D::getSizeY(){return ySize_;};
@@ -67,22 +67,22 @@ int PoissonSolver3D::getSizeY(){return ySize_;};
 /** Returns the number of points in z direction */
 int PoissonSolver3D::getSizeZ(){return zSize_;};
 
-/** Returns the max x in the grid points */ 
+/** Returns the max x in the grid points */
 double PoissonSolver3D::getMaxX(){return xMax_;};
 
-/** Returns the min x in the grid points */ 
+/** Returns the min x in the grid points */
 double PoissonSolver3D::getMinX(){return xMin_;};
 
-/** Returns the max y in the grid points */ 
+/** Returns the max y in the grid points */
 double PoissonSolver3D::getMaxY(){return yMax_;};
 
-/** Returns the min y in the grid points */ 
+/** Returns the min y in the grid points */
 double PoissonSolver3D::getMinY(){return yMin_;};
 
-/** Returns the max z in the grid points */ 
+/** Returns the max z in the grid points */
 double PoissonSolver3D::getMaxZ(){return zMax_;};
 
-/** Returns the min z in the grid points */ 
+/** Returns the min z in the grid points */
 double PoissonSolver3D::getMinZ(){return zMin_;};
 
 /** Returns the mesh step in x direction */
@@ -107,8 +107,8 @@ void PoissonSolver3D::checkSizes(Grid3D* rhoGrid,Grid3D*  phiGrid){
 		int rank = 0;
 		ORBIT_MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 		if(rank == 0){
-			std::cerr << "PoissonSolver3D (or subclass) checkSizes(...):" 
-			<< "The grid sizes are different "<< std::endl 
+			std::cerr << "PoissonSolver3D (or subclass) checkSizes(...):"
+			<< "The grid sizes are different "<< std::endl
 								<< "number x bins ="<< xSize_ << std::endl
 								<< "number y bins ="<< ySize_ << std::endl
 								<< "rhoGrid x bins ="<< rhoGrid->getSizeX() <<std::endl
@@ -138,7 +138,5 @@ void PoissonSolver3D::checkSizes(Grid3D* rhoGrid,Grid3D*  phiGrid){
 								<< "Stop. \n";
 		}
 		ORBIT_MPI_Finalize();
-  }		
+  }
 }
-
-
