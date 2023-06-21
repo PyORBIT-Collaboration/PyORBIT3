@@ -8,9 +8,9 @@
 //#include "wrap_forcesolverfft2d.hh"
 #include "wrap_boundary2d.hh"
 #include "wrap_spacecharge.hh"
-//#include "wrap_spacechargecalc2p5d.hh"
+#include "wrap_spacechargecalc2p5d.hh"
 //#include "wrap_spacechargeforcecalc2p5d.hh"
-//#include "wrap_spacechargecalc2p5d_rb.hh"
+#include "wrap_spacechargecalc2p5d_rb.hh"
 //#include "wrap_spacechargecalc_slicebyslice_2D.hh"
 //#include "wrap_lspacechargecalc.hh"
 //#include "wrap_spacechargecalc3d.hh"
@@ -43,6 +43,8 @@ extern "C" {
 		wrap_spacecharge::initPoissonSolverFFT2D(module);
 		wrap_spacecharge::initPoissonSolverFFT3D(module);
 		wrap_spacecharge::initBoundary2D(module);
+		wrap_spacecharge::initSpaceChargeCalc2p5D(module);
+		wrap_spacecharge::initSpaceChargeCalc2p5Drb(module);
 		/**
 		wrap_spacecharge::initSpaceChargeCalc3D(module);;
 		wrap_spacecharge::initForceSolverFFT2D(module);;
