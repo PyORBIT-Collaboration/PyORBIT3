@@ -142,24 +142,14 @@ for ip in range(0, b.getSize(), n_step):
     r_dp_arr.append([r, dp])
     r_dp_theory_arr.append([r, dp_th])
 
-# this is the example of using the Gnuplot package
-#import Gnuplot
-
-#g = Gnuplot.Gnuplot(debug=1)
-#g.title("dP vs r ")
-#g("set data style points")
-#g.plot(r_dp_arr, r_dp_theory_arr)
-#input("Please press return to stop:\n")
-
-#print("Finish.")
-
+# adapted from old examples and converted to pyplot
 import matplotlib.pyplot as plt
 
 plt.title("dP vs r")
 plt.scatter(r_dp_arr, r_dp_theory_arr)
 
-plt.xlabel('r')
-plt.ylabel('dP')
+plt.xlabel("r")
+plt.ylabel("dP")
 plt.show()
 
 print("Finish.")
