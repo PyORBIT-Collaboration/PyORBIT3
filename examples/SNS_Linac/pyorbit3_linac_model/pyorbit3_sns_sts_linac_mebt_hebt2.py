@@ -31,6 +31,7 @@ import sys
 import math
 import random
 import time
+import orbit.core
 
 from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
@@ -541,7 +542,6 @@ def action_entrance(paramsDict):
     s += "   %6.4f  %6.4f  %6.4f  %6.4f   " % (alphaY, betaY, emittY, norm_emittY)
     s += "   %6.4f  %6.4f  %6.4f  %6.4f   " % (alphaZ, betaZ, emittZ, phi_de_emittZ)
     s += "   %5.3f  %5.3f  %5.3f " % (x_rms, y_rms, z_rms_deg)
-    s += "  %10.6f   %8d " % (eKin, nParts)
     file_out.write(s + "\n")
     file_out.flush()
     s_prt = " %5d  %35s  %4.5f " % (paramsDict["count"], node.getName(), pos + pos_start)
@@ -557,7 +557,7 @@ def action_exit(paramsDict):
 actionContainer.addAction(action_entrance, AccActionsContainer.ENTRANCE)
 actionContainer.addAction(action_exit, AccActionsContainer.EXIT)
 
-time_start = time.clock()
+time_start = time.perf_counter()
 
 # ---- If we need to repeat the tracking we can do it starting after RF SCL23d cavity
 # ---- Here we do not need this, but the necessary actions are there
@@ -579,7 +579,7 @@ accLattice.trackBunch(bunch_in, paramsDict=paramsDict, actionContainer=actionCon
 # ------------Now track the bunch to the end
 accLattice.trackBunch(bunch_in, paramsDict=paramsDict, actionContainer=actionContainer, index_start=(ind_stop + 1))
 
-time_exec = time.clock() - time_start
+time_exec = time.perf_counter() - time_start
 print("time[sec]=", time_exec)
 
 file_out.close()

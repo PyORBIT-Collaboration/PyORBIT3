@@ -10,6 +10,7 @@ import math
 import sys
 import os
 import random
+import orbit.core
 
 import orbit_mpi
 from orbit_mpi import mpi_comm
