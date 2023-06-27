@@ -24,6 +24,7 @@ import math
 import sys
 import os
 import random
+import orbit.core
 
 # import general accelerator elements and lattice
 from orbit.lattice import AccNode, AccActionsContainer

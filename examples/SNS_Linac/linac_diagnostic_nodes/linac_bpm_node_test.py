@@ -17,6 +17,7 @@
 import math
 import sys
 import os
+import orbit.core
 
 import orbit_mpi
 from orbit_mpi import mpi_comm

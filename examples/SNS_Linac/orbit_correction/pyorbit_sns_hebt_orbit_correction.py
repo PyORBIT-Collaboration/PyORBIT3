@@ -12,6 +12,7 @@ import sys
 import math
 import random
 import time
+import orbit.core
 
 from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
@@ -114,11 +115,11 @@ def action_exit(paramsDict):
 actionContainer.addAction(action_entrance, AccActionsContainer.ENTRANCE)
 actionContainer.addAction(action_exit, AccActionsContainer.EXIT)
 
-time_start = time.clock()
+time_start = time.process_time()
 
 accLattice.trackBunch(bunch_init, paramsDict=paramsDict, actionContainer=actionContainer)
 
-time_exec = time.clock() - time_start
+time_exec = time.process_time() - time_start
 print("time[sec]=", time_exec)
 
 file_out.close()

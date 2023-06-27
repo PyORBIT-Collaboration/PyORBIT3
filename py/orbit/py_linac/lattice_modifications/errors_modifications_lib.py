@@ -19,6 +19,7 @@ import sys
 import os
 import time
 import random
+import orbit.core
 
 # ---- we need MPI for Gaussian distribution errors to be sure the lattices
 # ---- are the same across all relevant node (the same communicator)

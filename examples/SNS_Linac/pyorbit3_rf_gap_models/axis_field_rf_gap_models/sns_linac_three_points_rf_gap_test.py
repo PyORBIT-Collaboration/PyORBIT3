@@ -31,6 +31,7 @@ import sys
 import math
 import random
 import time
+import orbit.core
 
 import orbit_mpi
 from orbit_mpi import mpi_comm

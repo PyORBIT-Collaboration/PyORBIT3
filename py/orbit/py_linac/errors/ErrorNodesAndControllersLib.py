@@ -19,6 +19,7 @@ implemented in C++.
 import os
 import math
 import sys
+import orbit.core
 
 # import the finalization function
 from orbit.utils import orbitFinalize

@@ -10,6 +10,7 @@
 import math
 import sys
 import os
+import orbit.core
 
 import orbit_mpi
 from orbit_mpi import mpi_comm
@@ -46,7 +47,7 @@ from bunch import BunchTwissAnalysis
 # ---- They will assign these values for the initial
 # ---- bunch and we should see them in the lost bunch
 from orbit.bunch_utils import ParticleIdNumber
-from bunch_utils_functions import copyCoordsToInitCoordsAttr
+from orbit_utils import bunch_utils_functions
 
 
 # --------------------------------------------------------

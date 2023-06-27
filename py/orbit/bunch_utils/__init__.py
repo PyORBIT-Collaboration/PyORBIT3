@@ -5,7 +5,7 @@
 ## - ParticleIdNumber  - Class for adding unique id numbers to particle in a bunch
 #
 
-from particleidnumber import ParticleIdNumber
+from orbit.bunch_utils.particleidnumber import ParticleIdNumber
 
 __all__ = []
 __all__.append("addParticleIdNumbers")
