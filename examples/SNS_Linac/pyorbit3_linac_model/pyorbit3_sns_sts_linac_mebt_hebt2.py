@@ -557,7 +557,7 @@ def action_exit(paramsDict):
 actionContainer.addAction(action_entrance, AccActionsContainer.ENTRANCE)
 actionContainer.addAction(action_exit, AccActionsContainer.EXIT)
 
-time_start = time.perf_counter()
+time_start = time.process_time()
 
 # ---- If we need to repeat the tracking we can do it starting after RF SCL23d cavity
 # ---- Here we do not need this, but the necessary actions are there
@@ -579,7 +579,7 @@ accLattice.trackBunch(bunch_in, paramsDict=paramsDict, actionContainer=actionCon
 # ------------Now track the bunch to the end
 accLattice.trackBunch(bunch_in, paramsDict=paramsDict, actionContainer=actionContainer, index_start=(ind_stop + 1))
 
-time_exec = time.perf_counter() - time_start
+time_exec = time.process_time() - time_start
 print("time[sec]=", time_exec)
 
 file_out.close()

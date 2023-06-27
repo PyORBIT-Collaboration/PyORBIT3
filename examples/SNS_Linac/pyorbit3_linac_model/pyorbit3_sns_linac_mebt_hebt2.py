@@ -335,11 +335,11 @@ def action_exit(paramsDict):
 actionContainer.addAction(action_entrance, AccActionsContainer.ENTRANCE)
 actionContainer.addAction(action_exit, AccActionsContainer.EXIT)
 
-time_start = time.perf_counter()
+time_start = time.process_time()
 
 accLattice.trackBunch(bunch_in, paramsDict=paramsDict, actionContainer=actionContainer)
 
-time_exec = time.perf_counter() - time_start
+time_exec = time.process_time() - time_start
 print("time[sec]=", time_exec)
 
 file_out.close()
