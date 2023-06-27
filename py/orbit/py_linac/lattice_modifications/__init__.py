@@ -16,7 +16,7 @@ from orbit.py_linac.lattice_modifications.rf_quad_overlap_modifications_lib impo
 from orbit.py_linac.lattice_modifications.quad_overlap_modifications_lib import Replace_Quads_to_OverlappingQuads_Nodes
 
 
-#---- modification with errors
+# ---- modification with errors
 from orbit.py_linac.lattice_modifications.errors_modifications_lib import ErrorForNodesModification
 from orbit.py_linac.lattice_modifications.errors_modifications_lib import CoordinateDisplacementNodesModification
 from orbit.py_linac.lattice_modifications.errors_modifications_lib import BendFieldNodesModification
