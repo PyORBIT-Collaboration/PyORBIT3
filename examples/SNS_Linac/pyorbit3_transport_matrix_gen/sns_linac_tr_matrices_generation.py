@@ -11,9 +11,11 @@ The apertures are added to the lattice.
 """
 
 import sys
+import os
 import math
 import random
 import time
+import orbit.core
 
 from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
@@ -37,7 +39,7 @@ from orbit.py_linac.lattice_modifications import AddScrapersAperturesToLattice
 from orbit.py_linac.lattice_modifications import Replace_BaseRF_Gap_to_AxisField_Nodes
 
 # we take a SNS Linac Bunch generator from a neighboring directory
-sys.path.append("../pyorbit_linac_model")
+sys.path.append("../pyorbit3_linac_model")
 from sns_linac_bunch_generator import SNS_Linac_BunchGenerator
 
 from orbit.py_linac.lattice import LinacTrMatricesContrioller
@@ -46,7 +48,7 @@ from orbit_utils import Matrix
 
 random.seed(100)
 
-py_orbit_sns_home = "/home/shi/SHISHLO/AccPhysics/PyORBIT_Examples/SNS_Linac/"
+py_orbit_sns_home = os.path.abspath("..")
 
 names = ["MEBT", "DTL1", "DTL2", "DTL3", "DTL4", "DTL5", "DTL6", "CCL1", "CCL2", "CCL3", "CCL4", "SCLMed", "SCLHigh", "HEBT1", "HEBT2"]
 names = ["MEBT", "DTL1", "DTL2"]
@@ -56,7 +58,7 @@ sns_linac_factory = SNS_LinacLatticeFactory()
 sns_linac_factory.setMaxDriftLength(0.01)
 
 # ---- the XML file name with the structure
-xml_file_name = py_orbit_sns_home + "sns_linac_xml/sns_linac.xml"
+xml_file_name = py_orbit_sns_home + "/sns_linac_xml/sns_linac.xml"
 
 # ---- create the factory instance
 sns_linac_factory = SNS_LinacLatticeFactory()
@@ -303,11 +305,11 @@ def action_exit(paramsDict):
 actionContainer.addAction(action_entrance, AccActionsContainer.ENTRANCE)
 actionContainer.addAction(action_exit, AccActionsContainer.EXIT)
 
-time_start = time.clock()
+time_start = time.process_time()
 
 accLattice.trackBunch(bunch_in, paramsDict=paramsDict, actionContainer=actionContainer)
 
-time_exec = time.clock() - time_start
+time_exec = time.process_time() - time_start
 print("time[sec]=", time_exec)
 
 file_out.close()
