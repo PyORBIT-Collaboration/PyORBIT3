@@ -22,7 +22,7 @@ from orbit.py_linac.lattice import DCorrectorH, DCorrectorV, ThickKick
 from orbit.py_linac.lattice import RF_Cavity, Sequence
 from orbit.py_linac.lattice import BaseRF_Gap
 
-# from orbit.py_linac.materials import VacuumWindowNode
+from orbit.py_linac.materials import VacuumWindowNode
 
 # import general accelerator elements
 from orbit.lattice import AccNode

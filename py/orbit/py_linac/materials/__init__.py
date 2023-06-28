@@ -2,8 +2,8 @@
 ## \Classes and packages of ORBIT Linac.
 ##
 
-from VacuumWindowLinacNode import VacuumWindowNode
+from orbit.py_linac.materials.VacuumWindowLinacNode import VacuumWindowNode
+
 
 __all__ = []
-
 __all__.append("VacuumWindowNode")
