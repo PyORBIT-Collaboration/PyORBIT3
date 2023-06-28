@@ -39,7 +39,7 @@ from orbit.py_linac.lattice_modifications import Replace_Quads_to_OverlappingQua
 from orbit.py_linac.overlapping_fields import SNS_EngeFunctionFactory
 
 # we take a SNS Linac Bunch generator from a neighboring directory
-sys.path.append("../pyorbit_linac_model")
+sys.path.append("../pyorbit3_linac_model")
 from sns_linac_bunch_generator import SNS_Linac_BunchGenerator
 
 random.seed(100)
@@ -307,11 +307,11 @@ def action_exit(paramsDict):
 actionContainer.addAction(action_entrance, AccActionsContainer.ENTRANCE)
 actionContainer.addAction(action_exit, AccActionsContainer.EXIT)
 
-time_start = time.clock()
+time_start = time.process_time()
 
 accLattice.trackBunch(bunch_in, paramsDict=paramsDict, actionContainer=actionContainer)
 
-time_exec = time.clock() - time_start
+time_exec = time.process_time() - time_start
 print("time[sec]=", time_exec)
 
 # ---- dump the final bunch

@@ -11,6 +11,7 @@ import sys
 import math
 import random
 import time
+import orbit.core
 
 from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
@@ -40,7 +41,7 @@ from orbit.py_linac.lattice_modifications import Replace_Quads_to_OverlappingQua
 from orbit.py_linac.overlapping_fields import SNS_EngeFunctionFactory
 
 # we take a SNS Linac Bunch generator from a neighboring directory
-sys.path.append("../pyorbit_linac_model")
+sys.path.append("../pyorbit3_linac_model")
 from sns_linac_bunch_generator import SNS_Linac_BunchGenerator
 
 from bunch import Bunch
