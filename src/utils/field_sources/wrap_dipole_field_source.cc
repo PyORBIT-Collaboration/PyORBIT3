@@ -43,7 +43,7 @@ extern "C" {
   static PyObject* DipoleFieldSource_sizesXYZ(PyObject *self, PyObject *args){
 	  DipoleFieldSource* cpp_fieldSource = (DipoleFieldSource*)((pyORBIT_Object*) self)->cpp_obj;
 	  int nArgs = PyTuple_Size(args);
-	  double sizeX,sizeY,sizeZ;  
+	  double sizeX,sizeY,sizeZ;
 	  if(nArgs == 3){
 	  	if(!PyArg_ParseTuple(args,"ddd:sizesXYZ",&sizeX,&sizeY,&sizeZ)){
 	  		error("DipoleFieldSource.sizesXYZ(sizeX,sizeY,sizeZ) - parameters are needed.");
@@ -52,13 +52,13 @@ extern "C" {
 	  }
 	  cpp_fieldSource->getSizes(sizeX,sizeY,sizeZ);
 	  return Py_BuildValue("(ddd)",sizeX,sizeY,sizeZ);
-  }	 
-  
+  }
+
   /** Sets / Returns the fields of dipole in X,Y,Z directions in [T]*/
   static PyObject* DipoleFieldSource_fieldsXYZ(PyObject *self, PyObject *args){
 	  DipoleFieldSource* cpp_fieldSource = (DipoleFieldSource*)((pyORBIT_Object*) self)->cpp_obj;
 	  int nArgs = PyTuple_Size(args);
-	  double fieldX,fieldY,fieldZ;  
+	  double fieldX,fieldY,fieldZ;
 	  if(nArgs == 3){
 	  	if(!PyArg_ParseTuple(args,"ddd:fieldsXYZ",&fieldX,&fieldY,&fieldZ)){
 	  		error("DipoleFieldSource.fieldsXYZ(fieldX,fieldY,fieldZ) - parameters are needed.");
@@ -67,8 +67,8 @@ extern "C" {
 	  }
 	  cpp_fieldSource->getFields(fieldX,fieldY,fieldZ);
 	  return Py_BuildValue("(ddd)",fieldX,fieldY,fieldZ);
-  }	 
-  
+  }
+
   /** Returns X,Y,Z electric and magnetic fields as a function of x,y,z */
   static PyObject* DipoleFieldSource_getFields(PyObject *self, PyObject *args){
   	DipoleFieldSource* cpp_fieldSource = (DipoleFieldSource*)((pyORBIT_Object*) self)->cpp_obj;
@@ -82,7 +82,7 @@ extern "C" {
   	cpp_fieldSource->getElectricMagneticField(x,y,z,t,fe_x,fe_y,fe_z,fm_x,fm_y,fm_z);
   	return Py_BuildValue("(dddddd)",fe_x,fe_y,fe_z,fm_x,fm_y,fm_z);
   }
-  
+
   /** Sets / Returns the coordinates transformation matrix 4x4 from external to inner system */
   static PyObject* DipoleFieldSource_transormfMatrix(PyObject *self, PyObject *args){
 	  DipoleFieldSource* cpp_fieldSource = (DipoleFieldSource*)((pyORBIT_Object*) self)->cpp_obj;
@@ -101,10 +101,10 @@ extern "C" {
 	  	if(cpp_matrix->rows() != 4 || cpp_matrix->columns() != 4){
 	  		error("DipoleFieldSource.transormfMatrix(Matrix) - Matrix is not 4x4.");
 	  	}
-	  	// the Py_INCREF(pyMatrix) call will be performed inside setCoordsTransformMatrix(...) method 	  	
+	  	// the Py_INCREF(pyMatrix) call will be performed inside setCoordsTransformMatrix(...) method
 	  	cpp_fieldSource->setCoordsTransformMatrix(cpp_matrix);
 	  	Py_INCREF(Py_None);
-	  	return Py_None;			  	
+	  	return Py_None;
 	  }
 	  cpp_matrix = cpp_fieldSource->getCoordsTransformMatrix();
 	  pyMatrix = (PyObject*) ((pyORBIT_Object*) cpp_matrix->getPyWrapper());
@@ -113,7 +113,7 @@ extern "C" {
 	  }
 	  Py_INCREF(pyMatrix);
 	  return pyMatrix;
-  }  
+  }
 
   //-----------------------------------------------------
   //destructor for python DipoleFieldSource class (__del__ method).
@@ -122,12 +122,12 @@ extern "C" {
 		delete ((DipoleFieldSource*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python DipoleFieldSource wrapper class
 	// they will be vailable from python level
   static PyMethodDef DipoleFieldSourceClassMethods[] = {
     { "sizesXYZ",  DipoleFieldSource_sizesXYZ  ,METH_VARARGS, "Sets or returns sizes of dipole [m]"},
-    { "fieldsXYZ", DipoleFieldSource_fieldsXYZ ,METH_VARARGS, "Sets or returns fields of dipole in [T]"},   
+    { "fieldsXYZ", DipoleFieldSource_fieldsXYZ ,METH_VARARGS, "Sets or returns fields of dipole in [T]"},
     { "getFields", DipoleFieldSource_getFields ,METH_VARARGS, "Returns E and B fields (Ex,Ey,Ez,Bx,By,Bz) for (x,y,z) point"},
     { "transormfMatrix", DipoleFieldSource_transormfMatrix,METH_VARARGS, "Sets or returns the coordinates transformation matrix 4x4 from external to inner system"},
     {NULL}

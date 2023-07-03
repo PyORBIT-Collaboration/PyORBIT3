@@ -19,33 +19,33 @@ namespace wrap_field_sources_module{
 extern "C" {
 #endif
 
-	
+
 	// defenition of the memebers of the python wrapper module for functions
 	// they will be vailable from python level
-	static PyMethodDef FieldSourcesFunctionMethods[] = { 		
+	static PyMethodDef FieldSourcesFunctionMethods[] = {
 		/* {"name_of+function_on_python_level",  wrap_function_c    , METH_VARARGS, "help description"}, */
 		{NULL, NULL, 0, NULL}        /* Sentinel */
 	};
 
 	//--------------------------------------------------
-	//Initialization function of the module will be called 
+	//Initialization function of the module will be called
 	//from utils wrapper initialization.
 	//--------------------------------------------------
 
-  static struct PyModuleDef cModPyDem = 
+  static struct PyModuleDef cModPyDem =
   {
 	PyModuleDef_HEAD_INIT,
 	"field_sources", "Module that handles field sources.",
 	-1,
 	FieldSourcesFunctionMethods
-  };	
+  };
   PyMODINIT_FUNC initFieldSourcesModule(){
-    PyObject* module = PyModule_Create(&cModPyDem);	
+    PyObject* module = PyModule_Create(&cModPyDem);
 		wrap_field_source_grid3d::initMagnetFieldSourceGrid3D(module);
 		wrap_quad_field_source::initQuadFieldSource(module);
 		wrap_dipole_field_source::initDipoleFieldSource(module);
 		wrap_loop_field_source::initLoopFieldSource(module);
-		return module;	
+		return module;
 	}
 
 #ifdef __cplusplus

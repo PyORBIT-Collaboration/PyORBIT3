@@ -43,7 +43,7 @@ extern "C" {
   static PyObject* LoopFieldSource_radius(PyObject *self, PyObject *args){
 	  LoopFieldSource* cpp_fieldSource = (LoopFieldSource*)((pyORBIT_Object*) self)->cpp_obj;
 	  int nArgs = PyTuple_Size(args);
-	  double radius;  
+	  double radius;
 	  if(nArgs == 1){
 	  	if(!PyArg_ParseTuple(args,"d:radius",&radius)){
 	  		error("LoopFieldSource.radius(radius) - parameters are needed.");
@@ -52,13 +52,13 @@ extern "C" {
 	  }
 	  radius = cpp_fieldSource->getRadius();
 	  return Py_BuildValue("d",radius);
-  }	 
-  
+  }
+
   /** Sets / Returns the current of the loop in [A] */
   static PyObject* LoopFieldSource_current(PyObject *self, PyObject *args){
 	  LoopFieldSource* cpp_fieldSource = (LoopFieldSource*)((pyORBIT_Object*) self)->cpp_obj;
 	  int nArgs = PyTuple_Size(args);
-	  double current;  
+	  double current;
 	  if(nArgs == 1){
 	  	if(!PyArg_ParseTuple(args,"d:current",&current)){
 	  		error("LoopFieldSource.current(current) - parameters are needed.");
@@ -67,13 +67,13 @@ extern "C" {
 	  }
 	  current = cpp_fieldSource->getCurrent();
 	  return Py_BuildValue("d",current);
-  }	   
+  }
 
   /** Sets / Returns the maximal size in Z direction */
   static PyObject* LoopFieldSource_maxZ(PyObject *self, PyObject *args){
 	  LoopFieldSource* cpp_fieldSource = (LoopFieldSource*)((pyORBIT_Object*) self)->cpp_obj;
 	  int nArgs = PyTuple_Size(args);
-	  double maxZ;  
+	  double maxZ;
 	  if(nArgs == 1){
 	  	if(!PyArg_ParseTuple(args,"d:maxZ",&maxZ)){
 	  		error("LoopFieldSource.maxZ(maxZ) - parameters are needed.");
@@ -83,12 +83,12 @@ extern "C" {
 	  maxZ = cpp_fieldSource->getMaxZ();
 	  return Py_BuildValue("d",maxZ);
   }
-  
+
   /** Sets / Returns the maximal size in x-y plane */
   static PyObject* LoopFieldSource_maxR(PyObject *self, PyObject *args){
 	  LoopFieldSource* cpp_fieldSource = (LoopFieldSource*)((pyORBIT_Object*) self)->cpp_obj;
 	  int nArgs = PyTuple_Size(args);
-	  double maxR;  
+	  double maxR;
 	  if(nArgs == 1){
 	  	if(!PyArg_ParseTuple(args,"d:maxR",&maxR)){
 	  		error("LoopFieldSource.maxR(maxR) - parameters are needed.");
@@ -97,7 +97,7 @@ extern "C" {
 	  }
 	  maxR = cpp_fieldSource->getMaxR();
 	  return Py_BuildValue("d",maxR);
-  }	
+  }
 
   /** Returns X,Y,Z electric and magnetic fields as a function of x,y,z */
   static PyObject* LoopFieldSource_getFields(PyObject *self, PyObject *args){
@@ -112,7 +112,7 @@ extern "C" {
   	cpp_fieldSource->getElectricMagneticField(x,y,z,t,fe_x,fe_y,fe_z,fm_x,fm_y,fm_z);
   	return Py_BuildValue("(dddddd)",fe_x,fe_y,fe_z,fm_x,fm_y,fm_z);
   }
-  
+
   /** Sets / Returns the coordinates transformation matrix 4x4 from external to inner system */
   static PyObject* LoopFieldSource_transormfMatrix(PyObject *self, PyObject *args){
 	  LoopFieldSource* cpp_fieldSource = (LoopFieldSource*)((pyORBIT_Object*) self)->cpp_obj;
@@ -131,10 +131,10 @@ extern "C" {
 	  	if(cpp_matrix->rows() != 4 || cpp_matrix->columns() != 4){
 	  		error("LoopFieldSource.transormfMatrix(Matrix) - Matrix is not 4x4.");
 	  	}
-	  	// the Py_INCREF(pyMatrix) call will be performed inside setCoordsTransformMatrix(...) method 	  	
+	  	// the Py_INCREF(pyMatrix) call will be performed inside setCoordsTransformMatrix(...) method
 	  	cpp_fieldSource->setCoordsTransformMatrix(cpp_matrix);
 	  	Py_INCREF(Py_None);
-	  	return Py_None;			  	
+	  	return Py_None;
 	  }
 	  cpp_matrix = cpp_fieldSource->getCoordsTransformMatrix();
 	  pyMatrix = (PyObject*) ((pyORBIT_Object*) cpp_matrix->getPyWrapper());
@@ -143,7 +143,7 @@ extern "C" {
 	  }
 	  Py_INCREF(pyMatrix);
 	  return pyMatrix;
-  }  
+  }
 
   //-----------------------------------------------------
   //destructor for python LoopFieldSource class (__del__ method).
@@ -152,7 +152,7 @@ extern "C" {
 		delete ((LoopFieldSource*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python LoopFieldSource wrapper class
 	// they will be vailable from python level
   static PyMethodDef LoopFieldSourceClassMethods[] = {

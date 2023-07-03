@@ -49,8 +49,8 @@ namespace OrbitUtils{
 			Grid3D* getByGrid();
 
 			/** Returns pointer to Grid3D object with Bz field map */
-			Grid3D* getBzGrid();			
-			
+			Grid3D* getBzGrid();
+
 			/** Sets symmetry properties in Grid3D fields along x,y,z axises  */
 			void setSymmetry(int symmetry_x, int symmetry_y, int symmetry_z);
 
@@ -76,23 +76,23 @@ namespace OrbitUtils{
 				   double& H_x, double& H_y, double& H_z);
 
 	private:
-		
+
 		Grid3D* BxGrid;
 		Grid3D* ByGrid;
 		Grid3D* BzGrid;
-		
+
 		int symmetry_x;
 		int symmetry_y;
 		int symmetry_z;
-		
+
 		int** field_sign_arr;
-		
-		//used to correct Bx,By,Bz fields if we have the same 
+
+		//used to correct Bx,By,Bz fields if we have the same
 		//distributions for Grid3D (identical magnets) with different fields
-		//It will save the memory for us. 
+		//It will save the memory for us.
 		double field_coeff;
-		
-	};	
+
+	};
 };
 
 ///////////////////////////////////////////////////////////////////////////

@@ -101,7 +101,7 @@ extern "C" {
 		(initproc) PyBaseFieldSource_init, /* tp_init */
 		0, /* tp_alloc */
 		PyBaseFieldSource_new, /* tp_new */
-	};	
+	};
 
 	//--------------------------------------------------
 	//Initialization function of the pyPyBaseFieldSource class

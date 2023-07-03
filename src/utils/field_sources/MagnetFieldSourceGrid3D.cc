@@ -12,12 +12,12 @@
 // DESCRIPTION
 //    A class is an implementation of ShiftedFieldSource class.
 //    This class contains 3 Grid3D instances with Bx,By,Bz magnetic fields in [T]
-//    The coordTransform Matrix is (4x4) matrix object that translates the 
+//    The coordTransform Matrix is (4x4) matrix object that translates the
 //    spacial coordinates from external coordinates to the inner coordinates
 //    of each Grid3D. The last raw in coordTransform Matrix is [0,0,0,1], and
 //    The last column is a [a,b,c,1] where [-a,-b,-c] coordinates of the Grid3D
 //    origin in the external coordinates system.
-//    The vector (Bx,By,Bz) transforms back to the external coordinate 
+//    The vector (Bx,By,Bz) transforms back to the external coordinate
 //    system by coordTransformBack (3x3) matrix.
 //
 ///////////////////////////////////////////////////////////////////////////
@@ -40,19 +40,19 @@ MagnetFieldSourceGrid3D::MagnetFieldSourceGrid3D(Grid3D* BxGrid_In, Grid3D* ByGr
 	BxGrid = BxGrid_In;
 	ByGrid = ByGrid_In;
 	BzGrid = BzGrid_In;
-	
+
 	//if symmetry for axis != 0 (e.g. 1) only abs(coord_value) will be used
 	//to get information from Grid3D objects
 	symmetry_x = 0;
 	symmetry_y = 0;
 	symmetry_z = 0;
-	
+
 	// there are 8 possible quadrant (positive also include "equal to 0" case)
 	// #1  |  #0                      I   #5  |  #4
-	//-----------  x-y plane for z>0  I  ----------  x-y plane for z<0 
+	//-----------  x-y plane for z>0  I  ----------  x-y plane for z<0
 	// #3  |  #2                      I   #7  |  #6
 	//------------------------------------------------------------------------
-	// #0  -  x > 0   y > 0   z >0       
+	// #0  -  x > 0   y > 0   z >0
 	// #1  -  x < 0   y > 0   z >0
 	// #2  -  x > 0   y < 0   z >0
 	// #3  -  x < 0   y < 0   z >0
@@ -75,12 +75,12 @@ MagnetFieldSourceGrid3D::MagnetFieldSourceGrid3D(Grid3D* BxGrid_In, Grid3D* ByGr
 		field_sign_arr[i][1] = 1;
 		field_sign_arr[i][2] = 1;
 	}
-	
-	//used to correct Bx,By,Bz fields if we have the same 
+
+	//used to correct Bx,By,Bz fields if we have the same
 	//distributions for Grid3D (identical magnets) with different fields
-	//It will save the memory for us. 
-	field_coeff = 1.;	
-	
+	//It will save the memory for us.
+	field_coeff = 1.;
+
 }
 
 MagnetFieldSourceGrid3D::~MagnetFieldSourceGrid3D()
@@ -91,7 +91,7 @@ MagnetFieldSourceGrid3D::~MagnetFieldSourceGrid3D()
 	}
 	else {
 		Py_XDECREF(BxGrid->getPyWrapper());
-	}	
+	}
 
 	if(ByGrid->getPyWrapper() == NULL){
 		delete ByGrid;
@@ -106,12 +106,12 @@ MagnetFieldSourceGrid3D::~MagnetFieldSourceGrid3D()
 	else {
 		Py_XDECREF(BzGrid->getPyWrapper());
 	}
-	
+
 	for(int i = 0; i < 8; i++){
 		delete [] field_sign_arr[i];
 	}
 	delete [] field_sign_arr;
-	
+
 }
 
 /** Returns pointer to Grid3D object with Bx field map */
@@ -145,26 +145,26 @@ void MagnetFieldSourceGrid3D::getSymmetry(int& symmetry_x, int& symmetry_y, int&
 	symmetry_x = this->symmetry_x;
 	symmetry_y = this->symmetry_y;
 	symmetry_z = this->symmetry_z;
-}              
+}
 
 /** Sets signs for fields in different quadrants that defined by signs of  signX, signY, signZ */
 void MagnetFieldSourceGrid3D::setFieldSignsForQuadrants(int signX, int signY, int signZ, int signBx, int signBy, int signBz){
-	
+
     int ind_x = 0;
     int ind_y = 0;
     int ind_z = 0;
-    
+
     if(signX < 0){ ind_x = 1; }
     if(signY < 0){ ind_y = 1; }
     if(signZ < 0){ ind_z = 1; }
-    
+
     int quadrant_ind = ind_x + 2*ind_y + 4*ind_z;
     int* axis_sign_for_fields_arr = field_sign_arr[quadrant_ind];
-    
+
     axis_sign_for_fields_arr[0] = 1;
     axis_sign_for_fields_arr[1] = 1;
     axis_sign_for_fields_arr[2] = 1;
-    
+
     if(signBx < 0) { axis_sign_for_fields_arr[0] = -1; }
     if(signBy < 0) { axis_sign_for_fields_arr[1] = -1; }
     if(signBz < 0) { axis_sign_for_fields_arr[2] = -1; }
@@ -184,18 +184,18 @@ double MagnetFieldSourceGrid3D::getFieldCoeff()
 
 /** Returns signs for fields in different quadrants that defined by signs of  signX, signY, signZ */
 void MagnetFieldSourceGrid3D::getFieldSignsForQuadrants(int signX, int signY, int signZ, int& signBx, int& signBy, int& signBz){
-	
+
     int ind_x = 0;
     int ind_y = 0;
     int ind_z = 0;
-    
+
     if(signX < 0){ ind_x = 1; }
     if(signY < 0){ ind_y = 1; }
     if(signZ < 0){ ind_z = 1; }
-    
+
     int quadrant_ind = ind_x + 2*ind_y + 4*ind_z;
     int* axis_sign_for_fields_arr = field_sign_arr[quadrant_ind];
-    
+
     signBx = axis_sign_for_fields_arr[0];
     signBy = axis_sign_for_fields_arr[1];
     signBz = axis_sign_for_fields_arr[2];
@@ -204,7 +204,7 @@ void MagnetFieldSourceGrid3D::getFieldSignsForQuadrants(int signX, int signY, in
 
 /** Returns inner components of the electric and magnetic filds. */
 void MagnetFieldSourceGrid3D::getInnerElectricMagneticField(
-	  double x, double y, double z, double t, 
+	  double x, double y, double z, double t,
 		double& E_x, double& E_y, double& E_z,
 		double& H_x, double& H_y, double& H_z){
 
@@ -217,26 +217,26 @@ void MagnetFieldSourceGrid3D::getInnerElectricMagneticField(
     if(symmetry_x > 0){ x_inn = abs(x_inn); }
     if(symmetry_y > 0){ y_inn = abs(y_inn); }
     if(symmetry_z > 0){ z_inn = abs(z_inn); }
-    
+
     if(x_inn > BxGrid->getMaxX()){ return; }
     if(x_inn < BxGrid->getMinX()){ return; }
-    
+
     if(y_inn > ByGrid->getMaxY()){ return; }
     if(y_inn < ByGrid->getMinY()){ return; }
-     
+
     if(z_inn > BzGrid->getMaxZ()){ return; }
     if(z_inn < BzGrid->getMinZ()){ return; }
-     
+
     int ind_x = 0;
     int ind_y = 0;
     int ind_z = 0;
     if(x < 0.){ ind_x = 1; }
     if(y < 0.){ ind_y = 1; }
     if(z < 0.){ ind_z = 1; }
-    
+
     int quadrant_ind = ind_x + 2*ind_y + 4*ind_z;
     int* axis_sign_for_fields_arr = field_sign_arr[quadrant_ind];
-    
+
     H_x = field_coeff*axis_sign_for_fields_arr[0]*BxGrid->getValue(x_inn,y_inn,z_inn);
     H_y = field_coeff*axis_sign_for_fields_arr[1]*ByGrid->getValue(x_inn,y_inn,z_inn);
     H_z = field_coeff*axis_sign_for_fields_arr[2]*BzGrid->getValue(x_inn,y_inn,z_inn);

@@ -43,7 +43,7 @@ extern "C" {
   static PyObject* QuadFieldSource_length(PyObject *self, PyObject *args){
 	  QuadFieldSource* cpp_fieldSource = (QuadFieldSource*)((pyORBIT_Object*) self)->cpp_obj;
 	  int nArgs = PyTuple_Size(args);
-	  double length;  
+	  double length;
 	  if(nArgs == 1){
 	  	if(!PyArg_ParseTuple(args,"d:length",&length)){
 	  		error("QuadFieldSource.length(length) - parameter is needed.");
@@ -52,8 +52,8 @@ extern "C" {
 	  }
 	  length = cpp_fieldSource->getLength();
 	  return Py_BuildValue("d",length);
-  }	 
-  
+  }
+
   /** Sets - Returns field gradient of the quad in [T/m] */
   static PyObject* QuadFieldSource_gradient(PyObject *self, PyObject *args){
   	QuadFieldSource* cpp_fieldSource = (QuadFieldSource*)((pyORBIT_Object*) self)->cpp_obj;
@@ -66,9 +66,9 @@ extern "C" {
 	  	cpp_fieldSource->setGradient(gradient);
 	  }
 	  gradient = cpp_fieldSource->getGradient();
-	  return Py_BuildValue("d",gradient); 	
+	  return Py_BuildValue("d",gradient);
   }
-  
+
    /** Sets or returns X,Y,Z axis symmetries */
   static PyObject* QuadFieldSource_getFields(PyObject *self, PyObject *args){
   	QuadFieldSource* cpp_fieldSource = (QuadFieldSource*)((pyORBIT_Object*) self)->cpp_obj;
@@ -82,7 +82,7 @@ extern "C" {
   	cpp_fieldSource->getElectricMagneticField(x,y,z,t,fe_x,fe_y,fe_z,fm_x,fm_y,fm_z);
   	return Py_BuildValue("(dddddd)",fe_x,fe_y,fe_z,fm_x,fm_y,fm_z);
   }
-  
+
   /** Sets / Returns the coordinates transformation matrix 4x4 from external to inner system */
   static PyObject* QuadFieldSource_transormfMatrix(PyObject *self, PyObject *args){
 	  QuadFieldSource* cpp_fieldSource = (QuadFieldSource*)((pyORBIT_Object*) self)->cpp_obj;
@@ -101,10 +101,10 @@ extern "C" {
 	  	if(cpp_matrix->rows() != 4 || cpp_matrix->columns() != 4){
 	  		error("QuadFieldSource.transormfMatrix(Matrix) - Matrix is not 4x4.");
 	  	}
-	  	// the Py_INCREF(pyMatrix) call will be performed inside setCoordsTransformMatrix(...) method 	  	
+	  	// the Py_INCREF(pyMatrix) call will be performed inside setCoordsTransformMatrix(...) method
 	  	cpp_fieldSource->setCoordsTransformMatrix(cpp_matrix);
 	  	Py_INCREF(Py_None);
-	  	return Py_None;			  	
+	  	return Py_None;
 	  }
 	  cpp_matrix = cpp_fieldSource->getCoordsTransformMatrix();
 	  pyMatrix = (PyObject*) ((pyORBIT_Object*) cpp_matrix->getPyWrapper());
@@ -113,8 +113,8 @@ extern "C" {
 	  }
 	  Py_INCREF(pyMatrix);
 	  return pyMatrix;
-  }   
-  
+  }
+
   //-----------------------------------------------------
   //destructor for python QuadFieldSource class (__del__ method).
   //-----------------------------------------------------
@@ -122,14 +122,14 @@ extern "C" {
 		delete ((QuadFieldSource*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python QuadFieldSource wrapper class
 	// they will be vailable from python level
   static PyMethodDef QuadFieldSourceClassMethods[] = {
     { "length",   QuadFieldSource_length    ,METH_VARARGS,"Sets or returns length of quad in [m]"},
-    { "gradient", QuadFieldSource_gradient  ,METH_VARARGS, "Sets or returns gradient in quad in [T/m]"},   
+    { "gradient", QuadFieldSource_gradient  ,METH_VARARGS, "Sets or returns gradient in quad in [T/m]"},
     { "getFields",QuadFieldSource_getFields ,METH_VARARGS,"Returns E and B fields (Ex,Ey,Ez,Bx,By,Bz) for (x,y,z) point"},
-    { "transormfMatrix", QuadFieldSource_transormfMatrix,METH_VARARGS, "Sets or returns the coordinates transformation matrix 4x4 from external to inner system"},    
+    { "transormfMatrix", QuadFieldSource_transormfMatrix,METH_VARARGS, "Sets or returns the coordinates transformation matrix 4x4 from external to inner system"},
     {NULL}
   };
 

@@ -24,39 +24,39 @@
 #include <vector>
 
 namespace OrbitUtils{
-	
-	/** 
+
+	/**
 	  The container for instances of the BaseFieldSource class.
 		It implements a composite pattern.
 	*/
-	
+
 	class  FieldSourceContainer: public BaseFieldSource
 	{
 	public:
-		
+
 		/** Constructor. */
 		FieldSourceContainer();
-		
+
 		/** Destructor. */
 		~FieldSourceContainer();
-		
+
 		/** Adds the instance of the  ExternalEffects class to the container. */
 		void AddFieldSource(BaseFieldSource* fs);
-		
+
 		/** Adds the instance of the  ExternalEffects class to the container. */
-		void getElectricMagneticField(double x, double y, double z, double t, 
+		void getElectricMagneticField(double x, double y, double z, double t,
 						double& E_x, double& E_y, double& E_z,
 						double& H_x, double& H_y, double& H_z);
-		
+
 		private:
 
 			std::vector<BaseFieldSource*>	ref;
 
 	};
 };
-	
 
-	
+
+
 
 
 

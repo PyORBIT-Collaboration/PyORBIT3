@@ -41,9 +41,9 @@ extern "C" {
 			error("MagnetFieldSourceGrid3D(grid3D,grid3D,grid3D) - constructor needs 3x Grid3D with Bx,By,Bz fields.");
 		}
 		// check type
-		PyObject* pyORBIT_Grid3D_Type = getSpaceChargeType("Grid3D");		
-		if(!PyObject_IsInstance(pyBxGrid3D,pyORBIT_Grid3D_Type) 
-			 || !PyObject_IsInstance(pyByGrid3D,pyORBIT_Grid3D_Type) 
+		PyObject* pyORBIT_Grid3D_Type = getSpaceChargeType("Grid3D");
+		if(!PyObject_IsInstance(pyBxGrid3D,pyORBIT_Grid3D_Type)
+			 || !PyObject_IsInstance(pyByGrid3D,pyORBIT_Grid3D_Type)
 		   || !PyObject_IsInstance(pyBzGrid3D,pyORBIT_Grid3D_Type)){
 			error("MagnetFieldSourceGrid3D(grid3D,grid3D,grid3D) - constructor needs 3x Grid3D");
 		}
@@ -54,7 +54,7 @@ extern "C" {
 		self->cpp_obj = new MagnetFieldSourceGrid3D(BxGrid3D,ByGrid3D,BzGrid3D);
 		Py_INCREF(pyBxGrid3D);
 		Py_INCREF(pyByGrid3D);
-		Py_INCREF(pyBzGrid3D);	
+		Py_INCREF(pyBzGrid3D);
 		((MagnetFieldSourceGrid3D*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
@@ -67,17 +67,17 @@ extern "C" {
   	Grid3D* BzGrid3D = cpp_fieldSource->getBzGrid();
  		PyObject* pyBxGrid3D = (PyObject*) BxGrid3D->getPyWrapper();
  		PyObject* pyByGrid3D = (PyObject*) ByGrid3D->getPyWrapper();
- 		PyObject* pyBzGrid3D = (PyObject*) BzGrid3D->getPyWrapper(); 
+ 		PyObject* pyBzGrid3D = (PyObject*) BzGrid3D->getPyWrapper();
  		return Py_BuildValue("(OOO)",pyBxGrid3D,pyByGrid3D,pyBzGrid3D);
   }
-  
+
   /** Sets or returns X,Y,Z axis symmetries */
   static PyObject* MagnetFieldSourceGrid3D_symmetry(PyObject *self, PyObject *args){
 	  MagnetFieldSourceGrid3D* cpp_fieldSource = (MagnetFieldSourceGrid3D*)((pyORBIT_Object*) self)->cpp_obj;
 	  int nArgs = PyTuple_Size(args);
 	  int symmetry_x;
 	  int symmetry_y;
-	  int symmetry_z;	  
+	  int symmetry_z;
 	  if(nArgs == 3){
 	  	if(!PyArg_ParseTuple(args,"iii:symmetry",&symmetry_x,&symmetry_y,&symmetry_z)){
 	  		error("MagnetFieldSourceGrid3D.symmetry(symmetry_x,symmetry_y,symmetry_z) - params needed.");
@@ -92,9 +92,9 @@ extern "C" {
 	  }
 	  error("MagnetFieldSourceGrid3D.symmetry(...) - 0 or 3 int params are needed.");
 	  Py_INCREF(Py_None);
-	  return Py_None;		
-  }	 
-  
+	  return Py_None;
+  }
+
   /** Sets - Returns signs for fields in different quadrants that defined by signs of  signX, signY, signZ */
   static PyObject* MagnetFieldSourceGrid3D_fieldSignsForQuadrants(PyObject *self, PyObject *args){
   	MagnetFieldSourceGrid3D* cpp_fieldSource = (MagnetFieldSourceGrid3D*)((pyORBIT_Object*) self)->cpp_obj;
@@ -115,21 +115,21 @@ extern "C" {
   	if(nArgs == 6){
   		if(!PyArg_ParseTuple(args,"iiiiii:fieldSignForQuadrant",&signX,&signY,&signZ,&signBx,&signBy,&signBz)){
 	  		error("MagnetFieldSourceGrid3D.fieldSignForQuadrant(signX,signY,signZ,signBx,signBy,signBz) - params for quadrant indexes and field signs are needed.");
-	  	} 
+	  	}
 	  	cpp_fieldSource->setFieldSignsForQuadrants(signX,signY,signZ,signBx,signBy,signBz);
 	  	cpp_fieldSource->getFieldSignsForQuadrants(signX,signY,signZ,signBx,signBy,signBz);
 	  	return Py_BuildValue("(iii)",signBx,signBy,signBz);
   	}
 	  error("MagnetFieldSourceGrid3D.fieldSignForQuadrant(...) - 3 or 6 int params are needed.");
 	  Py_INCREF(Py_None);
-	  return Py_None;	  	
+	  return Py_None;
   }
 
   /** Sets or Returns the scaling coefficient for inner fields in Grid3D instances */
   static PyObject* MagnetFieldSourceGrid3D_fieldCoeff(PyObject *self, PyObject *args){
 	  MagnetFieldSourceGrid3D* cpp_fieldSource = (MagnetFieldSourceGrid3D*)((pyORBIT_Object*) self)->cpp_obj;
 	  int nArgs = PyTuple_Size(args);
-	  double field_coeff;  
+	  double field_coeff;
 	  if(nArgs == 1){
 	  	if(!PyArg_ParseTuple(args,"d:fieldCoeff",&field_coeff)){
 	  		error("MagnetFieldSourceGrid3D.fieldCoeff(field_coeff) - param is needed.");
@@ -138,7 +138,7 @@ extern "C" {
 	  }
 	  field_coeff = cpp_fieldSource->getFieldCoeff();
 	  return Py_BuildValue("d",field_coeff);
-  }	  
+  }
 
    /** Returns the Ex,Ey,Ez, Bx,By,Bz fields at (x,y,z) point */
   static PyObject* MagnetFieldSourceGrid3D_getFields(PyObject *self, PyObject *args){
@@ -153,7 +153,7 @@ extern "C" {
   	cpp_fieldSource->getElectricMagneticField(x,y,z,t,fe_x,fe_y,fe_z,fm_x,fm_y,fm_z);
   	return Py_BuildValue("(dddddd)",fe_x,fe_y,fe_z,fm_x,fm_y,fm_z);
   }
-  
+
   /** Sets / Returns the coordinates transformation matrix 4x4 from external to inner system */
   static PyObject* MagnetFieldSourceGrid3D_transormfMatrix(PyObject *self, PyObject *args){
 	  MagnetFieldSourceGrid3D* cpp_fieldSource = (MagnetFieldSourceGrid3D*)((pyORBIT_Object*) self)->cpp_obj;
@@ -172,10 +172,10 @@ extern "C" {
 	  	if(cpp_matrix->rows() != 4 || cpp_matrix->columns() != 4){
 	  		error("MagnetFieldSourceGrid3D.transormfMatrix(Matrix) - Matrix is not 4x4.");
 	  	}
-	  	// the Py_INCREF(pyMatrix) call will be performed inside setCoordsTransformMatrix(...) method 	  	
+	  	// the Py_INCREF(pyMatrix) call will be performed inside setCoordsTransformMatrix(...) method
 	  	cpp_fieldSource->setCoordsTransformMatrix(cpp_matrix);
 	  	Py_INCREF(Py_None);
-	  	return Py_None;			  	
+	  	return Py_None;
 	  }
 	  cpp_matrix = cpp_fieldSource->getCoordsTransformMatrix();
 	  pyMatrix = (PyObject*) ((pyORBIT_Object*) cpp_matrix->getPyWrapper());
@@ -184,8 +184,8 @@ extern "C" {
 	  }
 	  Py_INCREF(pyMatrix);
 	  return pyMatrix;
-  }    
-  
+  }
+
   //-----------------------------------------------------
   //destructor for python MagnetFieldSourceGrid3D class (__del__ method).
   //-----------------------------------------------------
@@ -193,7 +193,7 @@ extern "C" {
 		delete ((MagnetFieldSourceGrid3D*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
-	
+
 	// defenition of the methods of the python MagnetFieldSourceGrid3D wrapper class
 	// they will be vailable from python level
   static PyMethodDef MagnetFieldSourceGrid3DClassMethods[] = {

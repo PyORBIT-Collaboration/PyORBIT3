@@ -13,7 +13,7 @@
 //    A class is an implementation of ShiftedFieldSource class.
 //    This class describes dipole magnetic field. It needs dipole sizes
 //    [m] in three directions and the field strength in [T].
-//    The center of the dipole is at [0,0,0]. 
+//    The center of the dipole is at [0,0,0].
 //
 ///////////////////////////////////////////////////////////////////////////
 
@@ -31,14 +31,14 @@
 using namespace OrbitUtils;
 
 DipoleFieldSource::DipoleFieldSource(): ShiftedFieldSource()
-{	
-	sizeX = 0.;	
-	sizeY = 0.;	
-	sizeZ = 0.;	
-	
-	fieldX = 0.;	
-	fieldY = 0.;	
-	fieldZ = 0.;		
+{
+	sizeX = 0.;
+	sizeY = 0.;
+	sizeZ = 0.;
+
+	fieldX = 0.;
+	fieldY = 0.;
+	fieldZ = 0.;
 }
 
 DipoleFieldSource::~DipoleFieldSource()
@@ -59,7 +59,7 @@ void DipoleFieldSource::getSizes(double& sizeX, double& sizeY, double& sizeZ)
 	sizeX = this->sizeX;
 	sizeY = this->sizeY;
 	sizeZ = this->sizeZ;
-} 
+}
 
 /** Sets the fields of the dipole in [T] */
 void DipoleFieldSource::setFields(double fieldX, double fieldY, double fieldZ)
@@ -75,11 +75,11 @@ void DipoleFieldSource::getFields(double& fieldX, double& fieldY, double& fieldZ
 	fieldX = this->fieldX;
 	fieldY = this->fieldY;
 	fieldZ = this->fieldZ;
-} 
+}
 
 /** Returns inner components of the electric and magnetic filds. */
 void DipoleFieldSource::getInnerElectricMagneticField(
-	  double x, double y, double z, double t, 
+	  double x, double y, double z, double t,
 		double& E_x, double& E_y, double& E_z,
 		double& H_x, double& H_y, double& H_z){
 
@@ -89,7 +89,7 @@ void DipoleFieldSource::getInnerElectricMagneticField(
 		if(x < -sizeX/2 || x > sizeX/2) { return; }
 		if(y < -sizeY/2 || y > sizeY/2) { return; }
 		if(z < -sizeZ/2 || z > sizeZ/2) { return; }
-		
+
 		H_x = fieldX;
 		H_y = fieldY;
 		H_z = fieldZ;

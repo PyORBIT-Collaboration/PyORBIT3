@@ -13,7 +13,7 @@
 //    A class is an implementation of ShiftedFieldSource class.
 //    This class describes hard edge quad field. It needs the quad length and
 //    gradient in [T/m]. The sign of the gradient describes what quad it will
-//    be - horizontally or vertically focusing. The center of the quad is 
+//    be - horizontally or vertically focusing. The center of the quad is
 //    at (0,0,0).
 //
 ///////////////////////////////////////////////////////////////////////////
@@ -67,7 +67,7 @@ double QuadFieldSource::getGradient()
 
 /** Returns inner components of the electric and magnetic filds. */
 void QuadFieldSource::getInnerElectricMagneticField(
-	  double x, double y, double z, double t, 
+	  double x, double y, double z, double t,
 		double& E_x, double& E_y, double& E_z,
 		double& H_x, double& H_y, double& H_z){
 
@@ -75,7 +75,7 @@ void QuadFieldSource::getInnerElectricMagneticField(
 		H_x=0.;	H_y=0.;	H_z=0.;
 
 		if(z < -length/2 || z > length/2) { return; }
-		
+
 		H_x = gradient*y;
 		H_y = gradient*x;
 }
