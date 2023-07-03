@@ -10,6 +10,8 @@
 #include "wrap_foil.hh"
 #include "wrap_collimator.hh"
 #include "wrap_errorbase.hh"
+#include "wrap_trackerrk4.hh"
+#include "wrap_field_sources_module.hh"
 
 // Define the module methods for the orbit module
 static PyMethodDef OrbitMethods[] = {
@@ -57,6 +59,10 @@ PyMODINIT_FUNC PyInit_spacecharge(void) {
     return initspacecharge();
 }
 
+PyMODINIT_FUNC PyInit_trackerrk4(void) {
+    return inittrackerrk4();
+}
+
 PyMODINIT_FUNC PyInit_teapot_base(void) {
     return wrap_teapotbase::initteapotbase();
 }
@@ -83,4 +89,8 @@ PyMODINIT_FUNC PyInit_collimator(void) {
 
 PyMODINIT_FUNC PyInit_foil(void) {
     return wrap_foil::initfoil();
+}
+
+PyMODINIT_FUNC PyInit_field_sources(void) {
+    return wrap_field_sources_module::initFieldSourcesModule();
 }

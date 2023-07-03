@@ -3,8 +3,8 @@
 #include "wrap_utils.hh"
 #include "wrap_matrix.hh"
 #include "wrap_phase_vector.hh"
-//#include "wrap_py_base_field_source.hh"
-//#include "wrap_field_source_container.hh"
+#include "wrap_py_base_field_source.hh"
+#include "wrap_field_source_container.hh"
 #include "wrap_function.hh"
 #include "wrap_splinech.hh"
 //#include "wrap_statmoments2d.hh"
@@ -40,8 +40,8 @@ extern "C" {
 		//add the other classes init
 		wrap_utils_martix::initMatrix(module);
 		wrap_utils_phase_vector::initPhaseVector(module);
-		//wrap_utils_py_base_field_source::initPyBaseFieldSource(module);
-		//wrap_field_source_container::initFieldSourceContainer(module);
+		wrap_utils_py_base_field_source::initPyBaseFieldSource(module);
+		wrap_field_source_container::initFieldSourceContainer(module);
 		wrap_function::initFunction(module);
 		wrap_splinech::initSplineCH(module);
 		//wrap_statmoments2d::initstatmoments2d(module);
@@ -52,7 +52,7 @@ extern "C" {
 		wrap_numrecipes::initNumrecipes(module);
 		wrap_utils_bunch_functions::initBunchUtilsFunctions(module);
 		wrap_harmonicdata::initHarmonicData(module);
-		//wrap_field_sources_module::initFieldSourcesModule(module,const_cast<char*>("field_sources"));
+		//wrap_field_sources_module::initFieldSourcesModule(module);
 		return module;
   }
 

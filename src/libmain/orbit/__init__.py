@@ -15,7 +15,20 @@ def _load_module(mod_name, path):
     return module
 
 
-__all__ = ["orbit_mpi", "error_base", "bunch", "teapot_base", "linac", "spacecharge", "orbit_utils", "aperture", "foil", "collimator"]
+__all__ = [
+    "orbit_mpi",
+    "trackerrk4",
+    "error_base",
+    "bunch",
+    "teapot_base",
+    "linac",
+    "spacecharge",
+    "orbit_utils",
+    "aperture",
+    "foil",
+    "collimator",
+    "field_sources",
+]
 
 for mod_name in __all__:
     locals()[mod_name] = _load_module(mod_name, pkg_path)
