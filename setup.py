@@ -33,7 +33,7 @@ extension_mod = Extension(
     extra_link_args=["-lfftw3", "-lm"],
 )
 
-packages = []
+packages = ["orbit.core"]
 for folder in os.walk("py/orbit"):
     path = os.path.normpath(folder[0])
     path = path.split(os.sep)
