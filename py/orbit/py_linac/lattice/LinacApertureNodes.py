@@ -14,12 +14,10 @@ from orbit.utils import orbitFinalize
 from orbit.py_linac.lattice import BaseLinacNode, Quad
 
 # import BaseAperture and Phase and Eneregy Apertures C++ classes
-from aperture import BaseAperture
-from aperture import PhaseAperture
-from aperture import EnergyAperture
+from orbit.core.aperture import BaseAperture, PhaseAperture, EnergyAperture
 
 # ---- here we use only primitive aperture shapes - circle, ellipse, and rectangular
-from aperture import PrimitiveApertureShape
+from orbit.core.aperture import PrimitiveApertureShape
 
 
 class LinacApertureNode(BaseLinacNode):

@@ -17,21 +17,15 @@
 import math
 import sys
 import os
-import orbit.core
 
-import orbit_mpi
-from orbit_mpi import mpi_comm
-from orbit_mpi import mpi_datatype
-from orbit_mpi import mpi_op
+
+from orbit.core.orbit_mpi import mpi_comm, mpi_datatype, mpi_op, MPI_Comm_rank, MPI_Comm_size, MPI_Bcast
 
 from orbit.py_linac.lattice import BaseLinacNode
 
-from orbit.bunch_generators import TwissContainer
-from orbit.bunch_generators import GaussDist3D
-from orbit.bunch_generators import TwissAnalysis
+from orbit.bunch_generators import TwissContainer, GaussDist3D, TwissAnalysis
 
-from bunch import Bunch
-from bunch import BunchTwissAnalysis
+from orbit.core.bunch import Bunch, BunchTwissAnalysis
 
 from orbit.py_linac.lattice import LinacBPM
 
@@ -111,9 +105,9 @@ class SNS_Linac_BunchGenerator:
         Returns the pyORBIT bunch with particular number of particles.
         """
         (x0, xp0, y0, yp0, z0, dE0) = self.init_coords
-        comm = orbit_mpi.mpi_comm.MPI_COMM_WORLD
-        rank = orbit_mpi.MPI_Comm_rank(comm)
-        size = orbit_mpi.MPI_Comm_size(comm)
+        comm = mpi_comm.MPI_COMM_WORLD
+        rank = MPI_Comm_rank(comm)
+        size = MPI_Comm_size(comm)
         data_type = mpi_datatype.MPI_DOUBLE
         main_rank = 0
         bunch = Bunch()
@@ -124,7 +118,7 @@ class SNS_Linac_BunchGenerator:
         bunch.getSyncParticle().time(0.0)
         for i in range(nParticles):
             (x, xp, y, yp, z, dE) = distributor.getCoordinates()
-            (x, xp, y, yp, z, dE) = orbit_mpi.MPI_Bcast((x, xp, y, yp, z, dE), data_type, main_rank, comm)
+            (x, xp, y, yp, z, dE) = MPI_Bcast((x, xp, y, yp, z, dE), data_type, main_rank, comm)
             if i % size == rank:
                 bunch.addParticle(x + x0, xp + xp0, y + y0, yp + yp0, z + z0, dE + dE0)
         nParticlesGlobal = bunch.getSizeGlobal()
@@ -177,9 +171,9 @@ class SNS_Linac_BunchGenerator:
 # START of Script
 # -------------------------------------------
 
-comm = orbit_mpi.mpi_comm.MPI_COMM_WORLD
-rank = orbit_mpi.MPI_Comm_rank(comm)
-size = orbit_mpi.MPI_Comm_size(comm)
+comm = mpi_comm.MPI_COMM_WORLD
+rank = MPI_Comm_rank(comm)
+size = MPI_Comm_size(comm)
 data_type = mpi_datatype.MPI_DOUBLE
 main_rank = 0
 
