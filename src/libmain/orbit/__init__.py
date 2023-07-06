@@ -1,35 +1,11 @@
-import importlib.util
-import sys
-
-import _orbit
-
-pkg_path = _orbit.__file__
-
-
-def _load_module(mod_name, path):
-    spec = importlib.util.spec_from_file_location(mod_name, path)
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[mod_name] = module
-    spec.loader.exec_module(module)
-
-    return module
-
-
-__all__ = [
-    "orbit_mpi",
-    "trackerrk4",
-    "error_base",
-    "bunch",
-    "teapot_base",
-    "linac",
-    "spacecharge",
-    "orbit_utils",
-    "aperture",
-    "foil",
-    "collimator",
-    "field_sources",
-]
-
-for mod_name in __all__:
-    locals()[mod_name] = _load_module(mod_name, pkg_path)
-del mod_name
+from .orbit_mpi import orbit_mpi
+from .trackerrk4 import trackerrk4
+from .error_base import error_base
+from .bunch import bunch
+from .teapot_base import teapot_base
+from .linac import linac
+from .spacecharge import spacecharge
+from .orbit_utils import orbit_utils
+from .foil import foil
+from .collimator import collimator
+from .field_sources import field_sources

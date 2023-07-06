@@ -33,7 +33,7 @@ extension_mod = Extension(
     extra_link_args=["-lfftw3", "-lm"],
 )
 
-packages = ["orbit.core"]
+packages = []
 for folder in os.walk("py/orbit"):
     path = os.path.normpath(folder[0])
     path = path.split(os.sep)
@@ -41,6 +41,7 @@ for folder in os.walk("py/orbit"):
 
 # Define the setup parameters
 setup(
+    ext_package="orbit.core",
     ext_modules=[extension_mod],
     package_dir={
         "orbit.core": "src/libmain/orbit",
