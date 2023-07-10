@@ -19,4 +19,3 @@ extern "C"
 #endif  // __cplusplus
 
 #endif // WRAP_RFCAVITIES_H
-

@@ -105,7 +105,7 @@ void Frequency_Cav::trackBunch(Bunch* bunch)
   double d_rp          = -chargeE0TLsin * k /
                          (2.0 * mass * beta_gap * beta_gap * beta_out *
                           gamma_gap * gamma_gap * gamma_out);
-  
+
   double x, y, r, rp, d_phi;
   double I0, I1;
   for(int i = 0; i < bunch->getSize(); i++)
