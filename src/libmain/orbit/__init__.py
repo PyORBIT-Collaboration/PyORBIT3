@@ -30,6 +30,7 @@ __all__ = [
     "field_sources",
     "rfcavities",
     "impedances",
+    "fieldtracker",
 ]
 
 for mod_name in __all__:
