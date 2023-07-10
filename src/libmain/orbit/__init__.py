@@ -29,6 +29,7 @@ __all__ = [
     "collimator",
     "field_sources",
     "rfcavities",
+    "impedances",
 ]
 
 for mod_name in __all__:
