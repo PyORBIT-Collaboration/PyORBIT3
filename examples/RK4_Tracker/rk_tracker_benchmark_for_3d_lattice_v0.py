@@ -30,7 +30,7 @@ from bunch import BunchTwissAnalysis
 from trackerrk4 import RungeKuttaTracker
 from orbit_utils import StatMoments2D
 from fieldtracker import FieldTracker
-
+from linac import SuperFishFieldSource
 from orbit.bunch_generators import TwissContainer
 from orbit.bunch_generators import KVDist2D, KVDist3D
 from orbit.bunch_generators import GaussDist2D, GaussDist3D
