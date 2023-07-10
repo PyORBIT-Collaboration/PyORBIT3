@@ -22,20 +22,20 @@ void ForceSolverFFT2D::init(int xSize, int ySize)
 		int rank = 0;
 		ORBIT_MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 		if(rank == 0){
-			std::cerr << "ForceSolverFFT2D::ForceSolverFFT2D - CONSTRUCTOR \n" 
-         				<< "The grid size too small (should be more than 3)! \n" 
+			std::cerr << "ForceSolverFFT2D::ForceSolverFFT2D - CONSTRUCTOR \n"
+         				<< "The grid size too small (should be more than 3)! \n"
 								<< "number x bins ="<< xSize_ <<" \n"
 								<< "number y bins ="<< ySize_ <<" \n"
 								<< "Stop. \n";
 		}
 		ORBIT_MPI_Finalize();
 	}
-	
+
 	greensF_ = new std::complex<double>*[xSize2_];
-	
+
 	for(int i = 0; i < xSize2_ ; i++) {
 		greensF_[i] =  new std::complex<double>[ySize2_];
-	}	
+	}
 	test_      = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * xSize2_ * ySize2_);
 	in_        = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * xSize2_ * ySize2_);
 	in_res_    = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * xSize2_ * ySize2_);
@@ -48,7 +48,7 @@ void ForceSolverFFT2D::init(int xSize, int ySize)
 	planForward_greenF_ = fftw_plan_dft_2d(xSize2_ , ySize2_ , in_,  out_green_, FFTW_FORWARD, FFTW_ESTIMATE);
 	planForward_        = fftw_plan_dft_2d(xSize2_ , ySize2_ , in_,  out_,       FFTW_FORWARD, FFTW_ESTIMATE);
 	planBackward_       = fftw_plan_dft_2d(xSize2_ , ySize2_ , out_res_, in_res_,FFTW_BACKWARD, FFTW_ESTIMATE);
-  
+
 	//define FFT of the Green fuction
 	//_defineGreenF();
 }
@@ -59,7 +59,7 @@ ForceSolverFFT2D::~ForceSolverFFT2D()
 
   for(int i = 0; i < xSize2_ ; i++) {
     delete [] greensF_[i];
-  }   
+  }
   delete [] greensF_;
 
   fftw_free(in_);
@@ -67,7 +67,7 @@ ForceSolverFFT2D::~ForceSolverFFT2D()
   fftw_free(out_green_);
   fftw_free(out_);
   fftw_free(out_res_);
-	
+
   fftw_destroy_plan(planForward_greenF_);
   fftw_destroy_plan(planForward_);
   fftw_destroy_plan(planBackward_);
@@ -79,7 +79,7 @@ void ForceSolverFFT2D::setGridX(double xMin, double xMax){
 	xMax_ = xMax;
 	dx_ = (xMax_ - xMin_)/(xSize_ -1);
 	_defineGreenF();
-}	
+}
 
 void ForceSolverFFT2D::setGridY(double yMin, double yMax){
 	yMin_ = yMin;
@@ -102,23 +102,23 @@ void ForceSolverFFT2D::setGridXY(double xMin, double xMax, double yMin, double y
 // Please, keep in mind that the field of point like string 2*lambda*ln(abs(r)) in CGS
 void ForceSolverFFT2D::_defineGreenF()
 {
-	
+
 	double rTransY, rTransX, rTot2;
 	int i, j, iY , iX;
-	
+
 	for (iY = 0; iY < ySize2_/2; iY++)
 	{
 		rTransY = iY * dy_;
-		
+
 		for (iX = 0; iX < xSize2_/2; iX++)
 		{
 			rTransX = iX * dx_;
 			rTot2 = rTransX*rTransX + rTransY*rTransY;
 			greensF_[iX][iY] = complex<double>(rTransX/rTot2, rTransY/rTot2);
 		}
-		
+
 		greensF_[xSize2_/2][iY] = complex<double>(0,0); //end point
-		
+
 		for (iX = xSize2_/2+1; iX < xSize2_; iX++)
 		{
 			rTransX = (iX - xSize2_) * dx_;
@@ -126,12 +126,12 @@ void ForceSolverFFT2D::_defineGreenF()
 			greensF_[iX][iY] = complex<double>(rTransX/rTot2, rTransY/rTot2);
 		}
 	}
-	
+
 	for(iX=0; iX < xSize_/2; iX++)   // Null the top row:
 	{
 		greensF_[iX][ySize2_/2] = complex<double>(0,0);
 	}
-	
+
 	for (iY = ySize2_/2+1; iY < ySize2_; iY++)  // Bottom rows:
 	{
 		//rTransY = dy_ * (iY - 1 - ySize2_);
@@ -142,9 +142,9 @@ void ForceSolverFFT2D::_defineGreenF()
 			rTot2 = rTransX*rTransX + rTransY*rTransY;
 			greensF_[iX][iY] = complex<double>(rTransX/rTot2, rTransY/rTot2);
 	    }
-		
+
 		greensF_[xSize2_/2][iY] = complex<double>(0,0); //end point
-				
+
 		for (iX = xSize2_/2+1; iX < xSize2_; iX++)
 		{
 			rTransX = (iX - xSize2_) * dx_;
@@ -154,9 +154,9 @@ void ForceSolverFFT2D::_defineGreenF()
 	    }
 	}
 	greensF_[0][0] = complex<double>(0,0); //end point
-	
+
 	//   Calculate the FFT of the Greens Function:
-	
+
 	for (j = 0; j < xSize2_; j++)
 		for (i = 0; i < ySize2_; i++)
 		{
@@ -166,9 +166,9 @@ void ForceSolverFFT2D::_defineGreenF()
 			test_[index][0] = real(greensF_[i][j]);
 			test_[index][1] = imag(greensF_[i][j]);
 		}
-    
+
 		fftw_execute(planForward_greenF_);
-		
+
 	//	out_green_re00_ = out_green_[0][0];
 		for (j = 0; j < xSize2_; j++)
 			for (i = 0; i < ySize2_; i++)
@@ -177,7 +177,7 @@ void ForceSolverFFT2D::_defineGreenF()
 				in_[index][0] = 0.;
 				in_[index][1] = 0.;
 			}
-			
+
 }
 
 void ForceSolverFFT2D::findForce(Grid2D* rhoGrid, Grid2D* forceGridX, Grid2D* forceGridY)
@@ -187,8 +187,8 @@ void ForceSolverFFT2D::findForce(Grid2D* rhoGrid, Grid2D* forceGridX, Grid2D* fo
 		int rank = 0;
 		ORBIT_MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 		if(rank == 0){
-			std::cerr << "ForceSolverFFT2D:" 
-			<< "The grid sizes or shape are different "<< std::endl 
+			std::cerr << "ForceSolverFFT2D:"
+			<< "The grid sizes or shape are different "<< std::endl
 								<< "number x bins ="<< xSize_ << std::endl
 								<< "number y bins ="<< ySize_ << std::endl
 								<< "rhoGrid x bins ="<< rhoGrid->getSizeX() <<std::endl
@@ -205,7 +205,7 @@ void ForceSolverFFT2D::findForce(Grid2D* rhoGrid, Grid2D* forceGridX, Grid2D* fo
 		}
 		ORBIT_MPI_Finalize();
 	}
-	
+
 
 	//out_green_[0][0] = out_green_re00_ + scale_coeff*(xSize2_*ySize2_);
 	double** rhosc = rhoGrid->getArr();
@@ -223,8 +223,8 @@ void ForceSolverFFT2D::findForce(Grid2D* rhoGrid, Grid2D* forceGridX, Grid2D* fo
 		}
 
 	fftw_execute(planForward_);
-	
-	//do convolution with the FFT of the Green's function 
+
+	//do convolution with the FFT of the Green's function
 	double gr_re = 0.;
 	double gr_im = 0.;
 	for (j = 0; j < xSize2_; j++)
@@ -233,7 +233,7 @@ void ForceSolverFFT2D::findForce(Grid2D* rhoGrid, Grid2D* forceGridX, Grid2D* fo
 			index = j + ySize2_*i;
 			gr_re = out_green_[index][0];
 			gr_im = out_green_[index][1];
-			
+
 			out_res_[index][0] = out_[index][0]*gr_re - out_[index][1]*gr_im;
 			out_res_[index][1] = out_[index][0]*gr_im + out_[index][1]*gr_re;
 		}
@@ -247,10 +247,9 @@ void ForceSolverFFT2D::findForce(Grid2D* rhoGrid, Grid2D* forceGridX, Grid2D* fo
 	{
 		for (int iY = 0; iY < ySize_; iY++)
 		{
-			index = iY + ySize2_ * iX; 
+			index = iY + ySize2_ * iX;
 			fscx[iX][iY] = in_res_[index][0] * denom;
 			fscy[iX][iY] = in_res_[index][1] * denom;
 		}
 	}
 }
-

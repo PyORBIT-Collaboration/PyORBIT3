@@ -14,28 +14,28 @@ ForceSolver2D::ForceSolver2D(int xSize, int ySize): CppPyWrapper(NULL)
 	yMin_ = -1.0;
 	yMax_ = +1.0;
 	dx_ = (xMax_ - xMin_)/(xSize_ -1);
-	dy_ = (yMax_ - yMin_)/(ySize_ -1);	
+	dy_ = (yMax_ - yMin_)/(ySize_ -1);
 }
 
 // Destructor
 ForceSolver2D::~ForceSolver2D(){};
 
 /** Returns the number of points in x direction */
-int ForceSolver2D::getSizeX(){return xSize_;}; 
+int ForceSolver2D::getSizeX(){return xSize_;};
 
 /** Returns the number of points in y direction */
 int ForceSolver2D::getSizeY(){return ySize_;};
 
-/** Returns the max x in the grid points */ 
+/** Returns the max x in the grid points */
 double ForceSolver2D::getMaxX(){return xMax_;};
 
-/** Returns the min x in the grid points */ 
+/** Returns the min x in the grid points */
 double ForceSolver2D::getMinX(){return xMin_;};
 
-/** Returns the max y in the grid points */ 
+/** Returns the max y in the grid points */
 double ForceSolver2D::getMaxY(){return yMax_;};
 
-/** Returns the min y in the grid points */ 
+/** Returns the min y in the grid points */
 double ForceSolver2D::getMinY(){return yMin_;};
 
 /** Returns the mesh step in x direction */
@@ -52,8 +52,8 @@ void ForceSolver2D::checkSizes(Grid2D* rhoGrid){
 		int rank = 0;
 		ORBIT_MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 		if(rank == 0){
-			std::cerr << "ForceSolver2D (or subclass) checkSizes(...):" 
-			<< "The grid sizes are different "<< std::endl 
+			std::cerr << "ForceSolver2D (or subclass) checkSizes(...):"
+			<< "The grid sizes are different "<< std::endl
 								<< "number x bins ="<< xSize_ << std::endl
 								<< "number y bins ="<< ySize_ << std::endl
 								<< "rhoGrid x bins ="<< rhoGrid->getSizeX() <<std::endl
@@ -71,5 +71,3 @@ void ForceSolver2D::checkSizes(Grid2D* rhoGrid){
 		ORBIT_MPI_Finalize();
   }
 }
-
-

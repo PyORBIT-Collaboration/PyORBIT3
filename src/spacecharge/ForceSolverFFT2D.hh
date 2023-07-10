@@ -22,44 +22,44 @@
 
 using namespace std;
 
-/** 
+/**
   The ForceSolverFFT2D class is used to calculate the force*/
-    
+
 class ForceSolverFFT2D: public ForceSolver2D
 {
 	public:
 
 		/** Constructor with sizes only*/
 		ForceSolverFFT2D(int xSize, int ySize);
-		
+
 		/** Destructor */
 		virtual ~ForceSolverFFT2D();
-		
-		void setGridX(double xMin, double xMax); 	
+
+		void setGridX(double xMin, double xMax);
 		void setGridY(double yMin, double yMax);
 		void setGridXY(double xMin, double xMax, double yMin, double yMax);
-		
+
 		/** Solves the Force problem for an external charge distribution and
 		puts results into an external force grid
 		*/
 		void findForce(Grid2D* rhoGrid, Grid2D* forceGridX, Grid2D* forceGridY);
-		
-		
+
+
 	protected:
-		
+
 		//initialize the arrays
 		void init(int xSize,   int ySize);
-		
+
 		//define green functions table
 		void _defineGreenF();
-		
+
 		protected:
-			
+
 			//Twice extended grid size to use convolution method
 			int xSize2_;
-			int ySize2_; 
-			
-			//Green function 
+			int ySize2_;
+
+			//Green function
 			//double** greensF_;
 			std::complex<double>** greensF_;
 			//FFT arrays
@@ -69,14 +69,13 @@ class ForceSolverFFT2D: public ForceSolver2D
 			fftw_complex* out_green_;
 			fftw_complex* out_;
 			fftw_complex* out_res_;
-			
+
 			//real part of out_green[0][0] - is used for scaling
 			double out_green_re00_;
-			
+
 			fftw_plan planForward_greenF_;
 			fftw_plan planForward_;
 			fftw_plan planBackward_;
 };
 //end of SC_FORCE_SOLVER_FFT_2D_H ifdef
 #endif
-

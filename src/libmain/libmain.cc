@@ -12,6 +12,7 @@
 #include "wrap_errorbase.hh"
 #include "wrap_trackerrk4.hh"
 #include "wrap_field_sources_module.hh"
+#include "wrap_rfcavities.hh"
 
 // Define the module methods for the orbit module
 static PyMethodDef OrbitMethods[] = {
@@ -93,4 +94,8 @@ PyMODINIT_FUNC PyInit_foil(void) {
 
 PyMODINIT_FUNC PyInit_field_sources(void) {
     return wrap_field_sources_module::initFieldSourcesModule();
+}
+
+PyMODINIT_FUNC PyInit_rf_cavities(void) {
+    return wrap_rfcavities::initrfcavities();
 }

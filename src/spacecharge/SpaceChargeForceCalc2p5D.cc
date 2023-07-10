@@ -6,7 +6,7 @@
 //   08/02/10
 //
 // DESCRIPTION
-//   Calculate the space charge effect of the bunch in the 2.5D  
+//   Calculate the space charge effect of the bunch in the 2.5D
 //
 /////////////////////////////////////////////////////////////////////////////
 
@@ -28,7 +28,7 @@ SpaceChargeForceCalc2p5D::SpaceChargeForceCalc2p5D(int xSize, int ySize, int zSi
 	rhoGrid = new Grid2D(xSize, ySize);
 	forceGridX = new Grid2D(xSize, ySize);
 	forceGridY = new Grid2D(xSize, ySize);
-	zGrid = new Grid1D(zSize);	
+	zGrid = new Grid1D(zSize);
 	bunchExtremaCalc = new BunchExtremaCalculator();
 }
 
@@ -75,34 +75,34 @@ Grid1D* SpaceChargeForceCalc2p5D::getLongGrid(){
 
 void SpaceChargeForceCalc2p5D::trackBunch(Bunch* bunch, double length){
 
-	
+
 	int nPartsGlobal = bunch->getSizeGlobal();
-	if(nPartsGlobal < 2) return;	
-	
+	if(nPartsGlobal < 2) return;
+
 	double totalMacrosize = 0.;
-	
+
 	this->bunchAnalysis(bunch, totalMacrosize);
-		
+
 	double z_step = zGrid->getStepZ();
 
 	//calculate phiGrid
 	forceSolver->findForce(rhoGrid, forceGridX, forceGridY);
-	
-	SyncPart* syncPart = bunch->getSyncPart();	
-	double factor = 2*length*bunch->getClassicalRadius()*pow(bunch->getCharge(),2)/(pow(syncPart->getBeta(),2)*pow(syncPart->getGamma(),3));	
-		
-	factor = factor/(z_step*totalMacrosize);	
+
+	SyncPart* syncPart = bunch->getSyncPart();
+	double factor = 2*length*bunch->getClassicalRadius()*pow(bunch->getCharge(),2)/(pow(syncPart->getBeta(),2)*pow(syncPart->getGamma(),3));
+
+	factor = factor/(z_step*totalMacrosize);
 	double Lfactor = 0.;
 	double x,y,z,fx,fy;
-		
+
 	for (int i = 0, n = bunch->getSize(); i < n; i++){
 		x = bunch->x(i);
 		y = bunch->y(i);
 		z = bunch->z(i);
-		
+
 		forceGridX->interpolateBilinear(x,y,fx);
 		forceGridY->interpolateBilinear(x,y,fy);
-		
+
 		//Lfactor = - zGrid->getValue(z) * factor;
 		Lfactor =  zGrid->getValue(z) * factor;
 		bunch->xp(i) += fx * Lfactor;
@@ -113,9 +113,9 @@ void SpaceChargeForceCalc2p5D::trackBunch(Bunch* bunch, double length){
 void SpaceChargeForceCalc2p5D::bunchAnalysis(Bunch* bunch, double& totalMacrosize){
 
 	double xMin, xMax, yMin, yMax, zMin, zMax;
-	
+
 	bunchExtremaCalc->getExtremaXYZ(bunch, xMin, xMax, yMin, yMax, zMin, zMax);
-	
+
 	//bunchExtremaCalc->getXY_NRMS(bunch, N, xMin, xMax, yMin, yMax, zMin, zMax);
 
 	//check if the beam size is not zero
@@ -132,8 +132,8 @@ void SpaceChargeForceCalc2p5D::bunchAnalysis(Bunch* bunch, double& totalMacrosiz
 		}
 		ORBIT_MPI_Finalize();
 	}
-	
-	//check if the beam size is not zero 
+
+	//check if the beam size is not zero
 	if(zMin >=  zMax){
 		int rank = 0;
 		ORBIT_MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -159,19 +159,19 @@ void SpaceChargeForceCalc2p5D::bunchAnalysis(Bunch* bunch, double& totalMacrosiz
 	//sizes of the grids are set up
 	//bin rho&z Bunch to the Grid
 	rhoGrid->setZero();
-	
+
 	rhoGrid->binBunchBilinear(bunch);
-	
+
 	zGrid->setZero();
 	zGrid->binBunch(bunch);
 
 	rhoGrid->synchronizeMPI(bunch->getMPI_Comm_Local());
 	zGrid->synchronizeMPI(bunch->getMPI_Comm_Local());
-	
-	totalMacrosize = 0.;	
-	int nZ = zGrid->getSizeZ();	
+
+	totalMacrosize = 0.;
+	int nZ = zGrid->getSizeZ();
 	for(int iz = 0; iz < nZ; iz++){
-		totalMacrosize += zGrid->getValueOnGrid(iz);		
+		totalMacrosize += zGrid->getValueOnGrid(iz);
 	}
-	
+
 }

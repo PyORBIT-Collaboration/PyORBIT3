@@ -10,7 +10,7 @@ extern "C" {
   namespace wrap_spacecharge{
     void initSpaceChargeForceCalc2p5D(PyObject* module);
   }
-	
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
