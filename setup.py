@@ -41,6 +41,7 @@ for folder in os.walk("py/orbit"):
 
 # Define the setup parameters
 setup(
+    ext_package="orbit.core",
     ext_modules=[extension_mod],
     package_dir={
         "orbit.core": "src/libmain/orbit",

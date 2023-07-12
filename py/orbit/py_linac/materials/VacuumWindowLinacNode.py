@@ -16,7 +16,7 @@ from orbit.py_linac.lattice import BaseLinacNode
 
 # import Collimator class from C++ code
 # /src/orbit/MaterialInteractions/Collimator.cc
-from collimator import Collimator
+from orbit.core.collimator import Collimator
 
 """
 //-------------------------------------------------------------------------

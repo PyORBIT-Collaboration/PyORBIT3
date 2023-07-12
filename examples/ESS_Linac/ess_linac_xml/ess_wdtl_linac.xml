@@ -1,0 +1,2232 @@
+<?xml version="1.0" ?>
+<ess>
+    <MEBT bpmFrequency="7.0442E8" length="3.986" name="MEBT">
+	<accElement length="0.0" name="MEBT_START" pos="0.0" type="MARKER">
+  	 <parameters/>
+ 	</accElement>
+	<accElement length="0.0" name="RFQ-010:PBI-BCM-001" pos="0.03457" type="MARKER">
+   	 <parameters/>
+  	</accElement>
+	<accElement length="0.08" name="MEBT-010:BMD-QV-001" pos="0.2" type="QUAD">
+   	 <parameters aperture="0.0184" aprt_type="1" field="-16.3007"/>
+  	</accElement>
+       <accElement length="0.0" name="MEBT-010:BMD-CV-001" pos="0.2" type="DCV">
+   	<parameters B="0.0" effLength="0.08"/>
+ 	</accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CH-001" pos="0.2" type="DCH">
+  	 <parameters B="0.0" effLength="0.08"/>
+  	</accElement>
+	<accElement length="0.0" name="MEBT-010:PBI-WS-001" pos="0.3" type="MARKER">
+         <parameters/>
+        </accElement>
+	<accElement length="0.0" name="MEBT-010:PBI-BPM-001" pos="0.4" type="MARKER">
+ 	 <parameters/>
+   	</accElement>
+	<accElement length="0.08" name="MEBT-010:BMD-QH-002" pos="0.4" type="QUAD">
+   	 <parameters aperture="0.0184" aprt_type="1" field="19.5694"/>
+  	</accElement>
+       <accElement length="0.0" name="MEBT-010:BMD-CV-002" pos="0.4" type="DCV">
+   	<parameters B="0.0" effLength="0.08"/>
+ 	</accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CH-002" pos="0.4" type="DCH">
+  	 <parameters B="0.0" effLength="0.08"/>
+  	</accElement>
+	<accElement length="0.0" name="MEBT-010:EMR-Cav-001" pos="0.581" type="RFGAP">
+    <parameters E0L="0.000219447" E0TL="0.000131" EzFile="./axis_fields/MEBT_essRG.dat" aperture="0.03" aprt_type="1" cavity="MEBT1" mode="0" phase="-90.00"/>
+    <TTFs beta_max="0.099" beta_min="0.0651533180282">
+      <polyT order="4" pcoefs="1.01612778 0.000479710288 -0.000104039969 6.30940875e-07 -1.18628457e-09 "/>
+      <polyS order="0" pcoefs="0 "/>
+      <polyTP order="4" pcoefs="0.00589604495 -0.000392967324 4.25736235e-06 -1.81690079e-08 2.85459386e-11 "/>
+      <polySP order="0" pcoefs="0 "/>
+   </TTFs>
+  	</accElement>
+	<accElement length="0.0" name="MEBT-010:PBI-BPM-001" pos="0.4" type="MARKER">
+         <parameters/>
+        </accElement>
+        <accElement length="0.08" name="MEBT-010:BMD-QV-003" pos="0.762" type="QUAD">
+         <parameters aperture="0.0184" aprt_type="1" field="-12.4749"/>
+        </accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CV-003" pos="0.762" type="DCV">
+         <parameters B="0.0" effLength="0.08"/>
+        </accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CH-003" pos="0.4" type="DCH">
+         <parameters B="0.0" effLength="0.08"/>
+	</accElement>
+   	<accElement length="0.0" name="MEBT-010:ID-Coll-001" pos="0.762" type="MARKER">
+          <parameters/>
+        </accElement>
+	<accElement length="0.08" name="MEBT-010:BMD-QH-004" pos="1.512" type="QUAD">
+         <parameters aperture="0.0184" aprt_type="1" field="5.0"/>
+        </accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CV-004" pos="1.512" type="DCV">
+         <parameters B="0.0" effLength="0.08"/>
+        </accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CH-004" pos="1.512" type="DCH">
+         <parameters B="0.0" effLength="0.08"/>
+        </accElement>
+	<accElement length="0.0" name="MEBT-010:PBI-NPM-001" pos="1.637" type="MARKER">
+   	 <parameters/>
+  	</accElement>
+	<accElement length="0.0" name="MEBT-010:PBI-WS-002" pos="1.691" type="MARKER">
+  	 <parameters/>
+	</accElement>
+	<accElement length="0.0" name="MEBT-010:BMD-ChDump-001" pos="1.799122" type="MARKER">
+  	 <parameters/>
+  	</accElement>
+	<accElement length="0.0" name="MEBT-010:PBI-BCM-001" pos="1.8959" type="MARKER">
+  	 <parameters/>
+  	</accElement>
+	<accElement length="0.0" name="MEBT-010:EMR-CAV-002" pos="2.043" type="RFGAP">
+    <parameters E0L="0.0000988349" E0TL="0.000059" EzFile="./axis_fields/MEBT_essRG.dat" aperture="0.03" aprt_type="1" cavity="MEBT2" mode="0" phase="-90.00"/>
+    <TTFs beta_max="0.099" beta_min="0.0651533180282">
+      <polyT order="4" pcoefs="1.01612778 0.000479710288 -0.000104039969 6.30940875e-07 -1.18628457e-09 "/>
+      <polyS order="0" pcoefs="0 "/>
+      <polyTP order="4" pcoefs="0.00589604495 -0.000392967324 4.25736235e-06 -1.81690079e-08 2.85459386e-11 "/>
+      <polySP order="0" pcoefs="0 "/>
+   </TTFs>
+    </accElement>
+	<accElement length="0.0" name="MEBT-010:PBI-BPM-BPM03" pos="2.224" type="MARKER">
+   	 <parameters/>
+ 	</accElement>
+	<accElement length="0.08" name="MEBT-010:BMD-QH-005" pos="2.224" type="QUAD">
+          <parameters aperture="0.0184" aprt_type="1" field="6.87809"/>
+        </accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CV-005" pos="2.224" type="DCV">
+              <parameters B="0.0" effLength="0.08"/>
+        </accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CH-005" pos="2.224" type="DCH">
+               <parameters B="0.0" effLength="0.08"/>
+        </accElement>
+	<accElement length="0.0" name="MEBT-010:ID-Coll-002" pos="2.324" type="MARKER">
+   	 <parameters/>
+  	</accElement>
+	<accElement length="0.0" name="MEBT-010:PBI-FBCM-001" pos="2.384" type="MARKER">
+   	 <parameters/>
+  	</accElement>
+	<accElement length="0.0" name="MEBT-010:PBI-BPM-004" pos="2.424" type="MARKER">
+   	 <parameters/>
+  	</accElement>
+	<accElement length="0.08" name="MEBT-010:BMD-QV-006" pos="2.424" type="QUAD">
+          <parameters aperture="0.0184" aprt_type="1" field="-14.7817"/>
+        </accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CV-006" pos="2.424" type="DCV">
+           <parameters B="0.0" effLength="0.08"/>
+        </accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CH-006" pos="2.424" type="DCH">
+          <parameters B="0.0" effLength="0.08"/>
+        </accElement>
+	<accElement length="0.0" name="MEBT-010:PBI-WS-003" pos="2.524" type="MARKER">
+          <parameters/>
+        </accElement>
+        <accElement length="0.0" name="MEBT-010:PBI-EMU-001" pos="2.524" type="MARKER">
+          <parameters/>
+        </accElement>
+	<accElement length="0.0" name="MEBT-010:PBI-BPM-005" pos="2.624" type="MARKER">
+          <parameters/>
+        </accElement>
+	<accElement length="0.08" name="MEBT-010:BMD-QH-007" pos="2.624" type="QUAD">
+          <parameters aperture="0.0184" aprt_type="1" field="9.57296"/>
+        </accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CV-007" pos="2.624" type="DCV">
+           <parameters B="0.0" effLength="0.08"/>
+        </accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CH-007" pos="2.624" type="DCH">
+          <parameters B="0.0" effLength="0.08"/>
+        </accElement>
+ 	<accElement length="0.0" name="MEBT-010:PBI-LBM-001" pos="2.7628" type="MARKER">
+          <parameters/>
+        </accElement>
+	<accElement length="0.0" name="MEBT-010:PBI-FC-001" pos="2.9475" type="MARKER">
+          <parameters/>
+        </accElement>
+	<accElement length="0.0" name="MEBT-010:PBI-NPM-002" pos="2.9475" type="MARKER">
+   	 <parameters/>
+  	</accElement>
+	<accElement length="0.08" name="MEBT-010:BMD-QV-008" pos="3.074" type="QUAD">
+          <parameters aperture="0.0184" aprt_type="1" field="-9.19019"/>
+        </accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CV-008" pos="3.074" type="DCV">
+           <parameters B="0.0" effLength="0.08"/>
+        </accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CH-008" pos="3.074" type="DCH">
+          <parameters B="0.0" effLength="0.08"/>
+        </accElement>
+	<accElement length="0.0" name="MEBT-010:EMR-Cav-003" pos="3.255" type="RFGAP">
+    <parameters E0L="0.0002697021" E0TL="0.000161" EzFile="./axis_fields/MEBT_essRG.dat" aperture="0.03" aprt_type="1" cavity="MEBT3" mode="0" phase="-90.00"/>
+    <TTFs beta_max="0.099" beta_min="0.0651533180282">
+      <polyT order="4" pcoefs="1.01612778 0.000479710288 -0.000104039969 6.30940875e-07 -1.18628457e-09 "/>
+      <polyS order="0" pcoefs="0 "/>
+      <polyTP order="4" pcoefs="0.00589604495 -0.000392967324 4.25736235e-06 -1.81690079e-08 2.85459386e-11 "/>
+      <polySP order="0" pcoefs="0 "/>
+   </TTFs>
+  </accElement>
+	<accElement length="0.0" name="MEBT-010:PBI-BPM-006" pos="3.436" type="MARKER">
+          <parameters/>
+        </accElement>
+ 	<accElement length="0.08" name="MEBT-010:BMD-QH-009" pos="3.436" type="QUAD">
+          <parameters aperture="0.0184" aprt_type="1" field="18.58"/>
+        </accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CV-009" pos="3.436" type="DCV">
+           <parameters B="0.0" effLength="0.08"/>
+        </accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CH-009" pos="3.436" type="DCH">
+          <parameters B="0.0" effLength="0.08"/>
+        </accElement>
+	<accElement length="0.0" name="MEBT-010:ID-Coll-003" pos="3.536" type="MARKER">
+          <parameters/>
+        </accElement>
+	<accElement length="0.0" name="MEBT-010:PBI-BPM-007" pos="3.636" type="MARKER">
+          <parameters/>
+        </accElement>
+ 	<accElement length="0.08" name="MEBT-010:BMD-QV-010" pos="3.636" type="QUAD">
+          <parameters aperture="0.0184" aprt_type="1" field="-30.7441"/>
+        </accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CV-010" pos="3.636" type="DCV">
+           <parameters B="0.0" effLength="0.08"/>
+        </accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CH-010" pos="3.636" type="DCH">
+          <parameters B="0.0" effLength="0.08"/>
+        </accElement>
+	<accElement length="0.0" name="MEBT-010:PBI-BCM-002" pos="3.763" type="MARKER">
+          <parameters/>
+        </accElement>
+	<accElement length="0.0" name="MEBT-010:PBI-BPM-008" pos="3.836" type="MARKER">
+          <parameters/>
+        </accElement>
+	<accElement length="0.08" name="MEBT-010:BMD-QH-011" pos="3.836" type="QUAD">
+          <parameters aperture="0.0184" aprt_type="1" field="23.8053"/>
+        </accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CV-011" pos="3.836" type="DCV">
+           <parameters B="0.0" effLength="0.08"/>
+        </accElement>
+        <accElement length="0.0" name="MEBT-010:BMD-CH-011" pos="3.836" type="DCH">
+          <parameters B="0.0" effLength="0.08"/>
+        </accElement>
+	<accElement length="0.0" name="MEBT_END" pos="3.986" type="MARKER">
+  	 <parameters/>
+  	</accElement>
+	<Cavities>
+   	 <Cavity ampl="1.0" frequency="   3.5221e+08" name="MEBT1" pos="0.581"/>
+   	 <Cavity ampl="1.0" frequency="   3.5221e+08" name="MEBT2" pos="2.043"/>
+   	 <Cavity ampl="1.0" frequency="   3.5221e+08" name="MEBT3" pos="3.255"/>
+     	</Cavities>
+	</MEBT>
+ <DTL1 bpmFrequency="    7.0442e+08" length="7.7959377" name="DTL1">
+  <accElement name="DTL1-START" pos="0.0" type="MARKER" length="0.0">
+   <parameters/>
+  </accElement>
+  <accElement name="DTL1:PMQ01" ess_name="DTL-010:BMD-PMQ-001" pos="0.025" length="0.0499" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="-59.9444"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg01" ess_name="DTL-010:EMR-Cav-001:G1" pos="0.0626084" type="RFGAP" length="0.0">
+   <parameters phase="-35.0" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00022591137409733704" E0TL="0.000176348" EzFile="?" cavity="DTL1" TTF="0.780607"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.077307 -0.0025756494375926515 -1.17398133647787e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg02" ess_name="DTL-010:EMR-Cav-001:G2" pos="0.138587" type="RFGAP" length="0.0">
+   <parameters phase="-34.84" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0002302917395285282" E0TL="0.000181343" EzFile="?" cavity="DTL1" TTF="0.787449"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.072811 -0.0024701348165465722 -1.24177202900703e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ02" ess_name="DTL-010:BMD-PMQ-002" pos="0.1772669" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="61.4534"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg03" ess_name="DTL-010:EMR-Cav-001:G3" pos="0.2160535" type="RFGAP" length="0.0">
+   <parameters phase="-34.67" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00023469302793820441" E0TL="0.000186036" EzFile="?" cavity="DTL1" TTF="0.792678"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0692220000000001 -0.002390951552254617 -1.3119039332993493e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:BPM01" ess_name="DTL-010:PBI-BPM-001" pos="0.2555434" type="MARKER" length="0.0">
+   <parameters/>
+   <channelsuite>
+    <channel handle="yAvg" settable="false" signal="DTL-010:PBI-BPM-001:YP-AvgValue" valid="true"/>
+    <channel handle="phaseAvg" settable="false" signal="DTL-010:PBI-BPM-001:SA-AvgValue" valid="true"/>
+    <channel handle="amplitudeAvg" settable="false" signal="DTL-010:PBI-BPM-001:SM-AvgValue" valid="true"/>
+    <channel handle="xAvg" settable="false" signal="DTL-010:PBI-BPM-001:XP-AvgValue" valid="true"/>
+    <channel handle="phaseArray" settable="false" signal="DTL-010:PBI-BPM-001:SA-TR1-ArrayData" valid="true"/>
+   </channelsuite>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg04" ess_name="DTL-010:EMR-Cav-001:G4" pos="0.2950154" type="RFGAP" length="0.0">
+   <parameters phase="-34.51" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00023927120746750972" E0TL="0.000191327" EzFile="?" cavity="DTL1" TTF="0.799624"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.064953 -0.0022836066564136583 -1.3765925668455705e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ03" ess_name="DTL-010:BMD-PMQ-003" pos="0.335189" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="-60.6833"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg05" ess_name="DTL-010:EMR-Cav-001:G5" pos="0.3754925" type="RFGAP" length="0.0">
+   <parameters phase="-34.34" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00024376369029415642" E0TL="0.000196084" EzFile="?" cavity="DTL1" TTF="0.804402"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0618465 -0.0022131612658892893 -1.444744666997963e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:DCV01" ess_name="DTL-010:BMD-CV-001" pos="0.4164972" type="DCV" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-010:BMD-CV-001"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg06" ess_name="DTL-010:EMR-Cav-001:G6" pos="0.4574914" type="RFGAP" length="0.0">
+   <parameters phase="-34.18" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.000248422566090689" E0TL="0.000201463" EzFile="?" cavity="DTL1" TTF="0.810969"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0580175 -0.002112589908486924 -1.5064417949308168e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ04" ess_name="DTL-010:BMD-PMQ-004" pos="0.4991898" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="60.3324"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg07" ess_name="DTL-010:EMR-Cav-001:G7" pos="0.5410287" type="RFGAP" length="0.0">
+   <parameters phase="-34.02" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00025306993341426626" E0TL="0.000206376" EzFile="?" cavity="DTL1" TTF="0.81549"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0552405 -0.0020467199402234774 -1.5727315304161463e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:DCH01" ess_name="DTL-010:BMD-CH-001" pos="0.5835637" type="DCH" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-010:BMD-CH-001"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg08" ess_name="DTL-010:EMR-Cav-001:G8" pos="0.6261174" type="RFGAP" length="0.0">
+   <parameters phase="-33.85" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00025778580202800343" E0TL="0.000211745" EzFile="?" cavity="DTL1" TTF="0.821399"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.051938 -0.0019575534621794825 -1.632441951073949e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ05" ess_name="DTL-010:BMD-PMQ-005" pos="0.6693762" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="-59.6309"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg09" ess_name="DTL-010:EMR-Cav-001:G9" pos="0.7127661" type="RFGAP" length="0.0">
+   <parameters phase="-33.69" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00026244581143590614" E0TL="0.000216733" EzFile="?" cavity="DTL1" TTF="0.82582"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0493765 -0.001892933173235776 -1.6967921587342073e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:DCV02" ess_name="DTL-010:BMD-CV-002" pos="0.7568494" type="DCV" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-010:BMD-CV-002"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg10" ess_name="DTL-010:EMR-Cav-001:G10" pos="0.8009873" type="RFGAP" length="0.0">
+   <parameters phase="-33.53" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00026722530123671293" E0TL="0.000222084" EzFile="?" cavity="DTL1" TTF="0.831074"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0465529999999998 -0.0018149561352773422 -1.7550908161036132e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ06" ess_name="DTL-010:BMD-PMQ-006" pos="0.8458427" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="57.8545"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg11" ess_name="DTL-010:EMR-Cav-001:G11" pos="0.8907955" type="RFGAP" length="0.0">
+   <parameters phase="-33.36" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00027199231272743806" E0TL="0.000227295" EzFile="?" cavity="DTL1" TTF="0.835667"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.044083 -0.0017474908780352105 -1.8152775813571956e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:DCH02" ess_name="DTL-010:BMD-CH-002" pos="0.936438" type="DCH" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-010:BMD-CH-002"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg12" ess_name="DTL-010:EMR-Cav-001:G12" pos="0.9821965" type="RFGAP" length="0.0">
+   <parameters phase="-33.2" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00027675636940211005" E0TL="0.000232495" EzFile="?" cavity="DTL1" TTF="0.840071"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0417779999999999 -0.0016837456040224858 -1.874150273070046e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ07" ess_name="DTL-010:BMD-PMQ-007" pos="1.0286439" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="-57.4315"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg13" ess_name="DTL-010:EMR-Cav-001:G13" pos="1.0752056" type="RFGAP" length="0.0">
+   <parameters phase="-33.03" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0002815781432466299" E0TL="0.000237746" EzFile="?" cavity="DTL1" TTF="0.844334"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0396005000000001 -0.0016223490622908425 -1.9319633515419715e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg14" ess_name="DTL-010:EMR-Cav-001:G14" pos="1.1698276" type="RFGAP" length="0.0">
+   <parameters phase="-32.87" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0002865119774055217" E0TL="0.000243265" EzFile="?" cavity="DTL1" TTF="0.849057"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0373275 -0.0015541339430661606 -1.9839051635205878e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ08" ess_name="DTL-010:BMD-PMQ-008" pos="1.2178709" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="55.7685"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg15" ess_name="DTL-010:EMR-Cav-001:G15" pos="1.2660762" type="RFGAP" length="0.0">
+   <parameters phase="-32.71" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0002913760731973041" E0TL="0.000248459" EzFile="?" cavity="DTL1" TTF="0.852709"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0355135 -0.0015026058131434347 -2.0422633505840297e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:BPM02" ess_name="DTL-010:PBI-BPM-002" pos="1.3149599" type="MARKER" length="0.0">
+   <parameters/>
+   <channelsuite>
+    <channel handle="yAvg" settable="false" signal="DTL-010:PBI-BPM-002:YP-AvgValue" valid="true"/>
+    <channel handle="phaseAvg" settable="false" signal="DTL-010:PBI-BPM-002:SA-AvgValue" valid="true"/>
+    <channel handle="amplitudeAvg" settable="false" signal="DTL-010:PBI-BPM-002:SM-AvgValue" valid="true"/>
+    <channel handle="xAvg" settable="false" signal="DTL-010:PBI-BPM-002:XP-AvgValue" valid="true"/>
+    <channel handle="phaseArray" settable="false" signal="DTL-010:PBI-BPM-002:SA-TR1-ArrayData" valid="true"/>
+   </channelsuite>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg16" ess_name="DTL-010:EMR-Cav-001:G16" pos="1.3639625" type="RFGAP" length="0.0">
+   <parameters phase="-32.54" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0002963249137165327" E0TL="0.000253882" EzFile="?" cavity="DTL1" TTF="0.856769"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0336185 -0.0014451878137012647 -2.0947905836678746e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ09" ess_name="DTL-010:BMD-PMQ-009" pos="1.4136382" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="-54.807"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg17" ess_name="DTL-010:EMR-Cav-001:G17" pos="1.4634909" type="RFGAP" length="0.0">
+   <parameters phase="-32.38" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0003011650833065953" E0TL="0.000259061" EzFile="?" cavity="DTL1" TTF="0.860196"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0319405 -0.0013946410277320207 -2.1542779784399322e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg18" ess_name="DTL-010:EMR-Cav-001:G18" pos="1.5646722" type="RFGAP" length="0.0">
+   <parameters phase="-32.22" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.000306181686874158" E0TL="0.000264552" EzFile="?" cavity="DTL1" TTF="0.864036"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.030234 -0.0013408190972971576 -2.204399950786512e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ10" ess_name="DTL-010:BMD-PMQ-010" pos="1.6160155" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="53.7316"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg19" ess_name="DTL-010:EMR-Cav-001:G19" pos="1.6675186" type="RFGAP" length="0.0">
+   <parameters phase="-32.05" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0003112047591438428" E0TL="0.000269986" EzFile="?" cavity="DTL1" TTF="0.867551"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0286995 -0.0012926186575977438 -2.255085174054715e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:BPM03" ess_name="DTL-010:PBI-BPM-003" pos="1.7196973" type="MARKER" length="0.0">
+   <parameters/>
+   <channelsuite>
+    <channel handle="yAvg" settable="false" signal="DTL-010:PBI-BPM-003:YP-AvgValue" valid="true"/>
+    <channel handle="phaseAvg" settable="false" signal="DTL-010:PBI-BPM-003:SA-AvgValue" valid="true"/>
+    <channel handle="amplitudeAvg" settable="false" signal="DTL-010:PBI-BPM-003:SM-AvgValue" valid="true"/>
+    <channel handle="xAvg" settable="false" signal="DTL-010:PBI-BPM-003:XP-AvgValue" valid="true"/>
+    <channel handle="phaseArray" settable="false" signal="DTL-010:PBI-BPM-003:SA-TR1-ArrayData" valid="true"/>
+   </channelsuite>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg20" ess_name="DTL-010:EMR-Cav-001:G20" pos="1.7720327" type="RFGAP" length="0.0">
+   <parameters phase="-31.89" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00031630868915826974" E0TL="0.000275521" EzFile="?" cavity="DTL1" TTF="0.871051"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0272204999999999 -0.0012449071406347213 -2.303404932436888e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ11" ess_name="DTL-010:BMD-PMQ-011" pos="1.8250199" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="-52.8426"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg21" ess_name="DTL-010:EMR-Cav-001:G21" pos="1.8782288" type="RFGAP" length="0.0">
+   <parameters phase="-31.72" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00032125709996475764" E0TL="0.000280762" EzFile="?" cavity="DTL1" TTF="0.873948"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0259765 -0.0012060919078732127 -2.3572341558826514e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:DCV03" ess_name="DTL-010:BMD-CV-003" pos="1.9320821" type="DCV" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-010:BMD-CV-003"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg22" ess_name="DTL-010:EMR-Cav-001:G22" pos="1.9861081" type="RFGAP" length="0.0">
+   <parameters phase="-31.56" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0003264406756476401" E0TL="0.000286374" EzFile="?" cavity="DTL1" TTF="0.877262"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.024644 -0.0011615633563361197 -2.403053436071215e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ12" ess_name="DTL-010:BMD-PMQ-012" pos="2.0407757" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="51.8217"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg23" ess_name="DTL-010:EMR-Cav-001:G23" pos="2.0956815" type="RFGAP" length="0.0">
+   <parameters phase="-31.4" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0003315260316222872" E0TL="0.000291726" EzFile="?" cavity="DTL1" TTF="0.879949"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0235355 -0.0011258667926826965 -2.4559353045888205e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:DCH03" ess_name="DTL-010:BMD-CH-003" pos="2.1512265" type="DCH" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-010:BMD-CH-003"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg24" ess_name="DTL-010:EMR-Cav-001:G24" pos="2.2069588" type="RFGAP" length="0.0">
+   <parameters phase="-31.23" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00033677700924504117" E0TL="0.000297397" EzFile="?" cavity="DTL1" TTF="0.883068"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.022342 -0.0010846222203418068 -2.4994948194861696e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ13" ess_name="DTL-010:BMD-PMQ-013" pos="2.2632947" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="-50.9517"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg25" ess_name="DTL-010:EMR-Cav-001:G25" pos="2.3199414" type="RFGAP" length="0.0">
+   <parameters phase="-31.07" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0003418051872782098" E0TL="0.000302541" EzFile="?" cavity="DTL1" TTF="0.885127"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.021487 -0.0010584365801247558 -2.5580301459570024e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg26" ess_name="DTL-010:EMR-Cav-001:G26" pos="2.4346377" type="RFGAP" length="0.0">
+   <parameters phase="-30.91" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0003468893372862441" E0TL="0.000307729" EzFile="?" cavity="DTL1" TTF="0.88711"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0206715 -0.0010330441253412464 -2.61707872831895e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ14" ess_name="DTL-010:BMD-PMQ-014" pos="2.492681" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="49.9643"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg27" ess_name="DTL-010:EMR-Cav-001:G27" pos="2.551056" type="RFGAP" length="0.0">
+   <parameters phase="-30.74" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00035196502227726395" E0TL="0.000312905" EzFile="?" cavity="DTL1" TTF="0.889023"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.019904 -0.001008999148364489 -2.675742473268366e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:DCV04" ess_name="DTL-010:BMD-CV-004" pos="2.6099517" type="DCV" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-010:BMD-CV-004"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg28" ess_name="DTL-010:EMR-Cav-001:G28" pos="2.6691951" type="RFGAP" length="0.0">
+   <parameters phase="-30.58" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0003570731783979533" E0TL="0.000318089" EzFile="?" cavity="DTL1" TTF="0.890823"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0191835 -0.0009862905518646886 -2.7357809784359155e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ15" ess_name="DTL-010:BMD-PMQ-015" pos="2.728952" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="-49.1202"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg29" ess_name="DTL-010:EMR-Cav-001:G29" pos="2.7890664" type="RFGAP" length="0.0">
+   <parameters phase="-30.41" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00036216330673621806" E0TL="0.000323259" EzFile="?" cavity="DTL1" TTF="0.892578"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0185004999999998 -0.000964544236425547 -2.795218325292946e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:DCH04" ess_name="DTL-010:BMD-CH-004" pos="2.849705" type="DCH" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-010:BMD-CH-004"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg30" ess_name="DTL-010:EMR-Cav-001:G30" pos="2.9106681" type="RFGAP" length="0.0">
+   <parameters phase="-30.25" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0003674270749152463" E0TL="0.000328719" EzFile="?" cavity="DTL1" TTF="0.894651"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.01775 -0.0009382367249907512 -2.847164974431684e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ16" ess_name="DTL-010:BMD-PMQ-016" pos="2.9721483" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="48.1732"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg31" ess_name="DTL-010:EMR-Cav-001:G31" pos="3.0340088" type="RFGAP" length="0.0">
+   <parameters phase="-30.09" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00037259590173628393" E0TL="0.000333951" EzFile="?" cavity="DTL1" TTF="0.896282"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0171365 -0.0009183002854472178 -2.9067047737598628e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg32" ess_name="DTL-010:EMR-Cav-001:G32" pos="3.1590963" type="RFGAP" length="0.0">
+   <parameters phase="-29.92" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0003775341244637584" E0TL="0.000338818" EzFile="?" cavity="DTL1" TTF="0.89745"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0166565 -0.0009047519711442001 -2.975657176132305e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ17" ess_name="DTL-010:BMD-PMQ-017" pos="3.222324" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="-47.3716"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg33" ess_name="DTL-010:EMR-Cav-001:G33" pos="3.285927" type="RFGAP" length="0.0">
+   <parameters phase="-29.76" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00038283176176342044" E0TL="0.000344245" EzFile="?" cavity="DTL1" TTF="0.899207"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0160445 -0.0008832118112496265 -3.0303116765954498e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:BPM04" ess_name="DTL-010:PBI-BPM-004" pos="3.3500074" type="MARKER" length="0.0">
+   <parameters/>
+   <channelsuite>
+    <channel handle="yAvg" settable="false" signal="DTL-010:PBI-BPM-004:YP-AvgValue" valid="true"/>
+    <channel handle="phaseAvg" settable="false" signal="DTL-010:PBI-BPM-004:SA-AvgValue" valid="true"/>
+    <channel handle="amplitudeAvg" settable="false" signal="DTL-010:PBI-BPM-004:SM-AvgValue" valid="true"/>
+    <channel handle="xAvg" settable="false" signal="DTL-010:PBI-BPM-004:XP-AvgValue" valid="true"/>
+    <channel handle="phaseArray" settable="false" signal="DTL-010:PBI-BPM-004:SA-TR1-ArrayData" valid="true"/>
+   </channelsuite>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg34" ess_name="DTL-010:EMR-Cav-001:G34" pos="3.4145129" type="RFGAP" length="0.0">
+   <parameters phase="-29.59" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0003880169441653111" E0TL="0.00034945" EzFile="?" cavity="DTL1" TTF="0.900605"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0155329999999998 -0.0008665080808539061 -3.092361984970577e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ18" ess_name="DTL-010:BMD-PMQ-018" pos="3.479442" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="46.4787"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg35" ess_name="DTL-010:EMR-Cav-001:G35" pos="3.5448505" type="RFGAP" length="0.0">
+   <parameters phase="-29.43" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0003930935736918748" E0TL="0.000354434" EzFile="?" cavity="DTL1" TTF="0.901653"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0151160000000001 -0.0008543498551074904 -3.162841317838122e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg36" ess_name="DTL-010:EMR-Cav-001:G36" pos="3.6769465" type="RFGAP" length="0.0">
+   <parameters phase="-29.27" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00039847573835575037" E0TL="0.000359926" EzFile="?" cavity="DTL1" TTF="0.903257"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0145825 -0.0008349557814030998 -3.217816670899886e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ19" ess_name="DTL-010:BMD-PMQ-019" pos="3.7436457" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="-45.7144"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg37" ess_name="DTL-010:EMR-Cav-001:G37" pos="3.8108087" type="RFGAP" length="0.0">
+   <parameters phase="-29.1" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00040369968679139734" E0TL="0.00036515" EzFile="?" cavity="DTL1" TTF="0.904509"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0141405000000001 -0.0008201044983668971 -3.2814151514217054e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg38" ess_name="DTL-010:EMR-Cav-001:G38" pos="3.9464333" type="RFGAP" length="0.0">
+   <parameters phase="-28.94" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0004090195996171269" E0TL="0.000370483" EzFile="?" cavity="DTL1" TTF="0.905783"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.013708 -0.0008051813899301632 -3.343273525282112e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ20" ess_name="DTL-010:BMD-PMQ-020" pos="4.0148798" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="44.8682"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg39" ess_name="DTL-010:EMR-Cav-001:G39" pos="4.0838274" type="RFGAP" length="0.0">
+   <parameters phase="-28.78" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00041430513760071805" E0TL="0.000375718" EzFile="?" cavity="DTL1" TTF="0.906863"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.013327 -0.0007926936851963369 -3.410246122980665e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:BPM05" ess_name="DTL-010:PBI-BPM-005" pos="4.1531597" type="MARKER" length="0.0">
+   <parameters/>
+   <channelsuite>
+    <channel handle="yAvg" settable="false" signal="DTL-010:PBI-BPM-005:YP-AvgValue" valid="true"/>
+    <channel handle="phaseAvg" settable="false" signal="DTL-010:PBI-BPM-005:SA-AvgValue" valid="true"/>
+    <channel handle="amplitudeAvg" settable="false" signal="DTL-010:PBI-BPM-005:SM-AvgValue" valid="true"/>
+    <channel handle="xAvg" settable="false" signal="DTL-010:PBI-BPM-005:XP-AvgValue" valid="true"/>
+    <channel handle="phaseArray" settable="false" signal="DTL-010:PBI-BPM-005:SA-TR1-ArrayData" valid="true"/>
+   </channelsuite>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg40" ess_name="DTL-010:EMR-Cav-001:G40" pos="4.2229977" type="RFGAP" length="0.0">
+   <parameters phase="-28.61" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00041960648262873564" E0TL="0.000380988" EzFile="?" cavity="DTL1" TTF="0.907965"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0129525000000001 -0.0007800837117794251 -3.4757035539533996e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ21" ess_name="DTL-010:BMD-PMQ-021" pos="4.2932076" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="-44.1382"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg41" ess_name="DTL-010:EMR-Cav-001:G41" pos="4.3639398" type="RFGAP" length="0.0">
+   <parameters phase="-28.45" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00042490404892102477" E0TL="0.000386262" EzFile="?" cavity="DTL1" TTF="0.909057"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.012591 -0.0007677006551717376 -3.540648584042187e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg42" ess_name="DTL-010:EMR-Cav-001:G42" pos="4.5066642" type="RFGAP" length="0.0">
+   <parameters phase="-28.28" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00043024858084096847" E0TL="0.000391546" EzFile="?" cavity="DTL1" TTF="0.910046"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0122594999999999 -0.0007566286217277664 -3.608400186379903e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ22" ess_name="DTL-010:BMD-PMQ-022" pos="4.5786691" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="43.3346"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg43" ess_name="DTL-010:EMR-Cav-001:G43" pos="4.6511659" type="RFGAP" length="0.0">
+   <parameters phase="-28.12" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00043590497548901284" E0TL="0.000397296" EzFile="?" cavity="DTL1" TTF="0.911428"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0118530000000001 -0.0007403834133887703 -3.662079289523592e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:DCV05" ess_name="DTL-010:BMD-CV-005" pos="4.723995" type="DCV" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-010:BMD-CV-005"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg44" ess_name="DTL-010:EMR-Cav-001:G44" pos="4.7974524" type="RFGAP" length="0.0">
+   <parameters phase="-27.96" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0004409956891777636" E0TL="0.00040214" EzFile="?" cavity="DTL1" TTF="0.911891"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.011644 -0.0007360983165416844 -3.746983941164503e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ23" ess_name="DTL-010:BMD-PMQ-023" pos="4.8712291" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="-42.6416"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg45" ess_name="DTL-010:EMR-Cav-001:G45" pos="4.945529" type="RFGAP" length="0.0">
+   <parameters phase="-27.79" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00044669792827934827" E0TL="0.000407904" EzFile="?" cavity="DTL1" TTF="0.913154"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0112785000000002 -0.0007214513832514933 -3.8029352079211995e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:DCH05" ess_name="DTL-010:BMD-CH-005" pos="5.0201632" type="DCH" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-010:BMD-CH-005"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg46" ess_name="DTL-010:EMR-Cav-001:G46" pos="5.095391" type="RFGAP" length="0.0">
+   <parameters phase="-27.63" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00045216203028002126" E0TL="0.000413277" EzFile="?" cavity="DTL1" TTF="0.914002"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0110029999999999 -0.0007121035987454381 -3.873422268646981e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ24" ess_name="DTL-010:BMD-PMQ-024" pos="5.1709099" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="41.8827"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg47" ess_name="DTL-010:EMR-Cav-001:G47" pos="5.2470445" type="RFGAP" length="0.0">
+   <parameters phase="-27.47" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0004576342336905902" E0TL="0.00041862" EzFile="?" cavity="DTL1" TTF="0.914748"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0107565 -0.0007042535092888813 -3.9471349624676583e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg48" ess_name="DTL-010:EMR-Cav-001:G48" pos="5.4004958" type="RFGAP" length="0.0">
+   <parameters phase="-27.3" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00046316501170361613" E0TL="0.000424041" EzFile="?" cavity="DTL1" TTF="0.915529"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0105075 -0.0006958599546642019 -4.019342842764132e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ25" ess_name="DTL-010:BMD-PMQ-025" pos="5.477826" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="-41.2164"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg49" ess_name="DTL-010:EMR-Cav-001:G49" pos="5.5557386" type="RFGAP" length="0.0">
+   <parameters phase="-27.14" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00046915266515169205" E0TL="0.000430038" EzFile="?" cavity="DTL1" TTF="0.916627"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.010203 -0.0006834379308744057 -4.077867750260229e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:DCV06" ess_name="DTL-010:BMD-CV-006" pos="5.6338943" type="DCV" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-010:BMD-CV-006"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg50" ess_name="DTL-010:EMR-Cav-001:G50" pos="5.7127841" type="RFGAP" length="0.0">
+   <parameters phase="-26.97" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.000474161607479816" E0TL="0.000434718" EzFile="?" cavity="DTL1" TTF="0.916814"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0100810000000002 -0.0006829401522743045 -4.173847233571271e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ26" ess_name="DTL-010:BMD-PMQ-026" pos="5.791905" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="40.4902"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg51" ess_name="DTL-010:EMR-Cav-001:G51" pos="5.8716242" type="RFGAP" length="0.0">
+   <parameters phase="-26.81" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00048040533621510447" E0TL="0.00044099" EzFile="?" cavity="DTL1" TTF="0.917954"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0097815 -0.0006699828559250527 -4.2292399362982314e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:DCH06" ess_name="DTL-010:BMD-CH-006" pos="5.9515885" type="DCH" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-010:BMD-CH-006"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg52" ess_name="DTL-010:EMR-Cav-001:G52" pos="6.0322661" type="RFGAP" length="0.0">
+   <parameters phase="-26.65" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.000485874069831508" E0TL="0.000446218" EzFile="?" cavity="DTL1" TTF="0.918382"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0096195 -0.00066620384435143 -4.3153297609729244e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ27" ess_name="DTL-010:BMD-PMQ-027" pos="6.1131728" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="-39.85"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg53" ess_name="DTL-010:EMR-Cav-001:G53" pos="6.1947153" type="RFGAP" length="0.0">
+   <parameters phase="-26.48" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0004922410089353209" E0TL="0.000452559" EzFile="?" cavity="DTL1" TTF="0.919385"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0093535 -0.0006549276364580215 -4.3751260064490696e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg54" ess_name="DTL-010:EMR-Cav-001:G54" pos="6.3589651" type="RFGAP" length="0.0">
+   <parameters phase="-26.32" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0004976522758461702" E0TL="0.000457648" EzFile="?" cavity="DTL1" TTF="0.919614"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.009238 -0.0006538313203042822 -4.4704061428424004e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ28" ess_name="DTL-010:BMD-PMQ-028" pos="6.4416195" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="39.156"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg55" ess_name="DTL-010:EMR-Cav-001:G55" pos="6.5250207" type="RFGAP" length="0.0">
+   <parameters phase="-26.16" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0005035791922090344" E0TL="0.000463313" EzFile="?" cavity="DTL1" TTF="0.92004"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0090865 -0.0006500625913513395 -4.556954507405196e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg56" ess_name="DTL-010:EMR-Cav-001:G56" pos="6.6928876" type="RFGAP" length="0.0">
+   <parameters phase="-25.99" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0005085922569676203" E0TL="0.000467853" EzFile="?" cavity="DTL1" TTF="0.919898"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0090435 -0.0006538984442615323 -4.671784250225731e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ29" ess_name="DTL-010:BMD-PMQ-029" pos="6.7772933" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="-38.8753"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg57" ess_name="DTL-010:EMR-Cav-001:G57" pos="6.8625564" type="RFGAP" length="0.0">
+   <parameters phase="-25.83" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.00051383057142298" E0TL="0.000472608" EzFile="?" cavity="DTL1" TTF="0.919774"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.008996 -0.0006573978015799453 -4.7874837361399914e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:BPM06" ess_name="DTL-010:PBI-BPM-006" pos="6.9478596" type="MARKER" length="0.0">
+   <parameters/>
+   <channelsuite>
+    <channel handle="yAvg" settable="false" signal="DTL-010:PBI-BPM-006:YP-AvgValue" valid="true"/>
+    <channel handle="phaseAvg" settable="false" signal="DTL-010:PBI-BPM-006:SA-AvgValue" valid="true"/>
+    <channel handle="amplitudeAvg" settable="false" signal="DTL-010:PBI-BPM-006:SM-AvgValue" valid="true"/>
+    <channel handle="xAvg" settable="false" signal="DTL-010:PBI-BPM-006:XP-AvgValue" valid="true"/>
+    <channel handle="phaseArray" settable="false" signal="DTL-010:PBI-BPM-006:SA-TR1-ArrayData" valid="true"/>
+   </channelsuite>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg58" ess_name="DTL-010:EMR-Cav-001:G58" pos="7.0340363" type="RFGAP" length="0.0">
+   <parameters phase="-25.66" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0005190147744683442" E0TL="0.0004773" EzFile="?" cavity="DTL1" TTF="0.919627"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.008957 -0.0006613682636998207 -4.905715372686083e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ30" ess_name="DTL-010:BMD-PMQ-030" pos="7.1197885" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="37.7475"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg59" ess_name="DTL-010:EMR-Cav-001:G59" pos="7.207317" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0005178666811421126" E0TL="0.000477007" EzFile="?" cavity="DTL1" TTF="0.9211"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0086279999999999 -0.0006435627927103146 -4.938441953628947e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg60" ess_name="DTL-010:EMR-Cav-001:G60" pos="7.3801161" type="RFGAP" length="0.0">
+   <parameters phase="-30.0" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0005105313415193535" E0TL="0.000463007" EzFile="?" cavity="DTL1" TTF="0.906912"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.011249 -0.0008478440142888793 -5.800123210931265e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:PMQ31" ess_name="DTL-010:BMD-PMQ-031" pos="7.4660513" length="0.05" type="QUAD">
+   <parameters aperture="0.02" aprt_type="1" field="-37.8238"/>
+  </accElement>
+  <accElement name="DTL:Cav01:Rg61" ess_name="DTL-010:EMR-Cav-001:G61" pos="7.5543206" type="RFGAP" length="0.0">
+   <parameters phase="-35.0" mode="0.0" aperture="0.02" aprt_type="1" E0L="0.0005235099999007015" E0TL="0.000474488" EzFile="?" cavity="DTL1" TTF="0.906359"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0112919999999999 -0.0008589970703783636 -5.947631176197973e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL1:BCM01" ess_name="DTL-010:PBI-BCM-001" pos="7.6429486" type="MARKER" length="0.0">
+   <parameters/>
+   <channelsuite>
+    <channel handle="DisplayLength" settable="false" signal="DTL-010:PBI-BCM-001:PulseWidthR" valid="true"/>
+    <channel handle="currentAvg" settable="false" signal="DTL-010:PBI-BCM-001:FlatTopCurrentR" valid="true"/>
+    <channel handle="currentMax" settable="false" signal="DTL-010:PBI-BCM-001:UpperThreshold" valid="true"/>
+    <channel handle="tDelay" settable="false" signal="DTL-010:PBI-BCM-001:FineDelayR" valid="true"/>
+    <channel handle="Particles" settable="false" signal="DTL-010:PBI-BCM-001:PulseChargeR" valid="true"/>
+    <channel handle="currentArray" settable="false" signal="DTL-010:PBI-BCM-001:PRC-TR1-ArrayData" valid="true"/>
+   </channelsuite>
+  </accElement>
+  <accElement name="DTL1-END" pos="7.795937599999999" type="MARKER" length="0.0">
+   <parameters/>
+  </accElement>
+  <Cavities>
+   <Cavity ampl="1.0" frequency="352.21e+6" name="DTL1" pos="3.3025066836065577" ess_name="DTL-010:EMR-Cav-001">
+       </Cavity>
+  </Cavities>
+ </DTL1>
+ <DTL2 bpmFrequency="    7.0442e+08" length="7.364504700000001" name="DTL2">
+  <accElement name="DTL2-START" pos="0.0" type="MARKER" length="0.0">
+   <parameters/>
+  </accElement>
+  <accElement name="DTL2:PMQ01" ess_name="DTL-020:BMD-PMQ-001" pos="0.025" length="0.0499" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="36.4608"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg01" ess_name="DTL-020:EMR-Cav-001:G1" pos="0.1155519" type="RFGAP" length="0.0">
+   <parameters phase="-34.0" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.000572801480787652" E0TL="0.000512462" EzFile="?" cavity="DTL2" TTF="0.894659"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0144414999999998 -0.0011107113627751334 -6.571893246700862e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg02" ess_name="DTL-020:EMR-Cav-001:G2" pos="0.2975288" type="RFGAP" length="0.0">
+   <parameters phase="-30.0" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0005785348162367634" E0TL="0.000517165" EzFile="?" cavity="DTL2" TTF="0.893922"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0145279999999999 -0.0011281201190582514 -6.750212178100824e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:PMQ02" ess_name="DTL-020:BMD-PMQ-002" pos="0.3890799" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="-23.5715"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg03" ess_name="DTL-020:EMR-Cav-001:G3" pos="0.4815677" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0005770817207976062" E0TL="0.000516678" EzFile="?" cavity="DTL2" TTF="0.895329"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0141255 -0.0011076058766738563 -6.82561247734127e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:BPM01" ess_name="DTL-020:PBI-BPM-001" pos="0.5722174" type="MARKER" length="0.0">
+   <parameters/>
+   <channelsuite>
+    <channel handle="yAvg" settable="false" signal="DTL-020:PBI-BPM-001:YP-AvgValue" valid="true"/>
+    <channel handle="phaseAvg" settable="false" signal="DTL-020:PBI-BPM-001:SA-AvgValue" valid="true"/>
+    <channel handle="amplitudeAvg" settable="false" signal="DTL-020:PBI-BPM-001:SM-AvgValue" valid="true"/>
+    <channel handle="xAvg" settable="false" signal="DTL-020:PBI-BPM-001:XP-AvgValue" valid="true"/>
+    <channel handle="phaseArray" settable="false" signal="DTL-020:PBI-BPM-001:SA-TR1-ArrayData" valid="true"/>
+   </channelsuite>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg04" ess_name="DTL-020:EMR-Cav-001:G4" pos="0.6651745" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0005827235577084204" E0TL="0.000521618" EzFile="?" cavity="DTL2" TTF="0.895138"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.014081 -0.0011151273764954059 -6.986785910939582e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:PMQ03" ess_name="DTL-020:BMD-PMQ-003" pos="0.7567252" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="23.2883"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg05" ess_name="DTL-020:EMR-Cav-001:G5" pos="0.8506165" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0005884477381448575" E0TL="0.000526606" EzFile="?" cavity="DTL2" TTF="0.894907"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0140475 -0.0011233870775551413 -7.152032005088391e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:DCV01" ess_name="DTL-020:BMD-CV-001" pos="0.9430594" type="DCV" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-020:BMD-CV-001"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg06" ess_name="DTL-020:EMR-Cav-001:G6" pos="1.0378906" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0005941281946372797" E0TL="0.000531475" EzFile="?" cavity="DTL2" TTF="0.894546"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0140449999999999 -0.001134087200622489 -7.326319931288258e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:PMQ04" ess_name="DTL-020:BMD-PMQ-004" pos="1.1312403" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="-23.4903"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg07" ess_name="DTL-020:EMR-Cav-001:G7" pos="1.2269932" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0005999000295214836" E0TL="0.000536469" EzFile="?" cavity="DTL2" TTF="0.894264"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.014027 -0.0011434951526295542 -7.498277741512942e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:DCH01" ess_name="DTL-020:BMD-CH-001" pos="1.3212314" type="DCH" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-020:BMD-CH-001"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg08" ess_name="DTL-020:EMR-Cav-001:G8" pos="1.4179212" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0006055927548149267" E0TL="0.0005413" EzFile="?" cavity="DTL2" TTF="0.893835"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.014043 -0.0011556866784934842 -7.68060361446859e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:PMQ05" ess_name="DTL-020:BMD-PMQ-005" pos="1.5130547" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="22.7695"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg09" ess_name="DTL-020:EMR-Cav-001:G9" pos="1.6106707" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0006113296290989846" E0TL="0.000546157" EzFile="?" cavity="DTL2" TTF="0.893392"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0140654999999998 -0.0011683432943459795 -7.865998150575541e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg10" ess_name="DTL-020:EMR-Cav-001:G10" pos="1.8052381" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.000617032714126845" E0TL="0.000550959" EzFile="?" cavity="DTL2" TTF="0.892917"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.014094 -0.0011816024085876881 -8.055806551087805e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:PMQ06" ess_name="DTL-020:BMD-PMQ-006" pos="1.9021476" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="-22.9598"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg11" ess_name="DTL-020:EMR-Cav-001:G11" pos="2.0016196" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0006226884305254368" E0TL="0.000555628" EzFile="?" cavity="DTL2" TTF="0.892305"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0141555 -0.001197699775399565 -8.256013973703684e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg12" ess_name="DTL-020:EMR-Cav-001:G12" pos="2.1998111" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0006284533344995363" E0TL="0.000560444" EzFile="?" cavity="DTL2" TTF="0.891783"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0141995 -0.0012122915191237623 -8.453465556031795e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:PMQ07" ess_name="DTL-020:BMD-PMQ-007" pos="2.2984967" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="22.4318"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg13" ess_name="DTL-020:EMR-Cav-001:G13" pos="2.3998086" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0006341124295547839" E0TL="0.000565069" EzFile="?" cavity="DTL2" TTF="0.891118"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.014276 -0.0012297958498355445 -8.662265545243831e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg14" ess_name="DTL-020:EMR-Cav-001:G14" pos="2.601608" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0006398740111503501" E0TL="0.000569843" EzFile="?" cavity="DTL2" TTF="0.890555"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0143315 -0.0012454926684460934 -8.867474150516047e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:PMQ08" ess_name="DTL-020:BMD-PMQ-008" pos="2.702062" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="-22.3473"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg15" ess_name="DTL-020:EMR-Cav-001:G15" pos="2.8052053" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0006455663626811412" E0TL="0.000574454" EzFile="?" cavity="DTL2" TTF="0.889845"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0144195 -0.0012642736361510374 -9.084620073101685e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:BPM02" ess_name="DTL-020:PBI-BPM-002" pos="2.9065399" type="MARKER" length="0.0">
+   <parameters/>
+   <channelsuite>
+    <channel handle="yAvg" settable="false" signal="DTL-020:PBI-BPM-002:YP-AvgValue" valid="true"/>
+    <channel handle="phaseAvg" settable="false" signal="DTL-020:PBI-BPM-002:SA-AvgValue" valid="true"/>
+    <channel handle="amplitudeAvg" settable="false" signal="DTL-020:PBI-BPM-002:SM-AvgValue" valid="true"/>
+    <channel handle="xAvg" settable="false" signal="DTL-020:PBI-BPM-002:XP-AvgValue" valid="true"/>
+    <channel handle="phaseArray" settable="false" signal="DTL-020:PBI-BPM-002:SA-TR1-ArrayData" valid="true"/>
+   </channelsuite>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg16" ess_name="DTL-020:EMR-Cav-001:G16" pos="3.0105961" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0006512566386014005" E0TL="0.000579044" EzFile="?" cavity="DTL2" TTF="0.889118"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.014516 -0.001283717124523695 -9.305707055894233e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:PMQ09" ess_name="DTL-020:BMD-PMQ-009" pos="3.1128098" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="22.3743"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg17" ess_name="DTL-020:EMR-Cav-001:G17" pos="3.217776" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.000656971724523761" E0TL="0.000583632" EzFile="?" cavity="DTL2" TTF="0.888367"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.014618 -0.0013038808349917868 -9.531274345340357e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:DCV02" ess_name="DTL-020:BMD-CV-002" pos="3.3208571" type="DCV" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-020:BMD-CV-002"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg18" ess_name="DTL-020:EMR-Cav-001:G18" pos="3.4267405" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0006625628613506501" E0TL="0.000588004" EzFile="?" cavity="DTL2" TTF="0.887469"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.014754 -0.0013272074940219856 -9.770001951300409e-05"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:PMQ10" ess_name="DTL-020:BMD-PMQ-010" pos="3.5307051" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="-22.151"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg19" ess_name="DTL-020:EMR-Cav-001:G19" pos="3.637485" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0006682873244710306" E0TL="0.000592555" EzFile="?" cavity="DTL2" TTF="0.886677"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0148675 -0.0013487596137759445 -0.00010004274752697737"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:DCH02" ess_name="DTL-020:BMD-CH-002" pos="3.7423127" type="DCH" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-020:BMD-CH-002"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg20" ess_name="DTL-020:EMR-Cav-001:G20" pos="3.850005" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0006738926478341813" E0TL="0.000596893" EzFile="?" cavity="DTL2" TTF="0.885739"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.015017 -0.0013736453156959468 -0.00010251910385871785"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:PMQ11" ess_name="DTL-020:BMD-PMQ-011" pos="3.9557111" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="21.7321"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg21" ess_name="DTL-020:EMR-Cav-001:G21" pos="4.0642955" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0006796382013126729" E0TL="0.00060142" EzFile="?" cavity="DTL2" TTF="0.884912"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.015142 -0.0013964685021031677 -0.00010495027982500795"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg22" ess_name="DTL-020:EMR-Cav-001:G22" pos="4.280352" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0006852657384666032" E0TL="0.000605729" EzFile="?" cavity="DTL2" TTF="0.883933"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0153035000000001 -0.0014228995431642573 -0.00010751994616788178"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:PMQ12" ess_name="DTL-020:BMD-PMQ-012" pos="4.3877819" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="-21.5151"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg23" ess_name="DTL-020:EMR-Cav-001:G23" pos="4.4981695" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0006909193253003316" E0TL="0.000610041" EzFile="?" cavity="DTL2" TTF="0.882941"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0154695 -0.0014499929366408595 -0.00011013152329060848"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg24" ess_name="DTL-020:EMR-Cav-001:G24" pos="4.717743" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0006965954136845639" E0TL="0.000614347" EzFile="?" cavity="DTL2" TTF="0.881928"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0156435000000001 -0.0014779690547109868 -0.00011279213621936577"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:PMQ13" ess_name="DTL-020:BMD-PMQ-013" pos="4.8268943" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="21.2823"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg25" ess_name="DTL-020:EMR-Cav-001:G25" pos="4.9390675" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007022471718782815" E0TL="0.000618599" EzFile="?" cavity="DTL2" TTF="0.880885"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0158265000000002 -0.001507060656409557 -0.00011550834879311659"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg26" ess_name="DTL-020:EMR-Cav-001:G26" pos="5.162138" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007079416892655239" E0TL="0.000622874" EzFile="?" cavity="DTL2" TTF="0.879838"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.016011 -0.001536598646363581 -0.00011826089409541092"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:PMQ14" ess_name="DTL-020:BMD-PMQ-014" pos="5.2730023" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="-21.0756"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg27" ess_name="DTL-020:EMR-Cav-001:G27" pos="5.3869492" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.000713645529402661" E0TL="0.000627126" EzFile="?" cavity="DTL2" TTF="0.878764"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0162045 -0.001567245047257613 -0.00012106774445169404"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:BPM03" ess_name="DTL-020:PBI-BPM-003" pos="5.4986662" type="MARKER" length="0.0">
+   <parameters/>
+   <channelsuite>
+    <channel handle="yAvg" settable="false" signal="DTL-020:PBI-BPM-003:YP-AvgValue" valid="true"/>
+    <channel handle="phaseAvg" settable="false" signal="DTL-020:PBI-BPM-003:SA-AvgValue" valid="true"/>
+    <channel handle="amplitudeAvg" settable="false" signal="DTL-020:PBI-BPM-003:SM-AvgValue" valid="true"/>
+    <channel handle="xAvg" settable="false" signal="DTL-020:PBI-BPM-003:XP-AvgValue" valid="true"/>
+    <channel handle="phaseArray" settable="false" signal="DTL-020:PBI-BPM-003:SA-TR1-ArrayData" valid="true"/>
+   </channelsuite>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg28" ess_name="DTL-020:EMR-Cav-001:G28" pos="5.6134962" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007193581722744368" E0TL="0.000631367" EzFile="?" cavity="DTL2" TTF="0.877681"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0164025 -0.0015984999656887564 -0.00012391674879235073"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:PMQ15" ess_name="DTL-020:BMD-PMQ-015" pos="5.7260635" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="20.8547"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg29" ess_name="DTL-020:EMR-Cav-001:G29" pos="5.8417737" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007251077189143804" E0TL="0.00063562" EzFile="?" cavity="DTL2" TTF="0.876587"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.016605 -0.0016304491699086186 -0.0001268090985752359"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:DCV03" ess_name="DTL-020:BMD-CV-003" pos="5.9551784" type="DCV" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-020:BMD-CV-003"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg30" ess_name="DTL-020:EMR-Cav-001:G30" pos="6.0717765" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.000730727927853825" E0TL="0.000639631" EzFile="?" cavity="DTL2" TTF="0.875334"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0168469999999998 -0.0016667026129821457 -0.00012985987466819835"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:PMQ16" ess_name="DTL-020:BMD-PMQ-016" pos="6.1860354" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="-19.8501"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg31" ess_name="DTL-020:EMR-Cav-001:G31" pos="6.303499" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007363750337449841" E0TL="0.000643742" EzFile="?" cavity="DTL2" TTF="0.874204"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0170615 -0.0017004630702730202 -0.00013285109493654047"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:DCH03" ess_name="DTL-020:BMD-CH-003" pos="6.4181002" type="DCH" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-020:BMD-CH-003"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg32" ess_name="DTL-020:EMR-Cav-001:G32" pos="6.5369356" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007329507474910628" E0TL="0.000642553" EzFile="?" cavity="DTL2" TTF="0.876666"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0164274999999998 -0.0016489678745666904 -0.00013288492750406628"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:PMQ17" ess_name="DTL-020:BMD-PMQ-017" pos="6.6499728" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="20.2603"/>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg33" ess_name="DTL-020:EMR-Cav-001:G33" pos="6.7691243" type="RFGAP" length="0.0">
+   <parameters phase="-30.0" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007398971403368248" E0TL="0.000647538" EzFile="?" cavity="DTL2" TTF="0.875173"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.016727 -0.001690913503966747 -0.0001361646963683166"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav02:Rg34" ess_name="DTL-020:EMR-Cav-001:G34" pos="7.0032389" type="RFGAP" length="0.0">
+   <parameters phase="-34.0" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.000767681839631962" E0TL="0.000660472" EzFile="?" cavity="DTL2" TTF="0.860346"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.020362 -0.0020736575148918874 -0.00015037507254522036"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL2:PMQ18" ess_name="DTL-020:BMD-PMQ-018" pos="7.1261367" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="-20.5247"/>
+  </accElement>
+  <accElement name="DTL2-END" pos="7.364504600000001" type="MARKER" length="0.0">
+   <parameters/>
+  </accElement>
+  <Cavities>
+   <Cavity ampl="1.0" frequency="352.21e+6" name="DTL2" pos="3.4073049205882353" ess_name="DTL-020:EMR-Cav-001">
+    <channelsuite>
+     <channel handle="cavPhaseAvg" settable="false" signal="DTL-020:RFS-LLRF-101:SPRampingPhase" valid="true"/>
+     <channel handle="cavAmpSet" settable="true" signal="DTL-020:RFS-LLRF-101:SPRampingA" valid="true"/>
+     <channel handle="cavAmpAvg" settable="false" signal="DTL-020:RFS-LLRF-101:SPRampingA" valid="true"/>
+     <channel handle="cavPhaseSet" settable="true" signal="DTL-020:RFS-LLRF-101:SPRampingPhase" valid="true"/>
+     <channel handle="cavAmpWave" settable="true" signal="DTL-020:RFS-DIG-101:SPTbl-Mag" valid="true"/>
+     <channel handle="cavAmpArray" settable="true" signal="DTL-020:RFS-DIG-101:Dwn0-Cmp0" valid="true"/>
+     <channel handle="cavAmpSetOP" settable="true" signal="DTL-020:RFS-LLRF-101:FFPulseGenP" valid="true"/>
+     <channel handle="cavPhaseAck" settable="true" signal="DTL-020:RFS-LLRF-101:SPRampingEn" valid="true"/>
+     <channel handle="cavPhaseWave" settable="true" signal="DTL-020:RFS-DIG-101:SPTbl-Ang" valid="true"/>
+     <channel handle="cavPhaseArray" settable="true" signal="DTL-020:RFS-DIG-101:Dwn0-Cmp1" valid="true"/>
+     <channel handle="cavPhaseSetOP" settable="true" signal="DTL-020:RFS-LLRF-101:FFPulseGenPhase" valid="true"/>
+     <channel handle="cavFwd1" settable="true" signal="DTL-020:RFS-DIG-101:Dwn2-Cmp1" valid="true"/>
+     <channel handle="cavRefl1" settable="true" signal="DTL-020:RFS-DIG-101:Dwn3-Cmp1" valid="true"/>
+     <channel handle="cavFwd2" settable="true" signal="DTL-020:RFS-DIG-101:Dwn4-Cmp1" valid="true"/>
+     <channel handle="cavRefl2" settable="true" signal="DTL-020:RFS-DIG-101:Dwn5-Cmp1" valid="true"/>
+    </channelsuite>
+   </Cavity>
+  </Cavities>
+ </DTL2>
+ <DTL3 bpmFrequency="    7.0442e+08" length="7.866114" name="DTL3">
+  <accElement name="DTL3-START" pos="0.0" type="MARKER" length="0.0">
+   <parameters/>
+  </accElement>
+  <accElement name="DTL3:BCM01" ess_name="DTL-030:PBI-BCM-001" pos="0.0" type="MARKER" length="0.0">
+   <parameters/>
+   <channelsuite>
+    <channel handle="DisplayLength" settable="false" signal="DTL-030:PBI-BCM-001:PulseWidthR" valid="true"/>
+    <channel handle="currentAvg" settable="false" signal="DTL-030:PBI-BCM-001:FlatTopCurrentR" valid="true"/>
+    <channel handle="currentMax" settable="false" signal="DTL-030:PBI-BCM-001:UpperThreshold" valid="true"/>
+    <channel handle="tDelay" settable="false" signal="DTL-030:PBI-BCM-001:FineDelayR" valid="true"/>
+    <channel handle="Particles" settable="false" signal="DTL-030:PBI-BCM-001:PulseChargeR" valid="true"/>
+    <channel handle="currentArray" settable="false" signal="DTL-030:PBI-BCM-001:PRC-TR1-ArrayData" valid="true"/>
+   </channelsuite>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg01" ess_name="DTL-030:EMR-Cav-001:G1" pos="0.1208746" type="RFGAP" length="0.0">
+   <parameters phase="-34.0" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007443570208534714" E0TL="0.000644538" EzFile="?" cavity="DTL3" TTF="0.865899"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.01888 -0.0019347604143198805 -0.00014795469695289476"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:PMQ01" ess_name="DTL-030:BMD-PMQ-001" pos="0.2419694" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="19.8653"/>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg02" ess_name="DTL-030:EMR-Cav-001:G2" pos="0.3633872" type="RFGAP" length="0.0">
+   <parameters phase="-30.0" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007491192342113398" E0TL="0.000647042" EzFile="?" cavity="DTL3" TTF="0.863737"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.019382 -0.001999195075300062 -0.00015180540609833335"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg03" ess_name="DTL-030:EMR-Cav-001:G3" pos="0.6078427" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007452619779641901" E0TL="0.000646242" EzFile="?" cavity="DTL3" TTF="0.867134"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.018477 -0.0019181324108249465 -0.00015108814881299227"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:PMQ02" ess_name="DTL-030:BMD-PMQ-002" pos="0.7278389" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="-19.0015"/>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg04" ess_name="DTL-030:EMR-Cav-001:G4" pos="0.850918" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007498781504743469" E0TL="0.000649261" EzFile="?" cavity="DTL3" TTF="0.865822"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.018753 -0.0019599471477361944 -0.00015440416296453013"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:BPM01" ess_name="DTL-030:PBI-BPM-001" pos="0.9717158" type="MARKER" length="0.0">
+   <parameters/>
+   <channelsuite>
+    <channel handle="yAvg" settable="false" signal="DTL-030:PBI-BPM-001:YP-AvgValue" valid="true"/>
+    <channel handle="phaseAvg" settable="false" signal="DTL-030:PBI-BPM-001:SA-AvgValue" valid="true"/>
+    <channel handle="amplitudeAvg" settable="false" signal="DTL-030:PBI-BPM-001:SM-AvgValue" valid="true"/>
+    <channel handle="xAvg" settable="false" signal="DTL-030:PBI-BPM-001:XP-AvgValue" valid="true"/>
+    <channel handle="phaseArray" settable="false" signal="DTL-030:PBI-BPM-001:SA-TR1-ArrayData" valid="true"/>
+   </channelsuite>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg05" ess_name="DTL-030:EMR-Cav-001:G5" pos="1.0956229" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007546529678358176" E0TL="0.000652399" EzFile="?" cavity="DTL3" TTF="0.864502"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0190325 -0.002002523086177928 -0.00015776011011041502"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:PMQ03" ess_name="DTL-030:BMD-PMQ-003" pos="1.21722" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="19.2797"/>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg06" ess_name="DTL-030:EMR-Cav-001:G6" pos="1.3419523" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007594341316706231" E0TL="0.00065552" EzFile="?" cavity="DTL3" TTF="0.863169"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0193204999999999 -0.0020462021656894765 -0.00016116239798948288"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:DCV01" ess_name="DTL-030:BMD-CV-001" pos="1.4643455" type="DCV" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-030:BMD-CV-001"/>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg07" ess_name="DTL-030:EMR-Cav-001:G7" pos="1.5899006" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007642311043863791" E0TL="0.000658635" EzFile="?" cavity="DTL3" TTF="0.861827"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0196105 -0.0020906268533290757 -0.00016460666896455582"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:PMQ04" ess_name="DTL-030:BMD-PMQ-004" pos="1.7130874" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="-19.3638"/>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg08" ess_name="DTL-030:EMR-Cav-001:G8" pos="1.8394624" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007690211359513386" E0TL="0.000661725" EzFile="?" cavity="DTL3" TTF="0.860477"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.019908 -0.0021360091621749626 -0.00016809332583895097"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:DCH01" ess_name="DTL-030:BMD-CH-001" pos="1.9634308" type="DCH" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-030:BMD-CH-001"/>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg09" ess_name="DTL-030:EMR-Cav-001:G9" pos="2.0906323" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.000773684608802454" E0TL="0.000664568" EzFile="?" cavity="DTL3" TTF="0.858965"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.020249 -0.0021866028288693383 -0.00017175640950629868"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:PMQ05" ess_name="DTL-030:BMD-PMQ-005" pos="2.2153986" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="19.1826"/>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg10" ess_name="DTL-030:EMR-Cav-001:G10" pos="2.3434044" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007784869979115967" E0TL="0.000667625" EzFile="?" cavity="DTL3" TTF="0.857593"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0205565 -0.002233948482374734 -0.00017533020012946383"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg11" ess_name="DTL-030:EMR-Cav-001:G11" pos="2.5977733" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007833020911803695" E0TL="0.000670675" EzFile="?" cavity="DTL3" TTF="0.856215"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0208689999999998 -0.002282150532391285 -0.00017894291782684577"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:PMQ06" ess_name="DTL-030:BMD-PMQ-006" pos="2.7241078" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="-19.0165"/>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg12" ess_name="DTL-030:EMR-Cav-001:G12" pos="2.8537334" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007881278902046847" E0TL="0.000673713" EzFile="?" cavity="DTL3" TTF="0.854827"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0211855 -0.0023312565906335463 -0.00018259781811351248"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg13" ess_name="DTL-030:EMR-Cav-001:G13" pos="3.1112793" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007927880310708375" E0TL="0.000676467" EzFile="?" cavity="DTL3" TTF="0.853276"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.021549 -0.0023860109393958446 -0.00018643313381314447"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:PMQ07" ess_name="DTL-030:BMD-PMQ-007" pos="3.2391709" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="18.8414"/>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg14" ess_name="DTL-030:EMR-Cav-001:G14" pos="3.370405" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0007976214792328444" E0TL="0.000679473" EzFile="?" cavity="DTL3" TTF="0.851874"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0218745 -0.0024369428054725802 -0.0001901685896302084"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg15" ess_name="DTL-030:EMR-Cav-001:G15" pos="3.6311052" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0008022763516278807" E0TL="0.000682182" EzFile="?" cavity="DTL3" TTF="0.850308"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0222494999999998 -0.00249376162252982 -0.00019408691746530596"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:PMQ08" ess_name="DTL-030:BMD-PMQ-008" pos="3.7605433" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="-18.6843"/>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg16" ess_name="DTL-030:EMR-Cav-001:G16" pos="3.8933739" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0008071201131829647" E0TL="0.000685157" EzFile="?" cavity="DTL3" TTF="0.848891"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0225855 -0.002546673872526566 -0.0001979017676484341"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg17" ess_name="DTL-030:EMR-Cav-001:G17" pos="4.1572056" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.000811769968217026" E0TL="0.00068782" EzFile="?" cavity="DTL3" TTF="0.847309"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.022972 -0.002605623913767379 -0.00020190147187995302"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:PMQ09" ess_name="DTL-030:BMD-PMQ-009" pos="4.2881787" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="18.5189"/>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg18" ess_name="DTL-030:EMR-Cav-001:G18" pos="4.4225945" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0008166153984380726" E0TL="0.000690757" EzFile="?" cavity="DTL3" TTF="0.845878"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0233174999999999 -0.0026604979215425896 -0.00020579221563009808"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:BPM02" ess_name="DTL-030:PBI-BPM-002" pos="4.5543204" type="MARKER" length="0.0">
+   <parameters/>
+   <channelsuite>
+    <channel handle="yAvg" settable="false" signal="DTL-030:PBI-BPM-002:YP-AvgValue" valid="true"/>
+    <channel handle="phaseAvg" settable="false" signal="DTL-030:PBI-BPM-002:SA-AvgValue" valid="true"/>
+    <channel handle="amplitudeAvg" settable="false" signal="DTL-030:PBI-BPM-002:SM-AvgValue" valid="true"/>
+    <channel handle="xAvg" settable="false" signal="DTL-030:PBI-BPM-002:XP-AvgValue" valid="true"/>
+    <channel handle="phaseArray" settable="false" signal="DTL-030:PBI-BPM-002:SA-TR1-ArrayData" valid="true"/>
+   </channelsuite>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg19" ess_name="DTL-030:EMR-Cav-001:G19" pos="4.6895349" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0008212684609307542" E0TL="0.000693383" EzFile="?" cavity="DTL3" TTF="0.844283"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.023714 -0.002721535172489849 -0.00020986958796899725"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:PMQ10" ess_name="DTL-030:BMD-PMQ-010" pos="4.8220318" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="-18.3653"/>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg20" ess_name="DTL-030:EMR-Cav-001:G20" pos="4.958021" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0008261200227801243" E0TL="0.000696287" EzFile="?" cavity="DTL3" TTF="0.84284"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.024071 -0.0027784519434845044 -0.00021383508546280713"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:DCV02" ess_name="DTL-030:BMD-CV-002" pos="5.091264" type="DCV" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-030:BMD-CV-002"/>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg21" ess_name="DTL-030:EMR-Cav-001:G21" pos="5.2280472" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0008307767655058296" E0TL="0.000698876" EzFile="?" cavity="DTL3" TTF="0.841232"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0244775 -0.002841598021294484 -0.0002179880399165938"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:PMQ11" ess_name="DTL-030:BMD-PMQ-011" pos="5.3620456" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="18.2038"/>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg22" ess_name="DTL-030:EMR-Cav-001:G22" pos="5.4996076" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0008354430228985086" E0TL="0.000701453" EzFile="?" cavity="DTL3" TTF="0.839618"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0248875 -0.0029057899333670536 -0.00022217883367648948"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:DCH02" ess_name="DTL-030:BMD-CH-002" pos="5.6343694" type="DCH" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-030:BMD-CH-002"/>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg23" ess_name="DTL-030:EMR-Cav-001:G23" pos="5.7726963" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0008403063373265996" E0TL="0.000704312" EzFile="?" cavity="DTL3" TTF="0.838161"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.025258 -0.0029656198985202674 -0.00022625001327195368"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:PMQ12" ess_name="DTL-030:BMD-PMQ-012" pos="5.9081956" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="-18.0679"/>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg24" ess_name="DTL-030:EMR-Cav-001:G24" pos="6.0473079" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0008449729719391109" E0TL="0.000706852" EzFile="?" cavity="DTL3" TTF="0.836538"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0256795 -0.003031909359545906 -0.00023051072797322636"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg25" ess_name="DTL-030:EMR-Cav-001:G25" pos="6.3234363" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0008496410986107468" E0TL="0.000709373" EzFile="?" cavity="DTL3" TTF="0.834909"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0261069999999999 -0.0030994408188803834 -0.00023480557517242917"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:PMQ13" ess_name="DTL-030:BMD-PMQ-013" pos="6.4604368" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="18.0938"/>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg26" ess_name="DTL-030:EMR-Cav-001:G26" pos="6.6010758" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0008543504683606118" E0TL="0.000712049" EzFile="?" cavity="DTL3" TTF="0.833439"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0264895 -0.003162152661472747 -0.00023897907810282816"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg27" ess_name="DTL-030:EMR-Cav-001:G27" pos="6.8802204" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0008490182205194716" E0TL="0.00071158" EzFile="?" cavity="DTL3" TTF="0.838121"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0250955000000002 -0.0030111658784177596 -0.00023698364159647434"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:PMQ14" ess_name="DTL-030:BMD-PMQ-014" pos="7.0152358" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="-18.0416"/>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg28" ess_name="DTL-030:EMR-Cav-001:G28" pos="7.1573452" type="RFGAP" length="0.0">
+   <parameters phase="-30.0" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0008552683040599939" E0TL="0.000715077" EzFile="?" cavity="DTL3" TTF="0.836085"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0256355 -0.0030921652176150944 -0.00024170407171280985"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav03:Rg29" ess_name="DTL-030:EMR-Cav-001:G29" pos="7.4362636" type="RFGAP" length="0.0">
+   <parameters phase="-34.0" mode="0.0" aperture="0.022" aprt_type="1" E0L="0.0008837716574837665" E0TL="0.00071876" EzFile="?" cavity="DTL3" TTF="0.813287"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.032569 -0.003952131702432554 -0.0002663307597003225"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL3:PMQ15" ess_name="DTL-030:BMD-PMQ-015" pos="7.582633" length="0.08" type="QUAD">
+   <parameters aperture="0.022" aprt_type="1" field="17.2233"/>
+  </accElement>
+  <accElement name="DTL3-END" pos="7.866113899999999" type="MARKER" length="0.0">
+   <parameters/>
+  </accElement>
+  <Cavities>
+   <Cavity ampl="1.0" frequency="352.21e+6" name="DTL3" pos="3.6853456482758613" ess_name="DTL-030:EMR-Cav-001">
+    <channelsuite>
+     <channel handle="cavPhaseAvg" settable="false" signal="DTL-030:RFS-LLRF-101:SPRampingPhase" valid="true"/>
+     <channel handle="cavAmpSet" settable="true" signal="DTL-030:RFS-LLRF-101:SPRampingA" valid="true"/>
+     <channel handle="cavAmpAvg" settable="false" signal="DTL-030:RFS-LLRF-101:SPRampingA" valid="true"/>
+     <channel handle="cavPhaseSet" settable="true" signal="DTL-030:RFS-LLRF-101:SPRampingPhase" valid="true"/>
+     <channel handle="cavAmpWave" settable="true" signal="DTL-030:RFS-DIG-101:SPTbl-Mag" valid="true"/>
+     <channel handle="cavAmpArray" settable="true" signal="DTL-030:RFS-DIG-101:Dwn0-Cmp0" valid="true"/>
+     <channel handle="cavAmpSetOP" settable="true" signal="DTL-030:RFS-LLRF-101:FFPulseGenP" valid="true"/>
+     <channel handle="cavPhaseAck" settable="true" signal="DTL-030:RFS-LLRF-101:SPRampingEn" valid="true"/>
+     <channel handle="cavPhaseWave" settable="true" signal="DTL-030:RFS-DIG-101:SPTbl-Ang" valid="true"/>
+     <channel handle="cavPhaseArray" settable="true" signal="DTL-030:RFS-DIG-101:Dwn0-Cmp1" valid="true"/>
+     <channel handle="cavPhaseSetOP" settable="true" signal="DTL-030:RFS-LLRF-101:FFPulseGenPhase" valid="true"/>
+     <channel handle="cavFwd1" settable="true" signal="DTL-030:RFS-DIG-101:Dwn2-Cmp1" valid="true"/>
+     <channel handle="cavRefl1" settable="true" signal="DTL-030:RFS-DIG-101:Dwn3-Cmp1" valid="true"/>
+     <channel handle="cavFwd2" settable="true" signal="DTL-030:RFS-DIG-101:Dwn4-Cmp1" valid="true"/>
+     <channel handle="cavRefl2" settable="true" signal="DTL-030:RFS-DIG-101:Dwn5-Cmp1" valid="true"/>
+    </channelsuite>
+   </Cavity>
+  </Cavities>
+ </DTL3>
+ <DTL4 bpmFrequency="    7.0442e+08" length="10.126338100000002" name="DTL4">
+  <accElement name="DTL4-START" pos="0.0" type="MARKER" length="0.0">
+   <parameters/>
+  </accElement>
+  <accElement name="DTL4:BCM01" ess_name="DTL-040:PBI-BCM-001" pos="0.0" type="MARKER" length="0.0">
+   <parameters/>
+   <channelsuite>
+    <channel handle="DisplayLength" settable="false" signal="DTL-040:PBI-BCM-001:PulseWidthR" valid="true"/>
+    <channel handle="currentAvg" settable="false" signal="DTL-040:PBI-BCM-001:FlatTopCurrentR" valid="true"/>
+    <channel handle="currentMax" settable="false" signal="DTL-040:PBI-BCM-001:UpperThreshold" valid="true"/>
+    <channel handle="tDelay" settable="false" signal="DTL-040:PBI-BCM-001:FineDelayR" valid="true"/>
+    <channel handle="Particles" settable="false" signal="DTL-040:PBI-BCM-001:PulseChargeR" valid="true"/>
+    <channel handle="currentArray" settable="false" signal="DTL-040:PBI-BCM-001:PRC-TR1-ArrayData" valid="true"/>
+   </channelsuite>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg01" ess_name="DTL-040:EMR-Cav-001:G1" pos="0.143633" type="RFGAP" length="0.0">
+   <parameters phase="-34.0" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0008737454271427323" E0TL="0.000709594" EzFile="?" cavity="DTL4" TTF="0.812129"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0336055 -0.004099607865567446 -0.0002675665630347261"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:PMQ01" ess_name="DTL-040:BMD-PMQ-001" pos="0.2874172" length="0.08" type="QUAD">
+   <parameters aperture="0.024" aprt_type="1" field="-17.1713"/>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg02" ess_name="DTL-040:EMR-Cav-001:G2" pos="0.4315613" type="RFGAP" length="0.0">
+   <parameters phase="-30.0" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0008777934419059221" E0TL="0.000710443" EzFile="?" cavity="DTL4" TTF="0.809351"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0344845 -0.004227481257788521 -0.000272784091937468"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:BPM01" ess_name="DTL-040:PBI-BPM-001" pos="0.576001" type="MARKER" length="0.0">
+   <parameters/>
+   <channelsuite>
+    <channel handle="yAvg" settable="false" signal="DTL-040:PBI-BPM-001:YP-AvgValue" valid="true"/>
+    <channel handle="phaseAvg" settable="false" signal="DTL-040:PBI-BPM-001:SA-AvgValue" valid="true"/>
+    <channel handle="amplitudeAvg" settable="false" signal="DTL-040:PBI-BPM-001:SM-AvgValue" valid="true"/>
+    <channel handle="xAvg" settable="false" signal="DTL-040:PBI-BPM-001:XP-AvgValue" valid="true"/>
+    <channel handle="phaseArray" settable="false" signal="DTL-040:PBI-BPM-001:SA-TR1-ArrayData" valid="true"/>
+   </channelsuite>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg03" ess_name="DTL-040:EMR-Cav-001:G3" pos="0.7213027" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0008726467331118493" E0TL="0.000711564" EzFile="?" cavity="DTL4" TTF="0.815409"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.032446 -0.0039959371698257435 -0.0002701479967180176"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:PMQ02" ess_name="DTL-040:BMD-PMQ-002" pos="0.863303" length="0.08" type="QUAD">
+   <parameters aperture="0.024" aprt_type="1" field="17.3295"/>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg04" ess_name="DTL-040:EMR-Cav-001:G4" pos="1.0089126" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0008765903745628543" E0TL="0.000713371" EzFile="?" cavity="DTL4" TTF="0.813802"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0329154999999999 -0.004074407823971191 -0.0002745575983013972"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:DCV01" ess_name="DTL-040:BMD-CV-001" pos="1.1516208" type="DCV" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-040:BMD-CV-001"/>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg05" ess_name="DTL-040:EMR-Cav-001:G5" pos="1.2979593" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0008807501656008294" E0TL="0.00071534" EzFile="?" cavity="DTL4" TTF="0.812194"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0333919999999999 -0.004154034263971809 -0.00027899207262756915"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:PMQ03" ess_name="DTL-040:BMD-PMQ-003" pos="1.4413718" length="0.08" type="QUAD">
+   <parameters aperture="0.024" aprt_type="1" field="-17.2763"/>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg06" ess_name="DTL-040:EMR-Cav-001:G6" pos="1.588437" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.000884931111396228" E0TL="0.000717311" EzFile="?" cavity="DTL4" TTF="0.810584"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0338705 -0.00423459117805223 -0.0002834531149633285"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:DCH01" ess_name="DTL-040:BMD-CH-001" pos="1.7325522" type="DCH" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-040:BMD-CH-001"/>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg07" ess_name="DTL-040:EMR-Cav-001:G7" pos="1.8803401" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0008891381767702428" E0TL="0.000719287" EzFile="?" cavity="DTL4" TTF="0.808971"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.034355 -0.004316335912556196 -0.00028793481188439175"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:PMQ04" ess_name="DTL-040:BMD-PMQ-004" pos="2.025154" length="0.08" type="QUAD">
+   <parameters aperture="0.024" aprt_type="1" field="16.9784"/>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg08" ess_name="DTL-040:EMR-Cav-001:G8" pos="2.1736631" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0008933681134863511" E0TL="0.000721267" EzFile="?" cavity="DTL4" TTF="0.807357"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.034843 -0.004399065837919989 -0.0002924410751817247"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg09" ess_name="DTL-040:EMR-Cav-001:G9" pos="2.4684002" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0008975765225388245" E0TL="0.000723216" EzFile="?" cavity="DTL4" TTF="0.805743"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0353375 -0.004482878557216943 -0.0002969714714683666"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:PMQ05" ess_name="DTL-040:BMD-PMQ-005" pos="2.6146044" length="0.08" type="QUAD">
+   <parameters aperture="0.024" aprt_type="1" field="-16.8507"/>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg10" ess_name="DTL-040:EMR-Cav-001:G10" pos="2.7645459" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0009018264527866866" E0TL="0.000725183" EzFile="?" cavity="DTL4" TTF="0.804127"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0358334999999999 -0.0045677185628004114 -0.0003015193691356586"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg11" ess_name="DTL-040:EMR-Cav-001:G11" pos="3.0620947" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0009058237894576784" E0TL="0.000726785" EzFile="?" cavity="DTL4" TTF="0.802347"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.036391 -0.004660995583960342 -0.0003062329052940305"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:PMQ06" ess_name="DTL-040:BMD-PMQ-006" pos="3.2096778" length="0.08" type="QUAD">
+   <parameters aperture="0.024" aprt_type="1" field="16.7175"/>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg12" ess_name="DTL-040:EMR-Cav-001:G12" pos="3.3610406" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0009100657026284798" E0TL="0.000728716" EzFile="?" cavity="DTL4" TTF="0.800729"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.036896 -0.0047479965832581085 -0.0003108239224452171"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg13" ess_name="DTL-040:EMR-Cav-001:G13" pos="3.6613781" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0009142960114427157" E0TL="0.000730624" EzFile="?" cavity="DTL4" TTF="0.799111"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.037405 -0.004836036033635628 -0.0003154318772259781"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:PMQ07" ess_name="DTL-040:BMD-PMQ-007" pos="3.8103296" length="0.08" type="QUAD">
+   <parameters aperture="0.024" aprt_type="1" field="-16.5964"/>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg14" ess_name="DTL-040:EMR-Cav-001:G14" pos="3.9631017" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0009185510092251594" E0TL="0.000732538" EzFile="?" cavity="DTL4" TTF="0.797493"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0379189999999998 -0.0049251654493914715 -0.00032005616931557744"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:BPM02" ess_name="DTL-040:PBI-BPM-002" pos="4.1127333" type="MARKER" length="0.0">
+   <parameters/>
+   <channelsuite>
+    <channel handle="yAvg" settable="false" signal="DTL-040:PBI-BPM-002:YP-AvgValue" valid="true"/>
+    <channel handle="phaseAvg" settable="false" signal="DTL-040:PBI-BPM-002:SA-AvgValue" valid="true"/>
+    <channel handle="amplitudeAvg" settable="false" signal="DTL-040:PBI-BPM-002:SM-AvgValue" valid="true"/>
+    <channel handle="xAvg" settable="false" signal="DTL-040:PBI-BPM-002:XP-AvgValue" valid="true"/>
+    <channel handle="phaseArray" settable="false" signal="DTL-040:PBI-BPM-002:SA-TR1-ArrayData" valid="true"/>
+   </channelsuite>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg15" ess_name="DTL-040:EMR-Cav-001:G15" pos="4.2662059" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0009228243702198717" E0TL="0.000734451" EzFile="?" cavity="DTL4" TTF="0.795873"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0384380000000002 -0.0050153544931098755 -0.0003247050298090804"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:PMQ08" ess_name="DTL-040:BMD-PMQ-008" pos="4.4165147" length="0.08" type="QUAD">
+   <parameters aperture="0.024" aprt_type="1" field="16.4704"/>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg16" ess_name="DTL-040:EMR-Cav-001:G16" pos="4.5706851" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0009271455640820644" E0TL="0.00073639" EzFile="?" cavity="DTL4" TTF="0.794255"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.038955 -0.005106364103613787 -0.0003293639378964374"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:DCV02" ess_name="DTL-040:BMD-CV-002" pos="4.7216683" type="DCV" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-040:BMD-CV-002"/>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg17" ess_name="DTL-040:EMR-Cav-001:G17" pos="4.8765336" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0009314970156578611" E0TL="0.000738339" EzFile="?" cavity="DTL4" TTF="0.792637"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.039481 -0.005198619498101008 -0.0003340398149669858"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:PMQ09" ess_name="DTL-040:BMD-PMQ-009" pos="5.0281772" length="0.08" type="QUAD">
+   <parameters aperture="0.024" aprt_type="1" field="-16.3518"/>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg18" ess_name="DTL-040:EMR-Cav-001:G18" pos="5.1837462" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0009356404595538495" E0TL="0.000739955" EzFile="?" cavity="DTL4" TTF="0.790854"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0400684999999998 -0.005299821101497891 -0.00033887743548787185"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:DCH02" ess_name="DTL-040:BMD-CH-002" pos="5.3360711" type="DCH" length="0.0">
+   <parameters B="0.0" effLength="1.0" convFactor="0.00017023" polarity="1.0"/>
+   <channelsuite>
+    <channel handle="fieldRB" settable="false" signal="" valid="true"/>
+   </channelsuite>
+   <ps main="DTL-040:BMD-CH-002"/>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg19" ess_name="DTL-040:EMR-Cav-001:G19" pos="5.492317" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0009400511884851249" E0TL="0.000741926" EzFile="?" cavity="DTL4" TTF="0.78924"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0405995 -0.005393944747807395 -0.0003435815023268069"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:PMQ10" ess_name="DTL-040:BMD-PMQ-010" pos="5.6453074" length="0.08" type="QUAD">
+   <parameters aperture="0.024" aprt_type="1" field="16.2285"/>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg20" ess_name="DTL-040:EMR-Cav-001:G20" pos="5.8022404" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0009444733641264464" E0TL="0.000743888" EzFile="?" cavity="DTL4" TTF="0.787622"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.041137 -0.005489374830985782 -0.0003483020115700773"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg21" ess_name="DTL-040:EMR-Cav-001:G21" pos="6.1135112" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0009489494991132383" E0TL="0.00074588" EzFile="?" cavity="DTL4" TTF="0.786006"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0416779999999999 -0.005585685868993825 -0.00035304036338617715"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:PMQ11" ess_name="DTL-040:BMD-PMQ-011" pos="6.2678149" length="0.08" type="QUAD">
+   <parameters aperture="0.024" aprt_type="1" field="-16.2936"/>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg22" ess_name="DTL-040:EMR-Cav-001:G22" pos="6.4261237" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0009532316535900957" E0TL="0.00074755" EzFile="?" cavity="DTL4" TTF="0.784227"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0422805 -0.005691340999577832 -0.0003579259418349301"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg23" ess_name="DTL-040:EMR-Cav-001:G23" pos="6.7400723" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0009576304538380351" E0TL="0.000749455" EzFile="?" cavity="DTL4" TTF="0.782614"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0428255000000002 -0.005789637283344175 -0.00036268264527918216"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:PMQ12" ess_name="DTL-040:BMD-PMQ-012" pos="6.8952521" length="0.08" type="QUAD">
+   <parameters aperture="0.024" aprt_type="1" field="16.3707"/>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg24" ess_name="DTL-040:EMR-Cav-001:G24" pos="7.0553518" type="RFGAP" length="0.0">
+   <parameters phase="-25.5" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0009517660867286151" E0TL="0.000751702" EzFile="?" cavity="DTL4" TTF="0.789797"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0401765 -0.005452367666424762 -0.0003590726667989666"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg25" ess_name="DTL-040:EMR-Cav-001:G25" pos="7.3679925" type="RFGAP" length="0.0">
+   <parameters phase="-30.0" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0009579195629009378" E0TL="0.00075424" EzFile="?" cavity="DTL4" TTF="0.787373"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0410035 -0.005587908008429035 -0.00036459201065489364"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:PMQ13" ess_name="DTL-040:BMD-PMQ-013" pos="7.5224243" length="0.08" type="QUAD">
+   <parameters aperture="0.024" aprt_type="1" field="-16.0338"/>
+  </accElement>
+  <accElement name="DTL:Cav04:Rg26" ess_name="DTL-040:EMR-Cav-001:G26" pos="7.6823133" type="RFGAP" length="0.0">
+   <parameters phase="-34.0" mode="0.0" aperture="0.024" aprt_type="1" E0L="0.0009872947483816669" E0TL="0.000748402" EzFile="?" cavity="DTL4" TTF="0.758033"/>
+   <TTFs beta_max="0.999999" beta_min="1e-06">
+    <polyT order="3" pcoefs=" 1.0522375 -0.007156299976601703 -0.0003933023552108397"/>
+    <polyS order="0" pcoefs="0.0"/>
+    <polyTP order="0" pcoefs=" 0.0"/>
+    <polySP order="0" pcoefs="0.0"/>
+   </TTFs>
+  </accElement>
+  <accElement name="DTL4:BCM02" ess_name="DTL-040:PBI-BCM-002" pos="7.8473451" type="MARKER" length="0.0">
+   <parameters/>
+   <channelsuite>
+    <channel handle="DisplayLength" settable="false" signal="DTL-040:PBI-BCM-002:PulseWidthR" valid="true"/>
+    <channel handle="currentAvg" settable="false" signal="DTL-040:PBI-BCM-002:FlatTopCurrentR" valid="true"/>
+    <channel handle="currentMax" settable="false" signal="DTL-040:PBI-BCM-002:UpperThreshold" valid="true"/>
+    <channel handle="tDelay" settable="false" signal="DTL-040:PBI-BCM-002:FineDelayR" valid="true"/>
+    <channel handle="Particles" settable="false" signal="DTL-040:PBI-BCM-002:PulseChargeR" valid="true"/>
+    <channel handle="currentArray" settable="false" signal="DTL-040:PBI-BCM-002:PRC-TR1-ArrayData" valid="true"/>
+   </channelsuite>
+  </accElement>
+  <accElement name="DTL4-END" pos="10.126338000000002" type="MARKER" length="0.0">
+   <parameters/>
+  </accElement>
+  <Cavities>
+   <Cavity ampl="1.0" frequency="352.21e+6" name="DTL4" pos="3.8501332038461538" ess_name="DTL-040:EMR-Cav-001"/>
+   </Cavities>
+ </DTL4>
+</ess>
