@@ -8,3 +8,7 @@ build-pypi-package:
   image: continuumio/miniconda3:23.3.1-0
   before_script:
     - conda install -c conda-forge gcc gxx fftw mpich
+
+run-sonar-scanner:
+  only:
+    - main
