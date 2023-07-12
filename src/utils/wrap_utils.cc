@@ -7,7 +7,7 @@
 #include "wrap_field_source_container.hh"
 #include "wrap_function.hh"
 #include "wrap_splinech.hh"
-//#include "wrap_statmoments2d.hh"
+#include "wrap_statmoments2d.hh"
 #include "wrap_bunch_extrema_calculator.hh"
 #include "wrap_gauss_legendre_integrator.hh"
 #include "wrap_polynomial.hh"
@@ -44,7 +44,7 @@ extern "C" {
 		wrap_field_source_container::initFieldSourceContainer(module);
 		wrap_function::initFunction(module);
 		wrap_splinech::initSplineCH(module);
-		//wrap_statmoments2d::initstatmoments2d(module);
+		wrap_statmoments2d::initstatmoments2d(module);
 		wrap_utils_bunch::initBunchExtremaCalculator(module);
 		wrap_gl_integrator::initGLIntegrator(module);
 		wrap_polynomial::initPolynomial(module);

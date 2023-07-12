@@ -45,8 +45,13 @@ from sns_linac_bunch_generator import SNS_Linac_BunchGenerator
 random.seed(100)
 
 # names = ["MEBT","DTL1","DTL2","DTL3","DTL4","DTL5","DTL6","CCL1","CCL2","CCL3","CCL4","SCLMed","SCLHigh","HEBT1","HEBT2"]
-names = ["MEBT", "DTL1", "DTL2", "DTL3", "DTL4", "DTL5", "DTL6", "CCL1", "CCL2", "CCL3", "CCL4", "SCLMed", "SCLHigh", "HEBT1"]
-# names = ["MEBT","DTL1","DTL2","DTL3",]
+# names = ["MEBT", "DTL1", "DTL2", "DTL3", "DTL4", "DTL5", "DTL6", "CCL1", "CCL2", "CCL3", "CCL4", "SCLMed", "SCLHigh", "HEBT1"]
+names = [
+    "MEBT",
+    "DTL1",
+    "DTL2",
+    "DTL3",
+]
 # names = ["MEBT",]
 
 # ---- create the factory instance

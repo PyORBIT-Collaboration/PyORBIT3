@@ -6,7 +6,7 @@
 #include "wrap_MatrixRfGap.hh"
 #include "wrap_RfGapTTF.hh"
 #include "wrap_RfGapTTF_slow.hh"
-//#include "wrap_SuperFishFieldSource.hh"
+#include "wrap_SuperFishFieldSource.hh"
 #include "wrap_RfGapThreePointTTF.hh"
 #include "wrap_RfGapThreePointTTF_slow.hh"
 #include "wrap_linac_tracking.hh"
@@ -36,7 +36,7 @@ extern "C" {
         wrap_linac::initMatrixRfGap(module);
         wrap_linac::initRfGapTTF(module);
         wrap_linac::initRfGapTTF_slow(module);
-        //wrap_linac::initSuperFishFieldSource(module);
+        wrap_linac::initSuperFishFieldSource(module);
         wrap_linac::initRfGapThreePointTTF(module);
         wrap_linac::initRfGapThreePointTTF_slow(module);
         //initialization of the linac tracking module
