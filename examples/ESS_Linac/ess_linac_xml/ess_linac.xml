@@ -32,13 +32,13 @@
   	 <parameters B="0.0" effLength="0.08"/>
   	</accElement>
 	<accElement length="0.0" name="MEBT-010:EMR-Cav-001" pos="0.581" type="RFGAP">
-     	 <parameters E0L="0.000169424" E0TL="7.5e-05" EzFile="./axis_fields/MEBT1_Rg1.dat" aperture="0.03" aprt_type="1" cavity="MEBT1" mode="0" phase="90.00"/>
-   	<TTFs beta_max="0.0797326996297" beta_min="0.0651533180282">
-    	<polyT order="4" pcoefs="1.01612778 0.000479710288 -0.000104039969 6.30940875e-07 -1.18628457e-09 "/>
-    	<polyS order="0" pcoefs="0 "/>
-    	<polyTP order="4" pcoefs="0.00589604495 -0.000392967324 4.25736235e-06 -1.81690079e-08 2.85459386e-11 "/>
-    	<polySP order="0" pcoefs="0 "/>
-   	</TTFs>
+    <parameters E0L="0.000219447" E0TL="0.000131" EzFile="./axis_fields/MEBT_essRG.dat" aperture="0.03" aprt_type="1" cavity="MEBT1" mode="0" phase="-90.00"/>
+    <TTFs beta_max="0.099" beta_min="0.0651533180282">
+      <polyT order="4" pcoefs="1.01612778 0.000479710288 -0.000104039969 6.30940875e-07 -1.18628457e-09 "/>
+      <polyS order="0" pcoefs="0 "/>
+      <polyTP order="4" pcoefs="0.00589604495 -0.000392967324 4.25736235e-06 -1.81690079e-08 2.85459386e-11 "/>
+      <polySP order="0" pcoefs="0 "/>
+   </TTFs>
   	</accElement>
 	<accElement length="0.0" name="MEBT-010:PBI-BPM-001" pos="0.4" type="MARKER">
          <parameters/>
@@ -77,14 +77,14 @@
   	 <parameters/>
   	</accElement>
 	<accElement length="0.0" name="MEBT-010:EMR-CAV-002" pos="2.043" type="RFGAP">
-  	 <parameters E0L="0.000169424" E0TL="7.5e-05" EzFile="./axis_fields/MEBT1_Rg1.dat" aperture="0.03" aprt_type="1" cavity="MEBT1" mode="0" phase="90.00"/>
-   	<TTFs beta_max="0.0797326996297" beta_min="0.0651533180282">
-    	<polyT order="4" pcoefs="1.01612778 0.000479710288 -0.000104039969 6.30940875e-07 -1.18628457e-09 "/>
-    	<polyS order="0" pcoefs="0 "/>
-    	<polyTP order="4" pcoefs="0.00589604495 -0.000392967324 4.25736235e-06 -1.81690079e-08 2.85459386e-11 "/>
-    	<polySP order="0" pcoefs="0 "/>
-   	</TTFs>
-  	</accElement>
+    <parameters E0L="0.0000988349" E0TL="0.000059" EzFile="./axis_fields/MEBT_essRG.dat" aperture="0.03" aprt_type="1" cavity="MEBT2" mode="0" phase="-90.00"/>
+    <TTFs beta_max="0.099" beta_min="0.0651533180282">
+      <polyT order="4" pcoefs="1.01612778 0.000479710288 -0.000104039969 6.30940875e-07 -1.18628457e-09 "/>
+      <polyS order="0" pcoefs="0 "/>
+      <polyTP order="4" pcoefs="0.00589604495 -0.000392967324 4.25736235e-06 -1.81690079e-08 2.85459386e-11 "/>
+      <polySP order="0" pcoefs="0 "/>
+   </TTFs>
+    </accElement>
 	<accElement length="0.0" name="MEBT-010:PBI-BPM-BPM03" pos="2.224" type="MARKER">
    	 <parameters/>
  	</accElement>
@@ -152,14 +152,14 @@
           <parameters B="0.0" effLength="0.08"/>
         </accElement>
 	<accElement length="0.0" name="MEBT-010:EMR-Cav-003" pos="3.255" type="RFGAP">
-     	 <parameters E0L="0.000169424" E0TL="7.5e-05" EzFile="./axis_fields/MEBT1_Rg1.dat" aperture="0.03" aprt_type="1" cavity="MEBT1" mode="0" phase="90.00"/>
-   	<TTFs beta_max="0.0797326996297" beta_min="0.0651533180282">
-    	<polyT order="4" pcoefs="1.01612778 0.000479710288 -0.000104039969 6.30940875e-07 -1.18628457e-09 "/>
-    	<polyS order="0" pcoefs="0 "/>
-    	<polyTP order="4" pcoefs="0.00589604495 -0.000392967324 4.25736235e-06 -1.81690079e-08 2.85459386e-11 "/>
-    	<polySP order="0" pcoefs="0 "/>
-   	</TTFs>
-  	</accElement>
+    <parameters E0L="0.0002697021" E0TL="0.000161" EzFile="./axis_fields/MEBT_essRG.dat" aperture="0.03" aprt_type="1" cavity="MEBT3" mode="0" phase="-90.00"/>
+    <TTFs beta_max="0.099" beta_min="0.0651533180282">
+      <polyT order="4" pcoefs="1.01612778 0.000479710288 -0.000104039969 6.30940875e-07 -1.18628457e-09 "/>
+      <polyS order="0" pcoefs="0 "/>
+      <polyTP order="4" pcoefs="0.00589604495 -0.000392967324 4.25736235e-06 -1.81690079e-08 2.85459386e-11 "/>
+      <polySP order="0" pcoefs="0 "/>
+   </TTFs>
+  </accElement>
 	<accElement length="0.0" name="MEBT-010:PBI-BPM-006" pos="3.436" type="MARKER">
           <parameters/>
         </accElement>
@@ -206,9 +206,9 @@
   	 <parameters/>
   	</accElement>
 	<Cavities>
-   	 <Cavity ampl="0.0" frequency="   3.5221e+08" name="MEBT1" pos="0.581"/>
-   	 <Cavity ampl="0.0" frequency="   3.5221e+08" name="MEBT2" pos="2.043"/>
-   	 <Cavity ampl="0.0" frequency="   3.5221e+08" name="MEBT3" pos="3.255"/>
+   	 <Cavity ampl="1.0" frequency="   3.5221e+08" name="MEBT1" pos="0.581"/>
+   	 <Cavity ampl="1.0" frequency="   3.5221e+08" name="MEBT2" pos="2.043"/>
+   	 <Cavity ampl="1.0" frequency="   3.5221e+08" name="MEBT3" pos="3.255"/>
      	</Cavities>
 	</MEBT>
 	</ess>

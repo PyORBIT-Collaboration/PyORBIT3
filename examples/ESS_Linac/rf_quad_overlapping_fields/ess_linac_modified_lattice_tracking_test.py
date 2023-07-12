@@ -10,7 +10,6 @@ import sys
 import math
 import random
 import time
-import matplotlib.pyplot as plt
 
 from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
@@ -47,17 +46,15 @@ random.seed(100)
 
 # names = ["MEBT","DTL1","DTL2","DTL3","DTL4","DTL5","DTL6","CCL1","CCL2","CCL3","CCL4","SCLMed","SCLHigh","HEBT1","HEBT2"]
 # names = ["MEBT", "DTL1", "DTL2", "DTL3", "DTL4", "DTL5", "DTL6", "CCL1", "CCL2", "CCL3", "CCL4", "SCLMed", "SCLHigh", "HEBT1"]
-# names = ["MEBT","DTL1","DTL2","DTL3",]
-names = [
-    "MEBT",
-]
+names = ["MEBT","DTL1","DTL2","DTL3","DTL4"]
+#names = ["MEBT",]
 
 # ---- create the factory instance
 sns_linac_factory = SNS_LinacLatticeFactory()
 sns_linac_factory.setMaxDriftLength(0.01)
 
 # ---- the XML file name with the structure
-xml_file_name = "../ess_linac_xml/ess_linac.xml"
+xml_file_name = "../ess_linac_xml/ess_wdtl_linac.xml"
 
 # ---- make lattice from XML file
 accLattice = sns_linac_factory.getLinacAccLattice(names, xml_file_name)
@@ -69,17 +66,17 @@ print("Linac lattice is ready. L=", accLattice.getLength())
 # ---- BaseRfGap  uses only E0TL*cos(phi)*J0(kr) with E0TL = const
 # ---- MatrixRfGap uses a matrix approach like envelope codes
 # ---- RfGapTTF uses Transit Time Factors (TTF) like PARMILA
-# cppGapModel = BaseRfGap
+cppGapModel = BaseRfGap
 # cppGapModel = MatrixRfGap
-cppGapModel = RfGapTTF
+# cppGapModel = RfGapTTF
 rf_gaps = accLattice.getRF_Gaps()
 for rf_gap in rf_gaps:
     rf_gap.setCppGapModel(cppGapModel())
 
-# ---- If you want to switch off all cavities - remove comments marks
-cavs = accLattice.getRF_Cavities()
-for cav in cavs:
-    cav.setAmp(0.0)
+# # ---- If you want to switch off all cavities - remove comments marks
+# cavs = accLattice.getRF_Cavities()
+# for cav in cavs:
+#     cav.setAmp(0)
 
 # ------------------------------------------------------------------
 # ---- BaseRF_Gap and Quads will be replaced for specified sequences
@@ -131,6 +128,7 @@ sc_path_length_min = 0.02
 
 print("Set up Space Charge nodes. ")
 
+"""
 # set of uniformly charged ellipses Space Charge
 nEllipses = 1
 calcUnifEllips = SpaceChargeCalcUnifEllipse(nEllipses)
@@ -138,12 +136,11 @@ space_charge_nodes = setUniformEllipsesSCAccNodes(accLattice, sc_path_length_min
 
 """
 # set FFT 3D Space Charge instead of UniformEllipses
-sizeX = 64
-sizeY = 64
-sizeZ = 64
+sizeX = 16
+sizeY = 16
+sizeZ = 16
 calc3d = SpaceChargeCalc3D(sizeX,sizeY,sizeZ)
 space_charge_nodes =  setSC3DAccNodes(accLattice,sc_path_length_min,calc3d)
-"""
 
 max_sc_length = 0.0
 min_sc_length = accLattice.getLength()
@@ -163,12 +160,12 @@ print("maximal SC length =", max_sc_length, "  min=", min_sc_length)
 # aprtNodes = Add_rfgap_apertures_to_lattice(accLattice,aprtNodes)
 # aprtNodes = AddMEBTChopperPlatesAperturesToSNS_Lattice(accLattice,aprtNodes)
 
-x_size = 0.042
-y_size = 0.042
+#x_size = 0.042
+#y_size = 0.042
 # aprtNodes = AddScrapersAperturesToLattice(accLattice,"MEBT_Diag:H_SCRP",x_size,y_size,aprtNodes)
 
-x_size = 0.042
-y_size = 0.042
+#x_size = 0.042
+#y_size = 0.042
 # aprtNodes = AddScrapersAperturesToLattice(accLattice,"MEBT_Diag:V_SCRP",x_size,y_size,aprtNodes)
 
 
@@ -195,16 +192,16 @@ v_light = 2.99792458e8  # in [m/sec]
 (alphaY, betaY, emittY) = (-0.30984478, 0.37074849, 2.861819260781874)
 (alphaZ, betaZ, emittZ) = (-0.48130325, 0.92564505, 4.079614268808417)
 
-alphaZ = -alphaZ
+# alphaZ = -alphaZ
 
 # ---make emittances un-normalized XAL units [m*rad]
-emittX = 1.0e-6 * emittX / (gamma * beta)
-emittY = 1.0e-6 * emittY / (gamma * beta)
-emittZ = 1.0e-6 * emittZ / (gamma**3 * beta)
+emittX = 1.0e-6 * emittX # / (gamma * beta)
+emittY = 1.0e-6 * emittY #/ (gamma * beta)
+emittZ = 1.0e-6 * emittZ #/ (gamma**3 * beta)
 print(" ========= XAL Twiss ===========")
-print(" aplha beta emitt[mm*mrad] X= %6.4f %6.4f %6.4f " % (alphaX, betaX, emittX * 1.0e6))
-print(" aplha beta emitt[mm*mrad] Y= %6.4f %6.4f %6.4f " % (alphaY, betaY, emittY * 1.0e6))
-print(" aplha beta emitt[mm*mrad] Z= %6.4f %6.4f %6.4f " % (alphaZ, betaZ, emittZ * 1.0e6))
+print(" alpha beta emitt[mm*mrad] X= %6.4f %6.4f %6.4f " % (alphaX, betaX, emittX * 1.0e6))
+print(" alpha beta emitt[mm*mrad] Y= %6.4f %6.4f %6.4f " % (alphaY, betaY, emittY * 1.0e6))
+print(" alpha beta emitt[mm*mrad] Z= %6.4f %6.4f %6.4f " % (alphaZ, betaZ, emittZ * 1.0e6))
 
 # ---- long. size in mm
 sizeZ = math.sqrt(emittZ * betaZ) * 1.0e3
@@ -214,16 +211,18 @@ emittZ = emittZ * gamma**3 * beta**2 * mass
 betaZ = betaZ / (gamma**3 * beta**2 * mass)
 
 print(" ========= PyORBIT Twiss ===========")
-print(" aplha beta emitt[mm*mrad] X= %6.4f %6.4f %6.4f " % (alphaX, betaX, emittX * 1.0e6))
-print(" aplha beta emitt[mm*mrad] Y= %6.4f %6.4f %6.4f " % (alphaY, betaY, emittY * 1.0e6))
-print(" aplha beta emitt[mm*MeV] Z= %6.4f %6.4f %6.4f " % (alphaZ, betaZ, emittZ * 1.0e6))
+print(" alpha beta emitt[mm*mrad] X= %6.4f %6.4f %6.4f " % (alphaX, betaX, emittX * 1.0e6))
+print(" alpha beta emitt[mm*mrad] Y= %6.4f %6.4f %6.4f " % (alphaY, betaY, emittY * 1.0e6))
+print(" alpha beta emitt[mm*MeV] Z= %6.4f %6.4f %6.4f " % (alphaZ, betaZ, emittZ * 1.0e6))
 
 twissX = TwissContainer(alphaX, betaX, emittX)
 twissY = TwissContainer(alphaY, betaY, emittY)
 twissZ = TwissContainer(alphaZ, betaZ, emittZ)
 
 print("Start Bunch Generation.")
-bunch_gen = SNS_Linac_BunchGenerator(twissX, twissY, twissZ)
+bunch_gen = SNS_Linac_BunchGenerator(twissX, twissY, twissZ, frequency=frequency)        
+bunch_gen.bunch.mass(mass)
+bunch_gen.bunch.charge(1.0)
 
 # set the initial kinetic energy in GeV
 bunch_gen.setKinEnergy(e_kin_ini)
@@ -231,8 +230,8 @@ bunch_gen.setKinEnergy(e_kin_ini)
 # set the beam peak current in mA
 bunch_gen.setBeamCurrent(62.5)
 
-bunch_in = bunch_gen.getBunch(nParticles=100000, distributorClass=WaterBagDist3D)
-# bunch_in = bunch_gen.getBunch(nParticles = 100000, distributorClass = GaussDist3D)
+# bunch_in = bunch_gen.getBunch(nParticles=100000, distributorClass=WaterBagDist3D)
+bunch_in = bunch_gen.getBunch(nParticles = 100000, distributorClass = GaussDist3D)
 # bunch_in = bunch_gen.getBunch(nParticles = 10000, distributorClass = KVDist3D)
 
 print("Bunch Generation completed.")
@@ -322,36 +321,3 @@ print("time[sec]=", time_exec)
 
 file_out.close()
 
-
-def GetPlottingArrays(results_arr, length, order=+1):
-    pos_arr = []
-    rms_x_arr = []
-    rms_y_arr = []
-    rms_phi_arr = []
-    for [name, pos, rms_arr, twiss_arr, eKin, nParts] in results_arr:
-        if order < 0:
-            pos = length - pos
-        pos_arr.append(pos)
-        rms_x_arr.append(rms_arr[0])
-        rms_y_arr.append(rms_arr[1])
-        rms_phi_arr.append(rms_arr[2])
-    return (pos_arr, rms_x_arr, rms_y_arr, rms_phi_arr)
-
-
-# ---------------------------
-# Plot part
-# ---------------------------
-
-length = accLattice.getLength()
-
-(pos_arr, rms_x_arr, rms_y_arr, rms_phi_arr) = GetPlottingArrays(results_arr, length, order=+1)
-(pos_r_arr, rms_x_r_arr, rms_y_r_arr, rms_phi_r_arr) = GetPlottingArrays(results_backward_arr, length, order=-1)
-
-(line_1,) = plt.plot(pos_arr, rms_x_arr, label="Forward Tracking")
-(line_2,) = plt.plot(pos_r_arr, rms_x_r_arr, label="Backward Tracking")
-plt.legend(handles=[line_1, line_2])
-plt.title("Horizontal RMS Sizes")
-plt.ylabel("RMS x, mm")
-plt.xlabel("pos,m ")
-
-plt.show()
