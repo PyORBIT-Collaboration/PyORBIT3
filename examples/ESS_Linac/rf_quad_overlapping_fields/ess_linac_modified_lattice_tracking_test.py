@@ -46,8 +46,8 @@ random.seed(100)
 
 # names = ["MEBT","DTL1","DTL2","DTL3","DTL4","DTL5","DTL6","CCL1","CCL2","CCL3","CCL4","SCLMed","SCLHigh","HEBT1","HEBT2"]
 # names = ["MEBT", "DTL1", "DTL2", "DTL3", "DTL4", "DTL5", "DTL6", "CCL1", "CCL2", "CCL3", "CCL4", "SCLMed", "SCLHigh", "HEBT1"]
-names = ["MEBT","DTL1","DTL2","DTL3","DTL4"]
-#names = ["MEBT",]
+names = ["MEBT", "DTL1", "DTL2", "DTL3", "DTL4"]
+# names = ["MEBT",]
 
 # ---- create the factory instance
 sns_linac_factory = SNS_LinacLatticeFactory()
@@ -139,8 +139,8 @@ space_charge_nodes = setUniformEllipsesSCAccNodes(accLattice, sc_path_length_min
 sizeX = 16
 sizeY = 16
 sizeZ = 16
-calc3d = SpaceChargeCalc3D(sizeX,sizeY,sizeZ)
-space_charge_nodes =  setSC3DAccNodes(accLattice,sc_path_length_min,calc3d)
+calc3d = SpaceChargeCalc3D(sizeX, sizeY, sizeZ)
+space_charge_nodes = setSC3DAccNodes(accLattice, sc_path_length_min, calc3d)
 
 max_sc_length = 0.0
 min_sc_length = accLattice.getLength()
@@ -160,12 +160,12 @@ print("maximal SC length =", max_sc_length, "  min=", min_sc_length)
 # aprtNodes = Add_rfgap_apertures_to_lattice(accLattice,aprtNodes)
 # aprtNodes = AddMEBTChopperPlatesAperturesToSNS_Lattice(accLattice,aprtNodes)
 
-#x_size = 0.042
-#y_size = 0.042
+# x_size = 0.042
+# y_size = 0.042
 # aprtNodes = AddScrapersAperturesToLattice(accLattice,"MEBT_Diag:H_SCRP",x_size,y_size,aprtNodes)
 
-#x_size = 0.042
-#y_size = 0.042
+# x_size = 0.042
+# y_size = 0.042
 # aprtNodes = AddScrapersAperturesToLattice(accLattice,"MEBT_Diag:V_SCRP",x_size,y_size,aprtNodes)
 
 
@@ -195,9 +195,9 @@ v_light = 2.99792458e8  # in [m/sec]
 # alphaZ = -alphaZ
 
 # ---make emittances un-normalized XAL units [m*rad]
-emittX = 1.0e-6 * emittX # / (gamma * beta)
-emittY = 1.0e-6 * emittY #/ (gamma * beta)
-emittZ = 1.0e-6 * emittZ #/ (gamma**3 * beta)
+emittX = 1.0e-6 * emittX  # / (gamma * beta)
+emittY = 1.0e-6 * emittY  # / (gamma * beta)
+emittZ = 1.0e-6 * emittZ  # / (gamma**3 * beta)
 print(" ========= XAL Twiss ===========")
 print(" alpha beta emitt[mm*mrad] X= %6.4f %6.4f %6.4f " % (alphaX, betaX, emittX * 1.0e6))
 print(" alpha beta emitt[mm*mrad] Y= %6.4f %6.4f %6.4f " % (alphaY, betaY, emittY * 1.0e6))
@@ -220,7 +220,7 @@ twissY = TwissContainer(alphaY, betaY, emittY)
 twissZ = TwissContainer(alphaZ, betaZ, emittZ)
 
 print("Start Bunch Generation.")
-bunch_gen = SNS_Linac_BunchGenerator(twissX, twissY, twissZ, frequency=frequency)        
+bunch_gen = SNS_Linac_BunchGenerator(twissX, twissY, twissZ, frequency=frequency)
 bunch_gen.bunch.mass(mass)
 bunch_gen.bunch.charge(1.0)
 
@@ -231,7 +231,7 @@ bunch_gen.setKinEnergy(e_kin_ini)
 bunch_gen.setBeamCurrent(62.5)
 
 # bunch_in = bunch_gen.getBunch(nParticles=100000, distributorClass=WaterBagDist3D)
-bunch_in = bunch_gen.getBunch(nParticles = 100000, distributorClass = GaussDist3D)
+bunch_in = bunch_gen.getBunch(nParticles=100000, distributorClass=GaussDist3D)
 # bunch_in = bunch_gen.getBunch(nParticles = 10000, distributorClass = KVDist3D)
 
 print("Bunch Generation completed.")
@@ -320,4 +320,3 @@ print("time[sec]=", time_exec)
 # bunch_in.dumpBunch("bunch_test.dat")
 
 file_out.close()
-
