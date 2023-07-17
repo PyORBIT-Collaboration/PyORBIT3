@@ -98,14 +98,14 @@ PyMODINIT_FUNC PyInit__field_sources(void) {
     return wrap_field_sources_module::initFieldSourcesModule();
 }
 
-PyMODINIT_FUNC PyInit_rfcavities(void) {
+PyMODINIT_FUNC PyInit__rfcavities(void) {
     return wrap_rfcavities::initrfcavities();
 }
 
-PyMODINIT_FUNC PyInit_impedances(void) {
+PyMODINIT_FUNC PyInit__impedances(void) {
     return wrap_impedances::initimpedances();
 }
 
-PyMODINIT_FUNC PyInit_fieldtracker(void) {
+PyMODINIT_FUNC PyInit__fieldtracker(void) {
     return wrap_fieldtracker::initfieldtracker();
 }

@@ -10,12 +10,9 @@ import math
 import sys
 import os
 import random
-import orbit.core
 
-import orbit_mpi
-from orbit_mpi import mpi_comm
-from orbit_mpi import mpi_datatype
-from orbit_mpi import mpi_op
+from orbit.core import orbit_mpi
+from orbit.core.orbit_mpi import mpi_comm, mpi_datatype, mpi_op
 
 from orbit.bunch_generators import TwissContainer
 from orbit.bunch_generators import KVDist2D, KVDist3D
@@ -23,7 +20,7 @@ from orbit.bunch_generators import GaussDist2D, GaussDist3D
 from orbit.bunch_generators import WaterBagDist2D, WaterBagDist3D
 from orbit.bunch_generators import TwissAnalysis
 
-from bunch import Bunch
+from orbit.core.bunch import Bunch
 
 
 class SNS_Linac_BunchGenerator:

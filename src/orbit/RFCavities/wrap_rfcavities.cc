@@ -37,7 +37,7 @@ PyMODINIT_FUNC initrfcavities()
 
 PyObject* getRFCavityType(char* name)
 {
-  PyObject* mod = PyImport_ImportModule("rfcavities");
+  PyObject* mod = PyImport_ImportModule("_rfcavities");
   PyObject* pyType = PyObject_GetAttrString(mod, name);
   Py_DECREF(mod);
   Py_DECREF(pyType);
