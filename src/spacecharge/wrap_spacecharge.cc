@@ -5,7 +5,7 @@
 #include "wrap_grid3D.hh"
 #include "wrap_poissonsolverfft2d.hh"
 #include "wrap_poissonsolverfft3d.hh"
-//#include "wrap_forcesolverfft2d.hh"
+#include "wrap_forcesolverfft2d.hh"
 #include "wrap_boundary2d.hh"
 #include "wrap_spacecharge.hh"
 #include "wrap_spacechargecalc2p5d.hh"

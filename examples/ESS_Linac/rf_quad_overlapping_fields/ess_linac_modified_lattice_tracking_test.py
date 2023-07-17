@@ -14,19 +14,20 @@ import time
 from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
 # from linac import the C++ RF gap classes
-from orbit.core.linac import BaseRfGap, MatrixRfGap, RfGapTTF
+from linac import BaseRfGap, MatrixRfGap, RfGapTTF
 
 from orbit.bunch_generators import TwissContainer
 from orbit.bunch_generators import WaterBagDist3D, GaussDist3D, KVDist3D
 
-from orbit.core.bunch import Bunch, BunchTwissAnalysis
+from bunch import Bunch
+from bunch import BunchTwissAnalysis
 
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 
-from orbit.py_linac.lattice_modifications import Add_quad_apertures_to_lattice
-from orbit.py_linac.lattice_modifications import Add_rfgap_apertures_to_lattice
-from orbit.py_linac.lattice_modifications import AddMEBTChopperPlatesAperturesToSNS_Lattice
-from orbit.py_linac.lattice_modifications import AddScrapersAperturesToLattice
+# from orbit.py_linac.lattice_modifications import Add_quad_apertures_to_lattice
+# from orbit.py_linac.lattice_modifications import Add_rfgap_apertures_to_lattice
+# from orbit.py_linac.lattice_modifications import AddMEBTChopperPlatesAperturesToSNS_Lattice
+# from orbit.py_linac.lattice_modifications import AddScrapersAperturesToLattice
 
 from orbit.py_linac.lattice import AxisField_and_Quad_RF_Gap
 from orbit.py_linac.lattice import OverlappingQuadsNode
@@ -45,12 +46,7 @@ random.seed(100)
 
 # names = ["MEBT","DTL1","DTL2","DTL3","DTL4","DTL5","DTL6","CCL1","CCL2","CCL3","CCL4","SCLMed","SCLHigh","HEBT1","HEBT2"]
 # names = ["MEBT", "DTL1", "DTL2", "DTL3", "DTL4", "DTL5", "DTL6", "CCL1", "CCL2", "CCL3", "CCL4", "SCLMed", "SCLHigh", "HEBT1"]
-names = [
-    "MEBT",
-    "DTL1",
-    "DTL2",
-    "DTL3",
-]
+names = ["MEBT", "DTL1", "DTL2", "DTL3", "DTL4"]
 # names = ["MEBT",]
 
 # ---- create the factory instance
@@ -58,7 +54,7 @@ sns_linac_factory = SNS_LinacLatticeFactory()
 sns_linac_factory.setMaxDriftLength(0.01)
 
 # ---- the XML file name with the structure
-xml_file_name = "../sns_linac_xml/sns_linac.xml"
+xml_file_name = "../ess_linac_xml/ess_wdtl_linac.xml"
 
 # ---- make lattice from XML file
 accLattice = sns_linac_factory.getLinacAccLattice(names, xml_file_name)
@@ -70,17 +66,17 @@ print("Linac lattice is ready. L=", accLattice.getLength())
 # ---- BaseRfGap  uses only E0TL*cos(phi)*J0(kr) with E0TL = const
 # ---- MatrixRfGap uses a matrix approach like envelope codes
 # ---- RfGapTTF uses Transit Time Factors (TTF) like PARMILA
-# cppGapModel = BaseRfGap
+cppGapModel = BaseRfGap
 # cppGapModel = MatrixRfGap
-cppGapModel = RfGapTTF
+# cppGapModel = RfGapTTF
 rf_gaps = accLattice.getRF_Gaps()
 for rf_gap in rf_gaps:
     rf_gap.setCppGapModel(cppGapModel())
 
-# ---- If you want to switch off all cavities - remove comments marks
+# # ---- If you want to switch off all cavities - remove comments marks
 # cavs = accLattice.getRF_Cavities()
 # for cav in cavs:
-# 	cav.setAmp(0.)
+#     cav.setAmp(0)
 
 # ------------------------------------------------------------------
 # ---- BaseRF_Gap and Quads will be replaced for specified sequences
@@ -90,7 +86,7 @@ for rf_gap in rf_gaps:
 z_step = 0.005
 
 # ---- axis fields files location
-dir_location = "../sns_rf_fields/"
+dir_location = "../ess_rf_fields/"
 
 # Replace_BaseRF_Gap_to_AxisField_Nodes(accLattice,z_step,dir_location,["MEBT",])
 
@@ -126,12 +122,13 @@ for node in nodes:
 # Set up Space Charge Acc Nodes
 # -----------------------------------------------------
 from orbit.space_charge.sc3d import setSC3DAccNodes, setUniformEllipsesSCAccNodes
-from orbit.core.spacecharge import SpaceChargeCalcUnifEllipse, SpaceChargeCalc3D
+from spacecharge import SpaceChargeCalcUnifEllipse, SpaceChargeCalc3D
 
 sc_path_length_min = 0.02
 
 print("Set up Space Charge nodes. ")
 
+"""
 # set of uniformly charged ellipses Space Charge
 nEllipses = 1
 calcUnifEllips = SpaceChargeCalcUnifEllipse(nEllipses)
@@ -139,12 +136,11 @@ space_charge_nodes = setUniformEllipsesSCAccNodes(accLattice, sc_path_length_min
 
 """
 # set FFT 3D Space Charge instead of UniformEllipses
-sizeX = 64
-sizeY = 64
-sizeZ = 64
-calc3d = SpaceChargeCalc3D(sizeX,sizeY,sizeZ)
-space_charge_nodes =  setSC3DAccNodes(accLattice,sc_path_length_min,calc3d)
-"""
+sizeX = 16
+sizeY = 16
+sizeZ = 16
+calc3d = SpaceChargeCalc3D(sizeX, sizeY, sizeZ)
+space_charge_nodes = setSC3DAccNodes(accLattice, sc_path_length_min, calc3d)
 
 max_sc_length = 0.0
 min_sc_length = accLattice.getLength()
@@ -159,53 +155,53 @@ for sc_node in space_charge_nodes:
 print("maximal SC length =", max_sc_length, "  min=", min_sc_length)
 
 
-print("===== Aperture Nodes START  =======")
-aprtNodes = Add_quad_apertures_to_lattice(accLattice)
+# print("===== Aperture Nodes START  =======")
+# aprtNodes = Add_quad_apertures_to_lattice(accLattice)
 # aprtNodes = Add_rfgap_apertures_to_lattice(accLattice,aprtNodes)
 # aprtNodes = AddMEBTChopperPlatesAperturesToSNS_Lattice(accLattice,aprtNodes)
 
-x_size = 0.042
-y_size = 0.042
+# x_size = 0.042
+# y_size = 0.042
 # aprtNodes = AddScrapersAperturesToLattice(accLattice,"MEBT_Diag:H_SCRP",x_size,y_size,aprtNodes)
 
-x_size = 0.042
-y_size = 0.042
+# x_size = 0.042
+# y_size = 0.042
 # aprtNodes = AddScrapersAperturesToLattice(accLattice,"MEBT_Diag:V_SCRP",x_size,y_size,aprtNodes)
 
 
 # for node in aprtNodes:
 # 	print "aprt=",node.getName()," pos =",node.getPosition()
 
-print("===== Aperture Nodes Added ======= N total=", len(aprtNodes))
+# print("===== Aperture Nodes Added ======= N total=", len(aprtNodes))
 
 
 # -----TWISS Parameters at the entrance of MEBT ---------------
 # transverse emittances are unnormalized and in pi*mm*mrad
 # longitudinal emittance is in pi*eV*sec
-e_kin_ini = 0.0025  # in [GeV]
-mass = 0.939294  # in [GeV]
+e_kin_ini = 0.00362  # in [MeV]
+mass = 0.938272  # in [GeV]
 gamma = (mass + e_kin_ini) / mass
 beta = math.sqrt(gamma * gamma - 1.0) / gamma
 print("relat. gamma=", gamma)
 print("relat.  beta=", beta)
-frequency = 402.5e6
+frequency = 352.21e6
 v_light = 2.99792458e8  # in [m/sec]
 
 # ------ emittances are normalized - transverse by gamma*beta and long. by gamma**3*beta
-(alphaX, betaX, emittX) = (-1.9620, 0.1831, 0.21)
-(alphaY, betaY, emittY) = (1.7681, 0.1620, 0.21)
-(alphaZ, betaZ, emittZ) = (0.0196, 0.5844, 0.24153)
+(alphaX, betaX, emittX) = (-0.051805615, 0.20954703, 2.875304356347471)
+(alphaY, betaY, emittY) = (-0.30984478, 0.37074849, 2.861819260781874)
+(alphaZ, betaZ, emittZ) = (-0.48130325, 0.92564505, 4.079614268808417)
 
-alphaZ = -alphaZ
+# alphaZ = -alphaZ
 
 # ---make emittances un-normalized XAL units [m*rad]
-emittX = 1.0e-6 * emittX / (gamma * beta)
-emittY = 1.0e-6 * emittY / (gamma * beta)
-emittZ = 1.0e-6 * emittZ / (gamma**3 * beta)
+emittX = 1.0e-6 * emittX  # / (gamma * beta)
+emittY = 1.0e-6 * emittY  # / (gamma * beta)
+emittZ = 1.0e-6 * emittZ  # / (gamma**3 * beta)
 print(" ========= XAL Twiss ===========")
-print(" aplha beta emitt[mm*mrad] X= %6.4f %6.4f %6.4f " % (alphaX, betaX, emittX * 1.0e6))
-print(" aplha beta emitt[mm*mrad] Y= %6.4f %6.4f %6.4f " % (alphaY, betaY, emittY * 1.0e6))
-print(" aplha beta emitt[mm*mrad] Z= %6.4f %6.4f %6.4f " % (alphaZ, betaZ, emittZ * 1.0e6))
+print(" alpha beta emitt[mm*mrad] X= %6.4f %6.4f %6.4f " % (alphaX, betaX, emittX * 1.0e6))
+print(" alpha beta emitt[mm*mrad] Y= %6.4f %6.4f %6.4f " % (alphaY, betaY, emittY * 1.0e6))
+print(" alpha beta emitt[mm*mrad] Z= %6.4f %6.4f %6.4f " % (alphaZ, betaZ, emittZ * 1.0e6))
 
 # ---- long. size in mm
 sizeZ = math.sqrt(emittZ * betaZ) * 1.0e3
@@ -215,25 +211,27 @@ emittZ = emittZ * gamma**3 * beta**2 * mass
 betaZ = betaZ / (gamma**3 * beta**2 * mass)
 
 print(" ========= PyORBIT Twiss ===========")
-print(" aplha beta emitt[mm*mrad] X= %6.4f %6.4f %6.4f " % (alphaX, betaX, emittX * 1.0e6))
-print(" aplha beta emitt[mm*mrad] Y= %6.4f %6.4f %6.4f " % (alphaY, betaY, emittY * 1.0e6))
-print(" aplha beta emitt[mm*MeV] Z= %6.4f %6.4f %6.4f " % (alphaZ, betaZ, emittZ * 1.0e6))
+print(" alpha beta emitt[mm*mrad] X= %6.4f %6.4f %6.4f " % (alphaX, betaX, emittX * 1.0e6))
+print(" alpha beta emitt[mm*mrad] Y= %6.4f %6.4f %6.4f " % (alphaY, betaY, emittY * 1.0e6))
+print(" alpha beta emitt[mm*MeV] Z= %6.4f %6.4f %6.4f " % (alphaZ, betaZ, emittZ * 1.0e6))
 
 twissX = TwissContainer(alphaX, betaX, emittX)
 twissY = TwissContainer(alphaY, betaY, emittY)
 twissZ = TwissContainer(alphaZ, betaZ, emittZ)
 
 print("Start Bunch Generation.")
-bunch_gen = SNS_Linac_BunchGenerator(twissX, twissY, twissZ)
+bunch_gen = SNS_Linac_BunchGenerator(twissX, twissY, twissZ, frequency=frequency)
+bunch_gen.bunch.mass(mass)
+bunch_gen.bunch.charge(1.0)
 
 # set the initial kinetic energy in GeV
 bunch_gen.setKinEnergy(e_kin_ini)
 
 # set the beam peak current in mA
-bunch_gen.setBeamCurrent(38.0)
+bunch_gen.setBeamCurrent(62.5)
 
-bunch_in = bunch_gen.getBunch(nParticles=100000, distributorClass=WaterBagDist3D)
-# bunch_in = bunch_gen.getBunch(nParticles = 100000, distributorClass = GaussDist3D)
+# bunch_in = bunch_gen.getBunch(nParticles=100000, distributorClass=WaterBagDist3D)
+bunch_in = bunch_gen.getBunch(nParticles=100000, distributorClass=GaussDist3D)
 # bunch_in = bunch_gen.getBunch(nParticles = 10000, distributorClass = KVDist3D)
 
 print("Bunch Generation completed.")
@@ -313,7 +311,7 @@ actionContainer.addAction(action_exit, AccActionsContainer.EXIT)
 
 time_start = time.process_time()
 
-accLattice.trackBunch(bunch_in, paramsDict=paramsDict, actionContainer=actionContainer)
+results_arr = accLattice.trackBunch(bunch_in, paramsDict=paramsDict, actionContainer=actionContainer)
 
 time_exec = time.process_time() - time_start
 print("time[sec]=", time_exec)

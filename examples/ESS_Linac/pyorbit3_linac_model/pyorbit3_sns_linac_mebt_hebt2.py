@@ -1,25 +1,39 @@
 #! /usr/bin/env python
 
 """
-This script will track the bunch through the SNS Linac with
-the modified lattice. The quads and RF gaps will be replaced by
-elements with distributed fields.
+This script will track the bunch through the SNS Linac.
+
+At the beginning the lattice can be modified by replacing
+the BaseRF_Gap nodes with AxisFieldRF_Gap nodes for
+the selected sequences. These nodes will use the
+RF fields at the axis of the RF gap to track the bunch.
+The usual BaseRF_Gap nodes have a zero length.
+
+The apertures are added to the lattice.
 """
 
 import sys
 import math
 import random
 import time
+import orbit.core
 
 from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
 # from linac import the C++ RF gap classes
-from orbit.core.linac import BaseRfGap, MatrixRfGap, RfGapTTF
+# ---- for these RF gap models parameters are defined by the synchronous particle
+from linac import BaseRfGap, MatrixRfGap, RfGapTTF
+
+# ---- variants of slow RF gap models which updates all RF gap parameters
+# ---- individually for each particle in the bunch
+from linac import BaseRfGap_slow, RfGapTTF_slow, RfGapThreePointTTF_slow
+
 
 from orbit.bunch_generators import TwissContainer
 from orbit.bunch_generators import WaterBagDist3D, GaussDist3D, KVDist3D
 
-from orbit.core.bunch import Bunch, BunchTwissAnalysis
+from bunch import Bunch
+from bunch import BunchTwissAnalysis
 
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 
@@ -28,31 +42,18 @@ from orbit.py_linac.lattice_modifications import Add_rfgap_apertures_to_lattice
 from orbit.py_linac.lattice_modifications import AddMEBTChopperPlatesAperturesToSNS_Lattice
 from orbit.py_linac.lattice_modifications import AddScrapersAperturesToLattice
 
-from orbit.py_linac.lattice import AxisField_and_Quad_RF_Gap
-from orbit.py_linac.lattice import OverlappingQuadsNode
-
+# ---- BaseRF_Gap to  AxisFieldRF_Gap replacement  ---- It is a possibility ----------
 from orbit.py_linac.lattice_modifications import Replace_BaseRF_Gap_to_AxisField_Nodes
 from orbit.py_linac.lattice_modifications import Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes
 from orbit.py_linac.lattice_modifications import Replace_Quads_to_OverlappingQuads_Nodes
 
 from orbit.py_linac.overlapping_fields import SNS_EngeFunctionFactory
 
-# we take a SNS Linac Bunch generator from a neighboring directory
-sys.path.append("../pyorbit3_linac_model")
 from sns_linac_bunch_generator import SNS_Linac_BunchGenerator
 
 random.seed(100)
 
-# names = ["MEBT","DTL1","DTL2","DTL3","DTL4","DTL5","DTL6","CCL1","CCL2","CCL3","CCL4","SCLMed","SCLHigh","HEBT1","HEBT2"]
-# names = ["MEBT", "DTL1", "DTL2", "DTL3", "DTL4", "DTL5", "DTL6", "CCL1", "CCL2", "CCL3", "CCL4", "SCLMed", "SCLHigh", "HEBT1"]
-names = [
-    "MEBT",
-    "DTL1",
-    "DTL2",
-    "DTL3",
-]
-# names = ["MEBT",]
-
+names = ["MEBT", "DTL1", "DTL2", "DTL3", "DTL4", "DTL5", "DTL6", "CCL1", "CCL2", "CCL3", "CCL4", "SCLMed", "SCLHigh", "HEBT1", "HEBT2"]
 # ---- create the factory instance
 sns_linac_factory = SNS_LinacLatticeFactory()
 sns_linac_factory.setMaxDriftLength(0.01)
@@ -70,113 +71,136 @@ print("Linac lattice is ready. L=", accLattice.getLength())
 # ---- BaseRfGap  uses only E0TL*cos(phi)*J0(kr) with E0TL = const
 # ---- MatrixRfGap uses a matrix approach like envelope codes
 # ---- RfGapTTF uses Transit Time Factors (TTF) like PARMILA
+# cppGapModel = BaseRfGap_slow
+# cppGapModel = MatrixRfGap_slow
+# cppGapModel = RfGapTTF_slow
 # cppGapModel = BaseRfGap
 # cppGapModel = MatrixRfGap
 cppGapModel = RfGapTTF
+
 rf_gaps = accLattice.getRF_Gaps()
 for rf_gap in rf_gaps:
     rf_gap.setCppGapModel(cppGapModel())
 
-# ---- If you want to switch off all cavities - remove comments marks
-# cavs = accLattice.getRF_Cavities()
-# for cav in cavs:
-# 	cav.setAmp(0.)
 
 # ------------------------------------------------------------------
-# ---- BaseRF_Gap and Quads will be replaced for specified sequences
+# ---- BaseRF_Gap to  AxisFieldRF_Gap direct replacement
+# ---- in the MEBT, CCL, SCLMed,SCLHigh  it could be done directly
+# ---- because rf fields cover drifts only.
+# ---- The DTL needs a special treatment.
 # ------------------------------------------------------------------
-
-# ---- longitudinal step along the distributed fields lattice
-z_step = 0.005
 
 # ---- axis fields files location
 dir_location = "../sns_rf_fields/"
 
-# Replace_BaseRF_Gap_to_AxisField_Nodes(accLattice,z_step,dir_location,["MEBT",])
+# ---- longitudinal step along the distributed fields lattice
+z_step = 0.002
 
-# Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes(accLattice,z_step,dir_location,["MEBT","DTL1","DTL2","DTL3","DTL4","DTL5","DTL6"],[],SNS_EngeFunctionFactory)
-# Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes(accLattice,z_step,dir_location,["MEBT","DTL1","DTL2","DTL3",],[],SNS_EngeFunctionFactory)
-# Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes(accLattice,z_step,dir_location,["SCLMed","SCLHigh"],[],SNS_EngeFunctionFactory)
-# Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes(accLattice,z_step,dir_location,["MEBT",],[],SNS_EngeFunctionFactory)
+# --------- User can comment / uncomment the necessary RF and quad models
 
-# Replace_Quads_to_OverlappingQuads_Nodes(accLattice,z_step,["MEBT",],[],SNS_EngeFunctionFactory)
-# Replace_Quads_to_OverlappingQuads_Nodes(accLattice,z_step,["MEBT","DTL1"],[],SNS_EngeFunctionFactory)
-# Replace_Quads_to_OverlappingQuads_Nodes(accLattice,z_step,["DTL1",],[],SNS_EngeFunctionFactory)
+# ------------------------------------------------------------------------------
+# ----- only RF gaps will be replaced with non-zero length models
+# ----- Quads stay hard-edged.
+# ----- Such approach will not work for DTL cavities - RF and quad fields are overlapped for DTL
+# Replace_BaseRF_Gap_to_AxisField_Nodes(accLattice,z_step,dir_location,["MEBT","CCL1","CCL2","CCL3","CCL4","SCLMed"])
 
-# ------------Set the linac specific trackers for drifts, quads and RF gaps ------
-# ------------It is for situation when the bunch has very big energy spread
-# ------------which is unusual
-# accLattice.setLinacTracker(True)
+# ------------------------------------------------------------------------------
+# accSeq_names = ["MEBT","DTL1","DTL2","DTL3","DTL4","DTL5","DTL6","CCL1","CCL2","CCL3","CCL4","SCLMed"]
+accSeq_names = ["MEBT", "DTL1", "DTL2", "DTL3", "DTL4", "DTL5", "DTL6"]
 
+# ---- hard-edge quad models will be replaced with soft-edge models
+# ---- It is possible for DTL also - if the RF gap models are zero-length ones
+# Replace_Quads_to_OverlappingQuads_Nodes(accLattice,z_step,accSeq_names,[],SNS_EngeFunctionFactory)
 
-# ------------ Add tracking through the longitudinal field component of the quad
-# ------------ The longitudinal component is not zero only for the distributed
-# ------------ magnetic field of the quad. It means you have to modify lattice with
-# ------------ Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes
-# ------------ or
-# ------------ Replace_Quads_to_OverlappingQuads_Nodes
-nodes = accLattice.getNodes()
-for node in nodes:
-    if isinstance(node, OverlappingQuadsNode) or isinstance(node, AxisField_and_Quad_RF_Gap):
-        # node.setUseLongitudinalFieldOfQuad(True)
-        pass
+# ---- hard-edge quad and zero-length RF gap models will be replaced with
+# ---- soft-edge quads and field-on-axis RF gap models
+# ---- It can be used for any sequences, no limitations.
+# Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes(accLattice,z_step,dir_location,accSeq_names,[],SNS_EngeFunctionFactory)
+
+print("Linac lattice has been modified. New L[m] = ", accLattice.getLength())
 
 
 # -----------------------------------------------------
 # Set up Space Charge Acc Nodes
 # -----------------------------------------------------
 from orbit.space_charge.sc3d import setSC3DAccNodes, setUniformEllipsesSCAccNodes
-from orbit.core.spacecharge import SpaceChargeCalcUnifEllipse, SpaceChargeCalc3D
+from orbit.space_charge.sc2p5d import setSC2p5DrbAccNodes
+from spacecharge import SpaceChargeCalcUnifEllipse, SpaceChargeCalc3D
+from spacecharge import SpaceChargeCalc2p5Drb
 
-sc_path_length_min = 0.02
+sc_path_length_min = 0.01
 
 print("Set up Space Charge nodes. ")
 
+# -------------------------------------------------------------
 # set of uniformly charged ellipses Space Charge
+# -------------------------------------------------------------
 nEllipses = 1
 calcUnifEllips = SpaceChargeCalcUnifEllipse(nEllipses)
 space_charge_nodes = setUniformEllipsesSCAccNodes(accLattice, sc_path_length_min, calcUnifEllips)
 
 """
-# set FFT 3D Space Charge instead of UniformEllipses
+#-------------------------------------------------------------
+# set FFT 3D Space Charge
+#-------------------------------------------------------------
 sizeX = 64
 sizeY = 64
 sizeZ = 64
 calc3d = SpaceChargeCalc3D(sizeX,sizeY,sizeZ)
 space_charge_nodes =  setSC3DAccNodes(accLattice,sc_path_length_min,calc3d)
+
+#-------------------------------------------------------------
+# set 2.5D Rick Baartman's Space Charge model.
+# This model does not work for linac case
+# here it is just as example of setting another SC model
+#-------------------------------------------------------------
+sizeX = 32
+sizeY = 32
+sizeZ = 32
+calc3drb = SpaceChargeCalc2p5Drb(sizeX,sizeY,sizeZ)
+pipe_radius = 0.025
+space_charge_nodes =  setSC2p5DrbAccNodes(accLattice,sc_path_length_min,calc3drb,pipe_radius)
 """
+
 
 max_sc_length = 0.0
 min_sc_length = accLattice.getLength()
 for sc_node in space_charge_nodes:
     scL = sc_node.getLengthOfSC()
-    # if(scL > 0.028):
-    # 	print "debug sc node = ",sc_node.getName()," L=",scL
     if scL > max_sc_length:
         max_sc_length = scL
     if scL < min_sc_length:
         min_sc_length = scL
 print("maximal SC length =", max_sc_length, "  min=", min_sc_length)
 
-
 print("===== Aperture Nodes START  =======")
 aprtNodes = Add_quad_apertures_to_lattice(accLattice)
-# aprtNodes = Add_rfgap_apertures_to_lattice(accLattice,aprtNodes)
-# aprtNodes = AddMEBTChopperPlatesAperturesToSNS_Lattice(accLattice,aprtNodes)
+aprtNodes = Add_rfgap_apertures_to_lattice(accLattice, aprtNodes)
+aprtNodes = AddMEBTChopperPlatesAperturesToSNS_Lattice(accLattice, aprtNodes)
 
 x_size = 0.042
 y_size = 0.042
-# aprtNodes = AddScrapersAperturesToLattice(accLattice,"MEBT_Diag:H_SCRP",x_size,y_size,aprtNodes)
+aprtNodes = AddScrapersAperturesToLattice(accLattice, "MEBT_Diag:H_SCRP", x_size, y_size, aprtNodes)
 
 x_size = 0.042
 y_size = 0.042
-# aprtNodes = AddScrapersAperturesToLattice(accLattice,"MEBT_Diag:V_SCRP",x_size,y_size,aprtNodes)
+aprtNodes = AddScrapersAperturesToLattice(accLattice, "MEBT_Diag:V_SCRP", x_size, y_size, aprtNodes)
+
+"""
+for node in aprtNodes:
+	print "aprt=",node.getName()," pos =",node.getPosition()
+"""
+
+print("===== Aperture Nodes Added =======")
 
 
-# for node in aprtNodes:
-# 	print "aprt=",node.getName()," pos =",node.getPosition()
-
-print("===== Aperture Nodes Added ======= N total=", len(aprtNodes))
+# ----------------------------------------------------------
+# Set Linac style quads and drifts instead of TEAPOT style
+# That can be useful when energy spread is huge and TEAPOT
+# accuracy is not enough for tracking.
+# This will slow down tracking and it is not symplectic.
+# ----------------------------------------------------------
+# accLattice.setLinacTracker(True)
 
 
 # -----TWISS Parameters at the entrance of MEBT ---------------
@@ -244,14 +268,14 @@ accLattice.trackDesignBunch(bunch_in)
 print("Design tracking completed.")
 
 # track through the lattice
-paramsDict = {"old_pos": -1.0, "count": 0, "pos_step": 0.01}
-actionContainer = AccActionsContainer("Bunch Tracking")
+paramsDict = {"old_pos": -1.0, "count": 0, "pos_step": 0.1}
+actionContainer = AccActionsContainer("Test Design Bunch Tracking")
 
 pos_start = 0.0
 
 twiss_analysis = BunchTwissAnalysis()
 
-file_out = open("pyorbit_twiss_sizes_and_ekin.dat", "w")
+file_out = open("pyorbit_twiss_sizes_ekin.dat", "w")
 
 s = " Node   position "
 s += "   alphaX betaX emittX  normEmittX"
@@ -317,8 +341,5 @@ accLattice.trackBunch(bunch_in, paramsDict=paramsDict, actionContainer=actionCon
 
 time_exec = time.process_time() - time_start
 print("time[sec]=", time_exec)
-
-# ---- dump the final bunch
-# bunch_in.dumpBunch("bunch_test.dat")
 
 file_out.close()

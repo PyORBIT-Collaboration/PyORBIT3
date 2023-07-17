@@ -26,6 +26,9 @@ from orbit.py_linac.lattice import Drift, Quad, Bend, MarkerLinacNode
 from orbit.core.bunch import Bunch, BunchTwissAnalysis
 
 from orbit.core.trackerrk4 import RungeKuttaTracker
+from orbit.core.orbit_utils import StatMoments2D
+from orbit.core.fieldtracker import FieldTracker
+from orbit.core.linac import SuperFishFieldSource
 
 from orbit.bunch_generators import TwissContainer
 from orbit.bunch_generators import KVDist2D, KVDist3D

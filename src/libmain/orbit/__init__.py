@@ -1,12 +1,38 @@
-from orbit.core import aperture
-from orbit.core import orbit_mpi
-from orbit.core import trackerrk4
-from orbit.core import error_base
-from orbit.core import bunch
-from orbit.core import teapot_base
-from orbit.core import linac
-from orbit.core import spacecharge
-from orbit.core import orbit_utils
-from orbit.core import foil
-from orbit.core import collimator
-from orbit.core import field_sources
+import importlib.util
+import sys
+
+import _orbit
+
+pkg_path = _orbit.__file__
+
+
+def _load_module(mod_name, path):
+    spec = importlib.util.spec_from_file_location(mod_name, path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[mod_name] = module
+    spec.loader.exec_module(module)
+
+    return module
+
+
+__all__ = [
+    "orbit_mpi",
+    "trackerrk4",
+    "error_base",
+    "bunch",
+    "teapot_base",
+    "linac",
+    "spacecharge",
+    "orbit_utils",
+    "aperture",
+    "foil",
+    "collimator",
+    "field_sources",
+    "rfcavities",
+    "impedances",
+    "fieldtracker",
+]
+
+for mod_name in __all__:
+    locals()[mod_name] = _load_module(mod_name, pkg_path)
+del mod_name
