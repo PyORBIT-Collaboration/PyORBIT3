@@ -100,7 +100,7 @@ sns_linac_factory = SNS_LinacLatticeFactory()
 sns_linac_factory.setMaxDriftLength(0.02)
 
 # ---- the XML file name with the structure
-xml_file_name = "../sns_linac_xml/sns_sts_linac.xml"
+xml_file_name = "../../SNS_Linac/sns_linac_xml/sns_sts_linac.xml"
 
 # ---- make lattice from XML file
 accLattice = sns_linac_factory.getLinacAccLattice(names, xml_file_name)
@@ -123,7 +123,7 @@ for rf_gap in rf_gaps:
 # Set up Space Charge Acc Nodes
 # -----------------------------------------------------
 from orbit.space_charge.sc3d import setSC3DAccNodes, setUniformEllipsesSCAccNodes
-from spacecharge import SpaceChargeCalcUnifEllipse, SpaceChargeCalc3D
+from orbit.core.spacecharge import SpaceChargeCalcUnifEllipse, SpaceChargeCalc3D
 
 sc_path_length_min = 0.02
 

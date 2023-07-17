@@ -25,7 +25,7 @@ from orbit.core.linac import BaseRfGap, MatrixRfGap, RfGapTTF
 
 # ---- variants of slow RF gap models which updates all RF gap parameters
 # ---- individually for each particle in the bunch
-from linac import BaseRfGap_slow, RfGapTTF_slow, RfGapThreePointTTF_slow
+from orbit.core.linac import BaseRfGap_slow, RfGapTTF_slow, RfGapThreePointTTF_slow
 
 
 from orbit.bunch_generators import TwissContainer
@@ -57,7 +57,7 @@ sns_linac_factory = SNS_LinacLatticeFactory()
 sns_linac_factory.setMaxDriftLength(0.01)
 
 # ---- the XML file name with the structure
-xml_file_name = "../sns_linac_xml/sns_linac.xml"
+xml_file_name = "../../SNS_Linac/sns_linac_xml/sns_linac.xml"
 
 # ---- make lattice from XML file
 accLattice = sns_linac_factory.getLinacAccLattice(names, xml_file_name)
@@ -123,8 +123,7 @@ print("Linac lattice has been modified. New L[m] = ", accLattice.getLength())
 # -----------------------------------------------------
 from orbit.space_charge.sc3d import setSC3DAccNodes, setUniformEllipsesSCAccNodes
 from orbit.space_charge.sc2p5d import setSC2p5DrbAccNodes
-from spacecharge import SpaceChargeCalcUnifEllipse, SpaceChargeCalc3D
-from spacecharge import SpaceChargeCalc2p5Drb
+from orbit.core.spacecharge import SpaceChargeCalcUnifEllipse, SpaceChargeCalc3D, SpaceChargeCalc2p5Drb
 
 sc_path_length_min = 0.01
 

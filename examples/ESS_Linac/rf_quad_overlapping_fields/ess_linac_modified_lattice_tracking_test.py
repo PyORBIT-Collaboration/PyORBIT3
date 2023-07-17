@@ -121,7 +121,7 @@ for node in nodes:
 # Set up Space Charge Acc Nodes
 # -----------------------------------------------------
 from orbit.space_charge.sc3d import setSC3DAccNodes, setUniformEllipsesSCAccNodes
-from spacecharge import SpaceChargeCalcUnifEllipse, SpaceChargeCalc3D
+from orbit.core.spacecharge import SpaceChargeCalcUnifEllipse, SpaceChargeCalc3D
 
 sc_path_length_min = 0.02
 
