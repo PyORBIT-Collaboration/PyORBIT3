@@ -19,8 +19,7 @@ import os
 import time
 
 # ---- MPI environment
-import orbit_mpi
-from orbit_mpi import mpi_comm
+from orbit.core.orbit_mpi import mpi_comm, MPI_Comm_rank
 
 # import from orbit Python utilities
 from orbit.utils import orbitFinalize
@@ -29,9 +28,7 @@ from orbit.utils import orbitFinalize
 from orbit.py_linac.lattice import Quad, Drift
 from orbit.py_linac.lattice import BaseRF_Gap, AxisFieldRF_Gap
 
-from orbit_utils import Function
-from orbit_utils import SplineCH
-from orbit_utils import GaussLegendreIntegrator
+from orbit.core.orbit_utils import Function, SplineCH, GaussLegendreIntegrator
 
 
 def Replace_BaseRF_Gap_to_AxisField_Nodes(accLattice, z_step, dir_location="", accSeq_Names=[], cavs_Names=[]):
@@ -248,7 +245,7 @@ def Make_AxisFieldRF_Gaps_and_Find_Neihbor_Nodes(rf_length_tolerance, accLattice
     drift_up_ind are the indexes covering the edges of the axis filed of the
     particular AxisFieldRF_Gap.
     """
-    rank = orbit_mpi.MPI_Comm_rank(orbit_mpi.mpi_comm.MPI_COMM_WORLD)
+    rank = MPI_Comm_rank(mpi_comm.MPI_COMM_WORLD)
     nodes = accSeq.getNodes()
     node_pos_dict = accLattice.getNodePositionsDict()
     # --------------------------------------------------

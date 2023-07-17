@@ -46,7 +46,7 @@ namespace wrap_orbit_bunch{
 		// Template: PyObject* PyObject_CallMethod(	PyObject *o, char *method, char *format, ...)
 		//see Python/C API documentation
 		//It will create a SyncParticle object and set the reference to it from pyBunch
-		PyObject* mod = PyImport_ImportModule("bunch");
+		PyObject* mod = PyImport_ImportModule("_bunch");
 		PyObject* pySyncPart = PyObject_CallMethod(mod,const_cast<char*>("SyncParticle"),const_cast<char*>("O"),self);
 
 		//the references should be decreased because they were created as "new reference"
@@ -1335,7 +1335,7 @@ extern "C" {
   }
 
 	PyObject* getBunchType(const char* name){
-		PyObject* mod = PyImport_ImportModule("bunch");
+		PyObject* mod = PyImport_ImportModule("_bunch");
 		PyObject* pyType = PyObject_GetAttrString(mod,name);
 		Py_DECREF(mod);
 		Py_DECREF(pyType);

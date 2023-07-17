@@ -6,11 +6,8 @@
 
 import sys
 import math
-import orbit.core
 
-from orbit_utils import Matrix
-from orbit_utils import PhaseVector
-from orbit_utils import Function
+from orbit.core.orbit_utils import Matrix, PhaseVector, Function
 
 
 # ---- Print matrix function

@@ -21,11 +21,10 @@ from orbit.py_linac.lattice import RF_Cavity, Sequence
 from orbit.py_linac.lattice import BaseRF_Gap
 
 # from linac import the C++ RF gap classes
-from linac import BaseRfGap, MatrixRfGap, RfGapTTF
-from linac import BaseRfGap_slow, RfGapTTF_slow
+from orbit.core.linac import BaseRfGap, MatrixRfGap, RfGapTTF
+from orbit.core.linac import BaseRfGap_slow, RfGapTTF_slow
 
-from bunch import Bunch
-from bunch import SynchPartRedefinitionZdE
+from orbit.core.bunch import Bunch, SynchPartRedefinitionZdE
 
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 

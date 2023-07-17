@@ -16,9 +16,7 @@ from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunch
 from orbit.teapot import DriftTEAPOT
 
 # import RF cavity classes
-from rfcavities import Frequency_Cav
-from rfcavities import Harmonic_Cav
-from rfcavities import Barrier_Cav
+from orbit.core.rfcavities import Frequency_Cav, Harmonic_Cav, Barrier_Cav
 
 
 class Base_RFNode(DriftTEAPOT):

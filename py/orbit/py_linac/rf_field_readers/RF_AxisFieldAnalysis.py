@@ -1,14 +1,11 @@
 import sys
 import math
 
-import orbit_mpi
-from orbit_mpi import mpi_comm
+from orbit.core import orbit_mpi
+from orbit.core.orbit_mpi import mpi_comm
 
-from orbit_utils import Function
-from orbit_utils import SplineCH
-from orbit_utils import GaussLegendreIntegrator
+from orbit.core.orbit_utils import Function, SplineCH, GaussLegendreIntegrator, Polynomial
 from orbit.utils.fitting import PolynomialFit
-from orbit_utils import Polynomial
 
 
 class RF_AxisFieldAnalysis:

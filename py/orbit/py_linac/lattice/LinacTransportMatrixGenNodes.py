@@ -21,10 +21,9 @@ from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 
 from orbit.py_linac.lattice import MarkerLinacNode
 
-import orbit_utils
-from orbit_utils import bunch_utils_functions
+from orbit.core.orbit_utils import bunch_utils_functions
 
-from orbit_utils import Matrix
+from orbit.core.orbit_utils import Matrix
 
 
 class LinacTrMatrixGenNode(MarkerLinacNode):

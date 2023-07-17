@@ -12,7 +12,7 @@ import math
 
 
 # import bunch
-from bunch import Bunch
+from orbit.core.bunch import Bunch
 
 # import the function that creates multidimensional arrays
 from ..utils import orbitFinalize
@@ -22,8 +22,7 @@ from ..lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTrac
 
 # import matrix class and generators
 from ..teapot_base import MatrixGenerator
-from orbit_utils import Matrix
-from orbit_utils import PhaseVector
+from orbit.core.orbit_utils import Matrix, PhaseVector
 
 # import the AccNode implementation for a transport matrix
 from .BaseMATRIX import BaseMATRIX

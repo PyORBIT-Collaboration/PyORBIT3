@@ -10,15 +10,14 @@ from orbit.utils import orbitFinalize
 # import general accelerator elements and lattice
 from orbit.lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
 
-from bunch import Bunch
-from bunch import BunchTwissAnalysis
+from orbit.core.bunch import Bunch, BunchTwissAnalysis
 
 from orbit.py_linac.lattice import Quad
 from orbit.py_linac.lattice import DCorrectorH, DCorrectorV
 from orbit.py_linac.lattice import MarkerLinacNode
 from orbit.py_linac.lattice import BaseLinacNode
 
-from orbit_utils import Matrix, PhaseVector
+from orbit.core.orbit_utils import Matrix, PhaseVector
 
 
 def printM(m):

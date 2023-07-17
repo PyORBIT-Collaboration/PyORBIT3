@@ -7,11 +7,7 @@
 import sys
 import math
 
-from orbit_utils import Function
-from orbit_utils import SplineCH
-from orbit_utils import Matrix
-
-from orbit_utils import Polynomial
+from orbit.core.orbit_utils import Function, SplineCH, Matrix, Polynomial
 
 
 class PolynomialFit:

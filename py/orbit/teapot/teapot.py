@@ -23,10 +23,10 @@ from ..parsers.mad_parser import MAD_Parser, MAD_LattElement
 from ..parsers.madx_parser import MADX_Parser, MADX_LattElement
 
 # import aperture
-from aperture import Aperture
+from orbit.core.aperture import Aperture
 
 # monitor
-from bunch import BunchTwissAnalysis
+from orbit.core.bunch import BunchTwissAnalysis
 
 
 """

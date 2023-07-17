@@ -7,7 +7,7 @@ This is not a parallel version!
 import math
 import random
 import sys
-from bunch import Bunch
+from orbit.core.bunch import Bunch
 
 
 # ATTENTION !!! The python packet numpy and scipy are required

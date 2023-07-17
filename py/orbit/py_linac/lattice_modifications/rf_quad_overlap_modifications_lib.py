@@ -32,7 +32,7 @@ from orbit.py_linac.lattice import AxisField_and_Quad_RF_Gap
 
 from orbit.py_linac.overlapping_fields import EngeFunction
 
-from orbit_utils import Function
+from orbit.core.orbit_utils import Function
 
 from orbit.py_linac.lattice_modifications.rf_models_modifications_lib import Make_AxisFieldRF_Gaps_and_Find_Neihbor_Nodes
 

@@ -19,7 +19,6 @@ implemented in C++.
 import os
 import math
 import sys
-import orbit.core
 
 # import the finalization function
 from orbit.utils import orbitFinalize
@@ -34,26 +33,26 @@ from orbit.lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
 from orbit.teapot_base import TPB
 
 # import error packages from C++
-from error_base import CoordDisplacement
-from error_base import LongDisplacement
-from error_base import StraightRotationXY
-from error_base import StraightRotationXSI
-from error_base import StraightRotationXSF
-from error_base import StraightRotationYSI
-from error_base import StraightRotationYSF
-from error_base import BendFieldI
-from error_base import BendFieldF
-from error_base import BendDisplacementXI
-from error_base import BendDisplacementXF
-from error_base import BendDisplacementYI
-from error_base import BendDisplacementYF
-from error_base import BendDisplacementLI
-from error_base import BendDisplacementLF
-from error_base import RotationI
-from error_base import RotationF
-from error_base import DipoleKickerOsc
-from error_base import QuadKicker
-from error_base import QuadKickerOsc
+from orbit.core.error_base import CoordDisplacement
+from orbit.core.error_base import LongDisplacement
+from orbit.core.error_base import StraightRotationXY
+from orbit.core.error_base import StraightRotationXSI
+from orbit.core.error_base import StraightRotationXSF
+from orbit.core.error_base import StraightRotationYSI
+from orbit.core.error_base import StraightRotationYSF
+from orbit.core.error_base import BendFieldI
+from orbit.core.error_base import BendFieldF
+from orbit.core.error_base import BendDisplacementXI
+from orbit.core.error_base import BendDisplacementXF
+from orbit.core.error_base import BendDisplacementYI
+from orbit.core.error_base import BendDisplacementYF
+from orbit.core.error_base import BendDisplacementLI
+from orbit.core.error_base import BendDisplacementLF
+from orbit.core.error_base import RotationI
+from orbit.core.error_base import RotationF
+from orbit.core.error_base import DipoleKickerOsc
+from orbit.core.error_base import QuadKicker
+from orbit.core.error_base import QuadKickerOsc
 
 
 # ------------------------------------------------------------------------

@@ -12,11 +12,10 @@ import sys
 import math
 import random
 import time
-import orbit.core
 
 from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
-from bunch import Bunch
+from orbit.core.bunch import Bunch
 
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 

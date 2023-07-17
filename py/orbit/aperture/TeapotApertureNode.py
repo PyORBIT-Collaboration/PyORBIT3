@@ -5,11 +5,9 @@ This module is a Aperture node class for TEAPOT lattice
 import os
 import math
 
-from bunch import Bunch
-import orbit_mpi
-from orbit_mpi import mpi_comm
-from orbit_mpi import mpi_datatype
-from orbit_mpi import mpi_op
+from orbit.core.bunch import Bunch
+from orbit.core import orbit_mpi
+from orbit.core.orbit_mpi import mpi_comm, mpi_datatype, mpi_op
 
 # import the auxiliary classes
 from ..utils import orbitFinalize, NamedObject, ParamsDictObject
@@ -21,7 +19,7 @@ from ..lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTrac
 from ..teapot import DriftTEAPOT
 
 # import injection class
-from aperture import Aperture
+from orbit.core.aperture import Aperture
 
 # The aperture class simply removes particles from on bunch and places them in the lostbunch.
 

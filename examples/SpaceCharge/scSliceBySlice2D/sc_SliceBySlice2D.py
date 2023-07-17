@@ -4,17 +4,16 @@ import sys
 # import orbit_mpi
 import random
 import sys
-import orbit.core
 
-from bunch import Bunch
+from orbit.core.bunch import Bunch
 from orbit.teapot import teapot
 from orbit.teapot import TEAPOT_Lattice
 from orbit.teapot import DriftTEAPOT
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 from orbit.utils.orbit_mpi_utils import bunch_orbit_to_pyorbit, bunch_pyorbit_to_orbit
-from spacecharge import Boundary2D
+from orbit.core.spacecharge import Boundary2D
 from orbit.space_charge.sc2dslicebyslice import scAccNodes, scLatticeModifications
-from spacecharge import SpaceChargeCalcSliceBySlice2D
+from orbit.core.spacecharge import SpaceChargeCalcSliceBySlice2D
 from orbit.diagnostics import TeapotTuneAnalysisNode
 from orbit.diagnostics import addTeapotDiagnosticsNode
 

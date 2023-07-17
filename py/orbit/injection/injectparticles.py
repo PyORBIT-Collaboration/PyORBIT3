@@ -12,12 +12,10 @@ import math
 import random
 import sys
 
-from bunch import Bunch
+from orbit.core.bunch import Bunch
 
-import orbit_mpi
-from orbit_mpi import mpi_comm
-from orbit_mpi import mpi_datatype
-from orbit_mpi import mpi_op
+from orbit.core import orbit_mpi
+from orbit.core.orbit_mpi import mpi_comm, mpi_datatype, mpi_op
 
 
 class InjectParts:

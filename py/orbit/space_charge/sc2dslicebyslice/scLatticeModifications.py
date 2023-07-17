@@ -9,7 +9,7 @@ from orbit.space_charge.sc2dslicebyslice import SC2DSliceBySlice_AccNode
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import the boindary from c++ py module
-from spacecharge import Boundary2D
+from orbit.core.spacecharge import Boundary2D
 
 # import the general SC lattice modification function
 from orbit.space_charge.scLatticeModifications import setSC_General_AccNodes

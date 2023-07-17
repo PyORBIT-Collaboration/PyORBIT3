@@ -15,7 +15,7 @@ from orbit.lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
 from orbit.teapot import DriftTEAPOT
 
 # import Foil class
-from foil import Foil
+from orbit.core.foil import Foil
 
 
 class TeapotFoilNode(DriftTEAPOT):

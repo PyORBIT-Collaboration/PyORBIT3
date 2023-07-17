@@ -10,13 +10,11 @@
 import sys
 import math
 import random
-import orbit.core
 
-from bunch import Bunch
-from bunch import BunchTwissAnalysis
+from orbit.core.bunch import Bunch, BunchTwissAnalysis
 
-from trackerrk4 import RungeKuttaTracker
-from orbit_utils import PyBaseFieldSource
+from orbit.core.trackerrk4 import RungeKuttaTracker
+from orbit.core.orbit_utils import PyBaseFieldSource
 
 from orbit.bunch_generators import TwissContainer
 from orbit.bunch_generators import KVDist2D, KVDist3D
@@ -24,7 +22,7 @@ from orbit.bunch_generators import GaussDist2D, GaussDist3D
 from orbit.bunch_generators import WaterBagDist2D, WaterBagDist3D
 from orbit.bunch_generators import TwissAnalysis
 
-from orbit.sns_linac import Quad, Drift
+from orbit.py_linac.lattice import Quad, Drift
 
 random.seed(100)
 

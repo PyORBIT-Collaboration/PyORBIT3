@@ -6,7 +6,7 @@ The AccNode subclass that represents a transport 7x7 matrix in a MATRIX_Lattice 
 from ..lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import matrix class
-from orbit_utils import Matrix
+from orbit.core.orbit_utils import Matrix
 
 
 class BaseMATRIX(AccNodeBunchTracker):

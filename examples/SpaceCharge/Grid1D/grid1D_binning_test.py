@@ -9,10 +9,9 @@
 import sys
 import math
 import random
-import orbit.core
 
-from bunch import Bunch
-from spacecharge import Grid1D
+from orbit.core.bunch import Bunch
+from orbit.core.spacecharge import Grid1D
 from orbit.diagnostics import profiles
 
 random.seed(100)

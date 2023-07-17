@@ -4,9 +4,8 @@
 
 import sys
 import math
-import orbit.core
 
-from spacecharge import Grid3D
+from orbit.core.spacecharge import Grid3D
 
 print("Start.")
 

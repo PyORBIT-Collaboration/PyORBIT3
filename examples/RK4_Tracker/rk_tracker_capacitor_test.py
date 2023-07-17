@@ -11,12 +11,11 @@
 import sys
 import math
 import random
-import orbit.core
 
-from bunch import Bunch
+from orbit.core.bunch import Bunch
 
-from trackerrk4 import RungeKuttaTracker
-from orbit_utils import PyBaseFieldSource
+from orbit.core.trackerrk4 import RungeKuttaTracker
+from orbit.core.orbit_utils import PyBaseFieldSource
 
 random.seed(100)
 

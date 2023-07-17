@@ -9,8 +9,6 @@ from ..utils import ParamsDictObject
 
 from ..lattice import AccActionsContainer
 
-import orbit
-
 
 class AccNode(NamedObject, TypedObject, ParamsDictObject):
     """

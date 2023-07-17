@@ -19,7 +19,7 @@ from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunch
 from orbit.teapot import DriftTEAPOT
 
 # import longitudinal space charge package
-from spacecharge import LSpaceChargeCalc
+from orbit.core.spacecharge import LSpaceChargeCalc
 
 # -----------------------------------------------------------------------------
 # Node for impedance as function of node number

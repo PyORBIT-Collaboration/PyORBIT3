@@ -9,7 +9,7 @@ import os
 import math
 
 # import bunch
-from bunch import Bunch
+from orbit.core.bunch import Bunch
 
 # import the function that creates multidimensional arrays
 from ..utils import orbitFinalize

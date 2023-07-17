@@ -14,8 +14,7 @@ import time
 
 from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
-from bunch import Bunch
-from bunch import BunchTwissAnalysis
+from orbit.core.bunch import Bunch, BunchTwissAnalysis
 
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 

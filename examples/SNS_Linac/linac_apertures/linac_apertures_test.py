@@ -10,12 +10,8 @@
 import math
 import sys
 import os
-import orbit.core
 
-import orbit_mpi
-from orbit_mpi import mpi_comm
-from orbit_mpi import mpi_datatype
-from orbit_mpi import mpi_op
+from orbit.core.orbit_mpi import mpi_comm, mpi_datatype, mpi_op, MPI_Comm_rank, MPI_Comm_size, MPI_Bcast
 
 from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
@@ -39,15 +35,14 @@ from orbit.bunch_generators import TwissContainer
 from orbit.bunch_generators import WaterBagDist3D
 from orbit.bunch_generators import TwissAnalysis
 
-from bunch import Bunch
-from bunch import BunchTwissAnalysis
+from orbit.core.bunch import Bunch, BunchTwissAnalysis
 
 # ---- These are convinience class and function for
 # ---- particles attributes: Ids and Initial Coordinates
 # ---- They will assign these values for the initial
 # ---- bunch and we should see them in the lost bunch
 from orbit.bunch_utils import ParticleIdNumber
-from orbit_utils import bunch_utils_functions
+from orbit.core.orbit_utils import bunch_utils_functions
 
 
 # --------------------------------------------------------
@@ -87,9 +82,9 @@ class BunchDumpNode(BaseLinacNode):
 # START of Script
 # -------------------------------------------
 
-comm = orbit_mpi.mpi_comm.MPI_COMM_WORLD
-rank = orbit_mpi.MPI_Comm_rank(comm)
-size = orbit_mpi.MPI_Comm_size(comm)
+comm = mpi_comm.MPI_COMM_WORLD
+rank = MPI_Comm_rank(comm)
+size = MPI_Comm_size(comm)
 data_type = mpi_datatype.MPI_DOUBLE
 main_rank = 0
 
@@ -221,7 +216,7 @@ distributor = WaterBagDist3D(twissX, twissY, twissZ)
 
 for ind in range(N_particles):
     (x, xp, y, yp, z, dE) = distributor.getCoordinates()
-    (x, xp, y, yp, z, dE) = orbit_mpi.MPI_Bcast((x, xp, y, yp, z, dE), data_type, main_rank, comm)
+    (x, xp, y, yp, z, dE) = MPI_Bcast((x, xp, y, yp, z, dE), data_type, main_rank, comm)
     if ind % size == rank:
         bunch.addParticle(x, xp, y, yp, z, dE)
 
@@ -234,7 +229,7 @@ bunch.macroSize(macrosize)
 ParticleIdNumber.addParticleIdNumbers(bunch)
 # ---- Copy the coordinates to the initial coordinates
 # ---- array of Particles Attribute
-copyCoordsToInitCoordsAttr(bunch)
+bunch_utils_functions.copyCoordsToInitCoordsAttr(bunch)
 
 # set up design
 accLattice.trackDesignBunch(bunch)

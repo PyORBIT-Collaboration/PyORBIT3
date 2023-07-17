@@ -57,7 +57,7 @@ extern "C" {
   }
 
 	PyObject* getOrbitUtilsType(const char* name){
-		PyObject* mod = PyImport_ImportModule(const_cast<char*>("orbit_utils"));
+		PyObject* mod = PyImport_ImportModule(const_cast<char*>("_orbit_utils"));
 		PyObject* pyType = PyObject_GetAttrString(mod,name);
 		Py_DECREF(mod);
 		Py_DECREF(pyType);
