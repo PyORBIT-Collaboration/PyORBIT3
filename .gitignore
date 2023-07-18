@@ -1,8 +1,11 @@
 bin/pyORBIT
+build
+PyORBIT.egg-info
+.vscode
 **/*.pyc
 **/obj/*.o
 *.pyc
 *~
 *.o
 *.so
-build
+.*.swp

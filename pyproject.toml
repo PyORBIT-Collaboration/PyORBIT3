@@ -8,3 +8,4 @@ dynamic = ["version"]
 description = "Acceleratop Physics Simulation Code"
 
 [tool.setuptools_scm]
+write_to = "src/_version.py"
