@@ -1,4 +1,8 @@
+import orbit.core
 import pytest
+
+from orbit.core import _orbit
+
 from orbit.py_linac.lattice import Quad
 from orbit.teapot import QuadTEAPOT
 

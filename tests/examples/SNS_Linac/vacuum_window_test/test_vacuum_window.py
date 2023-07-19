@@ -11,7 +11,9 @@ import sys
 import math
 import random
 import time
+import orbit.core
 
+from orbit.core import _orbit
 from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
 from bunch import Bunch
