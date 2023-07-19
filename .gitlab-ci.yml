@@ -4,6 +4,17 @@ include:
   - remote: "https://gitlab.esss.lu.se/ics-infrastructure/gitlab-ci-yml/raw/master/ArtifactoryPyPI.gitlab-ci.yml"
   - remote: "https://gitlab.esss.lu.se/ics-infrastructure/gitlab-ci-yml/raw/master/SonarScanner.gitlab-ci.yml"
 
+run-tests:
+  tags:
+    - docker
+  stage: test
+  image: continuumio/miniconda3:23.3.1-0
+  before_script:
+    - conda install -c conda-forge gcc gxx fftw mpich
+    - pip install .
+  script:
+    - pytest tests
+
 build-pypi-package:
   image: continuumio/miniconda3:23.3.1-0
   before_script:

@@ -411,23 +411,22 @@ bunch = trackBunch4D(bunch_init, trMatrixTotal)
 corr_matrix = getBunch4D_CorrelationMatrix(twiss_analysis, bunch)
 printMatrix(corr_matrix, " Final Correlation Matrix by using linear transport model")
 
-# print("KEKIZL'S TEST")
-str2 = matrixToString(corr_matrix, " Final Correlation Matrix by using linear transport model")
-# print(str)
+string2 = matrixToString(corr_matrix, " Final Correlation Matrix by using linear transport model")
 
 
 def test_teapotMatrix():
-    expected = """m(0,0) =           +1  m(0,1) =     +0.62698  m(0,2) =     -0.89476  m(0,3) =     -0.85977
-m(1,0) =     +0.62698  m(1,1) =           +1  m(1,2) =     -0.78602  m(1,3) =     -0.24323
-m(2,0) =     -0.89476  m(2,1) =     -0.78602  m(2,2) =           +1  m(2,3) =     +0.74658
+    expected = """m(0,0) =           +1  m(0,1) =     +0.62698  m(0,2) =     -0.89476  m(0,3) =     -0.85977  
+m(1,0) =     +0.62698  m(1,1) =           +1  m(1,2) =     -0.78602  m(1,3) =     -0.24323  
+m(2,0) =     -0.89476  m(2,1) =     -0.78602  m(2,2) =           +1  m(2,3) =     +0.74658  
 m(3,0) =     -0.85977  m(3,1) =     -0.24323  m(3,2) =     +0.74658  m(3,3) =           +1  \n"""
 
     assert string == expected
 
 
 def test_corrMatrix():
-    expected = """m(0,0) =           +1  m(0,1) =     +0.62698  m(0,2) =     -0.89476  m(0,3) =     -0.85977
-m(1,0) =     +0.62698  m(1,1) =           +1  m(1,2) =     -0.78602  m(1,3) =     -0.24323
-m(2,0) =     -0.89476  m(2,1) =     -0.78602  m(2,2) =           +1  m(2,3) =     +0.74658
+    expected = """m(0,0) =           +1  m(0,1) =     +0.62698  m(0,2) =     -0.89476  m(0,3) =     -0.85977  
+m(1,0) =     +0.62698  m(1,1) =           +1  m(1,2) =     -0.78602  m(1,3) =     -0.24323  
+m(2,0) =     -0.89476  m(2,1) =     -0.78602  m(2,2) =           +1  m(2,3) =     +0.74658  
 m(3,0) =     -0.85977  m(3,1) =     -0.24323  m(3,2) =     +0.74658  m(3,3) =           +1  \n"""
-    assert str2 == expected
+
+    assert string2 == expected
