@@ -11,6 +11,7 @@ run-tests:
   image: continuumio/miniconda3:23.3.1-0
   before_script:
     - conda install -c conda-forge gcc gxx fftw mpich pytest
+    - python setup.py clean
     - pip install .
   script:
     - pytest tests --junitxml=junit.xml
