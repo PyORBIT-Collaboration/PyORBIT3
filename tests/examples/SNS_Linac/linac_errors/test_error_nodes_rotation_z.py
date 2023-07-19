@@ -5,8 +5,6 @@ import os
 import random
 import orbit.core
 
-from orbit.core import _orbit
-
 # import general accelerator elements and lattice
 from orbit.lattice import AccNode, AccActionsContainer
 
