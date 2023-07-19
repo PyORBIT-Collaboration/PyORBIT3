@@ -1,7 +1,7 @@
 import importlib.util
 import sys
 
-import _orbit
+from orbit.core import _orbit
 
 pkg_path = _orbit.__file__
 
