@@ -22,6 +22,8 @@ from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 # import the XmlDataAdaptor XML parser
 from orbit.utils.xml import XmlDataAdaptor
 
+random.seed(100)
+
 
 def make_vacwin_da(name, length, pos):
     """
