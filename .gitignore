@@ -9,3 +9,4 @@ PyORBIT.egg-info
 *.o
 *.so
 .*.swp
+.eggs
