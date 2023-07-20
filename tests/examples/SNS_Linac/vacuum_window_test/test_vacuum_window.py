@@ -96,8 +96,8 @@ print("       lost bunch size = ", lostbunch.getSize())
 
 
 def test_bunch():
-    assert bunch.getSize() == 864
+    assert bunch.getSize() == 850
 
 
 def test_lostbunch():
-    assert lostbunch.getSize() == 136
+    assert lostbunch.getSize() == 150

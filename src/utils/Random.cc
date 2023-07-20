@@ -16,9 +16,11 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #include "Random.hh"
-#include <cstdlib>
+#include <random>
+
+std::mt19937 mt(0);
 
 /** The method calculates a random number between 0 and 1. (0. and 1.0 excluded) */
 double Random::ran1(long& idum){
-	return ((double) std::rand() / (RAND_MAX));
+	return ((double) mt() / (mt.max()));
 }
