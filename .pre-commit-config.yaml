@@ -4,7 +4,8 @@ repos:
     hooks:
     - id: end-of-file-fixer
     - id: trailing-whitespace
-      exclude: ^tests/examples/SNS_Linac/linac_errors/.*
+      exclude: '^tests/examples/SNS_Linac/linac_errors/.*|^tests/examples/AccLattice_Tests/.*'
+
 
   - repo: https://github.com/ambv/black
     rev: 23.1.0
