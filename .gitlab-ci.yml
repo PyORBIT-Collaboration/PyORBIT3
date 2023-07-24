@@ -15,6 +15,7 @@ run-tests:
     - pip install .
   script:
     - pytest tests --junitxml=junit.xml --cov-report xml --cov orbit
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     paths:
       - junit.xml
