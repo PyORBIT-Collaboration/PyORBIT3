@@ -1,4 +1,7 @@
 import pytest
+import orbit.core
+import os
+
 from orbit.py_linac.lattice import Quad
 from orbit.teapot import QuadTEAPOT
 
@@ -106,3 +109,7 @@ def test_multipole_example_output_linacquad():
 
 def test_multipole_example_output_teapotquad():
     assert teapot_quad_tracking == "0.14635469 0.10098071 0.18790445 0.27736948 0.089552597 0.001"
+
+
+os.remove(myfile)
+os.remove(myfile2)

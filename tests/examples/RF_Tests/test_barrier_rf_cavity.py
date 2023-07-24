@@ -9,6 +9,7 @@ from orbit.rf_cavities import RFNode, RFLatticeModifications
 
 import math
 import orbit.core
+import os
 
 print("Start.")
 
@@ -130,3 +131,6 @@ def test_barrier_rf_cavity_bunch_after():
 0 0 0 0 1.4639496 -0.070710678
 0 0 0 0 1.7582998 -0.080901699"""
     assert bunch_after == expected
+
+
+os.remove(myfile)
