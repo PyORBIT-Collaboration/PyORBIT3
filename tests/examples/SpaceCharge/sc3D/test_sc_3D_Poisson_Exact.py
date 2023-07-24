@@ -131,6 +131,7 @@ def get_max_diff_phi():
     modified_max_diff_phi = to_4_significant_digits(max_diff_phi)
     return modified_max_diff_phi
 
+
 def test_phi_theory_at_max_deviation(get_max_diff_phi):
     assert get_max_diff_phi == "4.103"
 
@@ -140,6 +141,7 @@ def get_max_diff_solv_phi():
     modified_max_diff_solv_phi = to_4_significant_digits(max_diff_solv_phi)
     return modified_max_diff_solv_phi
 
+
 def test_phi_solver_at_max_deviation(get_max_diff_solv_phi):
     assert get_max_diff_solv_phi == "4.103"
 
@@ -148,6 +150,7 @@ def test_phi_solver_at_max_deviation(get_max_diff_solv_phi):
 def get_max_grad_diff():
     modified_max_grad_diff = to_4_significant_digits(max_grad_diff)
     return modified_max_grad_diff
+
 
 def test_max_gradient_deviation(get_max_grad_diff):
     assert get_max_grad_diff == "1.593"
