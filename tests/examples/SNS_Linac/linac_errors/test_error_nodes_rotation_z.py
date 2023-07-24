@@ -369,7 +369,7 @@ print("=================================================")
 corr_matrix = getBunch4D_CorrelationMatrix(twiss_analysis, bunch)
 printMatrix(corr_matrix, " Final Correlation Matrix by TEAPOT tracking")
 print("=================================================")
-string = matrixToString(corr_matrix, " Final Correlation Matrix by TEAPOT tracking")
+corr_matrix_teapot_track = matrixToString(corr_matrix, " Final Correlation Matrix by TEAPOT tracking")
 L = drift_1.getLength()
 arr = [[], [], [], []]
 arr[0] = [1.0, L, 0.0, 0.0]
@@ -411,7 +411,7 @@ bunch = trackBunch4D(bunch_init, trMatrixTotal)
 corr_matrix = getBunch4D_CorrelationMatrix(twiss_analysis, bunch)
 printMatrix(corr_matrix, " Final Correlation Matrix by using linear transport model")
 
-string2 = matrixToString(corr_matrix, " Final Correlation Matrix by using linear transport model")
+corr_matrix_linear_track = matrixToString(corr_matrix, " Final Correlation Matrix by using linear transport model")
 
 
 def test_teapotMatrix():
@@ -420,7 +420,7 @@ m(1,0) =     +0.62698  m(1,1) =           +1  m(1,2) =     -0.78602  m(1,3) =   
 m(2,0) =     -0.89476  m(2,1) =     -0.78602  m(2,2) =           +1  m(2,3) =     +0.74658  
 m(3,0) =     -0.85977  m(3,1) =     -0.24323  m(3,2) =     +0.74658  m(3,3) =           +1  \n"""
 
-    assert string == expected
+    assert corr_matrix_teapot_track == expected
 
 
 def test_corrMatrix():
@@ -429,4 +429,4 @@ m(1,0) =     +0.62698  m(1,1) =           +1  m(1,2) =     -0.78602  m(1,3) =   
 m(2,0) =     -0.89476  m(2,1) =     -0.78602  m(2,2) =           +1  m(2,3) =     +0.74658  
 m(3,0) =     -0.85977  m(3,1) =     -0.24323  m(3,2) =     +0.74658  m(3,3) =           +1  \n"""
 
-    assert string2 == expected
+    assert corr_matrix_linear_track == expected
