@@ -10,14 +10,21 @@ run-tests:
   stage: test
   image: continuumio/miniconda3:23.3.1-0
   before_script:
-    - conda install -c conda-forge gcc gxx fftw mpich pytest
+    - conda install -c conda-forge gcc gxx fftw mpich pytest pytest-cov coverage
     - python setup.py clean
     - pip install .
   script:
-    - pytest tests --junitxml=junit.xml
+    - pytest tests --junitxml=junit.xml --cov-report xml --cov orbit
   artifacts:
     paths:
       - junit.xml
+      - coverage.xml
+    reports:
+      junit: junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+
 
 build-pypi-package:
   image: continuumio/miniconda3:23.3.1-0
