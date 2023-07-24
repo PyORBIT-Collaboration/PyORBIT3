@@ -104,8 +104,8 @@ paramsDict["bunch"] = b
 lattice.trackActions(accContainer, paramsDict)
 print("=============AFTER=============================")
 b.dumpBunch(myfile)
-mystring = read_lines(myfile)
-print(mystring)
+bunch_after = read_lines(myfile)
+print(bunch_after)
 print("==========================================")
 
 print("lattice length=", lattice.getLength())
@@ -129,4 +129,4 @@ def test_barrier_rf_cavity_bunch_after():
 0 0 0 0 1.2 0
 0 0 0 0 1.4639496 -0.070710678
 0 0 0 0 1.7582998 -0.080901699"""
-    assert mystring == expected
+    assert bunch_after == expected

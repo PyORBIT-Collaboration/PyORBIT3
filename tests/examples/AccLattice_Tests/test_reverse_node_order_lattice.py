@@ -62,9 +62,8 @@ accNode.addChildNode(AccNode("chExit2"), AccNode.EXIT)
 
 accNode.initialize()
 
-txt = printAccNodeStructure(accNode)
-print("CHRIS'S VERY COOL TESTS")
-print(txt)
+initial_node_structure = printAccNodeStructure(accNode)
+print(initial_node_structure)
 
 
 def test_initial_node_structure():
@@ -130,13 +129,13 @@ def test_initial_node_structure():
    ==== END of AccNode = chExit2
  ==== END of AccNode = test_node
 """
-    assert txt == expected
+    assert initial_node_structure == expected
 
 
 print("============== REVERSED NODE STRUCTURE =============")
 accNode.reverseOrder()
-txt2 = printAccNodeStructure(accNode)
-print(txt2)
+reversed_node_structure = printAccNodeStructure(accNode)
+print(reversed_node_structure)
 
 
 def test_reverse_node_structure():
@@ -202,4 +201,4 @@ def test_reverse_node_structure():
    ==== END of AccNode = chEntrn0
  ==== END of AccNode = test_node
 """
-    assert txt2 == expected2
+    assert reversed_node_structure == expected2

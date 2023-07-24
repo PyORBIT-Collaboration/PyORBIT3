@@ -94,26 +94,13 @@ for ind in range(n_parts):
 bunch_teapot.dumpBunch(myfile2)
 
 
-str = read_lines(myfile)
-print(str)
-str2 = read_lines(myfile2)
-print(str2)
+linac_quad_tracking = read_lines(myfile)
+print(linac_quad_tracking)
+teapot_quad_tracking = read_lines(myfile2)
+print(teapot_quad_tracking)
 
+def test_multipole_example_output_linacquad():
+    assert linac_quad_tracking == "0.14635674 0.10095515 0.1879077 0.27735323 0.089551404 0.001"
 
-# pytest things
-@pytest.fixture
-def output():
-    return str
-
-
-def test_multipole_example_output_linacquad(output):
-    assert output == "0.14635674 0.10095515 0.1879077 0.27735323 0.089551404 0.001"
-
-
-@pytest.fixture
-def output2():
-    return str2
-
-
-def test_multipole_example_output_teapotquad(output2):
-    assert output2 == "0.14635469 0.10098071 0.18790445 0.27736948 0.089552597 0.001"
+def test_multipole_example_output_teapotquad():
+    assert teapot_quad_tracking == "0.14635469 0.10098071 0.18790445 0.27736948 0.089552597 0.001"

@@ -10,7 +10,7 @@ from spacecharge import Grid3D
 from spacecharge import PoissonSolverFFT3D
 
 
-def convert_to_2(number):
+def to_4_significant_digits(number):
     return f"{number:.4g}"
 
 
@@ -128,9 +128,8 @@ print("Stop.")
 
 @pytest.fixture
 def get_max_diff_phi():
-    to2 = convert_to_2(max_diff_phi)
-    return to2
-
+    modified_max_diff_phi = to_4_significant_digits(max_diff_phi)
+    return modified_max_diff_phi
 
 def test_phi_theory_at_max_deviation(get_max_diff_phi):
     assert get_max_diff_phi == "4.103"
@@ -138,9 +137,8 @@ def test_phi_theory_at_max_deviation(get_max_diff_phi):
 
 @pytest.fixture
 def get_max_diff_solv_phi():
-    to3 = convert_to_2(max_diff_solv_phi)
-    return to3
-
+    modified_max_diff_solv_phi = to_4_significant_digits(max_diff_solv_phi)
+    return modified_max_diff_solv_phi
 
 def test_phi_solver_at_max_deviation(get_max_diff_solv_phi):
     assert get_max_diff_solv_phi == "4.103"
@@ -148,9 +146,8 @@ def test_phi_solver_at_max_deviation(get_max_diff_solv_phi):
 
 @pytest.fixture
 def get_max_grad_diff():
-    to4 = convert_to_2(max_grad_diff)
-    return to4
-
+    modified_max_grad_diff = to_4_significant_digits(max_grad_diff)
+    return modified_max_grad_diff
 
 def test_max_gradient_deviation(get_max_grad_diff):
     assert get_max_grad_diff == "1.593"

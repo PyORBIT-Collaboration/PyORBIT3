@@ -402,9 +402,9 @@ print("debug ========We can compare these 3D tracking RMS sizes with TEAPOT resu
 x_rms = math.sqrt(twiss_analysis.getTwiss(0)[1] * twiss_analysis.getTwiss(0)[3]) * 1000.0
 y_rms = math.sqrt(twiss_analysis.getTwiss(1)[1] * twiss_analysis.getTwiss(1)[3]) * 1000.0
 z_rms = math.sqrt(twiss_analysis.getTwiss(2)[1] * twiss_analysis.getTwiss(2)[3]) * 1000.0
-# print("After 3D tracking (x_rms,y_rms,z_rms) = ( %6.3f, %6.3f, %6.3f )" % (x_rms, y_rms, z_rms))
-mystring = "After 3D tracking (x_rms,y_rms,z_rms) = ( {:.3f}, {:.3f}, {:.3f} )".format(x_rms, y_rms, z_rms)
-print(mystring)
+print("After 3D tracking (x_rms,y_rms,z_rms) = ( %6.3f, %6.3f, %6.3f )" % (x_rms, y_rms, z_rms))
+after_3D_tracking = "After 3D tracking (x_rms,y_rms,z_rms) = ( {:.3f}, {:.3f}, {:.3f} )".format(x_rms, y_rms, z_rms)
+
 
 print("debug =======================================================================================")
 
@@ -414,4 +414,4 @@ print("Stop.")
 
 
 def test1():
-    assert mystring == "After 3D tracking (x_rms,y_rms,z_rms) = ( 46.888, 26.027, 34.528 )"
+    assert after_3D_tracking == "After 3D tracking (x_rms,y_rms,z_rms) = ( 46.888, 26.027, 34.528 )"

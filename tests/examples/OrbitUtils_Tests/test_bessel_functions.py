@@ -26,7 +26,7 @@ step = 0.1
 x_start = 0.0
 n_steps = 30
 print("x  num_recipes.bessj0 num_recipes.bessj1 num_recipes.bessj2   num_recipes.bessi0 num_recipes.bessi1 num_recipes.bessi2  ")
-st = " "
+grid = " "
 for i in range(n_steps):
     x = x_start + step * i
     res = (
@@ -38,8 +38,8 @@ for i in range(n_steps):
         num_recipes.bessi(1, x),
         num_recipes.bessi(2, x),
     )
-    st += "%.1f %.4f %.4f %.4f %.4f %.4f %.4f" % res + "\n"
-print(st)
+    grid += "%.1f %.4f %.4f %.4f %.4f %.4f %.4f" % res + "\n"
+print(grid)
 
 
 def test_num_recipes():
@@ -75,4 +75,4 @@ def test_num_recipes():
 2.9 -0.2243 0.3754 0.4832 4.5027 3.6126 2.0113
 """
 
-    assert st == expected
+    assert grid == expected
