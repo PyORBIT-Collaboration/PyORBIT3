@@ -8,13 +8,14 @@ run-tests:
   tags:
     - docker
   stage: test
-  image: continuumio/miniconda3:23.3.1-0
+  image: continuumio/miniconda3:23.5.2-0
   before_script:
     - conda install -c conda-forge gcc gxx fftw mpich pytest pytest-cov coverage
     - python setup.py clean
     - pip install .
   script:
-    - pytest tests --junitxml=junit.xml --cov-report xml --cov orbit
+    - pytest tests --junitxml=junit.xml --cov-report xml --cov-report term --cov orbit
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     paths:
       - junit.xml
@@ -27,6 +28,6 @@ run-tests:
 
 
 build-pypi-package:
-  image: continuumio/miniconda3:23.3.1-0
+  image: continuumio/miniconda3:23.5.2-0
   before_script:
     - conda install -c conda-forge gcc gxx fftw mpich
