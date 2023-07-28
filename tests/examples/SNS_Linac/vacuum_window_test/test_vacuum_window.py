@@ -16,13 +16,16 @@ from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTwissAnalysis
+from orbit.core.orbit_utils import random as orbit_random
 
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 
 # import the XmlDataAdaptor XML parser
 from orbit.utils.xml import XmlDataAdaptor
 
+# Setting the random seed for the Python random module and for the orbit_utils random number generator
 random.seed(100)
+orbit_random.seed(0)
 
 
 def make_vacwin_da(name, length, pos):

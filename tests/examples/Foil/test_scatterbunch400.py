@@ -8,8 +8,12 @@ from bunch import Bunch
 from foil import Foil
 from orbit.injection import InjectParts
 import random
+from orbit.core.orbit_utils import random as orbit_random
 
+
+# Setting the random seed for the Python random module and for the orbit_utils random number generator
 random.seed(100)
+orbit_random.seed(0)
 
 
 def read_lines(file):
