@@ -18,9 +18,16 @@
 #include "Random.hh"
 #include <random>
 
-std::mt19937 mt(0);
+using namespace OrbitUtils;
+
+// By default the random generator is initialized using a random seed (current time)
+std::mt19937 mt(time(0));
+
+void Random::seed(int seed){
+	mt.seed(seed);
+}
 
 /** The method calculates a random number between 0 and 1. (0. and 1.0 excluded) */
-double Random::ran1(long& idum){
+double Random::ran1(){
 	return ((double) mt() / (mt.max()));
 }

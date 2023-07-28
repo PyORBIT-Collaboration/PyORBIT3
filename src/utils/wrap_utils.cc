@@ -14,6 +14,7 @@
 #include "wrap_numrecipes.hh"
 #include "wrap_bunch_utils_functions.hh"
 #include "wrap_harmonic_data.hh"
+#include "wrap_random.hh"
 //#include "wrap_field_sources_module.hh"
 
 namespace wrap_orbit_utils{
@@ -53,6 +54,7 @@ extern "C" {
 		wrap_utils_bunch_functions::initBunchUtilsFunctions(module);
 		wrap_harmonicdata::initHarmonicData(module);
 		//wrap_field_sources_module::initFieldSourcesModule(module);
+		wrap_random::initRandom(module);
 		return module;
   }
 

@@ -20,18 +20,21 @@
 #include <cmath>
 #include <iostream>
 
-
 /**
   This class is a methods to create random numbers
 */
 
-class  Random
+namespace OrbitUtils
 {
-public:
+	class Random
+	{
+	public:
+		/** Method to initialise the random seed */
+		static void seed(int seed);
 
-	/** The method calculates a random number between 0 and 1 */
-	static double ran1(long& idum);
-};
-
+		/** The method calculates a random number between 0 and 1 */
+		static double ran1();
+	};
+}
 
 #endif
