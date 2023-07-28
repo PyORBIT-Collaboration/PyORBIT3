@@ -52,7 +52,7 @@ private:
 	void checkStep(double rl, double radlengthfac, double& stepsize, double* coords, SyncPart* syncpart);
 
 	/** take a step inside the collimator with MCS and ionization energy loss */
-	void takeStep(Bunch* bunch, Bunch* lostbunch, double* coords, SyncPart* syncpart, double z, double a, double density, long& idum, double stepsize, double& zrl, double& rl, int& coll_flag, int ip);
+	void takeStep(Bunch* bunch, Bunch* lostbunch, double* coords, SyncPart* syncpart, double z, double a, double density, double stepsize, double& zrl, double& rl, int& coll_flag, int ip);
 
 	/** delete the particle from the main bunch and add it to the lost particles bunch. */
 	void loseParticle(Bunch* bunch, Bunch* lostbunch, int ip, int& nLost, int& coll_flag, double& zrl);

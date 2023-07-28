@@ -27,13 +27,13 @@ class MaterialInteractions
 		static void momentumKick(double t, double p, double& dpx, double& dpy);
 
 		/** Routine to apply multiple coulomb scattering kicks following JD Jackson, Chapter 13 */
-		static void mcsJackson(double stepsize, double z, double a, double rho, long& idum, double beta, double pfac, double& x, double& y, double& px, double& py);
+		static void mcsJackson(double stepsize, double z, double a, double rho, double beta, double pfac, double& x, double& y, double& px, double& py);
 
 		/** Routine to apply Rutherford scattering following JD Jackson, Chapter 13 */
-		static double ruthScattJackson(double stepsize, double z, double a, double rho, long& idum, double beta, int trackit, double pfac, double& thetax, double& thetay);
+		static double ruthScattJackson(double stepsize, double z, double a, double rho, double beta, int trackit, double pfac, double& thetax, double& thetay);
 
 		/** Routine to generate a random momentum transfer for low energy elastic scattering (<= 0.4 GeV) */
-		static double elastic_t(double p, double a, long& idum);
+		static double elastic_t(double p, double a);
 
 		/** Routine to calculate ionization energy loss. */
 		static double ionEnergyLoss(double beta, double z, double a);

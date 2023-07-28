@@ -13,6 +13,8 @@
 
 #include "ParticleInitialCoordinates.hh"
 
+using namespace OrbitUtils;
+
 // Constructor
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -70,8 +72,6 @@ void Collimator::collimateBunch(Bunch* bunch, Bunch* lostbunch){
 	double random, choice, length, dlength, meanfreepath, b_pN;
 	double rl, zrl, stepsize, smallstep, radlengthfac, directionfac;
 	double t, dp_x=0.0, dp_y=0.0, thx = 0.0, thy = 0.0;
-	long idum = (unsigned)time(0);
-	idum = -idum;
 
 	SyncPart* syncPart = bunch->getSyncPart();
 
@@ -132,10 +132,10 @@ void Collimator::collimateBunch(Bunch* bunch, Bunch* lostbunch){
 				double ecross = OrbitUtils::get_elastic_crosssection((syncPart->getEnergy() + part_coord_arr[ip][5]), ma_);
 				double icross = OrbitUtils::get_inelastic_crosssection((syncPart->getEnergy() + part_coord_arr[ip][5]), ma_);
 
-				double rcross = MaterialInteractions::ruthScattJackson(stepsize, z, a, eff_density, idum, beta, 0, pfac, thx, thy);
+				double rcross = MaterialInteractions::ruthScattJackson(stepsize, z, a, eff_density, beta, 0, pfac, thx, thy);
 				double totcross = ecross + icross + rcross;
 				meanfreepath = OrbitUtils::get_a(ma_) / ((nAvogadro * 1000.0) * eff_density * (totcross * 1.0e-28));
-				stepsize = -meanfreepath * log(Random::ran1(idum));
+				stepsize = -meanfreepath * log(Random::ran1());
 
 				Collimator::checkStep(rl, radlengthfac, stepsize, part_coord_arr[ip], syncPart);
 				if(stepsize < smallstep) stepsize = smallstep;
@@ -144,13 +144,13 @@ void Collimator::collimateBunch(Bunch* bunch, Bunch* lostbunch){
 					stepsize = rl + dlength;
 					Collimator::checkStep(rl, radlengthfac, stepsize, part_coord_arr[ip], syncPart);
 					if(stepsize < smallstep) stepsize = smallstep;
-					Collimator::takeStep(bunch, lostbunch, part_coord_arr[ip], syncPart, z, a, eff_density, idum, stepsize, zrl, rl, coll_flag, ip);
+					Collimator::takeStep(bunch, lostbunch, part_coord_arr[ip], syncPart, z, a, eff_density, stepsize, zrl, rl, coll_flag, ip);
 
 
 				}
 
 				else{ //Take the step and allow nuclear scatter
-					Collimator::takeStep(bunch, lostbunch, part_coord_arr[ip], syncPart, z, a, eff_density, idum, stepsize, zrl, rl, coll_flag, ip);
+					Collimator::takeStep(bunch, lostbunch, part_coord_arr[ip], syncPart, z, a, eff_density, stepsize, zrl, rl, coll_flag, ip);
 
 					//If it still exists after MCS and energy loss, nuclear scatter
 					if(coll_flag==1 && zrl > 0){
@@ -161,25 +161,25 @@ void Collimator::collimateBunch(Bunch* bunch, Bunch* lostbunch){
 
 						ecross = OrbitUtils::get_elastic_crosssection((syncPart->getEnergy() + part_coord_arr[ip][5]), ma_);
 						icross = OrbitUtils::get_inelastic_crosssection((syncPart->getEnergy() + part_coord_arr[ip][5]), ma_);
-						rcross = MaterialInteractions::ruthScattJackson(stepsize, z, a, eff_density, idum, beta, 0, pfac, thx, thy);
+						rcross = MaterialInteractions::ruthScattJackson(stepsize, z, a, eff_density, beta, 0, pfac, thx, thy);
 
 						totcross = ecross + icross + rcross;
 
 						double e_frac = ecross/totcross;
 						double i_frac = icross/totcross;
 						double r_frac = rcross/totcross;
-						choice = Random::ran1(idum);
+						choice = Random::ran1();
 
 						// Nuclear Elastic Scattering
 						if((choice >= 0.) && (choice <= e_frac))
 						{
 							if((syncPart->getEnergy() + part_coord_arr[ip][5]) <= 0.4)
 							{
-								t=MaterialInteractions::elastic_t(p, a, idum);
+								t=MaterialInteractions::elastic_t(p, a);
 							}
 							if((syncPart->getEnergy() + part_coord_arr[ip][5]) > 0.4)
 							{
-								t=-log(Random::ran1(idum))/b_pN;
+								t=-log(Random::ran1())/b_pN;
 							}
 
 							MaterialInteractions::momentumKick(t, p, dp_x, dp_y);
@@ -190,7 +190,7 @@ void Collimator::collimateBunch(Bunch* bunch, Bunch* lostbunch){
 						// Rutherford Coulomb scattering
 						if((choice > e_frac) && (choice <= (1 - i_frac)))
 						{
-							rcross = MaterialInteractions::ruthScattJackson(stepsize, z, a, eff_density, idum, beta, 1, pfac, thx, thy);
+							rcross = MaterialInteractions::ruthScattJackson(stepsize, z, a, eff_density, beta, 1, pfac, thx, thy);
 
 							double xpfac = part_coord_arr[ip][1] / pfac;
 							double ypfac = part_coord_arr[ip][3] / pfac;
@@ -701,7 +701,6 @@ double Collimator::getP(double* coords, SyncPart* syncpart){
 //	 z:			z number of material
 //	 a:			a number of material
 //	 density:	density of material already corrected by density factor
-//	 idum:		a random number seed
 //	 stepsize:	the stepsize to be taken
 //	 zrl:		remaining collimator length in the z direction
 //   rl:		remaining collimator length in the direction of particle momentum
@@ -712,13 +711,13 @@ double Collimator::getP(double* coords, SyncPart* syncpart){
 //
 ///////////////////////////////////////////////////////////////////////////
 
-void Collimator::takeStep(Bunch* bunch, Bunch* lostbunch, double* coords, SyncPart* syncpart, double z, double a, double density, long& idum, double stepsize, double& zrl, double& rl, int& coll_flag, int ip){
+void Collimator::takeStep(Bunch* bunch, Bunch* lostbunch, double* coords, SyncPart* syncpart, double z, double a, double density, double stepsize, double& zrl, double& rl, int& coll_flag, int ip){
 
 	double beta = Collimator::getBeta(coords, syncpart);
 	double p = Collimator::getP(coords, syncpart);
 	double pfac = Collimator::getPFactor(coords, syncpart);
 
-	MaterialInteractions::mcsJackson(stepsize, z, a, density, idum, beta, pfac, coords[0], coords[2], coords[1], coords[3]);
+	MaterialInteractions::mcsJackson(stepsize, z, a, density, beta, pfac, coords[0], coords[2], coords[1], coords[3]);
 	double dE = MaterialInteractions::ionEnergyLoss(beta, z, a);
 	dE = -dE * density * stepsize; //Factors for units m->cm and MeV->GeV
 	coords[5] += dE;
