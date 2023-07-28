@@ -1,15 +1,11 @@
-from orbit.core import aperture
-from orbit.core import orbit_mpi
-from orbit.core import trackerrk4
-from orbit.core import error_base
-from orbit.core import bunch
-from orbit.core import teapot_base
-from orbit.core import linac
-from orbit.core import spacecharge
-from orbit.core import orbit_utils
-from orbit.core import foil
-from orbit.core import collimator
-from orbit.core import field_sources
-from orbit.core import rfcavities
-from orbit.core import impedances
-from orbit.core import fieldtracker
+## Dynamically import all submodules
+import os
+import importlib
+
+submodules = [f.name for f in os.scandir(os.path.dirname(__file__)) if f.is_dir() and not f.name.startswith(".")]
+
+for module in submodules:
+    _mod = importlib.import_module(f"orbit.core.{module}", package=None)
+    locals().update({module: _mod})
+
+del _mod
