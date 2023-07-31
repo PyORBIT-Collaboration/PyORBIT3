@@ -23,6 +23,8 @@
 #include <cfloat>
 #include <cstdlib>
 
+using namespace OrbitUtils;
+
 /** Constructor */
 MaterialInteractions::MaterialInteractions()
 {
@@ -50,7 +52,6 @@ MaterialInteractions::~MaterialInteractions()
 //   Z:        atomic number of scattering material.
 //   A:        atomic weight of scattering material.
 //   rho:      mass density of scattering material.
-//   idum:     random number seed.
 //   beta:     v/c.
 //   pfac:     1+dp/p0.
 //   x,y:      horizontal and vertical coordinates {m}.
@@ -61,7 +62,7 @@ MaterialInteractions::~MaterialInteractions()
 //
 ///////////////////////////////////////////////////////////////////////////
 
-void MaterialInteractions::mcsJackson(double stepsize, double z, double a, double rho, long& idum, double beta, double pfac, double& x, double& y, double& px, double& py){
+void MaterialInteractions::mcsJackson(double stepsize, double z, double a, double rho, double beta, double pfac, double& x, double& y, double& px, double& py){
 
 	//Convert to mm and mrad for this routine.	And density to g/cm3
 	x *= 1000.0;
@@ -104,8 +105,8 @@ void MaterialInteractions::mcsJackson(double stepsize, double z, double a, doubl
 
 	double th2Tot = nColl * th2s;
 
-	double probrp = Random::ran1(idum);
-	double probxy = 2.0 * pi * Random::ran1(idum);
+	double probrp = Random::ran1();
+	double probxy = 2.0 * pi * Random::ran1();
 
 	double angle = sqrt(-th2Tot * log(probrp));
 	double anglexMCS = angle * cos(probxy);
@@ -152,7 +153,6 @@ void MaterialInteractions::mcsJackson(double stepsize, double z, double a, doubl
 //   Z:        atomic number of scattering material.
 //   A:        atomic weight of scattering material.
 //   rho:      mass density of scattering material.
-//   idum:     random number seed.
 //   beta:     v/c.
 //	 trackit:
 //   pfac:     1+dp/p0.
@@ -164,7 +164,7 @@ void MaterialInteractions::mcsJackson(double stepsize, double z, double a, doubl
 //
 ///////////////////////////////////////////////////////////////////////////
 
-double MaterialInteractions::ruthScattJackson(double stepsize, double z, double a, double rho, long& idum, double beta, int trackit, double pfac, double& thx, double& thy){
+double MaterialInteractions::ruthScattJackson(double stepsize, double z, double a, double rho, double beta, int trackit, double pfac, double& thx, double& thy){
 
 	stepsize *= 1000.0; //Convert to mm
 	rho /= 1000.0;		//Convert to g/cm3
@@ -221,8 +221,8 @@ double MaterialInteractions::ruthScattJackson(double stepsize, double z, double 
 
 		if(thMin < thMax)
 		{
-			double probrp = Random::ran1(idum);
-			double probxy = 2.0 * pi * Random::ran1(idum);
+			double probrp = Random::ran1();
+			double probxy = 2.0 * pi * Random::ran1();
 
 			double denom2 = probrp * th2iDiff + thMax2i;
 			double th = sqrt(1.0 / denom2);
@@ -249,7 +249,6 @@ double MaterialInteractions::ruthScattJackson(double stepsize, double z, double 
 // PARAMETERS
 //   t:     magnitude of momentum transfer
 //   p:     particle momentum
-//	 idum:	seed for random number generator
 //
 // RETURNS
 //   dp: the momentum kick generated in each plane.
@@ -260,7 +259,6 @@ double MaterialInteractions::ruthScattJackson(double stepsize, double z, double 
 void MaterialInteractions::momentumKick(double t, double p, double& dpx, double& dpy){
 
 	double va, vb, va2, vb2, r2=10., theta;
-	long idum = -(unsigned)time(0);
 	theta = acos(1 - t/(2*p*p));
 	double dp[2];
 	dp[0] = 0.0;
@@ -268,8 +266,8 @@ void MaterialInteractions::momentumKick(double t, double p, double& dpx, double&
 
 	while(r2 > 1.)
     {
-		va=2.*Random::ran1(idum)-1;
-		vb=Random::ran1(idum)-1;
+		va=2.*Random::ran1()-1;
+		vb=Random::ran1()-1;
 		va2=va*va;
 		vb2=vb*vb;
 		r2=va2+vb2;
@@ -295,14 +293,13 @@ void MaterialInteractions::momentumKick(double t, double p, double& dpx, double&
 // PARAMETERS
 //   p: particle momentum
 //   a: nuclear mass number
-//   idum:  random seed.
 //
 // RETURNS
 //   double.
 //
 ///////////////////////////////////////////////////////////////////////////
 
-double MaterialInteractions::elastic_t(double p, double a, long& idum)
+double MaterialInteractions::elastic_t(double p, double a)
 {
 	double c = OrbitConst::c;
 	double PI = OrbitConst::PI;
@@ -325,7 +322,7 @@ double MaterialInteractions::elastic_t(double p, double a, long& idum)
 	cnorm = 1./2.*(sqrt(PI)-sqrt(PI)*pow(OrbitUtils::bessj0(u),2)
 				   -sqrt(PI)*pow(OrbitUtils::bessj1(u),2))/(sqrt(PI));
 
-	random = Random::ran1(idum);
+	random = Random::ran1();
 
 	while(theta<=PI)
 	{

@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<test_lattice>
+ <TEST_SEQ length="14.0" name="TEST_SEQ">
+  <accElement length="0.5" name="QV01" pos="1.0" type="QUAD">
+   <parameters aperture="0.30" aprt_type="1" field="-3.0"/>
+  </accElement>
+  <accElement length="0.5" name="HKick01:1" pos="2.0" type="THICK_KICK">
+   <parameters Bx="0." By="0.0"/>
+  </accElement>
+  <accElement length="0.5" name="QH02" pos="5.0" type="QUAD">
+   <parameters aperture="0.30" aprt_type="1" field="3.0"/>
+  </accElement>
+  <accElement length="0.5" name="HKick02:1" pos="6.0" type="THICK_KICK">
+   <parameters Bx="0." By="0.0"/>
+  </accElement>
+  <accElement length="0.5" name="HKick02:2" pos="7.0" type="THICK_KICK">
+   <parameters Bx="0." By="0.0"/>
+  </accElement>
+  <accElement length="0.5" name="QV03" pos="9.0" type="QUAD">
+   <parameters aperture="0.40" aprt_type="1" field="-3.0"/>
+  </accElement>
+  <accElement length="0.5" name="HKick03:1" pos="11.0" type="THICK_KICK">
+   <parameters Bx="0." By="0.0"/>
+  </accElement>
+  <accElement length="0.5" name="QH04" pos="13.0" type="QUAD">
+   <parameters aperture="0.30" aprt_type="1" field="3.0"/>
+  </accElement>
+ </TEST_SEQ>
+</test_lattice>

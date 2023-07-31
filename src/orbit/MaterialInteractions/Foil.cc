@@ -13,6 +13,8 @@
 
 #include "ParticleInitialCoordinates.hh"
 
+using namespace OrbitUtils;
+
 ///////////////////////////////////////////////////////////////////////////
 //
 // NAME
@@ -70,8 +72,6 @@ void Foil::traverseFoilSimpleScatter(Bunch* bunch){
 	double muScatter = 1.35;
 	double emass = 9.1093837e-28;
 	double pInj0;
-	long idum = (unsigned)time(0);
-	idum = -idum;
 
 	int foil_flag = 0;
 	double length = thick_ / (1.0e3 * OrbitUtils::get_rho(ma_));
@@ -127,16 +127,15 @@ void Foil::traverseFoilSimpleScatter(Bunch* bunch){
 
 			while (zrl >= 0.0)
 			{
-				random1 = Random::ran1(idum);
-				//cout << "idum "<<idum<<"\n";
+				random1 = Random::ran1();
 				zrl += lscatter * log(random1);
 				if(zrl < 0.0) break; // exit foil
 
 				// Generate random angles
 
-				random1 = Random::ran1(idum);
+				random1 = Random::ran1();
 				double phi = 2*OrbitConst::PI * random1;
-				random1 = Random::ran1(idum);
+				random1 = Random::ran1();
 				double theta = thetaScatMin * sqrt(random1 / (1. - random1));
 				if(theta > 2.0 * thetaScatMax) theta = 2.0 * thetaScatMax;
 				thetaX += theta * cos(phi);
@@ -176,8 +175,6 @@ void Foil::traverseFoilFullScatter(Bunch* bunch, Bunch* lostbunch){
 	double random, choice, length, dlength, meanfreepath;
 	double rl, zrl, stepsize, radlengthfac, directionfac;
 	double t, dp_x=0.0, dp_y=0.0, thx = 0.0, thy = 0.0;
-	long idum = (unsigned)time(0);
-	idum = -idum;
 
 	SyncPart* syncPart = bunch->getSyncPart();
 
@@ -216,19 +213,19 @@ void Foil::traverseFoilFullScatter(Bunch* bunch, Bunch* lostbunch){
 				double ecross = OrbitUtils::get_elastic_crosssection((syncPart->getEnergy() + part_coord_arr[ip][5]), ma_);
 				double icross = OrbitUtils::get_inelastic_crosssection((syncPart->getEnergy() + part_coord_arr[ip][5]), ma_);
 
-				double rcross = MaterialInteractions::ruthScattJackson(stepsize, z, a, density, idum, beta, 0, pfac, thx, thy);
+				double rcross = MaterialInteractions::ruthScattJackson(stepsize, z, a, density, beta, 0, pfac, thx, thy);
 				double totcross = ecross + icross + rcross;
 				meanfreepath = OrbitUtils::get_a(ma_) / ((nAvogadro * 1e3) * density  * (totcross * 1.0e-28));
-				stepsize = -meanfreepath * log(Random::ran1(idum));
+				stepsize = -meanfreepath * log(Random::ran1());
 
 				if(stepsize > rl){ //Take the step but no nuclear scattering event
 					stepsize = rl + dlength;
 					Foil::takeStep(bunch, lostbunch, part_coord_arr[ip], syncPart, z, a, density,
-								   idum, stepsize, zrl, rl, foil_flag, ip);
+								   stepsize, zrl, rl, foil_flag, ip);
 
 				}
 				if(stepsize <= rl) { //Take the step and allow nuclear scatter
-					Foil::takeStep(bunch, lostbunch, part_coord_arr[ip], syncPart, z, a, density, idum, stepsize, zrl, rl, foil_flag, ip);
+					Foil::takeStep(bunch, lostbunch, part_coord_arr[ip], syncPart, z, a, density, stepsize, zrl, rl, foil_flag, ip);
 
 					//If it still exists after MCS and energy loss, nuclear scatter
 					if(foil_flag==1 && zrl > 0){
@@ -239,7 +236,7 @@ void Foil::traverseFoilFullScatter(Bunch* bunch, Bunch* lostbunch){
 
 						ecross = OrbitUtils::get_elastic_crosssection((syncPart->getEnergy() + part_coord_arr[ip][5]), ma_);
 						icross = OrbitUtils::get_inelastic_crosssection((syncPart->getEnergy() + part_coord_arr[ip][5]), ma_);
-						rcross = MaterialInteractions::ruthScattJackson(stepsize, z, a, density, idum, beta, 0, pfac, thx, thy);
+						rcross = MaterialInteractions::ruthScattJackson(stepsize, z, a, density, beta, 0, pfac, thx, thy);
 
 						totcross = ecross + icross + rcross;
 
@@ -247,18 +244,18 @@ void Foil::traverseFoilFullScatter(Bunch* bunch, Bunch* lostbunch){
 						double i_frac = icross/totcross;
 						double r_frac = rcross/totcross;
 
-						choice = Random::ran1(idum);
+						choice = Random::ran1();
 
 						// Nuclear Elastic Scattering
 						if((choice >= 0.) && (choice <= e_frac))
 						{
 							if((syncPart->getEnergy() + part_coord_arr[ip][5]) <= 0.4)
 							{
-								t=MaterialInteractions::elastic_t(p, a, idum);
+								t=MaterialInteractions::elastic_t(p, a);
 							}
 							if((syncPart->getEnergy() + part_coord_arr[ip][5]) > 0.4)
 							{
-								t=-log(Random::ran1(idum))/b_pN;
+								t=-log(Random::ran1())/b_pN;
 							}
 
 							MaterialInteractions::momentumKick(t, p, dp_x, dp_y);
@@ -269,7 +266,7 @@ void Foil::traverseFoilFullScatter(Bunch* bunch, Bunch* lostbunch){
 						// Rutherford Coulomb scattering
 						if((choice > e_frac) && (choice <= (1 - i_frac)))
 						{
-							rcross = MaterialInteractions::ruthScattJackson(stepsize, z, a, density, idum, beta, 1, pfac, thx, thy);
+							rcross = MaterialInteractions::ruthScattJackson(stepsize, z, a, density, beta, 1, pfac, thx, thy);
 
 							double xpfac = part_coord_arr[ip][1] / pfac;
 							double ypfac = part_coord_arr[ip][3] / pfac;
@@ -512,7 +509,6 @@ double Foil::getP(double* coords, SyncPart* syncpart){
 //	 z:			z number of material
 //	 a:			a number of material
 //	 density:	density of material
-//	 idum:		a random number seed
 //	 stepsize:	the stepsize to be taken
 //	 zrl:		remaining Foil length in the z direction
 //   rl:		remaining Foil length in the direction of particle momentum
@@ -523,13 +519,13 @@ double Foil::getP(double* coords, SyncPart* syncpart){
 //
 ///////////////////////////////////////////////////////////////////////////
 
-void Foil::takeStep(Bunch* bunch, Bunch* lostbunch, double* coords, SyncPart* syncpart, double z, double a, double density, long& idum, double stepsize, double& zrl, double& rl, int& foil_flag, int ip){
+void Foil::takeStep(Bunch* bunch, Bunch* lostbunch, double* coords, SyncPart* syncpart, double z, double a, double density, double stepsize, double& zrl, double& rl, int& foil_flag, int ip){
 
 	double beta = Foil::getBeta(coords, syncpart);
 	double p = Foil::getP(coords, syncpart);
 	double pfac = Foil::getPFactor(coords, syncpart);
 
-	MaterialInteractions::mcsJackson(stepsize, z, a, density, idum, beta, pfac, coords[0], coords[2], coords[1], coords[3]);
+	MaterialInteractions::mcsJackson(stepsize, z, a, density, beta, pfac, coords[0], coords[2], coords[1], coords[3]);
 	double dE = MaterialInteractions::ionEnergyLoss(beta, z, a);
 	dE = -dE * density * stepsize; //Factors for units m->cm and MeV->GeV
 	coords[5] += dE;
