@@ -1,0 +1,17 @@
+#!/bin/bash
+if command -v mpirun &> /dev/null
+then
+    # using MPI if available
+    COMMAND="mpirun python"
+else
+    COMMAND="python"
+fi
+
+if [ $# -eq 0 ]
+then
+    # Run an interactive session if no arguments provided
+    $COMMAND -i -m orbit.core.pyORBIT
+else
+    # Otherwise run the script
+    $COMMAND -m orbit.core.pyORBIT $1
+fi
