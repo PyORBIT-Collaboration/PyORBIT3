@@ -6,10 +6,39 @@
 #include <ctime>
 
 /** A C wrapper around MPI_Init. */
-int ORBIT_MPI_Init(int *len, char ***ch){
+int ORBIT_MPI_Init(){
   int res = 0;
 #if USE_MPI > 0
-  res = MPI_Init(len,ch);
+  int len=0;
+  char** ch = NULL;
+  // Getting arguments from sys.argv
+  PyObject* sys_module = PyImport_ImportModule("sys");
+  PyObject* argv_list = PyObject_GetAttrString(sys_module, "argv");
+
+  // Check if argv_list is a list
+  if (PyList_Check(argv_list)) {
+    // Access individual command-line arguments
+    len = PyList_Size(argv_list);
+    ch = (char**) malloc(sizeof(char*) * len);
+    for (Py_ssize_t i = 0; i < len; ++i) {
+      PyObject* item = PyList_GetItem(argv_list, i);
+      if (item && PyUnicode_Check(item)) {
+        ch[i] = const_cast<char*>(PyUnicode_AsUTF8(item));
+      }
+    }
+  }
+
+  // Release references
+  Py_XDECREF(argv_list);
+  Py_XDECREF(sys_module);
+
+  res = MPI_Init(&len,&ch);
+
+  free(ch);
+  ch = NULL;
+
+  // Registering MPI finalize method at cleanup stage
+  Py_AtExit(ORBIT_MPI_Finalize);
 #else
   res  = MPI_SUCCESS;
 #endif
@@ -29,8 +58,14 @@ int ORBIT_MPI_Initialized(int *init){
 }
 
 /** A C wrapper around MPI_Finalize. */
-int ORBIT_MPI_Finalize(){
-  return ORBIT_MPI_Finalize(NULL);
+void ORBIT_MPI_Finalize(){
+  int res = 0;
+  res = ORBIT_MPI_Finalize(NULL);
+  if(res != MPI_SUCCESS){
+    PyErr_SetString(PyExc_RuntimeError,"ORBIT_MPI_Finalize.");
+    PyErr_Print();
+    PyRun_SimpleString("import traceback; traceback.print_stack()");
+  }
 }
 
 /** A C wrapper around MPI_Finalize(message). */

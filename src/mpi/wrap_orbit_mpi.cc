@@ -177,8 +177,10 @@ namespace wrap_orbit_mpi{
 			orbit_mpiMethods
 		};
 
-
 		PyMODINIT_FUNC initorbit_mpi(void) {
+					// Initialize MPI
+			ORBIT_MPI_Init();
+
 			PyObject *m, *d;
 			m = PyModule_Create(&cModPyDem);
 			d = PyModule_GetDict(m);
