@@ -30,7 +30,7 @@ extension_mod = Extension(
     libraries=["fftw3"],
     include_dirs=include,
     extra_compile_args=["-DUSE_MPI=1", "-fPIC", "-lmpi", "-lmpicxx", "-Wl,--enable-new-dtags"],
-    extra_link_args=["-lfftw3", "-lm", "-lmpi", "-lmpicxx", "-Wl,--enable-new-dtags", "-fPIC", "-shared", "-Wl,--export-dynamic"],
+    extra_link_args=["-lfftw3", "-lm", "-lmpi", "-lmpicxx", "-fPIC"],
 )
 
 packages = ["orbit.core"]
