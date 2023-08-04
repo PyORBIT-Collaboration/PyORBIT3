@@ -214,8 +214,8 @@ def test_bisection_search():
 ===== best score ========== exact answer (pos. min, min value)=(2.0, 10.0)
 best score=10.0007476807 iteration=10
 ======== TrialPoint ===========
- Name                       Value          Step       Use      Limit_Min       Limit_Max
-               (x-2)^2+10         1.972656          0.3333    1                -5              10
+ Name                       Value          Step       Use      Limit_Min       Limit_Max  
+               (x-2)^2+10         1.972656          0.3333    1                -5              10  
 """
     assert bisection_output == expected_bisection_output
 
@@ -225,8 +225,8 @@ def test_goldensection_solve():
 ===== best score ========== exact answer (pos. min, min value)=(2.0, 10.0)
 best score=10.0067304508 iteration=10
 ======== TrialPoint ===========
- Name                       Value          Step       Use      Limit_Min       Limit_Max
-               (x-2)^2+10         2.082039          0.3333    1                -5              10
+ Name                       Value          Step       Use      Limit_Min       Limit_Max  
+               (x-2)^2+10         2.082039          0.3333    1                -5              10  
 """
     assert goldensection_output == expected_goldensection_output
 
@@ -236,8 +236,8 @@ def test_simplex_solve_1D():
 ===== best score ========== exact answer (pos. min, min value)=(2.0, 10.0)
 best score=10.0001268367 iteration=20
 ======== TrialPoint ===========
- Name                       Value          Step       Use      Limit_Min       Limit_Max
-               (x-2)^2+10         1.988738      0.08838835    1    -1.797693e+300   1.797693e+300
+ Name                       Value          Step       Use      Limit_Min       Limit_Max  
+               (x-2)^2+10         1.988738      0.08838835    1    -1.797693e+300   1.797693e+300  
 """
     assert solvex_output_1D == expected_solvex_output_1D
 
@@ -247,9 +247,9 @@ def test_simplex_solve_3D():
 ===== best score ========== exact answer (pos. min, min value)=([2.0, 3.0, 4.0], 5.0)
 best score=5.00004003151 iteration=50
 ======== TrialPoint ===========
- Name                       Value          Step       Use      Limit_Min       Limit_Max
-                      one         1.999807     0.009020704    1    -1.797693e+300   1.797693e+300
-                      two         3.001916      0.01349468    1    -1.797693e+300   1.797693e+300
-                    three         4.006027      0.01065753    1    -1.797693e+300   1.797693e+300
+ Name                       Value          Step       Use      Limit_Min       Limit_Max  
+                      one         1.999807     0.009020704    1    -1.797693e+300   1.797693e+300  
+                      two         3.001916      0.01349468    1    -1.797693e+300   1.797693e+300  
+                    three         4.006027      0.01065753    1    -1.797693e+300   1.797693e+300  
 """
     assert solvex_output_3D == expected_solvex_output_3D
