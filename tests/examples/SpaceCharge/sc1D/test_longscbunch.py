@@ -34,17 +34,6 @@ def read_values_from_file(file_path):
 
     return values
 
-
-def read_lines(file):
-    with open(file, "r") as f:
-        lines = f.readlines()
-
-    stripped_line = [line.strip() for line in lines if not line.startswith("%")]
-    stripped_content = "\n".join(stripped_line)
-
-    return stripped_content
-
-
 def getLattice(lattice_length, n_parts):
     elem = teapot.DriftTEAPOT("a drift")
     elem.setLength(lattice_length)
@@ -327,7 +316,7 @@ bunch_pyorbit_to_orbit(lattice.getLength(), b, "pybunch_final.dat")
 print("Stop.")
 
 expected_bunch = os.path.join(script_dir, "expectedbunchfinal.dat")
-expected_bunch = read_lines(expected_bunch)
+expected_bunch = read_values_from_file(expected_bunch)
 
 
 # the tolerance is included due to python3 giving more precise numbers
@@ -348,6 +337,6 @@ def test_bunch_tracking():
         assert e == pytest.approx(a, abs=0.00000000001)
 
 
-os.remove("bunch_final.dat")
+#os.remove("bunch_final.dat")
 os.remove("bunch_init.dat")
 os.remove("pybunch_final.dat")
