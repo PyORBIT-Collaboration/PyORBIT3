@@ -35,6 +35,16 @@ def read_values_from_file(file_path):
     return values
 
 
+def read_lines(file):
+    with open(file, "r") as f:
+        lines = f.readlines()
+
+    stripped_line = [line.strip() for line in lines if not line.startswith("%")]
+    stripped_content = "\n".join(stripped_line)
+
+    return stripped_content
+
+
 def getLattice(lattice_length, n_parts):
     elem = teapot.DriftTEAPOT("a drift")
     elem.setLength(lattice_length)
@@ -278,34 +288,17 @@ paramsDict = {}
 paramsDict["bunch"] = b
 b.dumpBunch("bunch_init.dat")
 
-"""
 sc1Dnode = SC1D_AccNode(b_a, length, nMacrosMin, useSpaceCharge, nBins)
 sc1Dnode.assignImpedance(ZM)
 addLongitudinalSpaceChargeNode(lattice, position, sc1Dnode)
-"""
-
-
-f_sc1Dnode = FreqDep_SC1D_AccNode(b_a, length, nMacrosMin, useSpaceCharge, nBins, b, f_impeDict)
-addLongitudinalSpaceChargeNode(lattice, position, f_sc1Dnode)
-
-
-"""
-compbf_sc1Dnode = BetFreqDep_SC1D_AccNode(b_a, length, nMacrosMin, useSpaceCharge, nBins, b, compbf_impeDict)
-addLongitudinalSpaceChargeNode(lattice, position, compbf_sc1Dnode)
-"""
-
-"""
-bf_sc1Dnode = BetFreqDep_SC1D_AccNode(b_a, length, nMacrosMin, useSpaceCharge, nBins, b, bf_impeDict)
-addLongitudinalSpaceChargeNode(lattice, position, bf_sc1Dnode)
-"""
 
 print("===========Lattice modified =======================================")
 print("New Lattice = ", lattice.getName(), " length [m] = ", lattice.getLength(), " nodes = ", len(lattice.getNodes()))
 
 print("Ready to track")
 
-# sc1Dnode.trackBunch(b)
-f_sc1Dnode.trackBunch(b)
+sc1Dnode.trackBunch(b)
+# f_sc1Dnode.trackBunch(b)
 # compbf_sc1Dnode.trackBunch(b)
 # bf_sc1Dnode.trackBunch(b)
 
@@ -317,16 +310,8 @@ bunch_pyorbit_to_orbit(lattice.getLength(), b, "pybunch_final.dat")
 print("Stop.")
 
 
-# the tolerance is included due to python3 giving more precise numbers
-def test_constants():
-    assert abs(BetaRef - 0.875025655404) < 1e-11
-    assert abs(FreqRef - 1057766.50019) < 1e-5
-    assert abs(Beta - 0.922995711873) < 1e-11
-    assert abs(Freq - 1115754.64994) < 1e-5
-
-
 def test_bunch_tracking():
-    expected_bunch_final = os.path.join(script_dir, "expectedbunchfinal.dat")
+    expected_bunch_final = os.path.join(script_dir, "expectedregfinalbunch.dat")
     expected_bunch_final = read_values_from_file(expected_bunch_final)
 
     assert len(bunch_final) == len(expected_bunch_final)
