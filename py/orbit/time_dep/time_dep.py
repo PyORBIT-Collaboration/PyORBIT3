@@ -4,6 +4,7 @@ Module. Includes classes for all time-dependent lattice.
 import sys
 import os
 import math
+import logging
 
 from orbit.teapot import TEAPOT_Ring
 from orbit.parsers.mad_parser import MAD_Parser, MAD_LattLine
@@ -24,6 +25,7 @@ class TIME_DEP_Lattice(TEAPOT_Ring):
         self.__latticeDict = {}
         self.__TDNodeDict = {}
         self.__turns = 1
+        self.logger = logging.getLogger(__name__)
 
     def setLatticeOrder(self):
         """
@@ -109,13 +111,14 @@ class TIME_DEP_Lattice(TEAPOT_Ring):
         It tracks the bunch through the lattice with multi-turn.
         """
         turns = self.__turns
+        logging.basicConfig(level=logging.DEBUG)
         # start
         for i in range(turns - 1):
             self.trackBunch(bunch)
             syncPart = bunch.getSyncParticle()
             time = syncPart.time()
             self.setTimeDepStrength(time)
-            print("debug trackBunchTurns time", time, "in", i, "turn")
+            self.logger.debug("trackBunchTurns time %s in %s turn", format(time, ".12g"), i)
         # getsublattice
         # sublattice.trackBunch(bunch)
 
