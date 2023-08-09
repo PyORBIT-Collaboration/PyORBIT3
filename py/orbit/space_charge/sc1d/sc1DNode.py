@@ -81,7 +81,7 @@ class FreqDep_SC1D_AccNode(DriftTEAPOT):
         BetaRel = bunch.getSyncParticle().beta()
         Freq0 = (BetaRel * self.c) / self.phaseLength
         Z = []
-        for n in range(self.nBins / 2 - 1):
+        for n in range(self.nBins // 2 - 1):
             freq_mode = Freq0 * (n + 1)
             z_mode = interp(freq_mode, self.freq_range, self.freq_tuple, self.z_tuple)
             Z.append(z_mode)
@@ -96,7 +96,7 @@ class FreqDep_SC1D_AccNode(DriftTEAPOT):
         BetaRel = bunch.getSyncParticle().beta()
         Freq0 = (BetaRel * self.c) / self.phaseLength
         Z = []
-        for n in range(self.nBins / 2 - 1):
+        for n in range(self.nBins // 2 - 1):
             freq_mode = Freq0 * (n + 1)
             z_mode = interp(freq_mode, self.freq_range, self.freq_tuple, self.z_tuple)
             Z.append(z_mode)
@@ -113,7 +113,7 @@ class FreqDep_SC1D_AccNode(DriftTEAPOT):
         BetaRel = bunch.getSyncParticle().beta()
         Freq0 = (BetaRel * self.c) / self.phaseLength
         Z = []
-        for n in range(self.nBins / 2 - 1):
+        for n in range(self.nBins // 2 - 1):
             freq_mode = Freq0 * (n + 1)
             z_mode = interp(freq_mode, self.freq_range, self.freq_tuple, self.z_tuple)
             Z.append(z_mode)

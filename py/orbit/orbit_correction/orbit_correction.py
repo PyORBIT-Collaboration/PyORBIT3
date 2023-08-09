@@ -5,15 +5,10 @@ This is not a parallel version!
 
 """
 import math
-import random
-import sys
-from orbit.core.bunch import Bunch
-
 
 # ATTENTION !!! The python packet numpy and scipy are required
 import numpy as np
-from numpy import linalg as LA
-from scipy.optimize import minimize, leastsq
+from scipy.optimize import leastsq
 from orbit.teapot import TEAPOT_MATRIX_Lattice
 
 

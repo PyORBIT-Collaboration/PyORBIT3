@@ -8,8 +8,8 @@
 ##   addErrorNode - function to add one error
 ##                  node to the lattice
 
-from . import orbit
-from . import correction
+from .orbit_correction import orbit
+from .orbit_correction import correction
 
 
 __all__ = []

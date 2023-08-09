@@ -1,0 +1,22 @@
+! Element definitions:
+
+QFH: QUADRUPOLE, L=0.25, K1=0.838581217201
+QDH: QUADRUPOLE, L=0.25, K1=-0.838582112944
+D: DRIFT, L=0.25
+B: SBEND, L=1.0, ANGLE=0.19634954085
+K: KICKER, L=0.25, HKICK=0.0, VKICK=0.0
+!K: KICKER, L=0.25, HKICK=0.01, VKICK=-0.01
+S: SOLENOID, L=0.25, KS=1.0
+M: SEXTUPOLE, L=0.25, K2=-5.0
+
+! Generated drifts:
+
+! Snapshot date: 28/07/10 Time: 16.19.23
+
+! Beam lines from SAVELINE command:
+
+L000001: LINE = (QFH, D, S, D, B, D, K, D, QDH, QDH, D, M, D, B, D, D, D, QFH)
+
+TEST: LINE = (L000001)
+
+RETURN
