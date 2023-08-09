@@ -8,7 +8,7 @@ from ..utils import orbitFinalize
 from ..lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import Teapot Aperture node
-from aperture import Aperture
+from orbit.core.aperture import Aperture
 from .TeapotApertureNode import TeapotApertureNode
 
 # import teapot drift class

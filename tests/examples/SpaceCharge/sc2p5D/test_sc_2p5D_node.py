@@ -9,7 +9,7 @@ random.seed(10)
 from orbit.teapot import teapot
 from orbit.space_charge.sc2p5d import scLatticeModifications
 from orbit.core.bunch import Bunch
-from spacecharge import SpaceChargeCalc2p5D, Boundary2D
+from orbit.core.spacecharge import SpaceChargeCalc2p5D, Boundary2D
 
 print("Start.")
 
