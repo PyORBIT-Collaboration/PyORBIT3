@@ -19,6 +19,7 @@ from orbit.teapot import DriftTEAPOT
 from rfcavities import Frequency_Cav
 from rfcavities import Harmonic_Cav
 from rfcavities import Barrier_Cav
+from rfcavities import Dual_Harmonic_Cav
 
 
 class Base_RFNode(DriftTEAPOT):
