@@ -9,24 +9,18 @@
 #      Random search
 # -----------------------------------------------------------------------
 
-import os
 import math
 import sys
-import time
-import orbit.core
-import pytest
 
 from orbit.utils.fitting.Solver_lib import Solver, Scorer, SolveStopperFactory, VariableProxy, TrialPoint
 
 from orbit.utils.fitting.BisectionSearch1D import BisectionSearchAlgorithm
 from orbit.utils.fitting.GoldenSectionSearch1D import GoldenSectionSearchAlgorithm
 from orbit.utils.fitting.SimplexSearch import SimplexSearchAlgorithm
-from orbit.utils.fitting.RandomSearch import RandomSearchAlgorithm
 
 from orbit.utils.fitting.BisectionSearch1D import BisectionSearchAlgorithm
 from orbit.utils.fitting.GoldenSectionSearch1D import GoldenSectionSearchAlgorithm
 from orbit.utils.fitting.SimplexSearch import SimplexSearchAlgorithm
-from orbit.utils.fitting.RandomSearch import RandomSearchAlgorithm
 
 # ------------------------------------------------------
 #  Functions for minimization

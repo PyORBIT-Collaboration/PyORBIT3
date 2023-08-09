@@ -1,16 +1,13 @@
 # -----------------------------------------------------
 # Creates Space Charge Calculator Node
 # -----------------------------------------------------
-import sys
 import math
 import random
-import pytest
 
 random.seed(10)
 
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 from orbit.teapot import teapot
-from orbit.space_charge.sc2p5d import scAccNodes, scLatticeModifications
+from orbit.space_charge.sc2p5d import scLatticeModifications
 from orbit.core.bunch import Bunch
 from spacecharge import SpaceChargeCalc2p5D, Boundary2D
 

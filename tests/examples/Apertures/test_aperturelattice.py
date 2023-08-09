@@ -4,24 +4,16 @@
 # diagnotics nodes
 ##############################################################
 
-import math
-import sys
-import orbit.core
 import pytest
 import os
 
 from orbit.teapot import teapot
-from orbit.teapot import TEAPOT_Lattice
-from orbit.teapot import DriftTEAPOT
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer
-from bunch import Bunch
-from orbit.utils.orbit_mpi_utils import bunch_orbit_to_pyorbit, bunch_pyorbit_to_orbit
+from orbit.core.bunch import Bunch
+from orbit.utils.orbit_mpi_utils import bunch_orbit_to_pyorbit
 
 
-from orbit.utils import orbitFinalize, NamedObject, ParamsDictObject
 from orbit.aperture import addTeapotApertureNode
-from orbit.aperture import TeapotApertureNode, CircleApertureNode, EllipseApertureNode, RectangleApertureNode
-from orbit.aperture import addCircleApertureSet, addEllipseApertureSet, addRectangleApertureSet
+from orbit.aperture import CircleApertureNode
 
 print("Start.")
 

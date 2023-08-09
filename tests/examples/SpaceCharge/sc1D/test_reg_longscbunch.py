@@ -1,20 +1,13 @@
 import math
-import sys
-import string
-import orbit.core
 import pytest
 import os
 
-from bunch import Bunch
+from orbit.core.bunch import Bunch
 from orbit.teapot import teapot
-from orbit.teapot import TEAPOT_Lattice
-from orbit.teapot import DriftTEAPOT
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 from orbit.utils.orbit_mpi_utils import bunch_orbit_to_pyorbit, bunch_pyorbit_to_orbit
 from orbit.utils import consts
-from spacecharge import LSpaceChargeCalc
 from orbit.space_charge.sc1d import addLongitudinalSpaceChargeNode
-from orbit.space_charge.sc1d import SC1D_AccNode, FreqDep_SC1D_AccNode, BetFreqDep_SC1D_AccNode
+from orbit.space_charge.sc1d import SC1D_AccNode
 
 print("Start.")
 

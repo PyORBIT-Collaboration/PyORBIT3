@@ -2,22 +2,13 @@
 # pyORBIT error module benchmark
 # ------------------------------------------------
 
-import sys
-import math
-import pytest
-import orbit.core
 import os
 
-import orbit_mpi
 
-from orbit.teapot import teapot
 from orbit.teapot import TEAPOT_Lattice
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer
-from bunch import Bunch
-from orbit.errors import AddErrorNode
+from orbit.core.bunch import Bunch
 from orbit.errors import AddErrorSet
 
-from orbit.utils.orbit_mpi_utils import bunch_pyorbit_to_orbit
 
 print("Start.")
 # ------------------------------

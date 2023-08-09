@@ -4,35 +4,19 @@
 # diagnotics nodes
 ##############################################################
 
-import math
-import sys
 import pytest
 import os
 
-# import random
 
 from orbit.teapot import teapot
-from orbit.teapot import TEAPOT_Lattice
-from orbit.teapot import DriftTEAPOT
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer
-from orbit.core.bunch import Bunch, BunchTuneAnalysis
-from orbit.utils.orbit_mpi_utils import bunch_orbit_to_pyorbit, bunch_pyorbit_to_orbit
-from orbit.kickernodes import XKicker, YKicker
-from orbit.kickernodes import rootTWaveform, flatTopWaveform
-from orbit.kickernodes import TeapotXKickerNode, TeapotYKickerNode, addTeapotKickerNode
-from orbit.diagnostics import StatLats
+from orbit.core.bunch import Bunch
+from orbit.utils.orbit_mpi_utils import bunch_pyorbit_to_orbit
 from orbit.diagnostics import addTeapotDiagnosticsNode
-from orbit.diagnostics import TeapotStatLatsNode, TeapotMomentsNode, TeapotTuneAnalysisNode
+from orbit.diagnostics import TeapotTuneAnalysisNode
 from orbit.diagnostics import addTeapotStatLatsNodeSet, addTeapotMomentsNodeSet
-from orbit.utils import orbitFinalize, NamedObject, ParamsDictObject
-from orbit.utils.orbit_mpi_utils import bunch_orbit_to_pyorbit, bunch_pyorbit_to_orbit
-from orbit.utils.consts import speed_of_light
-
-# from orbit.core.orbit_utils import random as orbit_random
+from orbit.utils.orbit_mpi_utils import bunch_pyorbit_to_orbit
 
 
-# random.seed(100)
-# orbit_random.seed(0)
 def read_lines(file):
     with open(file, "r") as f:
         lines = f.readlines()
