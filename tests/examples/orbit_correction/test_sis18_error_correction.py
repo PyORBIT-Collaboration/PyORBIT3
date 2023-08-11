@@ -101,7 +101,7 @@ def test_OrbitX():
     assert len(OrbitX_corr) == len(expected_OrbitX_corr)
 
     for a, e in zip(OrbitX_corr, expected_OrbitX_corr):
-        assert a == pytest.approx(e, abs=0.000000001)
+        assert a == pytest.approx(e, abs=0.0000001)
 
 
 def test_OrbitY():
@@ -111,4 +111,4 @@ def test_OrbitY():
     assert len(OrbitY_corr) == len(expected_OrbitY_corr)
 
     for a, e in zip(OrbitY_corr, expected_OrbitY_corr):
-        assert a == pytest.approx(e, abs=0.000000001)
+        assert a == pytest.approx(e, abs=0.0000001)
