@@ -10,25 +10,22 @@ will generate the transport matices.
 The apertures are added to the lattice.
 """
 
-import sys
 import os
 import math
 import random
 import time
-import orbit.core
-import pytest
 
-import orbit_mpi
-from orbit_mpi import mpi_comm, mpi_datatype, mpi_op
+from orbit.core import orbit_mpi
+from orbit.core.orbit_mpi import mpi_comm, mpi_datatype
 from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
 # from linac import the C++ RF gap classes
-from linac import MatrixRfGap
+from orbit.core.linac import MatrixRfGap
 
 from orbit.bunch_generators import TwissContainer
 from orbit.bunch_generators import WaterBagDist3D
 
-from bunch import Bunch, BunchTwissAnalysis
+from orbit.core.bunch import Bunch, BunchTwissAnalysis
 
 from orbit.lattice import AccActionsContainer
 
@@ -123,7 +120,6 @@ class SNS_Linac_BunchGenerator:
 
 
 # ---- BaseRF_Gap to  AxisFieldRF_Gap replacement  ---- It is a possibility ----------
-from orbit.py_linac.lattice_modifications import Replace_BaseRF_Gap_to_AxisField_Nodes
 
 script_dir = os.path.dirname(__file__)
 
@@ -194,7 +190,7 @@ print "Linac lattice has been modified. New L[m] = ",accLattice.getLength()
 # Set up Space Charge Acc Nodes
 # -----------------------------------------------------
 from orbit.space_charge.sc3d import setUniformEllipsesSCAccNodes
-from spacecharge import SpaceChargeCalcUnifEllipse
+from orbit.core.spacecharge import SpaceChargeCalcUnifEllipse
 
 sc_path_length_min = 0.02
 

@@ -12,40 +12,35 @@
 # Author: Andrei Shishlo
 # -----------------------------------------------------
 import os
-import sys
 import math
 import random
 import time
 
 from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer
+from orbit.lattice import AccActionsContainer
 
 from orbit.py_linac.lattice import ThickKick
-from orbit.py_linac.lattice import Drift, Quad, Bend, MarkerLinacNode
+from orbit.py_linac.lattice import Quad
 
 from orbit.core.bunch import Bunch, BunchTwissAnalysis
 
 from orbit.core.trackerrk4 import RungeKuttaTracker
-from orbit.core.orbit_utils import StatMoments2D
-from orbit.core.fieldtracker import FieldTracker
-from orbit.core.linac import SuperFishFieldSource
 from orbit.bunch_generators import TwissContainer
-from orbit.bunch_generators import KVDist2D, KVDist3D
-from orbit.bunch_generators import GaussDist2D, GaussDist3D
-from orbit.bunch_generators import WaterBagDist2D, WaterBagDist3D
+from orbit.bunch_generators import KVDist3D
+from orbit.bunch_generators import GaussDist3D
+from orbit.bunch_generators import WaterBagDist3D
 
 from orbit.core.orbit_utils import Function
 
 # --------------------------------------------------------
 # Classes for 3D tracking
 # --------------------------------------------------------
-from orbit.core.orbit_utils import Matrix, PhaseVector
+from orbit.core.orbit_utils import Matrix
 from orbit.core.orbit_utils import FieldSourceContainer
 from orbit.core.field_sources import *
 
 from orbit.core.trackerrk4 import RungeKuttaTracker
-from orbit.core.trackerrk4 import PyExternalEffects
 
 random.seed(100)
 

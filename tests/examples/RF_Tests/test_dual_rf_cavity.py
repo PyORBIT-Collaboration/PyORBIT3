@@ -1,15 +1,11 @@
 from orbit.teapot import teapot
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer
+from orbit.lattice import AccLattice, AccActionsContainer
 from orbit.core.bunch import Bunch
 from orbit.rf_cavities import RFNode, RFLatticeModifications
 
-import orbit.core
-from rfcavities import Harmonic_Cav
-from rfcavities import Dual_Harmonic_Cav
 
 import math
 import os
-import pytest
 
 
 def read_lines(file):
