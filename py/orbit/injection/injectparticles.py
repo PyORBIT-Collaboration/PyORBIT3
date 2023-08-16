@@ -111,7 +111,7 @@ class InjectParts:
         dE_local = orbit_mpi.MPI_Bcast(dE_rank0, mpi_datatype.MPI_DOUBLE, 0, comm)
 
         n_remainder = ninjected % numprocs
-        n_inj_local = ninjected / numprocs
+        n_inj_local = ninjected // numprocs
 
         # ---- inject the equal number of particles on each CPU
         i_start = rank * n_inj_local

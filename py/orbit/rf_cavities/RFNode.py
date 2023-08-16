@@ -2,21 +2,13 @@
 Module. Includes classes for RF accelerator nodes.
 """
 
-import sys
-import os
 import math
-
-# import the function that finalizes the execution
-from orbit.utils import orbitFinalize
-
-# import general accelerator elements and lattice
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import teapot drift class
 from orbit.teapot import DriftTEAPOT
 
 # import RF cavity classes
-from orbit.core.rfcavities import Frequency_Cav, Harmonic_Cav, Barrier_Cav
+from orbit.core.rfcavities import Frequency_Cav, Harmonic_Cav, Barrier_Cav, Dual_Harmonic_Cav
 
 
 class Base_RFNode(DriftTEAPOT):

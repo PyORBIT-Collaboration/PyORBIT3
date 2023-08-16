@@ -82,7 +82,7 @@ class FreqDep_LImpedance_Node(DriftTEAPOT):
         BetaRel = bunch.getSyncParticle().beta()
         Freq0 = (BetaRel * self.c) / self.phaseLength
         Z = []
-        for n in range(self.nBins / 2 - 1):
+        for n in range(self.nBins // 2 - 1):
             freq_mode = Freq0 * (n + 1)
             z_mode = interp(freq_mode, self.freq_range, self.freq_tuple, self.z_tuple)
             Z.append(z_mode)
@@ -97,7 +97,7 @@ class FreqDep_LImpedance_Node(DriftTEAPOT):
         BetaRel = bunch.getSyncParticle().beta()
         Freq0 = (BetaRel * self.c) / self.phaseLength
         Z = []
-        for n in range(self.nBins / 2 - 1):
+        for n in range(self.nBins // 2 - 1):
             freq_mode = Freq0 * (n + 1)
             z_mode = interp(freq_mode, self.freq_range, self.freq_tuple, self.z_tuple)
             Z.append(z_mode)
@@ -114,7 +114,7 @@ class FreqDep_LImpedance_Node(DriftTEAPOT):
         BetaRel = bunch.getSyncParticle().beta()
         Freq0 = (BetaRel * self.c) / self.phaseLength
         Z = []
-        for n in range(self.nBins / 2 - 1):
+        for n in range(self.nBins // 2 - 1):
             freq_mode = Freq0 * (n + 1)
             z_mode = interp(freq_mode, self.freq_range, self.freq_tuple, self.z_tuple)
             Z.append(z_mode)
@@ -148,7 +148,7 @@ class BetFreqDep_LImpedance_Node(DriftTEAPOT):
         BetaRel = bunch.getSyncParticle().beta()
         Freq0 = (BetaRel * self.c) / self.phaseLength
         Z = []
-        for n in range(self.nBins / 2 - 1):
+        for n in range(self.nBins // 2 - 1):
             freq_mode = Freq0 * (n + 1)
             z_mode = bilinterp(BetaRel, freq_mode, self.bet_range, self.freq_range, self.bet_tuple, self.freq_tuple, self.z_bf)
             Z.append(z_mode)
@@ -163,7 +163,7 @@ class BetFreqDep_LImpedance_Node(DriftTEAPOT):
         BetaRel = bunch.getSyncParticle().beta()
         Freq0 = (BetaRel * self.c) / self.phaseLength
         Z = []
-        for n in range(self.nBins / 2 - 1):
+        for n in range(self.nBins // 2 - 1):
             freq_mode = Freq0 * (n + 1)
             z_mode = bilinterp(BetaRel, freq_mode, self.bet_range, self.freq_range, self.bet_tuple, self.freq_tuple, self.z_bf)
             Z.append(z_mode)
@@ -180,7 +180,7 @@ class BetFreqDep_LImpedance_Node(DriftTEAPOT):
         BetaRel = bunch.getSyncParticle().beta()
         Freq0 = (BetaRel * self.c) / self.phaseLength
         Z = []
-        for n in range(self.nBins / 2 - 1):
+        for n in range(self.nBins // 2 - 1):
             freq_mode = Freq0 * (n + 1)
             z_mode = bilinterp(BetaRel, freq_mode, self.bet_range, self.freq_range, self.bet_tuple, self.freq_tuple, self.z_bf)
             Z.append(z_mode)
@@ -318,7 +318,7 @@ class FreqDep_TImpedance_Node(DriftTEAPOT):
             z_tuple = self.localDict["zx_imp"]
             Zp = []
             Zm = []
-            for n in range(self.nBins / 2):
+            for n in range(self.nBins // 2):
                 Freq_p = Freq0 * (n + qX)
                 Freq_m = Freq0 * (n - qX)
                 sign_m = 1.0
@@ -337,7 +337,7 @@ class FreqDep_TImpedance_Node(DriftTEAPOT):
             z_tuple = self.localDict["zy_imp"]
             Zp = []
             Zm = []
-            for n in range(self.nBins / 2):
+            for n in range(self.nBins // 2):
                 Freq_p = Freq0 * (n + qY)
                 Freq_m = Freq0 * (n - qY)
                 sign_m = 1.0
@@ -432,7 +432,7 @@ class BetFreqDep_TImpedance_Node(DriftTEAPOT):
             z_bf = self.localDict["zx_imp"]
             Zp = []
             Zm = []
-            for n in range(self.nBins / 2):
+            for n in range(self.nBins // 2):
                 Freq_p = Freq0 * (n + qX)
                 Freq_m = Freq0 * (n - qX)
                 sign_m = 1.0
@@ -451,7 +451,7 @@ class BetFreqDep_TImpedance_Node(DriftTEAPOT):
             z_bf = self.localDict["zy_imp"]
             Zp = []
             Zm = []
-            for n in range(self.nBins / 2):
+            for n in range(self.nBins // 2):
                 Freq_p = Freq0 * (n + qY)
                 Freq_m = Freq0 * (n - qY)
                 sign_m = 1.0

@@ -1,12 +1,11 @@
-import math
-import os
-
 from orbit.teapot import teapot
-from orbit.lattice import AccLattice, AccActionsContainer
+from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 from orbit.core.bunch import Bunch
 from orbit.rf_cavities import RFNode, RFLatticeModifications
 
-print("Start.")
+import math
+import os
+import pytest
 
 
 def read_lines(file):
@@ -21,20 +20,15 @@ def read_lines(file):
 
 temp_bunch = "temp_bunch.txt"
 
+print("Start.")
+
 b = Bunch()
-b.addParticle(0.0, 0.0, 0.0, 0.0, -1.8, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, -1.5, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, -1.2, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, -0.9, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, -0.6, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, -0.3, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, 0.3, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, 0.6, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, 0.9, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, 1.2, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, 1.5, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, 1.8, 0.0)
+b.addParticle(1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0)
+b.addParticle(0.0, 1.0e-3, 0.0, 0.0, 0.0, 0.0)
+b.addParticle(0.0, 0.0, 1.0e-3, 0.0, 0.0, 0.0)
+b.addParticle(0.0, 0.0, 0.0, 1.0e-3, 0.0, 0.0)
+b.addParticle(0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
+b.addParticle(0.0, 0.0, 0.0, 0.0, 0.0, 1.0e-3)
 b.compress()
 
 syncPart = b.getSyncParticle()
@@ -59,24 +53,21 @@ lattice.initialize()
 
 # ///////////////////////////////////////////////////////////
 ZtoPhi = 2.0 * math.pi / lattice.getLength()
-RFVoltage = 0.1
-RFPhasep = 150.0
-RFPhasem = -150.0
-dRFPhasep = 30.0
-dRFPhasem = 30.0
+accelDict = {}
+accelDict["gammaTrans"] = 1.0e10
+accelDict["RFHNum"] = 1
+accelDict["n_tuple"] = 8
+accelDict["time"] = (0, 5.0e-09, 10.0e-09, 15.0e-09, 20.0e-09, 25.0e-09, 30.0e-09, 35.0e-09, 40.0e-09)
+accelDict["SyncPhase"] = (0.0, 10.0, 20.0, 30.0, 40.0, 30.0, 20.0, 10.0, 0.0)
+accelDict["RFVoltage"] = (0.1, 0.11, 0.12, 0.13, 0.14, 0.13, 0.12, 0.11, 0.1)
+accelDict["RFPhase"] = (0.0, 30.0, 60.0, 90.0, 90.0, 90.0, 60.0, 30.0, 0.0)
 length = 0.0
-name = "barrier_rfnode"
-rf_node = RFNode.Barrier_RFNode(ZtoPhi, RFVoltage, RFPhasep, RFPhasem, dRFPhasep, dRFPhasem, length, name)
+name = "harmonic_rfnode"
+rf_node = RFNode.SyncPhaseDep_Harmonic_RFNode(ZtoPhi, accelDict, b, length, name)
 position = 1.0
 RFLatticeModifications.addRFNode(lattice, position, rf_node)
 
 print("Lattice length = ", lattice.getLength())
-print("ZtoPhi = ", ZtoPhi)
-print("RFVoltage = ", RFVoltage)
-print("RFPhasep  = ", RFPhasep)
-print("RFPhasem  = ", RFPhasem)
-print("dRFPhasep = ", dRFPhasep)
-print("dRFPhasem = ", dRFPhasem)
 
 # ///////////////////////////////////////////////////////////
 
@@ -98,6 +89,10 @@ paramsDict = {}
 paramsDict["bunch"] = b
 
 lattice.trackActions(accContainer, paramsDict)
+lattice.trackActions(accContainer, paramsDict)
+lattice.trackActions(accContainer, paramsDict)
+lattice.trackActions(accContainer, paramsDict)
+
 print("=============AFTER=============================")
 b.dumpBunch(temp_bunch)
 bunch_after = read_lines(temp_bunch)
@@ -108,24 +103,18 @@ print("lattice length=", lattice.getLength())
 print("beta=", b.getSyncParticle().beta())
 print("TEAPOT time[sec]=", b.getSyncParticle().time())
 print("SIMPLE time[sec]=", lattice.getLength() / (b.getSyncParticle().beta() * 2.99792458e8))
+
 print("Stop.")
 
 
-def test_barrier_rf_cavity_bunch_after():
-    expected = """0 0 0 0 -1.7645982 0.080901699
-0 0 0 0 -1.4687555 0.070710678
-0 0 0 0 -1.2 0
-0 0 0 0 -0.9 0
-0 0 0 0 -0.6 0
-0 0 0 0 -0.3 0
-0 0 0 0 0 0
-0 0 0 0 0.3 0
-0 0 0 0 0.6 0
-0 0 0 0 0.9 0
-0 0 0 0 1.2 0
-0 0 0 0 1.4639496 -0.070710678
-0 0 0 0 1.7582998 -0.080901699"""
-    assert bunch_after == expected
+def test_syncphasedep_rf_cavity():
+    expected_bunch_after = """0.001 0 0 0 -0.00078986123 -0.0013118323
+0.01447853 0.00085864263 0 0 -0.00079565342 -0.0013104034
+0 0 0.001 0 -0.00078986123 -0.0013118323
+0 0 0.01447853 0.00085864263 -0.00079565342 -0.0013104034
+0 0 0 0 0.30176901 -0.45642588
+0 0 0 0 0.00090121999 -0.00073868826"""
+    assert bunch_after == expected_bunch_after
 
 
 os.remove(temp_bunch)

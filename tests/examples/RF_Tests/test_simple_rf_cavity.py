@@ -1,10 +1,11 @@
-import math
-import os
-
 from orbit.teapot import teapot
-from orbit.lattice import AccLattice, AccActionsContainer
+from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 from orbit.core.bunch import Bunch
 from orbit.rf_cavities import RFNode, RFLatticeModifications
+
+import math
+import os
+import pytest
 
 print("Start.")
 
@@ -19,22 +20,15 @@ def read_lines(file):
     return stripped_content
 
 
+print("Start.")
 temp_bunch = "temp_bunch.txt"
-
 b = Bunch()
-b.addParticle(0.0, 0.0, 0.0, 0.0, -1.8, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, -1.5, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, -1.2, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, -0.9, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, -0.6, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, -0.3, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, 0.3, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, 0.6, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, 0.9, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, 1.2, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, 1.5, 0.0)
-b.addParticle(0.0, 0.0, 0.0, 0.0, 1.8, 0.0)
+b.addParticle(1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0)
+b.addParticle(0.0, 1.0e-3, 0.0, 0.0, 0.0, 0.0)
+b.addParticle(0.0, 0.0, 1.0e-3, 0.0, 0.0, 0.0)
+b.addParticle(0.0, 0.0, 0.0, 1.0e-3, 0.0, 0.0)
+b.addParticle(0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
+b.addParticle(0.0, 0.0, 0.0, 0.0, 0.0, 1.0e-3)
 b.compress()
 
 syncPart = b.getSyncParticle()
@@ -59,25 +53,22 @@ lattice.initialize()
 
 # ///////////////////////////////////////////////////////////
 ZtoPhi = 2.0 * math.pi / lattice.getLength()
+dESync = 0.0
+RFHNum = 1.0
 RFVoltage = 0.1
-RFPhasep = 150.0
-RFPhasem = -150.0
-dRFPhasep = 30.0
-dRFPhasem = 30.0
+RFPhase = 0.0
 length = 0.0
-name = "barrier_rfnode"
-rf_node = RFNode.Barrier_RFNode(ZtoPhi, RFVoltage, RFPhasep, RFPhasem, dRFPhasep, dRFPhasem, length, name)
+name = "harmonic_rfnode"
+rf_node = RFNode.Harmonic_RFNode(ZtoPhi, dESync, RFHNum, RFVoltage, RFPhase, length, name)
 position = 1.0
 RFLatticeModifications.addRFNode(lattice, position, rf_node)
 
 print("Lattice length = ", lattice.getLength())
 print("ZtoPhi = ", ZtoPhi)
+print("dESync = ", dESync)
+print("RFHNum = ", RFHNum)
 print("RFVoltage = ", RFVoltage)
-print("RFPhasep  = ", RFPhasep)
-print("RFPhasem  = ", RFPhasem)
-print("dRFPhasep = ", dRFPhasep)
-print("dRFPhasem = ", dRFPhasem)
-
+print("RFPhase = ", RFPhase)
 # ///////////////////////////////////////////////////////////
 
 print("==============BEFORE============================")
@@ -111,21 +102,14 @@ print("SIMPLE time[sec]=", lattice.getLength() / (b.getSyncParticle().beta() * 2
 print("Stop.")
 
 
-def test_barrier_rf_cavity_bunch_after():
-    expected = """0 0 0 0 -1.7645982 0.080901699
-0 0 0 0 -1.4687555 0.070710678
-0 0 0 0 -1.2 0
-0 0 0 0 -0.9 0
-0 0 0 0 -0.6 0
-0 0 0 0 -0.3 0
-0 0 0 0 0 0
-0 0 0 0 0.3 0
-0 0 0 0 0.6 0
-0 0 0 0 0.9 0
-0 0 0 0 1.2 0
-0 0 0 0 1.4639496 -0.070710678
-0 0 0 0 1.7582998 -0.080901699"""
-    assert bunch_after == expected
+def test_simple_rf_cavity():
+    expected_bunch_after = """0.001 0 0 0 0 0
+0.0039999998 0.001 0 0 -1.9627964e-06 7.8539816e-08
+0 0 0.001 0 0 0
+0 0 0.0039999998 0.001 -1.9627964e-06 7.8539816e-08
+0 0 0 0 0.94737387 -0.1
+0 0 0 0 0.00061923385 0.00097522276"""
+    assert bunch_after == expected_bunch_after
 
 
 os.remove(temp_bunch)
