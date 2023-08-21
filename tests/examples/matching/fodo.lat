@@ -1,0 +1,19 @@
+!---------------------  DRIFT SPACES DEFINITION  ---------------------
+DR: drift, L = 1.191;
+DRB: drift, L = 2.618;
+
+
+!--------------------------  BENDING MAGNET ---------------------------
+RADDEG=1/57.2958;
+ALPHA  := 15.0 * RADDEG;
+LL     := 150 * RADDEG;
+RB: SBEND,L = LL,ANGLE = ALPHA;
+DRB: drift, L =  LL;
+! ------------------- horizontal quadrupole ----------------------------
+
+QF:  quadrupole, L = 4.0,  K1 = 0.0331;
+QD:  quadrupole, L = 4.0,  K1 = -0.0331;
+
+! ---------------------------  LINE DEFINITION ---------------------------
+CELLA: line = (QF,DR,DRB,DR,QD,DR,DRB,DR);
+!------------------------------------------------------------------------
