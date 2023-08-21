@@ -10,7 +10,7 @@ run-tests:
   stage: test
   image: continuumio/miniconda3:23.5.2-0
   before_script:
-    - conda install -c conda-forge gcc gxx fftw mpich pytest pytest-cov coverage numpy scipy
+    - conda install -c conda-forge gcc gxx fftw mpich pytest pytest-cov coverage numpy scipy matplotlib
     - python setup.py clean
     - pip install .
   script:
