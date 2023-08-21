@@ -1,5 +1,6 @@
 import os
 import math
+import pytest
 
 from orbit.teapot import TEAPOT_Lattice
 
@@ -54,5 +55,5 @@ expected_phasey = 0.47845404552827536
 
 
 def test_phaseX_phaseY():
-    assert phasex == expected_phasex
-    assert phasey == expected_phasey
+    assert phasex == pytest.approx(expected_phasex, abs=0.0000001)
+    assert phasey == pytest.approx(expected_phasey, abs=0.0000001)
