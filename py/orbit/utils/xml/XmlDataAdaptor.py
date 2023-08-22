@@ -53,6 +53,7 @@ import xml.dom.minidom
 
 # import python XML ElementTree parser
 import xml.etree.ElementTree as ET
+from lxml import etree
 
 from orbit.utils import NamedObject, ParamsDictObject
 
@@ -225,7 +226,8 @@ class XmlDataAdaptor(NamedObject, ParamsDictObject):
     @staticmethod
     def adaptorForFile(file_name):
         """returns the new data adaptor created from the input file"""
-        et = ET.parse(file_name)
+        parser = etree.XMLParser(load_dtd=True, no_network=False)
+        et = etree.parse(file_name, parser=parser)
         root = et.getroot()
         xml_root_adaptor = XmlDataAdaptor(root.tag)
         XmlDataAdaptor._makeDataAdaptor(xml_root_adaptor, root)
