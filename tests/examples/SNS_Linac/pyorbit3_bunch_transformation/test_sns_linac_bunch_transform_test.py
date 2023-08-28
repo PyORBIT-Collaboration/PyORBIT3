@@ -214,7 +214,7 @@ for rf_gap in rf_gaps:
 # Set up Space Charge Acc Nodes
 # -----------------------------------------------------
 from orbit.space_charge.sc3d import setUniformEllipsesSCAccNodes
-from spacecharge import SpaceChargeCalcUnifEllipse
+from orbit.core.spacecharge import SpaceChargeCalcUnifEllipse
 
 sc_path_length_min = 0.02
 
