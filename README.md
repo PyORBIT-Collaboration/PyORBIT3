@@ -26,9 +26,9 @@ You will also need to install the relevant packages in order to use PyOrbit. You
 ### Conda Setup:
 
 First of all make sure you have conda installed. Then run the following:
- 
+
 ```bash
-cd pyorbit3/ 
+cd pyorbit3/
 conda env create -n pyorbit --file environment.yml
 conda activate pyorbit
 ```
@@ -53,7 +53,7 @@ python setup.py clean
 pip install .
 ```
 
-You need only build the project after a change is made to the core c++ or python classes.  
+You need only build the project after a change is made to the core c++ or python classes.
 
 ## 3. Run SNS linac example
 
@@ -93,4 +93,3 @@ In the above line you can change the number 4 for however many MPI nodes you wou
 **./examples**		- pyORBIT3 examples.
 
 **./tests**		- pytests written for the CI Pipeline.
-
