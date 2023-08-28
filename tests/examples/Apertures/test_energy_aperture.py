@@ -3,8 +3,6 @@
 # class of the "aperture" module
 ##############################################################
 
-import math
-import sys
 import pytest
 import os
 

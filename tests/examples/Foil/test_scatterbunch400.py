@@ -1,8 +1,6 @@
 import pytest
 
 import os
-import math
-import sys
 from orbit.core.bunch import Bunch
 from orbit.core.foil import Foil
 from orbit.injection import InjectParts

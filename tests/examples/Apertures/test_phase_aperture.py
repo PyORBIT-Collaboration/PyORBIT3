@@ -3,8 +3,6 @@
 # class of the "aperture" module
 ##############################################################
 
-import math
-import sys
 import os
 
 from orbit.core.bunch import Bunch

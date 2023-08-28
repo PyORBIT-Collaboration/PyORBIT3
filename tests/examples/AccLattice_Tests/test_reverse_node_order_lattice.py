@@ -1,6 +1,3 @@
-import sys
-import math
-import posix
 import os
 import pytest
 
