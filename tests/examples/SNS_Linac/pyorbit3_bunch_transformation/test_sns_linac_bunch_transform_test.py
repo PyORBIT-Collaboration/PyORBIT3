@@ -10,33 +10,24 @@ import os
 import math
 import random
 import time
-import orbit.core
-import pytest
 
 from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
-import orbit_mpi
-from orbit_mpi import mpi_comm, mpi_datatype, mpi_op
+from orbit.core import orbit_mpi
+from orbit.core.orbit_mpi import mpi_comm, mpi_datatype
 
 # from linac import the C++ RF gap classes
-from linac import BaseRfGap, MatrixRfGap, RfGapTTF
-from linac import BaseRfGap_slow, RfGapTTF_slow
+from orbit.core.linac import BaseRfGap
 
 from orbit.bunch_generators import TwissContainer
-from orbit.bunch_generators import WaterBagDist3D, GaussDist3D, KVDist3D
+from orbit.bunch_generators import WaterBagDist3D
 
-from bunch import Bunch
-from bunch import BunchTwissAnalysis
-from bunch import SynchPartRedefinitionZdE
+from orbit.core.bunch import Bunch, BunchTwissAnalysis, SynchPartRedefinitionZdE
 
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer
+from orbit.lattice import AccNode, AccActionsContainer
 
 from orbit.py_linac.lattice_modifications import Add_quad_apertures_to_lattice
-from orbit.py_linac.lattice_modifications import Add_rfgap_apertures_to_lattice
-from orbit.py_linac.lattice_modifications import AddMEBTChopperPlatesAperturesToSNS_Lattice
-from orbit.py_linac.lattice_modifications import AddScrapersAperturesToLattice
 
-from orbit.py_linac.lattice_modifications import Replace_BaseRF_Gap_to_AxisField_Nodes
 from orbit.py_linac.lattice_modifications import Replace_BaseRF_Gap_and_Quads_to_Overlapping_Nodes
 from orbit.py_linac.lattice_modifications import Replace_Quads_to_OverlappingQuads_Nodes
 
@@ -222,8 +213,8 @@ for rf_gap in rf_gaps:
 # -----------------------------------------------------
 # Set up Space Charge Acc Nodes
 # -----------------------------------------------------
-from orbit.space_charge.sc3d import setSC3DAccNodes, setUniformEllipsesSCAccNodes
-from spacecharge import SpaceChargeCalcUnifEllipse, SpaceChargeCalc3D
+from orbit.space_charge.sc3d import setUniformEllipsesSCAccNodes
+from spacecharge import SpaceChargeCalcUnifEllipse
 
 sc_path_length_min = 0.02
 

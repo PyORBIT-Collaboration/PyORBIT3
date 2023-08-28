@@ -4,7 +4,7 @@ import pytest
 
 from orbit.teapot import TEAPOT_Lattice
 
-from bunch import Bunch
+from orbit.core.bunch import Bunch
 
 from orbit.matching import Optics, EnvelopeSolver
 
