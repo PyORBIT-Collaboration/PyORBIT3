@@ -1,11 +1,10 @@
 import math
 
-from bunch import Bunch
+from orbit.core.bunch import Bunch
 
 # pyORBIT MPI module import
-import orbit_mpi
-from orbit_mpi import mpi_datatype
-from orbit_mpi import mpi_op
+from orbit.core import orbit_mpi
+from orbit.core.orbit_mpi import mpi_datatype, mpi_op
 
 
 def bunch_pyorbit_to_orbit(ringLength, pyOrbitBunch, name_of_orbit_mpi_bunch_file):

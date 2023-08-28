@@ -2,7 +2,7 @@ def orbitFinalize(message=None):
     """
     Method. Finalizes the execution of the ORBIT script.
     """
-    import orbit_mpi
+    from orbit.core import orbit_mpi
     import sys
     import traceback
 

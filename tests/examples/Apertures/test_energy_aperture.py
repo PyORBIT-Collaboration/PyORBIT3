@@ -3,14 +3,11 @@
 # class of the "aperture" module
 ##############################################################
 
-import math
-import sys
-import orbit.core
 import pytest
 import os
 
-from bunch import Bunch
-from aperture import EnergyAperture
+from orbit.core.bunch import Bunch
+from orbit.core.aperture import EnergyAperture
 
 
 def read_lines(file):

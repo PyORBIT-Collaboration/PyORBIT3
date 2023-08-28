@@ -13,12 +13,10 @@
 
 import sys
 import math
-import orbit.core
 
-import orbit_mpi
+from orbit.core import orbit_mpi
 
-from spacecharge import Grid3D
-from spacecharge import PoissonSolverFFT3D
+from orbit.core.spacecharge import Grid3D, PoissonSolverFFT3D
 
 print("Start.")
 

@@ -4,9 +4,7 @@
 # The script will test the gerenrators from bunch_generators
 # --------------------------------------------------------
 
-import math
 import random
-import sys
 import pytest
 
 random.seed(100)

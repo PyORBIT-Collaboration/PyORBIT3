@@ -1,38 +1,13 @@
-import importlib.util
-import sys
+## Dynamically import all submodules
+import os
+import importlib
 
-from orbit.core import _orbit
-
-pkg_path = _orbit.__file__
-
-
-def _load_module(mod_name, path):
-    spec = importlib.util.spec_from_file_location(mod_name, path)
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[mod_name] = module
-    spec.loader.exec_module(module)
-
-    return module
-
-
-__all__ = [
-    "orbit_mpi",
-    "trackerrk4",
-    "error_base",
-    "bunch",
-    "teapot_base",
-    "linac",
-    "spacecharge",
-    "orbit_utils",
-    "aperture",
-    "foil",
-    "collimator",
-    "field_sources",
-    "rfcavities",
-    "impedances",
-    "fieldtracker",
+submodules = [
+    f.name for f in os.scandir(os.path.dirname(__file__)) if f.is_dir() and not f.name.startswith(".") and not f.name.startswith("_")
 ]
 
-for mod_name in __all__:
-    locals()[mod_name] = _load_module(mod_name, pkg_path)
-del mod_name
+for module in submodules:
+    _mod = importlib.import_module(f"orbit.core.{module}", package=None)
+    locals().update({module: _mod})
+
+del _mod

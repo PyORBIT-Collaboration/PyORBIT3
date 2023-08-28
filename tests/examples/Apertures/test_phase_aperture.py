@@ -3,13 +3,10 @@
 # class of the "aperture" module
 ##############################################################
 
-import math
-import sys
-import orbit.core
 import os
 
-from bunch import Bunch
-from aperture import PhaseAperture
+from orbit.core.bunch import Bunch
+from orbit.core.aperture import PhaseAperture
 
 
 def read_lines(file):

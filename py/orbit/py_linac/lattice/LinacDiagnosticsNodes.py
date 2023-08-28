@@ -7,10 +7,7 @@ import math
 import sys
 
 # ---- MPI module function and classes
-import orbit_mpi
-from orbit_mpi import mpi_comm
-from orbit_mpi import mpi_datatype
-from orbit_mpi import mpi_op
+from orbit.core.orbit_mpi import mpi_comm, mpi_datatype, mpi_op, MPI_Allreduce
 
 # import from orbit Python utilities
 from orbit.utils import orbitFinalize
@@ -18,8 +15,7 @@ from orbit.utils import phaseNearTargetPhase, phaseNearTargetPhaseDeg
 from orbit.utils import speed_of_light
 
 # import from orbit c++ utilities
-from orbit_utils import Polynomial
-from orbit_utils import Function
+from orbit.core.orbit_utils import Polynomial, Function
 
 # from LinacAccLattice import Sequence
 from orbit.py_linac.lattice.LinacAccLatticeLib import Sequence
@@ -156,7 +152,7 @@ class LinacBPM(BaseLinacNode):
             y_avg += bunch.y(ind)
             phase_avg += z_to_phase * bunch.z(ind)
         # ---- for parallel case
-        (x_avg, y_avg, phase_avg) = orbit_mpi.MPI_Allreduce((x_avg, y_avg, phase_avg), mpi_datatype.MPI_DOUBLE, mpi_op.MPI_SUM, comm)
+        (x_avg, y_avg, phase_avg) = MPI_Allreduce((x_avg, y_avg, phase_avg), mpi_datatype.MPI_DOUBLE, mpi_op.MPI_SUM, comm)
         x_avg /= nPartsGlobal
         y_avg /= nPartsGlobal
         phase_avg /= nPartsGlobal
@@ -179,7 +175,7 @@ class LinacBPM(BaseLinacNode):
             if phase_ind >= nHistP:
                 phase_ind = nHistP - 1
             self.phase_hist_arr[phase_ind] += 1.0
-        phase_hist_arr = orbit_mpi.MPI_Allreduce(self.phase_hist_arr, mpi_datatype.MPI_DOUBLE, mpi_op.MPI_SUM, comm)
+        phase_hist_arr = MPI_Allreduce(self.phase_hist_arr, mpi_datatype.MPI_DOUBLE, mpi_op.MPI_SUM, comm)
         phase_hist_arr = list(phase_hist_arr)
         # ---- find the position of the max value
         total_sum = 0.0

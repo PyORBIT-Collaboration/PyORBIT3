@@ -1,13 +1,9 @@
-import sys
-import orbit.core
-import pytest
 import os
 import logging
 
-from orbit.parsers.mad_parser import MAD_Parser, MAD_LattElement, MAD_LattLine
 from orbit.time_dep import time_dep
-from orbit.time_dep.waveform import KickerWaveform, MagnetWaveform, LinearMagnetWaveform
-from bunch import Bunch
+from orbit.time_dep.waveform import LinearMagnetWaveform
+from orbit.core.bunch import Bunch
 
 
 # this function is just to replace the DEBUG message that logger prints so that we can compare it to the python2.7 output

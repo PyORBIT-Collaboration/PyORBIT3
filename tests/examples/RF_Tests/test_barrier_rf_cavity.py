@@ -2,7 +2,7 @@ import math
 import os
 
 from orbit.teapot import teapot
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer
+from orbit.lattice import AccLattice, AccActionsContainer
 from orbit.core.bunch import Bunch
 from orbit.rf_cavities import RFNode, RFLatticeModifications
 

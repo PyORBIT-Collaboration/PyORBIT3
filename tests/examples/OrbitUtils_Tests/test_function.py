@@ -8,11 +8,9 @@
 
 import sys
 import math
-import orbit.core
 import pytest
 
-from orbit_utils import Function
-from orbit_utils import SplineCH
+from orbit.core.orbit_utils import Function, SplineCH
 
 f = Function()
 

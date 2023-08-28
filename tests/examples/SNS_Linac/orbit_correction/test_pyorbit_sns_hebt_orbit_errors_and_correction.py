@@ -12,12 +12,11 @@ of quads.
 """
 
 import random
-import pytest
 import os
 
 from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
-from bunch import Bunch
+from orbit.core.bunch import Bunch
 
 from orbit.py_linac.orbit_correction import TrajectoryCorrection
 

@@ -1,12 +1,6 @@
-import orbit.core
-import pytest
-
 import os
-import math
-import sys
-from bunch import Bunch
-from foil import Foil
-from orbit.injection import InjectParts
+from orbit.core.bunch import Bunch
+from orbit.core.foil import Foil
 import random
 from orbit.core.orbit_utils import random as orbit_random
 

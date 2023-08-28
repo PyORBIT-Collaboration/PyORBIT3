@@ -5,10 +5,8 @@ This is not a parallel version!
 """
 
 # for mpi operations
-import orbit_mpi
-from orbit_mpi import mpi_comm
-from orbit_mpi import mpi_datatype
-from orbit_mpi import mpi_op
+from orbit.core import orbit_mpi
+from orbit.core.orbit_mpi import mpi_comm, mpi_datatype, mpi_op
 
 import math
 import random

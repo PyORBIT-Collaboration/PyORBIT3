@@ -326,7 +326,7 @@ class LinacAccLattice(AccLattice):
             return (nodes[index1], index1, posBefore1, posAfter1)
         index = 0
         while index0 != index1:
-            index = (index0 + index1) / 2
+            index = (index0 + index1) // 2
             (posBefore, posAfter) = node_pos_dict[nodes[index]]
             if z < posBefore:
                 index1 = index

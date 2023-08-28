@@ -7,13 +7,12 @@
 # -----------------------------------------------------
 import sys
 import math
-import orbit.core
 
-from bunch import Bunch
+from orbit.core.bunch import Bunch
 
-from trackerrk4 import RungeKuttaTracker
-from trackerrk4 import PyExternalEffects
-from orbit_utils import PyBaseFieldSource
+from orbit.core.trackerrk4 import RungeKuttaTracker
+from orbit.core.trackerrk4 import PyExternalEffects
+from orbit.core.orbit_utils import PyBaseFieldSource
 
 
 # the implementation of the field source

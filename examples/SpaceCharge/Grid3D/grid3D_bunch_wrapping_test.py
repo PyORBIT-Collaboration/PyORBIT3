@@ -8,10 +8,9 @@
 import sys
 import math
 import random
-import orbit.core
 
-from spacecharge import Grid3D
-from bunch import Bunch
+from orbit.core.spacecharge import Grid3D
+from orbit.core.bunch import Bunch
 
 print("==== Start ====")
 

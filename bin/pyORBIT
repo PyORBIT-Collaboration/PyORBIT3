@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]
+then
+    # Run an interactive session if no arguments provided
+    python -i -m orbit.core.pyORBIT
+else
+    # Otherwise run the script
+    python -m orbit.core.pyORBIT $1
+fi

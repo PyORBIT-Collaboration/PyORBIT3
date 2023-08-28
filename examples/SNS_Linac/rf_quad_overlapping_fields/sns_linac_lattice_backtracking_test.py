@@ -11,18 +11,16 @@ import sys
 import math
 import random
 import time
-import orbit.core
 
 from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
 # from linac import the C++ RF gap classes
-from linac import BaseRfGap, MatrixRfGap, RfGapTTF
+from orbit.core.linac import BaseRfGap, MatrixRfGap, RfGapTTF
 
 from orbit.bunch_generators import TwissContainer
 from orbit.bunch_generators import WaterBagDist3D, GaussDist3D, KVDist3D
 
-from bunch import Bunch
-from bunch import BunchTwissAnalysis
+from orbit.core.bunch import Bunch, BunchTwissAnalysis
 
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 
@@ -44,7 +42,6 @@ from orbit.py_linac.overlapping_fields import SNS_EngeFunctionFactory
 sys.path.append("../pyorbit3_linac_model")
 from sns_linac_bunch_generator import SNS_Linac_BunchGenerator
 
-from bunch import Bunch
 
 random.seed(100)
 
@@ -147,7 +144,7 @@ for node in nodes:
 # Set up Space Charge Acc Nodes
 # -----------------------------------------------------
 from orbit.space_charge.sc3d import setSC3DAccNodes, setUniformEllipsesSCAccNodes
-from spacecharge import SpaceChargeCalcUnifEllipse, SpaceChargeCalc3D
+from orbit.core.spacecharge import SpaceChargeCalcUnifEllipse, SpaceChargeCalc3D
 
 sc_path_length_min = 0.02
 

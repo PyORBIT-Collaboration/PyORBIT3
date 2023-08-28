@@ -6,7 +6,7 @@ This is not a parallel version!
 import math
 import random
 import sys
-from bunch import Bunch
+from orbit.core.bunch import Bunch
 
 # import numpy as np
 # from numpy import linalg as LA

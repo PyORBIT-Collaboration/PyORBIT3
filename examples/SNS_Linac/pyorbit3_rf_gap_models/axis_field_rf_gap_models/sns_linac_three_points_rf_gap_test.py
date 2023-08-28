@@ -31,22 +31,18 @@ import sys
 import math
 import random
 import time
-import orbit.core
 
-import orbit_mpi
-from orbit_mpi import mpi_comm
-from orbit_mpi import mpi_datatype
-from orbit_mpi import mpi_op
+from orbit.core.orbit_mpi import mpi_comm, mpi_datatype, mpi_op
 
 from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
 # from linac import the C++ RF gap classes
-from linac import BaseRfGap, MatrixRfGap, RfGapTTF
+from orbit.core.linac import BaseRfGap, MatrixRfGap, RfGapTTF
 
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 from orbit.py_linac.lattice import Drift, AxisFieldRF_Gap
 
-from bunch import Bunch
+from orbit.core.bunch import Bunch
 
 
 # names = ["MEBT","DTL1","DTL2","DTL3","DTL4","DTL5","DTL6","CCL1","CCL2","CCL3","CCL4","SCLMed","SCLHigh","HEBT1","HEBT2"]

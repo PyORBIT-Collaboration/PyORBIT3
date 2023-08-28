@@ -50,62 +50,62 @@ PyMODINIT_FUNC PyInit__orbit(void) {
 // Create wrappers with magic names
 // that will be picked up by importlib
 
-PyMODINIT_FUNC PyInit_orbit_mpi(void) {
+PyMODINIT_FUNC PyInit__orbit_mpi(void) {
     return wrap_orbit_mpi::initorbit_mpi();
 }
 
-PyMODINIT_FUNC PyInit_bunch(void) {
+PyMODINIT_FUNC PyInit__bunch(void) {
     return wrap_orbit_bunch::initbunch();
 }
 
-PyMODINIT_FUNC PyInit_spacecharge(void) {
+PyMODINIT_FUNC PyInit__spacecharge(void) {
     return initspacecharge();
 }
 
-PyMODINIT_FUNC PyInit_trackerrk4(void) {
+PyMODINIT_FUNC PyInit__trackerrk4(void) {
     return inittrackerrk4();
 }
 
-PyMODINIT_FUNC PyInit_teapot_base(void) {
+PyMODINIT_FUNC PyInit__teapot_base(void) {
     return wrap_teapotbase::initteapotbase();
 }
 
-PyMODINIT_FUNC PyInit_linac(void) {
+PyMODINIT_FUNC PyInit__linac(void) {
     return wrap_linac::initlinac();
 }
 
-PyMODINIT_FUNC PyInit_orbit_utils(void) {
+PyMODINIT_FUNC PyInit__orbit_utils(void) {
     return wrap_orbit_utils::initutils();
 }
 
-PyMODINIT_FUNC PyInit_aperture(void) {
+PyMODINIT_FUNC PyInit__aperture(void) {
     return wrap_aperture::initaperture();
 }
 
-PyMODINIT_FUNC PyInit_error_base(void) {
+PyMODINIT_FUNC PyInit__error_base(void) {
     return wrap_errorbase::initerrorbase();
 }
 
-PyMODINIT_FUNC PyInit_collimator(void) {
+PyMODINIT_FUNC PyInit__collimator(void) {
     return wrap_collimator::initcollimator();
 }
 
-PyMODINIT_FUNC PyInit_foil(void) {
+PyMODINIT_FUNC PyInit__foil(void) {
     return wrap_foil::initfoil();
 }
 
-PyMODINIT_FUNC PyInit_field_sources(void) {
+PyMODINIT_FUNC PyInit__field_sources(void) {
     return wrap_field_sources_module::initFieldSourcesModule();
 }
 
-PyMODINIT_FUNC PyInit_rfcavities(void) {
+PyMODINIT_FUNC PyInit__rfcavities(void) {
     return wrap_rfcavities::initrfcavities();
 }
 
-PyMODINIT_FUNC PyInit_impedances(void) {
+PyMODINIT_FUNC PyInit__impedances(void) {
     return wrap_impedances::initimpedances();
 }
 
-PyMODINIT_FUNC PyInit_fieldtracker(void) {
+PyMODINIT_FUNC PyInit__fieldtracker(void) {
     return wrap_fieldtracker::initfieldtracker();
 }

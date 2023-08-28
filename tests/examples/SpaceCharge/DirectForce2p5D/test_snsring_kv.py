@@ -3,20 +3,18 @@
 # creates the TEAPOT lattice, and modifies this lattice by inserting
 # injection nodes
 ##############################################################
-import orbit.core
+
 import math
 import os
 import pytest
 
 from orbit.teapot import teapot
-from bunch import Bunch
-from orbit.utils.orbit_mpi_utils import bunch_orbit_to_pyorbit, bunch_pyorbit_to_orbit
-from orbit.collimation import TeapotCollimatorNode, addTeapotCollimatorNode
-from orbit.space_charge.directforce2p5d import directforceAccNodes, directforceLatticeModifications
-from spacecharge import LSpaceChargeCalc
-from spacecharge import SpaceChargeForceCalc2p5D
-from orbit.space_charge.sc1d import addLongitudinalSpaceChargeNode, SC1D_AccNode
-from orbit.rf_cavities import RFNode, RFLatticeModifications
+from orbit.core.bunch import Bunch
+from orbit.utils.orbit_mpi_utils import bunch_pyorbit_to_orbit
+from orbit.space_charge.directforce2p5d import directforceLatticeModifications
+from orbit.core.spacecharge import SpaceChargeForceCalc2p5D
+from orbit.space_charge.sc1d import SC1D_AccNode
+from orbit.rf_cavities import RFNode
 
 print("Start.")
 

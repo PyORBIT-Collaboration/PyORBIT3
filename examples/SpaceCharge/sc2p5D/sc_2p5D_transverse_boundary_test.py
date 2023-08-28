@@ -5,14 +5,12 @@
 import sys
 import math
 import random
-import orbit.core
 
 random.seed(10)
-import orbit_mpi
+from orbit.core import orbit_mpi
 
-from bunch import Bunch
-from spacecharge import SpaceChargeCalc2p5D
-from spacecharge import Boundary2D
+from orbit.core.bunch import Bunch
+from orbit.core.spacecharge import SpaceChargeCalc2p5D, Boundary2D
 
 print("Start.")
 

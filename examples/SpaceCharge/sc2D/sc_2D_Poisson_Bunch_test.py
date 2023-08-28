@@ -10,12 +10,10 @@
 
 import sys
 import math
-import orbit.core
 
-from bunch import Bunch
+from orbit.core.bunch import Bunch
 
-from spacecharge import Grid2D
-from spacecharge import PoissonSolverFFT2D
+from orbit.core.spacecharge import Grid2D, PoissonSolverFFT2D
 
 print("Start.")
 

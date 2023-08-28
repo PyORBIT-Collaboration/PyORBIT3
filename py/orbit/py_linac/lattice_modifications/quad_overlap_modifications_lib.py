@@ -353,7 +353,7 @@ def GetNodeInAccSeqForPosition(accLattice, nodes, z):
     if z >= posAfter1:
         return (nodes[index1], index1, posBefore1, posAfter1)
     while index0 != index1:
-        index = (index0 + index1) / 2
+        index = (index0 + index1) // 2
         # print "debug z=",z," index0=",index0," index1=",index1," index=",index," (posBefore0, posAfter0)=",(posBefore0, posAfter0)," (posBefore1, posAfter1)=",(posBefore1, posAfter1)
         (posBefore, posAfter) = node_pos_dict[nodes[index]]
         if z < posBefore:

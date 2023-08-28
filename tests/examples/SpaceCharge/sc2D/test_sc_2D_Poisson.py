@@ -10,13 +10,11 @@
 
 import sys
 import math
-import orbit.core
 import pytest
 
-import orbit_mpi
+from orbit.core import orbit_mpi
 
-from spacecharge import Grid2D
-from spacecharge import PoissonSolverFFT2D
+from orbit.core.spacecharge import Grid2D, PoissonSolverFFT2D
 
 sizeX = 200
 sizeY = 200

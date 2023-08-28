@@ -1,4 +1,3 @@
-bin/pyORBIT
 build
 PyORBIT.egg-info
 .vscode
@@ -9,3 +8,4 @@ PyORBIT.egg-info
 *.o
 *.so
 .*.swp
+.eggs

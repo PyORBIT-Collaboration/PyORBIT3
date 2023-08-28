@@ -1,13 +1,10 @@
 import sys
 import math
-import orbit.core
 
-import orbit_mpi
+from orbit.core import orbit_mpi
 
-from bunch import Bunch
-from spacecharge import SpaceChargeCalc2p5D
-from spacecharge import PoissonSolverFFT2D
-from spacecharge import Boundary2D
+from orbit.core.bunch import Bunch
+from orbit.core.spacecharge import SpaceChargeCalc2p5D, PoissonSolverFFT2D, Boundary2D
 
 print("Start.")
 

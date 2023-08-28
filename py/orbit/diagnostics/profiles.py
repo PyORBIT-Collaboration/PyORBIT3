@@ -1,13 +1,12 @@
 import os
 import math
 
-from spacecharge import Grid1D
-from orbit_utils import BunchExtremaCalculator
+from orbit.core.spacecharge import Grid1D
+from orbit.core.orbit_utils import BunchExtremaCalculator
 
 # pyORBIT MPI module import
-import orbit_mpi
-from orbit_mpi import mpi_datatype
-from orbit_mpi import mpi_op
+from orbit.core import orbit_mpi
+from orbit.core.orbit_mpi import mpi_datatype, mpi_op
 
 
 def profiles(bunch, coord, histogram, steps=100, Min=1.0, Max=-1.0):

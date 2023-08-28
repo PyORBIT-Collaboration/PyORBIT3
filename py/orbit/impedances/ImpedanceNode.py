@@ -2,25 +2,18 @@
 Module. Includes classes for impedance accelerator nodes.
 """
 
-import sys
-import os
-import math
-
-# import the function that finalizes the execution
-from orbit.utils import orbitFinalize
 
 # import physical constants
 from orbit.utils import consts
 
 # import general accelerator elements and lattice
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
 
 # import teapot drift class
 from orbit.teapot import DriftTEAPOT
 
 # import impedance packages
-from impedances import LImpedance
-from impedances import TImpedance
+from orbit.core.impedances import LImpedance
+from orbit.core.impedances import TImpedance
 
 # -----------------------------------------------------------------------------
 # Node for LImpedance as function of node number

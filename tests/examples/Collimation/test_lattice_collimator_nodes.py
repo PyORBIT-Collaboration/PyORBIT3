@@ -11,7 +11,7 @@ import random
 from orbit.core.orbit_utils import random as orbit_random
 from orbit.teapot import teapot
 from orbit.teapot import DriftTEAPOT
-from bunch import Bunch
+from orbit.core.bunch import Bunch
 from orbit.utils.orbit_mpi_utils import bunch_orbit_to_pyorbit, bunch_pyorbit_to_orbit
 
 from orbit.collimation import TeapotCollimatorNode

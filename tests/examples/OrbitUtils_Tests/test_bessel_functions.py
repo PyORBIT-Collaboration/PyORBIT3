@@ -5,10 +5,9 @@
 import sys
 import math
 import pytest
-import orbit.core
 
 
-from orbit_utils import num_recipes
+from orbit.core.orbit_utils import num_recipes
 
 x = 1.0
 

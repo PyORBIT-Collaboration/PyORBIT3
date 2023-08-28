@@ -1,13 +1,12 @@
 import sys
 import math
-import orbit.core
 import pytest
 from decimal import Decimal
 
-import orbit_mpi
+from orbit.core import orbit_mpi
 
-from spacecharge import Grid3D
-from spacecharge import PoissonSolverFFT3D
+from orbit.core.spacecharge import Grid3D
+from orbit.core.spacecharge import PoissonSolverFFT3D
 
 
 def to_4_significant_digits(number):

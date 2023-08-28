@@ -6,16 +6,15 @@
 import sys
 import math
 import time
-import orbit.core
 import pytest
 
 # from orbit_utils import field_sources
-from field_sources import QuadFieldSource
-from field_sources import DipoleFieldSource
-from field_sources import MagnetFieldSourceGrid3D
+from orbit.core.field_sources import QuadFieldSource
+from orbit.core.field_sources import DipoleFieldSource
+from orbit.core.field_sources import MagnetFieldSourceGrid3D
 
-from orbit_utils import Matrix, PhaseVector
-from spacecharge import Grid3D
+from orbit.core.orbit_utils import Matrix, PhaseVector
+from orbit.core.spacecharge import Grid3D
 
 transfCoordsMatrix = Matrix(4, 4)
 transfCoordsMatrix.unit()

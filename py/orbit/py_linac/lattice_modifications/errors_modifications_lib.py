@@ -19,14 +19,10 @@ import sys
 import os
 import time
 import random
-import orbit.core
 
 # ---- we need MPI for Gaussian distribution errors to be sure the lattices
 # ---- are the same across all relevant node (the same communicator)
-import orbit_mpi
-from orbit_mpi import mpi_comm
-from orbit_mpi import mpi_datatype
-from orbit_mpi import mpi_op
+from orbit.core.orbit_mpi import mpi_comm, mpi_datatype, mpi_op, MPI_Bcast
 
 # import from orbit Python utilities
 from orbit.utils import orbitFinalize
@@ -196,7 +192,7 @@ class CoordinateDisplacementNodesModification(ErrorForNodesModification):
             while abs(value_tmp) > abs(value) * cut_off_level:
                 value_tmp = random.gauss(0.0, value)
             main_rank = 0
-            value_tmp = orbit_mpi.MPI_Bcast(value_tmp, mpi_datatype.MPI_DOUBLE, main_rank, comm)
+            value_tmp = MPI_Bcast(value_tmp, mpi_datatype.MPI_DOUBLE, main_rank, comm)
             errCntrl.setDisplacementParameter(key, value_tmp)
 
 
@@ -251,7 +247,7 @@ class LongitudinalDisplacementNodesModification(ErrorForNodesModification):
             while abs(shift_length_tmp) > abs(shift_length) * cut_off_level:
                 shift_length_tmp = random.gauss(0.0, shift_length)
             main_rank = 0
-            shift_length_tmp = orbit_mpi.MPI_Bcast(shift_length, mpi_datatype.MPI_DOUBLE, main_rank, comm)
+            shift_length_tmp = MPI_Bcast(shift_length, mpi_datatype.MPI_DOUBLE, main_rank, comm)
             errCntrl.setShiftLength(shift_length_tmp)
 
 
@@ -306,7 +302,7 @@ class StraightRotationZ_NodesModification(ErrorForNodesModification):
             while abs(angle_tmp) > abs(angle) * cut_off_level:
                 angle_tmp = random.gauss(0.0, angle)
             main_rank = 0
-            angle_tmp = orbit_mpi.MPI_Bcast(angle, mpi_datatype.MPI_DOUBLE, main_rank, comm)
+            angle_tmp = MPI_Bcast(angle, mpi_datatype.MPI_DOUBLE, main_rank, comm)
             errCntrl.setRotationAngle(angle_tmp)
 
 
@@ -377,7 +373,7 @@ class StraightRotationX_NodesModification(ErrorForNodesModification):
             while abs(angle_tmp) > abs(angle) * cut_off_level:
                 angle_tmp = random.gauss(0.0, angle)
             main_rank = 0
-            angle_tmp = orbit_mpi.MPI_Bcast(angle, mpi_datatype.MPI_DOUBLE, main_rank, comm)
+            angle_tmp = MPI_Bcast(angle, mpi_datatype.MPI_DOUBLE, main_rank, comm)
             errCntrl.setRotationAngle(angle_tmp)
 
 
@@ -448,7 +444,7 @@ class StraightRotationY_NodesModification(ErrorForNodesModification):
             while abs(angle_tmp) > abs(angle) * cut_off_level:
                 angle_tmp = random.gauss(0.0, angle)
             main_rank = 0
-            angle_tmp = orbit_mpi.MPI_Bcast(angle, mpi_datatype.MPI_DOUBLE, main_rank, comm)
+            angle_tmp = MPI_Bcast(angle, mpi_datatype.MPI_DOUBLE, main_rank, comm)
             errCntrl.setRotationAngle(angle_tmp)
 
 
@@ -496,7 +492,7 @@ class QuadFieldsErrorsDeployment(NamedObject, TypedObject):
             while abs(rel_err) > abs(relative_error) * cut_off_level:
                 rel_err = random.gauss(0.0, relative_error)
             main_rank = 0
-            rel_err = orbit_mpi.MPI_Bcast(rel_err, mpi_datatype.MPI_DOUBLE, main_rank, comm)
+            rel_err = MPI_Bcast(rel_err, mpi_datatype.MPI_DOUBLE, main_rank, comm)
             field = field_init * (1.0 + rel_err)
             quad.setParam("dB/dr", field)
 
@@ -563,6 +559,6 @@ class BendFieldNodesModification(ErrorForNodesModification):
         while abs(rel_err) > abs(relative_error) * cut_off_level:
             rel_err = random.gauss(0.0, relative_error)
         main_rank = 0
-        rel_err = orbit_mpi.MPI_Bcast(rel_err, mpi_datatype.MPI_DOUBLE, main_rank, comm)
+        rel_err = MPI_Bcast(rel_err, mpi_datatype.MPI_DOUBLE, main_rank, comm)
         self.relative_field_change = rel_err
         self.updateErrorParameters()

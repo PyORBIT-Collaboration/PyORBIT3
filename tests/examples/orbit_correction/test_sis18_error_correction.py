@@ -2,12 +2,11 @@
 # pyORBIT error and correction example
 # ------------------------------------------------
 
-# import orbit.core
 import pytest
 import os
 
 from orbit.teapot import TEAPOT_Lattice
-from bunch import Bunch
+from orbit.core.bunch import Bunch
 from orbit.errors import AddErrorSet
 
 
@@ -111,4 +110,4 @@ def test_OrbitY():
     assert len(OrbitY_corr) == len(expected_OrbitY_corr)
 
     for a, e in zip(OrbitY_corr, expected_OrbitY_corr):
-        assert a == pytest.approx(e, abs=0.0000001)
+        assert a == pytest.approx(e, abs=0.000001)

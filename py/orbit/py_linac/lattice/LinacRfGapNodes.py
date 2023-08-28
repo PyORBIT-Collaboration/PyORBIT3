@@ -5,24 +5,20 @@ The RF Cavities and gaps in them are different from the ring RF.
 
 import os
 import math
-import sys
-import orbit.core
-import orbit_mpi
 
 # ---- MPI module function and classes
-from orbit_mpi import mpi_comm, mpi_datatype, mpi_op
+from orbit.core.orbit_mpi import mpi_comm, mpi_datatype, MPI_Comm_rank, MPI_Bcast
 
 # import from orbit Python utilities
 from orbit.utils import orbitFinalize
-from orbit.utils import phaseNearTargetPhase, phaseNearTargetPhaseDeg
+from orbit.utils import phaseNearTargetPhase
 from orbit.utils import speed_of_light
 
 # import from orbit c++ utilities
 from orbit.core.orbit_utils import Polynomial, Function
 
 # from LinacAccLattice import Sequence
-from orbit.py_linac.lattice.LinacAccLatticeLib import Sequence
-from orbit.py_linac.lattice.LinacAccNodes import Drift, BaseLinacNode
+from orbit.py_linac.lattice.LinacAccNodes import BaseLinacNode
 
 # from linac import the RF gap classes
 from orbit.core.linac import BaseRfGap, MatrixRfGap, RfGapTTF, RfGapThreePointTTF, BaseRfGap_slow, RfGapTTF_slow, RfGapThreePointTTF_slow
@@ -31,14 +27,12 @@ from orbit.core.linac import BaseRfGap, MatrixRfGap, RfGapTTF, RfGapThreePointTT
 from orbit.py_linac.lattice.LinacAccNodes import AbstractRF_Gap
 
 # import teapot base functions from wrapper around C++ functions
-from orbit.teapot_base import TPB
 
 # Import the linac specific tracking from linac_tracking. This module has
 # the following functions duplicated the original TEAPOT functions
 # drift - linac drift tracking
 # quad1 - linac quad linear part of tracking
 # quad2 - linac quad non-linear part of tracking
-from orbit.core.linac import linac_tracking
 
 from orbit.core.bunch import Bunch
 
@@ -382,9 +376,9 @@ class RF_AxisFieldsStore:
         """
         if fl_name in cls.static_axis_field_dict:
             return cls.static_axis_field_dict[fl_name]
-        comm = orbit_mpi.mpi_comm.MPI_COMM_WORLD
+        comm = mpi_comm.MPI_COMM_WORLD
         data_type = mpi_datatype.MPI_DOUBLE
-        rank = orbit_mpi.MPI_Comm_rank(comm)
+        rank = MPI_Comm_rank(comm)
         main_rank = 0
         x_arr = []
         y_arr = []
@@ -399,8 +393,8 @@ class RF_AxisFieldsStore:
                     y = float(res_arr[1])
                     x_arr.append(x)
                     y_arr.append(y)
-        x_arr = orbit_mpi.MPI_Bcast(x_arr, data_type, main_rank, comm)
-        y_arr = orbit_mpi.MPI_Bcast(y_arr, data_type, main_rank, comm)
+        x_arr = MPI_Bcast(x_arr, data_type, main_rank, comm)
+        y_arr = MPI_Bcast(y_arr, data_type, main_rank, comm)
         function = Function()
         for ind in range(len(x_arr)):
             function.add(x_arr[ind], y_arr[ind])

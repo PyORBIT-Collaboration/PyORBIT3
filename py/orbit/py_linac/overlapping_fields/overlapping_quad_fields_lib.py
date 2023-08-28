@@ -23,7 +23,7 @@ from orbit.py_linac.lattice import AxisField_and_Quad_RF_Gap
 # import teapot base functions from wrapper around C++ functions
 from orbit.teapot_base import TPB
 
-from orbit_utils import Function
+from orbit.core.orbit_utils import Function
 
 
 class AbstractQuadFieldSourceFunction:

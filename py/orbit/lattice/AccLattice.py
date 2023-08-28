@@ -8,8 +8,6 @@ from ..utils import TypedObject
 from ..lattice import AccActionsContainer
 from ..lattice import AccNode
 
-import orbit
-
 
 class AccLattice(NamedObject, TypedObject):
     """

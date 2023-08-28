@@ -4,15 +4,14 @@
 import sys
 import math
 import random
-import orbit.core
 
 random.seed(10)
 
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer
 from orbit.teapot import teapot
 from orbit.space_charge.sc2p5d import scAccNodes, scLatticeModifications
-from bunch import Bunch
-from spacecharge import SpaceChargeCalc2p5D, Boundary2D
+from orbit.core.bunch import Bunch
+from orbit.core.spacecharge import SpaceChargeCalc2p5D, Boundary2D
 
 print("Start.")
 

@@ -3,7 +3,6 @@ import math
 import sys
 import os
 import random
-import orbit.core
 
 # import general accelerator elements and lattice
 from orbit.lattice import AccNode, AccActionsContainer
@@ -22,10 +21,9 @@ from orbit.bunch_generators import TwissContainer
 from orbit.bunch_generators import GaussDist3D
 from orbit.bunch_generators import TwissAnalysis
 
-from bunch import Bunch
-from bunch import BunchTwissAnalysis
+from orbit.core.bunch import Bunch, BunchTwissAnalysis
 
-from orbit_utils import Matrix, PhaseVector
+from orbit.core.orbit_utils import Matrix, PhaseVector
 
 random.seed(100)
 

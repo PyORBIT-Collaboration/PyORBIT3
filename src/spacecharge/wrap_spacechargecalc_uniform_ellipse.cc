@@ -80,7 +80,7 @@ extern "C" {
 			return cpp_ellipseFieldCalc->getPyWrapper();
 		}
 		//It will create a pyUniformEllipsoidFieldCalculator object
-		PyObject* mod = PyImport_ImportModule("spacecharge");
+		PyObject* mod = PyImport_ImportModule("_spacecharge");
 		PyObject* pyUniformEllipsoidFieldCalculator = PyObject_CallMethod(mod,const_cast<char*>("UniformEllipsoidFieldCalculator"),const_cast<char*>(""));
 		//delete the c++ reference to the internal UniformEllipsoidFieldCalculator inside pyUniformEllipsoidFieldCalculator and assign the new one
 		delete ((UniformEllipsoidFieldCalculator*)((pyORBIT_Object*) pyUniformEllipsoidFieldCalculator)->cpp_obj);

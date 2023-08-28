@@ -19,8 +19,7 @@ from orbit.py_linac.lattice.LinacAccNodes import BaseLinacNode, Drift, Quad
 from orbit.teapot_base import TPB
 
 # from linac import the RF gap classes
-from linac import RfGapThreePointTTF
-from linac import RfGapThreePointTTF_slow
+from orbit.core.linac import RfGapThreePointTTF, RfGapThreePointTTF_slow
 
 
 class AxisField_and_Quad_RF_Gap(AbstractRF_Gap):

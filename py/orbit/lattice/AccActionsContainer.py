@@ -3,7 +3,6 @@ import os
 
 from ..utils import orbitFinalize
 from ..utils import NamedObject
-import orbit
 
 
 class AccActionsContainer(NamedObject):

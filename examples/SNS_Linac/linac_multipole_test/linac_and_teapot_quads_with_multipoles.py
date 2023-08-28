@@ -21,7 +21,7 @@ from orbit.py_linac.lattice import Quad
 
 from orbit.teapot import QuadTEAPOT
 
-from bunch import Bunch
+from orbit.core.bunch import Bunch
 
 # ------------------------------------------
 # Proton bunch with 1 GeV energy

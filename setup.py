@@ -25,7 +25,7 @@ for folder in os.walk("src"):
         print(folder[0])
 
 extension_mod = Extension(
-    "_orbit",
+    "orbit.core._orbit",
     sources=src,
     libraries=["fftw3"],
     include_dirs=include,
@@ -39,15 +39,42 @@ for folder in os.walk("py/orbit"):
     path = path.split(os.sep)
     packages.append(".".join(path[1:]))
 
+package_dir = {
+    "orbit": "py/orbit",
+    "orbit.core": "src/libmain/orbit",
+}
+
+# This snippet generates the package structure of the orbit.core modules
+# including the __init__.py file for each module
+# The purpose is to be able to load individual modules from orbit.core in a
+# Pythonic fashion.
+core_modules = [
+    "aperture",
+    "orbit_mpi",
+    "trackerrk4",
+    "error_base",
+    "bunch",
+    "teapot_base",
+    "linac",
+    "spacecharge",
+    "orbit_utils",
+    "foil",
+    "collimator",
+    "field_sources",
+    "rfcavities",
+    "impedances",
+    "fieldtracker",
+]
+for mod in core_modules:
+    packages.append(f"orbit.core.{mod}")
+    package_dir.update({f"orbit.core.{mod}": "src/libmain/module_template"})
+
 # Define the setup parameters
 setup(
-    ext_package="orbit.core",
     ext_modules=[extension_mod],
-    package_dir={
-        "orbit.core": "src/libmain/orbit",
-        "orbit": "py/orbit",
-    },
+    package_dir=package_dir,
     packages=packages,
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
+    scripts=["bin/pyORBIT"],
 )
