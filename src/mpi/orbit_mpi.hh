@@ -144,9 +144,9 @@ extern "C" {
 //--------------------------------------------------------------
 
 
-int ORBIT_MPI_Init(int *len, char ***ch);
+int ORBIT_MPI_Init();
 int ORBIT_MPI_Initialized(int *init);
-int ORBIT_MPI_Finalize();
+void ORBIT_MPI_Finalize();
 int ORBIT_MPI_Finalize(const char* message);
 int ORBIT_MPI_Get_processor_name(char *name, int* len);
 double ORBIT_MPI_Wtime(void);

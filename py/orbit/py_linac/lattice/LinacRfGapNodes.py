@@ -6,6 +6,8 @@ The RF Cavities and gaps in them are different from the ring RF.
 import os
 import math
 import sys
+import orbit.core
+import orbit_mpi
 
 # ---- MPI module function and classes
 from orbit.core.orbit_mpi import mpi_comm, mpi_datatype, mpi_op, MPI_Comm_rank, MPI_Bcast
