@@ -18,7 +18,7 @@ This guide was tested on following configurations
 First step is to clone the source code:
 
 ```bash
-git clone path_to_source.git
+git clone https://gitlab.esss.lu.se/ess-crs/pyorbit3.git
 ```
 
 You will also need to install the relevant packages in order to use PyOrbit. You can either do this through conda, or by installing the packages with your preferred package manager.
@@ -28,7 +28,7 @@ You will also need to install the relevant packages in order to use PyOrbit. You
 First of all make sure you have conda installed. Then run the following:
 
 ```bash
-cd pyorbit3/
+cd pyorbit3
 conda env create -n pyorbit --file environment.yml
 conda activate pyorbit
 ```
@@ -57,23 +57,17 @@ You need only build the project after a change is made to the core c++ or python
 
 ## 3. Run SNS linac example
 
-Please ensure that the python part of PyOrbit should be in PYTHONPATH. This is very important as it otherwise will not run and it can be set as follows:
-
-```bash
-export PYTHONPATH=/path/to/pyorbit3
-```
-
-Then, navigate to your examples directory:
+Navigate to your examples directory:
 
 ```bash
 cd examples/SNS_Linac/pyorbit3_linac_model/
-python pyorbit3_sns_linac_mebt_hebt2_test.py
+python pyorbit3_sns_linac_mebt_hebt2.py
 ```
 
 Additionally if you would like to run the example on multiple MPI nodes you can use the following:
 
 ```bash
-mpi run -n 4 python pyorbit3_sns_linac_mebt_hebt2_test.py
+mpirun -n 4 python pyorbit3_sns_linac_mebt_hebt2.py
 ```
 
 In the above line you can change the number 4 for however many MPI nodes you would like to test it on.
