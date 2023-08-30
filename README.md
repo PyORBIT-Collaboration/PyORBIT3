@@ -13,17 +13,31 @@ This guide was tested on following configurations
 | Apple M2      | arm64        | macOS 13.3.1 | 3.9.6   | clang-14.0.3 |
 
 
-## 1. Installation
+## 1. Installation from source
 
 First step is to clone the source code:
 
 ```bash
-git clone https://gitlab.esss.lu.se/ess-crs/pyorbit3.git
+git clone https://github.com/PyORBIT-Collaboration/PyORBIT3.git
+```
+
+Make sure you have a C++ compiler.
+
+On Debian based distributions:
+```
+sudo apt-get update
+sudo apt-get install build-essential
+```
+
+On RedHat based distributions
+```
+sudo yum update
+sudo yum group install "Development Tools"
 ```
 
 You will also need to install the relevant packages in order to use PyOrbit. You can either do this through conda, or by installing the packages with your preferred package manager.
 
-### Conda Setup:
+### Conda Setup (Recommended):
 
 First of all make sure you have conda installed. Then run the following:
 
@@ -41,6 +55,21 @@ Make sure that you have the correct python version installed. We require python=
 - Matplotlib
 - Numpy & Scipy
 - Mpich
+
+On Debian based distributions:
+```
+sudo apt-get install python-dev libmpich-dev mpich  zlib1g-dev libfftw3-dev
+```
+
+On RedHat based distributions
+```
+sudo yum install python-devel mpich mpich-devel zlib-devel fftw-devel
+```
+
+Then install the Python dependencies using PIP:
+```
+pip install numpy scipy matplotlib
+```
 
 For both of these methods these are the minimum requirements you need to run the examples. Additional packages will be required if you would like to modify and deploy to GitHub. These packages are pre-commit, flake8 and pytest to name a few.
 
