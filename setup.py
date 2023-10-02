@@ -24,13 +24,21 @@ for folder in os.walk("src"):
         include.append(folder[0])
         print(folder[0])
 
+if "CC" in os.environ and "mpi" in os.environ["CC"]:
+    if "CXX" not in os.environ or "mpi" not in os.environ["CXX"]:
+        raise ValueError("If you configure CC for MPI, you also need to set CXX correspondingly")
+    print("MPI Enabled")
+    USE_MPI = 1
+else:
+    print("MPI Disabled")
+    USE_MPI = 0
 extension_mod = Extension(
     "orbit.core._orbit",
     sources=src,
     libraries=["fftw3"],
     include_dirs=include,
-    extra_compile_args=["-DUSE_MPI=1", "-fPIC", "-lmpi", "-lmpicxx", "-Wl,--enable-new-dtags"],
-    extra_link_args=["-lfftw3", "-lm", "-lmpi", "-lmpicxx", "-fPIC"],
+    extra_compile_args=[f"-DUSE_MPI=${USE_MPI}", "-fPIC", "-Wl,--enable-new-dtags"],
+    extra_link_args=["-lfftw3", "-lm", "-fPIC"],
 )
 
 packages = ["orbit.core"]
