@@ -27,7 +27,15 @@ run-tests:
         path: coverage.xml
 
 
+build-pypi-package-py310:
+  extends: build-pypi-package
+  image: continuumio/miniconda3:23.5.2-0
+  before_script:
+    - conda install python=3.10
+    - conda install -c conda-forge gcc gxx fftw mpich
+
 build-pypi-package:
   image: continuumio/miniconda3:23.5.2-0
   before_script:
+    - conda install python=3.11
     - conda install -c conda-forge gcc gxx fftw mpich
