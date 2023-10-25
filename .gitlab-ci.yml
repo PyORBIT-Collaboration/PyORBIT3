@@ -38,6 +38,7 @@ build-pypi-package-py310_centos:
   extends: build-pypi-package
   image: conda/miniconda3-centos7:latest
   before_script:
+    - conda update -n base -c defaults conda
     - conda create -n python310 python=3.10
     - conda init bash
     - source ~/.bashrc
