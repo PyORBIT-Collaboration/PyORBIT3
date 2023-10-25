@@ -82,6 +82,12 @@ python setup.py clean
 pip install .
 ```
 
+By default you do not compile with MPI enabled. To compile with MPI, set CC and CXX environment variables for the pip command:
+
+```bash
+CC=mpicc CXX=mpicxx pip install .
+```
+
 You need only build the project after a change is made to the core c++ or python classes.
 
 ## 3. Run SNS linac example

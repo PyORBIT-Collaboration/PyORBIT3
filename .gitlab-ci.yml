@@ -4,6 +4,10 @@ include:
   - remote: "https://gitlab.esss.lu.se/ics-infrastructure/gitlab-ci-yml/raw/master/ArtifactoryPyPI.gitlab-ci.yml"
   - remote: "https://gitlab.esss.lu.se/ics-infrastructure/gitlab-ci-yml/raw/master/SonarScanner.gitlab-ci.yml"
 
+variables:
+  CC: "mpicc"
+  CXX: "mpic++"
+
 run-tests:
   tags:
     - docker
