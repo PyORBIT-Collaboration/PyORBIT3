@@ -40,7 +40,7 @@ build-pypi-package-py310:
     - conda init bash
     - source ~/.bashrc
     - conda activate python310
-    - conda install -y -c conda-forge git fftw mpich
+    - conda install -y -c conda-forge git fftw mpich mpich-mpicc mpich-mpicxx
 
 build-pypi-package:
   image: conda/miniconda3-centos7:latest
@@ -51,4 +51,4 @@ build-pypi-package:
     - conda init bash
     - source ~/.bashrc
     - conda activate python311
-    - conda install -y -c conda-forge git fftw mpich
+    - conda install -y -c conda-forge git fftw mpich mpich-mpicc mpich-mpicxx
