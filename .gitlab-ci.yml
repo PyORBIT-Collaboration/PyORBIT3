@@ -43,7 +43,7 @@ build-pypi-package-py310_centos:
     - conda init bash
     - source ~/.bashrc
     - conda activate python310
-    - conda install -y -c conda-forge gcc gxx fftw mpich
+    - conda install -y -c conda-forge gcc git gxx fftw mpich
 
 build-pypi-package:
   image: continuumio/miniconda3:23.5.2-0
