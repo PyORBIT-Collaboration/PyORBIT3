@@ -30,19 +30,21 @@ build-pypi-package-py310:
   extends: build-pypi-package
   image: conda/miniconda3-centos7:latest
   before_script:
-    - conda update -n base -c defaults conda
-    - conda create -n python310 python=3.10
+    - yum install -y gcc gcc-c++
+    - conda update -y -n base -c defaults conda
+    - conda create -y -n python310 python=3.10
     - conda init bash
     - source ~/.bashrc
     - conda activate python310
-    - conda install -y -c conda-forge gcc git gxx fftw mpich
+    - conda install -y -c conda-forge git fftw mpich
 
 build-pypi-package:
   image: conda/miniconda3-centos7:latest
   before_script:
-    - conda update -n base -c defaults conda
-    - conda create -n python311 python=3.11
+    - yum install -y gcc gcc-c++
+    - conda update -y -n base -c defaults conda
+    - conda create -y -n python311 python=3.11
     - conda init bash
     - source ~/.bashrc
     - conda activate python311
-    - conda install -c conda-forge gcc git gxx fftw mpich
+    - conda install -y -c conda-forge git fftw mpich
