@@ -152,7 +152,6 @@ class SNS_LinacLatticeFactory:
                 if node_type == "QUAD":
                     accNode = Quad(node_da.stringValue("name"))
                     accNode.setParam("dB/dr", params_da.doubleValue("field"))
-                    accNode.setParam("field", params_da.doubleValue("field"))
                     accNode.setLength(node_length)
                     if params_da.hasAttribute("poles"):
                         # accNode.setParam("poles",[int(x) for x in eval(params_da.stringValue("poles"))])
