@@ -106,11 +106,17 @@ def main():
     parser = argparse.ArgumentParser(epilog=epilog_text, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--python', default=None, type=str,
                         help='Python interpreter to use')
+    parser.add_argument('--mpi', default=None, type=str,
+                        help='Path to MPI installation')
 
     parser.add_argument('venv_name', default='.venv', type=str, nargs='?',
                         help='Name of virtual environment')
 
     args = parser.parse_args()
+
+    if args.mpi:
+        SEARCH.insert(0, args.mpi)
+
     venv_name = args.venv_name
     python = args.python if args.python else sys.executable
 

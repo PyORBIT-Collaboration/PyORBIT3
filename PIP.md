@@ -34,6 +34,13 @@ python3 install/create_env.py <PATH_TO_YOUR_ENV>
 It makes sense to put your virtual environment outside PyORBIT directory.
 The script should find MPI and FFTW and add them to corresponding environment variables. These variables are set only when your virtual enviroment is activated.
 
+Currently, it will need an MPI distribution that supports **mpicc -showme** option. 
+MPICH doesn't support it, OPENMPI does. So if you have MPICH installed along with OPENMPI you need to specify that you will need to use OPENMPI.
+
+```
+python3 install/create_env.py --mpi /usr/lib64/openmpi <PATH_TO_YOUR_ENV>
+```
+
 Activate your environment
 ```
 . <PATH_TO_YOUR_ENV>/bin/activate

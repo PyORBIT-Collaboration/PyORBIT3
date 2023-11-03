@@ -69,6 +69,8 @@ extension_mod = Extension(
     libraries=libraries,
     include_dirs=include_dirs,
     library_dirs=library_dirs,
+    # unclear when next line is needed
+    runtime_library_dirs=library_dirs,
     extra_compile_args=extra_compile_args + ["-Wl,--enable-new-dtags"],
     extra_link_args=["-lm", "-fPIC"],
 )
