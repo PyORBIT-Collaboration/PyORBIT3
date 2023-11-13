@@ -1,10 +1,49 @@
 from setuptools import Extension, setup
-from pathlib import Path
 import os
+from pathlib import Path
+import subprocess
 
-# main dir is special
-# we need it in include but not the actual main.cc
-# libmain contains python package def, we don't want it in C++ sources
+
+def parse_options(line):
+    library_dirs = []
+    libraries = []
+    include_dirs = []
+    compile_options = []
+    for option in line.split(' ')[1:]:
+        if option.startswith('-L'):
+            library_dirs.append(option[2:])
+        elif option.startswith('-l'):
+            libraries.append(option[2:])
+        elif option.startswith('-I'):
+            include_dirs.append(option[2:])
+        else:
+            compile_options.append(option[:])
+    return library_dirs, libraries, include_dirs, compile_options
+
+
+library_dirs, libraries, include_dirs, extra_compile_args = [], [], [], []
+
+
+mpi_compiler = os.environ.get('MPICC', default='mpicc')
+
+if mpi_compiler:
+    try:
+        result = subprocess.check_output([mpi_compiler, '-showme']).decode().strip()
+        options = parse_options(result)
+        library_dirs, libraries, include_dirs, extra_compile_args = options
+    except Exception:
+        print("MPICC not valid")
+        library_dirs, libraries, include_dirs, extra_compile_args = [], [], [], ["-DUSE_MPI=0"]
+        print('MPI not found will be compiled without MPI support')
+
+fftw_include = os.environ.get('FFTW3_INCLUDE_DIR', default=None)
+if fftw_include:
+    include_dirs.append(fftw_include)
+fftw_lib = os.environ.get('FFTW3_LIB_DIR', default=None)
+if fftw_lib:
+    library_dirs.append(fftw_lib)
+libraries += ['fftw3']
+
 
 src = []
 
@@ -17,20 +56,23 @@ for f in Path("src").rglob("*.cc"):
     if include:
         src.append(str(f))
 
-include = []
+
 for folder in os.walk("src"):
     excludes = ["src", "src/libmain", "src/libmain/orbit"]
     if folder[0] not in excludes:
-        include.append(folder[0])
+        include_dirs.append(folder[0])
         print(folder[0])
 
 extension_mod = Extension(
     "orbit.core._orbit",
     sources=src,
-    libraries=["fftw3"],
-    include_dirs=include,
-    extra_compile_args=["-DUSE_MPI=1", "-fPIC", "-lmpi", "-lmpicxx", "-Wl,--enable-new-dtags"],
-    extra_link_args=["-lfftw3", "-lm", "-lmpi", "-lmpicxx", "-fPIC"],
+    libraries=libraries,
+    include_dirs=include_dirs,
+    library_dirs=library_dirs,
+    # unclear when next line is needed
+    runtime_library_dirs=library_dirs,
+    extra_compile_args=extra_compile_args + ["-Wl,--enable-new-dtags"],
+    extra_link_args=["-lm", "-fPIC"],
 )
 
 packages = ["orbit.core"]
@@ -69,6 +111,7 @@ for mod in core_modules:
     packages.append(f"orbit.core.{mod}")
     package_dir.update({f"orbit.core.{mod}": "src/libmain/module_template"})
 
+
 # Define the setup parameters
 setup(
     ext_modules=[extension_mod],
@@ -78,3 +121,4 @@ setup(
     setup_requires=["setuptools_scm"],
     scripts=["bin/pyORBIT"],
 )
+
