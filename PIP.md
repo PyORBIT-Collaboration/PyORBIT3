@@ -46,4 +46,9 @@ Activate your environment
 . <PATH_TO_YOUR_ENV>/bin/activate
 ```
 
+Optionally, if you want to imitate development environment, you can create a symlink from your *py/orbit* to your *site-packages*. If you do that and later use IDE like PyCharm, you will be able to edit PyORBIT python files (not C++) in place while working on your user script. All these modifications will happen in *py/orbit* development library.
+```
+ln -s $(pwd)/py/orbit <PATH_TO_YOUR_ENV>/lib/<YOUR-PYTHON-VERSION>/site-packages/orbit
+```
+
 You are ready to [build](README.md#2-build)

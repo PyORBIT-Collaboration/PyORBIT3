@@ -1,4 +1,5 @@
 build
+py/orbit/core
 PyORBIT.egg-info
 .vscode
 **/*.pyc
