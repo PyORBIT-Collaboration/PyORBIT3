@@ -8,9 +8,9 @@
 ## - addTeapotBumpNode - Adds a teapot bump node to a teapot lattice
 ## - TeapotSimpleBumpNode - Creates a teapot instance of a simple bump nodes
 
-from . import simpleBump, close_orbit_bumps, TDsimpleBump
-from BumpLatticeModifications import addTeapotBumpNode
-from TeapotBumpNode import TeapotSimpleBumpNode, TDTeapotSimpleBumpNode
+from .bumps import simpleBump, close_orbit_bumps, TDsimpleBump
+from .BumpLatticeModifications import addTeapotBumpNode
+from .TeapotBumpNode import TeapotSimpleBumpNode, TDTeapotSimpleBumpNode
 
 __all__ = []
 __all__.append("addTeapotBumpNode")
