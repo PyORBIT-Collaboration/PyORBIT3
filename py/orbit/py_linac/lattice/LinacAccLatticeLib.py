@@ -434,11 +434,11 @@ class RF_Cavity(NamedObject, ParamsDictObject):
 
     def setAmp(self, Amp):
         """Sets the Amp for RF cavity."""
-        self.setParam("Amp", Amp)
+        self.setParam("amp", Amp)
 
     def getAmp(self):
         """Returns the Amp for RF cavity."""
-        return self.getParam("Amp")
+        return self.getParam("amp")
 
     def setFrequency(self, freq):
         """Sets the frequency in Hz."""
