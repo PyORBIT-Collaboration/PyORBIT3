@@ -47,6 +47,11 @@ conda env create -n pyorbit --file environment.yml
 conda activate pyorbit
 ```
 
+On macOS, you also need to install the `compilers` conda package if you want MPI support:
+```bash
+conda install -c conda-forge compilers
+```
+
 ### Manual Setup:
 
 Make sure that you have the correct python version installed. We require python=3.10. Further the following packages are required, use your preferred packet manager to install them:
@@ -78,7 +83,7 @@ For both of these methods these are the minimum requirements you need to run the
 After you have installed everything, the next step is to build. In order to build the project, navigate to the root pyorbit directory and run the following:
 
 ```bash
-python setup.py clean
+python setup.py clean --all
 pip install .
 ```
 
