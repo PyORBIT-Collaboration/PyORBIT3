@@ -308,13 +308,15 @@ class Quad(LinacMagnetNode):
         self.setType("linacQuad")
 
         def fringeIN(node, paramsDict):
-            # B*rho = 3.335640952*momentum [T*m] if momentum in GeV/c
+            # B*rho = 3.335640952*momentum/charge [T*m] if momentum in GeV/c
             usageIN = node.getUsage()
             if not usageIN:
                 return
             bunch = paramsDict["bunch"]
+            charge = bunch.charge()
             momentum = bunch.getSyncParticle().momentum()
-            kq = node.getParam("dB/dr") / (3.335640952 * momentum)
+            # ---- The charge sign will be accounted for inside tracking module functions.
+            kq = node.getParam("dB/dr") / bunch.B_Rho()
             poleArr = node.getParam("poles")
             klArr = node.getParam("kls")
             skewArr = node.getParam("skews")
@@ -329,12 +331,15 @@ class Quad(LinacMagnetNode):
                 TPB.multpfringeIN(bunch, pole, k, skew)
 
         def fringeOUT(node, paramsDict):
+            # B*rho = 3.335640952*momentum/charge [T*m] if momentum in GeV/c
             usageOUT = node.getUsage()
             if not usageOUT:
                 return
             bunch = paramsDict["bunch"]
+            charge = bunch.charge()
             momentum = bunch.getSyncParticle().momentum()
-            kq = node.getParam("dB/dr") / (3.335640952 * momentum)
+            # ---- The charge sign will be accounted for inside tracking module functions
+            kq = node.getParam("dB/dr") / bunch.B_Rho()
             poleArr = node.getParam("poles")
             klArr = node.getParam("kls")
             skewArr = node.getParam("skews")
@@ -393,18 +398,18 @@ class Quad(LinacMagnetNode):
         for i in range(nParts):
             self.setLength(lengthStep, i)
         """
-		#=============================================
-		# This is an old TEAPOT-like implementation
-		# of the Quad slicing.
-		#=============================================
-		lengthIN = (self.getLength()/(nParts - 1))/2.0
-		lengthOUT = (self.getLength()/(nParts - 1))/2.0
-		lengthStep = lengthIN + lengthOUT
-		self.setLength(lengthIN,0)
-		self.setLength(lengthOUT,nParts - 1)
-		for i in range(nParts-2):
-			self.setLength(lengthStep,i+1)
-		"""
+        #=============================================
+        # This is an old TEAPOT-like implementation
+        # of the Quad slicing.
+        #=============================================
+        lengthIN = (self.getLength()/(nParts - 1))/2.0
+        lengthOUT = (self.getLength()/(nParts - 1))/2.0
+        lengthStep = lengthIN + lengthOUT
+        self.setLength(lengthIN,0)
+        self.setLength(lengthOUT,nParts - 1)
+        for i in range(nParts-2):
+            self.setLength(lengthStep,i+1)
+        """
 
     def track(self, paramsDict):
         """
@@ -412,8 +417,13 @@ class Quad(LinacMagnetNode):
         of the AccNode class track(probe) method.
         """
         bunch = paramsDict["bunch"]
+        charge = bunch.charge()
         momentum = bunch.getSyncParticle().momentum()
-        kq = self.getParam("dB/dr") / (3.335640952 * momentum)
+        # ---- The sign of dB/dr will be delivered to tracking module
+        # ---- functions as kq.
+        # ---- The charge sign will be accounted for inside tracking module
+        # ---- functions.
+        kq = self.getParam("dB/dr") / bunch.B_Rho()
         nParts = self.getnParts()
         index = self.getActivePartIndex()
         length = self.getLength(index)
@@ -447,33 +457,33 @@ class Quad(LinacMagnetNode):
         self.tracking_module.quad2(bunch, step / 4)
         self.tracking_module.quad1(bunch, step / 4, kq)
         """
-		#=============================================
-		# This is an old TEAPOT-like implementation
-		# of the Quad tracking.
-		#=============================================
-		if(index == 0):
-			self.tracking_module.quad1(bunch, length, kq)
-			return
-		if(index > 0 and index < (nParts-1)):
-			self.tracking_module.quad2(bunch, length/2.0)
-			for i in range(len(poleArr)):
-				pole = poleArr[i]
-				kl = klArr[i]/(nParts - 1)
-				skew = skewArr[i]
-				TPB.multp(bunch,pole,kl,skew)
-			self.tracking_module.quad2(bunch, length/2.0)
-			self.tracking_module.quad1(bunch, length, kq)
-			return
-		if(index == (nParts-1)):
-			self.tracking_module.quad2(bunch, length)
-			for i in range(len(poleArr)):
-				pole = poleArr[i]
-				kl = klArr[i]*kq*length/(nParts - 1)
-				skew = skewArr[i]
-				TPB.multp(bunch,pole,kl,skew)
-			self.tracking_module.quad2(bunch, length)
-			self.tracking_module.quad1(bunch, length, kq)
-		"""
+        #=============================================
+        # This is an old TEAPOT-like implementation
+        # of the Quad tracking.
+        #=============================================
+        if(index == 0):
+            self.tracking_module.quad1(bunch, length, kq)
+            return
+        if(index > 0 and index < (nParts-1)):
+            self.tracking_module.quad2(bunch, length/2.0)
+            for i in range(len(poleArr)):
+                pole = poleArr[i]
+                kl = klArr[i]/(nParts - 1)
+                skew = skewArr[i]
+                TPB.multp(bunch,pole,kl,skew)
+            self.tracking_module.quad2(bunch, length/2.0)
+            self.tracking_module.quad1(bunch, length, kq)
+            return
+        if(index == (nParts-1)):
+            self.tracking_module.quad2(bunch, length)
+            for i in range(len(poleArr)):
+                pole = poleArr[i]
+                kl = klArr[i]*kq*length/(nParts - 1)
+                skew = skewArr[i]
+                TPB.multp(bunch,pole,kl,skew)
+            self.tracking_module.quad2(bunch, length)
+            self.tracking_module.quad1(bunch, length, kq)
+        """
         return
 
     def getTotalField(self, z):
@@ -537,7 +547,17 @@ class Bend(LinacMagnetNode):
                             TPB.multpfringeIN(bunch, pole, kl, skew)
                     frinout = 1
                     TPB.wedgerotate(bunch, e, frinout)
-                TPB.wedgebendCF(bunch, e, inout, rho, len(poleArr), poleArr, klArr, skewArr, nParts - 1)
+                TPB.wedgebendCF(
+                    bunch,
+                    e,
+                    inout,
+                    rho,
+                    len(poleArr),
+                    poleArr,
+                    klArr,
+                    skewArr,
+                    nParts - 1,
+                )
             else:
                 if usageIN:
                     TPB.bendfringeIN(bunch, rho)
@@ -560,7 +580,17 @@ class Bend(LinacMagnetNode):
             nParts = paramsDict["parentNode"].getnParts()
             if e != 0.0:
                 inout = 1
-                TPB.wedgebendCF(bunch, e, inout, rho, len(poleArr), poleArr, klArr, skewArr, nParts - 1)
+                TPB.wedgebendCF(
+                    bunch,
+                    e,
+                    inout,
+                    rho,
+                    len(poleArr),
+                    poleArr,
+                    klArr,
+                    skewArr,
+                    nParts - 1,
+                )
                 if usageOUT:
                     frinout = 0
                     TPB.wedgerotate(bunch, -e, frinout)
@@ -697,11 +727,11 @@ class DCorrectorH(LinacMagnetNode):
         length = self.getParam("effLength") / nParts
         field = self.getParam("B")
         bunch = paramsDict["bunch"]
+        charge = bunch.charge()
         syncPart = bunch.getSyncParticle()
         momentum = syncPart.momentum()
         # dp/p = Q*c*B*L/p p in GeV/c c = 2.99792*10^8/10^9
-        # Q is used inside kick-method
-        kick = field * length * 0.299792 / momentum
+        kick = -field * charge * length * 0.299792 / momentum
         self.tracking_module.kick(bunch, kick, 0.0, 0.0)
 
 
@@ -742,11 +772,11 @@ class DCorrectorV(LinacMagnetNode):
         length = self.getParam("effLength") / nParts
         field = self.getParam("B")
         bunch = paramsDict["bunch"]
+        charge = bunch.charge()
         syncPart = bunch.getSyncParticle()
         momentum = syncPart.momentum()
         # dp/p = Q*c*B*L/p p in GeV/c, c = 2.99792*10^8/10^9
-        # Q is used inside kick-method
-        kick = field * length * 0.299792 / momentum
+        kick = field * charge * length * 0.299792 / momentum
         self.tracking_module.kick(bunch, 0, kick, 0.0)
 
 
@@ -803,6 +833,7 @@ class ThickKick(LinacMagnetNode):
         The Thick Kick  class implementation of the AccNode class track(probe) method.
         """
         bunch = paramsDict["bunch"]
+        charge = bunch.charge()
         momentum = bunch.getSyncParticle().momentum()
         Bx = self.getParam("Bx")
         By = self.getParam("By")
@@ -812,9 +843,8 @@ class ThickKick(LinacMagnetNode):
         # print "debug name =",self.getName()," Bx=",Bx," By=",By,"  L=",self.getLength(index)," index=",index
         # ==========================================
         # dp/p = Q*c*B*L/p p in GeV/c, c = 2.99792*10^8/10^9
-        # Q is used inside kick-method
-        kickY = Bx * length * 0.299792 / momentum
-        kickX = By * length * 0.299792 / momentum
+        kickY = +Bx * charge * length * 0.299792 / momentum
+        kickX = -By * charge * length * 0.299792 / momentum
         self.tracking_module.drift(bunch, length / 2.0)
         self.tracking_module.kick(bunch, kickX, kickY, 0.0)
         self.tracking_module.drift(bunch, length / 2.0)
