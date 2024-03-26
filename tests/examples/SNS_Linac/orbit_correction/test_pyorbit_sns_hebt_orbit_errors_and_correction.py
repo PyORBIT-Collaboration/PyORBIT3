@@ -150,24 +150,24 @@ print("Done.")
 
 
 def test_dcvs():
-    expected_dcvs_string = """DCV = HEBT_Mag:DCV05 B [T] =  0.00067
+    expected_dcvs_string = """DCV = HEBT_Mag:DCV05 B [T] =  0.00064
 DCV = HEBT_Mag:DCV07 B [T] =  0.00026
-DCV = HEBT_Mag:DCV15 B [T] = -0.00043
-DCV = HEBT_Mag:DCV17 B [T] =  0.00034
-DCV = HEBT_Mag:DCV21 B [T] =  0.00069
-DCV = HEBT_Mag:DCV23 B [T] = -0.00047
-DCV = HEBT_Mag:DCV29 B [T] = -0.00142
+DCV = HEBT_Mag:DCV15 B [T] = -0.00039
+DCV = HEBT_Mag:DCV17 B [T] =  0.00044
+DCV = HEBT_Mag:DCV21 B [T] =  0.00068
+DCV = HEBT_Mag:DCV23 B [T] = -0.00046
+DCV = HEBT_Mag:DCV29 B [T] = -0.00141
 DCV = HEBT_Mag:DCV31 B [T] =  0.00104\n"""
     assert dcvs_string == expected_dcvs_string
 
 
 def test_dchs():
-    expected_dcvs_string = """DCH = HEBT_Mag:DCH06 B [T] =  0.00123
-DCH = HEBT_Mag:DCH08 B [T] = -0.00010
-DCH = HEBT_Mag:DCH14 B [T] =  0.00001
-DCH = HEBT_Mag:DCH16 B [T] = -0.00033
-DCH = HEBT_Mag:DCH22 B [T] =  0.00041
-DCH = HEBT_Mag:DCH24 B [T] = -0.00119
-DCH = HEBT_Mag:DCH28 B [T] =  0.00041
-DCH = HEBT_Mag:DCH30 B [T] =  0.00027\n"""
+    expected_dcvs_string = """DCH = HEBT_Mag:DCH06 B [T] = -0.00123
+DCH = HEBT_Mag:DCH08 B [T] =  0.00010
+DCH = HEBT_Mag:DCH14 B [T] = -0.00002
+DCH = HEBT_Mag:DCH16 B [T] =  0.00036
+DCH = HEBT_Mag:DCH22 B [T] = -0.00040
+DCH = HEBT_Mag:DCH24 B [T] =  0.00118
+DCH = HEBT_Mag:DCH28 B [T] = -0.00041
+DCH = HEBT_Mag:DCH30 B [T] = -0.00027\n"""
     assert dchs_string == expected_dcvs_string

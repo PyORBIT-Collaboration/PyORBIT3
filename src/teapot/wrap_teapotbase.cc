@@ -26,7 +26,7 @@ extern "C"
     {
         PyObject* pyBunch;
         double anglexy;
-        if(!PyArg_ParseTuple(	args, "Od:rotatexy",
+        if(!PyArg_ParseTuple(args, "Od:rotatexy",
                              &pyBunch, &anglexy))
         {
             error("teapotbase - rotatexy - cannot parse arguments!");
@@ -42,7 +42,7 @@ extern "C"
     {
         PyObject* pyBunch;
         double length;
-        if(!PyArg_ParseTuple(	args, "Od:wrapbunch",
+        if(!PyArg_ParseTuple(args, "Od:wrapbunch",
                              &pyBunch, &length))
         {
             error("teapotbase - wrapbunch - cannot parse arguments!");
@@ -58,7 +58,7 @@ extern "C"
     {
         PyObject* pyBunch;
         double length;
-        if(!PyArg_ParseTuple(	args, "Od:drift",
+        if(!PyArg_ParseTuple(args, "Od:drift",
                              &pyBunch, &length))
         {
             error("teapotbase - drift - cannot parse arguments!");
@@ -93,7 +93,7 @@ extern "C"
         int pole, skew;
         double kl;
         int useCharge = 1;
-        if(!PyArg_ParseTuple(	args, "Oidi|i:multp",
+        if(!PyArg_ParseTuple(args, "Oidi|i:multp",
                              &pyBunch, &pole, &kl, &skew, &useCharge))
         {
             error("teapotbase - multp - cannot parse arguments!");
@@ -111,7 +111,7 @@ extern "C"
         int pole, skew;
         double kl;
         int useCharge = 1;
-        if(!PyArg_ParseTuple(	args, "Oidi|i:multpfringeIN",
+        if(!PyArg_ParseTuple(args, "Oidi|i:multpfringeIN",
                              &pyBunch, &pole, &kl, &skew, &useCharge))
         {
             error("teapotbase - multpfringeIN - cannot parse arguments!");
@@ -129,7 +129,7 @@ extern "C"
         int pole, skew;
         double kl;
         int useCharge = 1;
-        if(!PyArg_ParseTuple(	args, "Oidi|i:multpfringeOUT",
+        if(!PyArg_ParseTuple(args, "Oidi|i:multpfringeOUT",
                              &pyBunch, &pole, &kl, &skew, &useCharge))
         {
             error("teapotbase - multpfringeOUT - cannot parse arguments!");
@@ -146,7 +146,7 @@ extern "C"
         PyObject* pyBunch;
         double kx, ky, kE;
         int useCharge = 1;
-        if(!PyArg_ParseTuple(	args, "Oddd|i:kick",
+        if(!PyArg_ParseTuple(args, "Oddd|i:kick",
                              &pyBunch, &kx, &ky, &kE, &useCharge))
         {
             error("teapotbase - kick - cannot parse arguments!");
@@ -163,7 +163,7 @@ extern "C"
         PyObject* pyBunch;
         double length, kq;
         int useCharge = 1;
-        if(!PyArg_ParseTuple(	args, "Odd|i:quad1",
+        if(!PyArg_ParseTuple(args, "Odd|i:quad1",
                              &pyBunch, &length, &kq, &useCharge))
         {
             error("teapotbase - quad1 - cannot parse arguments!");
@@ -179,7 +179,7 @@ extern "C"
     {
         PyObject* pyBunch;
         double length;
-        if(!PyArg_ParseTuple(	args, "Od:quad2",
+        if(!PyArg_ParseTuple(args, "Od:quad2",
                              &pyBunch, &length))
         {
             error("teapotbase - quad2 - cannot parse arguments!");
@@ -203,7 +203,7 @@ extern "C"
         PyObject* pyBunch;
         double kq;
         int useCharge = 1;
-        if(!PyArg_ParseTuple(	args, "Od|i:quadfringeIN",
+        if(!PyArg_ParseTuple(args, "Od|i:quadfringeIN",
                              &pyBunch, &kq, &useCharge))
         {
             error("teapotbase - quadfringeIN - cannot parse arguments!");
@@ -220,7 +220,7 @@ extern "C"
         PyObject* pyBunch;
         double kq;
         int useCharge = 1;
-        if(!PyArg_ParseTuple(	args, "Od|i:quadfringeOUT",
+        if(!PyArg_ParseTuple(args, "Od|i:quadfringeOUT",
                              &pyBunch, &kq, &useCharge))
         {
             error("teapotbase - quadfringeOUT - cannot parse arguments!");
@@ -237,7 +237,7 @@ extern "C"
         PyObject* pyBunch;
         double e;
         int frinout;
-        if(!PyArg_ParseTuple(	args, "Odi:wedgerotate",
+        if(!PyArg_ParseTuple(args, "Odi:wedgerotate",
                              &pyBunch, &e, &frinout))
         {
             error("teapotbase - wedgerotate - cannot parse arguments!");
@@ -254,7 +254,7 @@ extern "C"
         PyObject* pyBunch;
         double e;
         int inout;
-        if(!PyArg_ParseTuple(	args, "Odi:wedgedrift",
+        if(!PyArg_ParseTuple(args, "Odi:wedgedrift",
                              &pyBunch, &e, &inout))
         {
             error("teapotbase - wedgedrift - cannot parse arguments!");
@@ -271,7 +271,7 @@ extern "C"
         PyObject* pyBunch;
         double e, rho;
         int inout, nsteps;
-        if(!PyArg_ParseTuple(	args, "Odidi:wedgebend",
+        if(!PyArg_ParseTuple(args, "Odidi:wedgebend",
                              &pyBunch, &e, &inout, &rho, &nsteps))
         {
             error("teapotbase - wedgebend - cannot parse arguments!");
@@ -288,7 +288,7 @@ extern "C"
         PyObject* pyBunch;
         double length;
         double th;
-        if(!PyArg_ParseTuple(	args, "Odd:bend1",
+        if(!PyArg_ParseTuple(args, "Odd:bend1",
                              &pyBunch, &length, &th))
         {
             error("teapotbase - bend1 - cannot parse arguments!");
@@ -304,7 +304,7 @@ extern "C"
     {
         PyObject* pyBunch;
         double length;
-        if(!PyArg_ParseTuple(	args, "Od:bend2",
+        if(!PyArg_ParseTuple(args, "Od:bend2",
                              &pyBunch, &length))
         {
             error("teapotbase - bend2 - cannot parse arguments!");
@@ -320,7 +320,7 @@ extern "C"
     {
         PyObject* pyBunch;
         double th;
-        if(!PyArg_ParseTuple(	args, "Od:bend3",
+        if(!PyArg_ParseTuple(args, "Od:bend3",
                              &pyBunch, &th))
         {
             error("teapotbase - bend3 - cannot parse arguments!");
@@ -336,7 +336,7 @@ extern "C"
     {
         PyObject* pyBunch;
         double th;
-        if(!PyArg_ParseTuple(	args, "Od:bend4",
+        if(!PyArg_ParseTuple(args, "Od:bend4",
                              &pyBunch, &th))
         {
             error("teapotbase - bend4 - cannot parse arguments!");
@@ -352,7 +352,7 @@ extern "C"
     {
         PyObject* pyBunch;
         double rho;
-        if(!PyArg_ParseTuple(	args, "Od:bendfringeIN",
+        if(!PyArg_ParseTuple(args, "Od:bendfringeIN",
                              &pyBunch, &rho))
         {
             error("teapotbase - bendfringeIN - cannot parse arguments!");
@@ -368,7 +368,7 @@ extern "C"
     {
         PyObject* pyBunch;
         double rho;
-        if(!PyArg_ParseTuple(	args, "Od:bendfringeOUT",
+        if(!PyArg_ParseTuple(args, "Od:bendfringeOUT",
                              &pyBunch, &rho))
         {
             error("teapotbase - bendfringeOUT - cannot parse arguments!");
@@ -385,7 +385,7 @@ extern "C"
         PyObject* pyBunch;
         double length, B;
         int useCharge = 1;
-        if(!PyArg_ParseTuple(	args, "Odd|i:soln",
+        if(!PyArg_ParseTuple(args, "Odd|i:soln",
                              &pyBunch, &length, &B, &useCharge))
         {
             error("teapotbase - soln - cannot parse arguments!");
@@ -409,7 +409,7 @@ extern "C"
         PyObject* klPySeq;
         PyObject* skewPySeq;
         int useCharge = 1;
-        if(!PyArg_ParseTuple(	args, "OdidiOOOi|i:wedgebendCF",
+        if(!PyArg_ParseTuple(args, "OdidiOOOi|i:wedgebendCF",
                              &pyBunch, &e, &inout, &rho, &vecnum,
                              &polePySeq, &klPySeq, &skewPySeq, &nsteps, &useCharge))
         {
@@ -470,7 +470,7 @@ extern "C"
         double voltage, phase_s, ring_length;
         int harmonics_numb;
         int useCharge = 1;
-        if(!PyArg_ParseTuple(	args, "Odidd|i:RingRF",
+        if(!PyArg_ParseTuple(args, "Odidd|i:RingRF",
                              &pyBunch, &ring_length, &harmonics_numb,
                              &voltage, &phase_s, &useCharge))
         {
@@ -485,40 +485,40 @@ extern "C"
 
     static PyMethodDef teapotbaseMethods[] =
     {
-			{"rotatexy",         wrap_rotatexy,       METH_VARARGS, "Rotates bunch around z axis "},
-			{"drift",            wrap_drift,          METH_VARARGS, "Tracking a bunch through a drift "},
-			{"drifti",           wrap_drifti,         METH_VARARGS, "Drifts one macroparticle in the bunch"},
-			{"wrapbunch",		 wrap_wrapbunch,      METH_VARARGS, "Tracking a bunch through a wrapbunch routine"},
-			{"multp",            wrap_multp,          METH_VARARGS, "Tracking a bunch through a multipole "},
-			{"multpfringeIN",    wrap_multpfringeIN,  METH_VARARGS, "Tracking a bunch through an IN edge of a multipole "},
-			{"multpfringeOUT",   wrap_multpfringeOUT, METH_VARARGS, "Tracking a bunch through an OUT edge of a multipole"},
-			{"kick",             wrap_kick,           METH_VARARGS, "Kicker element: chnges in x-prime, y-prime and dE"},
-			{"quad1",            wrap_quad1,          METH_VARARGS, "Quadrupole element one: linear transport matrix "},
-			{"quad2",            wrap_quad2,          METH_VARARGS, "Quadrupole element two: drift in quadrupole "},
-			{"quad3",            wrap_quad3,          METH_VARARGS, "Quadrupole element one: mon-linear transport of Bz - empty there "},
-			{"quadfringeIN",     wrap_quadfringeIN,   METH_VARARGS, "Quadrupole element IN edge"},
-			{"quadfringeOUT",    wrap_quadfringeOUT,  METH_VARARGS, "Quadrupole element OUT edge"},
-			{"wedgerotate",      wrap_wedgerotate,    METH_VARARGS, "Rotates coordinates by e for fringe fields at non-SBEND "},
-			{"wedgedrift",       wrap_wedgedrift,     METH_VARARGS, "Drifts particles through wedge for non-SBEND "},
-			{"wedgebend",        wrap_wedgebend,      METH_VARARGS, "Straight bends particles through wedge for non-SBEND "},
-			{"bend1",            wrap_bend1,          METH_VARARGS, "Linear bend transport "},
-			{"bend2",            wrap_bend2,          METH_VARARGS, "Kinetic bend transport (same as nonlinear quad transport - quad2) "},
-			{"bend3",            wrap_bend3,          METH_VARARGS, "Nonlinear curvature bend transport depending on py and dE in Hamiltonian "},
-			{"bend4",            wrap_bend4,          METH_VARARGS, "Nonlinear curvature bend transport depending on px in Hamiltonian "},
-			{"bendfringeIN",     wrap_bendfringeIN,   METH_VARARGS, "Hard edge fringe field for a bend IN"},
-			{"bendfringeOUT",    wrap_bendfringeOUT,  METH_VARARGS, "Hard edge fringe field for a bend OUT"},
-			{"soln",             wrap_soln,           METH_VARARGS, "Integration through a solenoid "},
-			{"wedgebendCF",      wrap_wedgebendCF,    METH_VARARGS, "Straight bends particles through wedge for Combined Function non-SBEND "},
-			{"RingRF",           wrap_RingRF,         METH_VARARGS, "Tracking particles through a simple ring RF cavity."},
-			{ NULL, NULL }
+            {"rotatexy",         wrap_rotatexy,       METH_VARARGS, "Rotates bunch around z axis "},
+            {"drift",            wrap_drift,          METH_VARARGS, "Tracking a bunch through a drift "},
+            {"drifti",           wrap_drifti,         METH_VARARGS, "Drifts one macroparticle in the bunch"},
+            {"wrapbunch",        wrap_wrapbunch,      METH_VARARGS, "Tracking a bunch through a wrapbunch routine"},
+            {"multp",            wrap_multp,          METH_VARARGS, "Tracking a bunch through a multipole "},
+            {"multpfringeIN",    wrap_multpfringeIN,  METH_VARARGS, "Tracking a bunch through an IN edge of a multipole "},
+            {"multpfringeOUT",   wrap_multpfringeOUT, METH_VARARGS, "Tracking a bunch through an OUT edge of a multipole"},
+            {"kick",             wrap_kick,           METH_VARARGS, "Kicker element: chnges in x-prime, y-prime and dE"},
+            {"quad1",            wrap_quad1,          METH_VARARGS, "Quadrupole element one: linear transport matrix "},
+            {"quad2",            wrap_quad2,          METH_VARARGS, "Quadrupole element two: drift in quadrupole "},
+            {"quad3",            wrap_quad3,          METH_VARARGS, "Quadrupole element one: mon-linear transport of Bz - empty there "},
+            {"quadfringeIN",     wrap_quadfringeIN,   METH_VARARGS, "Quadrupole element IN edge"},
+            {"quadfringeOUT",    wrap_quadfringeOUT,  METH_VARARGS, "Quadrupole element OUT edge"},
+            {"wedgerotate",      wrap_wedgerotate,    METH_VARARGS, "Rotates coordinates by e for fringe fields at non-SBEND "},
+            {"wedgedrift",       wrap_wedgedrift,     METH_VARARGS, "Drifts particles through wedge for non-SBEND "},
+            {"wedgebend",        wrap_wedgebend,      METH_VARARGS, "Straight bends particles through wedge for non-SBEND "},
+            {"bend1",            wrap_bend1,          METH_VARARGS, "Linear bend transport "},
+            {"bend2",            wrap_bend2,          METH_VARARGS, "Kinetic bend transport (same as nonlinear quad transport - quad2) "},
+            {"bend3",            wrap_bend3,          METH_VARARGS, "Nonlinear curvature bend transport depending on py and dE in Hamiltonian "},
+            {"bend4",            wrap_bend4,          METH_VARARGS, "Nonlinear curvature bend transport depending on px in Hamiltonian "},
+            {"bendfringeIN",     wrap_bendfringeIN,   METH_VARARGS, "Hard edge fringe field for a bend IN"},
+            {"bendfringeOUT",    wrap_bendfringeOUT,  METH_VARARGS, "Hard edge fringe field for a bend OUT"},
+            {"soln",             wrap_soln,           METH_VARARGS, "Integration through a solenoid "},
+            {"wedgebendCF",      wrap_wedgebendCF,    METH_VARARGS, "Straight bends particles through wedge for Combined Function non-SBEND "},
+            {"RingRF",           wrap_RingRF,         METH_VARARGS, "Tracking particles through a simple ring RF cavity."},
+            { NULL, NULL }
     };
 
     static struct PyModuleDef cModPyDem =
     {
-	    PyModuleDef_HEAD_INIT,
-	    "teapot_base", "TEAPOT tracking functions for different lattice elements.",
-	    -1,
-	    teapotbaseMethods
+        PyModuleDef_HEAD_INIT,
+        "teapot_base", "TEAPOT tracking functions for different lattice elements.",
+        -1,
+        teapotbaseMethods
     };
 
     PyMODINIT_FUNC initteapotbase(void)
