@@ -1,0 +1,4 @@
+ninja
+meson-python
+numpy
+matplotlib

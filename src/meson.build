@@ -13,17 +13,6 @@ cpp = meson.get_compiler('cpp')
 base = meson.current_source_dir() + '/core'
 
 
-
-inc = [
-'/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/Headers',
-'/opt/homebrew/include'
-]
-link_a = ['-L/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib',
-      '-L/opt/homebrew/lib',
-      '-lpython3.9', '-lfftw3'
-]
-
-
 sources = files([
     'linac/wrap_linacmodule.cc',
 	'linac/tracking/linac_tracking.cc',
