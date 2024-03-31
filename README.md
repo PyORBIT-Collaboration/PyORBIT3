@@ -35,7 +35,7 @@ After you have installed everything, the next step is to build. In order to buil
 
 You need only build the project after a change is made to the core c++ or python classes.
 
-## 3. Run excamples
+## 3. Run examples
 
 Navigate to your examples/meson directory:
 
