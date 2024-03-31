@@ -1335,9 +1335,7 @@ extern "C" {
   }
 
 	PyObject* getBunchType(const char* name){
-	    printf("Imorting bunch");
 		PyObject* mod = PyImport_ImportModule("orbit.core.bunch");
-		printf("Imported bunch");
 		PyObject* pyType = PyObject_GetAttrString(mod,name);
 		Py_DECREF(mod);
 		Py_DECREF(pyType);
