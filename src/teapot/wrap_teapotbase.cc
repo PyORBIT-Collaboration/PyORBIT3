@@ -533,7 +533,7 @@ extern "C"
 
     PyObject* getBaseTEAPOTType(char* name)
     {
-        PyObject* mod = PyImport_ImportModule("_teapot_base");
+        PyObject* mod = PyImport_ImportModule("orbit.core.teapot_base");
         PyObject* pyType = PyObject_GetAttrString(mod, name);
         Py_DECREF(mod);
         Py_DECREF(pyType);

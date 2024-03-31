@@ -57,7 +57,7 @@ extern "C" {
 			return cpp_grid2d->getPyWrapper();
 		}
 		//It will create a pyGrid2D object
-		PyObject* mod = PyImport_ImportModule("spacecharge");
+		PyObject* mod = PyImport_ImportModule("orbit.core.spacecharge");
 		PyObject* pyGrid2D = PyObject_CallMethod(mod,const_cast<char*>("Grid2D"),const_cast<char*>("ii"),cpp_grid2d->getSizeX(),cpp_grid2d->getSizeY());
 		//delete the c++ reference to the internal Grid2D inside pyGrid2D and assign the new one
 		delete ((Grid2D*)((pyORBIT_Object*) pyGrid2D)->cpp_obj);
@@ -78,7 +78,7 @@ extern "C" {
 			return cpp_grid2d->getPyWrapper();
 		}
 		//It will create a pyGrid2D object
-		PyObject* mod = PyImport_ImportModule("spacecharge");
+		PyObject* mod = PyImport_ImportModule("orbit.core.spacecharge");
 		PyObject* pyGrid2D = PyObject_CallMethod(mod,const_cast<char*>("Grid2D"),const_cast<char*>("ii"),cpp_grid2d->getSizeX(),cpp_grid2d->getSizeY());
 		//delete the c++ reference to the internal Grid2D inside pyGrid2D and assign the new one
 		delete ((Grid2D*)((pyORBIT_Object*) pyGrid2D)->cpp_obj);
@@ -100,7 +100,7 @@ extern "C" {
 			return cpp_grid2d->getPyWrapper();
 		}
 		//It will create a pyGrid2D object
-		PyObject* mod = PyImport_ImportModule("spacecharge");
+		PyObject* mod = PyImport_ImportModule("orbit.core.spacecharge");
 		PyObject* pyGrid2D = PyObject_CallMethod(mod,const_cast<char*>("Grid2D"),const_cast<char*>("ii"),cpp_grid2d->getSizeX(),cpp_grid2d->getSizeY());
 		//delete the c++ reference to the internal Grid2D inside pyGrid2D and assign the new one
 		delete ((Grid2D*)((pyORBIT_Object*) pyGrid2D)->cpp_obj);
@@ -122,7 +122,7 @@ extern "C" {
 			return cpp_grid1d->getPyWrapper();
 		}
 		//It will create a pyGrid2D object
-		PyObject* mod = PyImport_ImportModule("spacecharge");
+		PyObject* mod = PyImport_ImportModule("orbit.core.spacecharge");
 		PyObject* pyGrid1D = PyObject_CallMethod(mod,const_cast<char*>("Grid1D"),const_cast<char*>("i"),cpp_grid1d->getSizeZ());
 		//delete the c++ reference to the internal Grid1D inside pyGrid1D and assign the new one
 		delete ((Grid1D*)((pyORBIT_Object*) pyGrid1D)->cpp_obj);

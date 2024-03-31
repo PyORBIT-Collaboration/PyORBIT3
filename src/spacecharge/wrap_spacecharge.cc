@@ -53,7 +53,7 @@ extern "C" {
   }
 
 	PyObject* getSpaceChargeType(const char* name){
-		PyObject* mod = PyImport_ImportModule("_spacecharge");
+		PyObject* mod = PyImport_ImportModule("orbit.core.spacecharge");
 		PyObject* pyType = PyObject_GetAttrString(mod,name);
 		Py_DECREF(mod);
 		Py_DECREF(pyType);
