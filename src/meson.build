@@ -3,15 +3,16 @@
 
 
 # Add Python installation details
-python = import('python').find_installation(pure: false)
-
-py3 = python.dependency()
+python = import('python').find_installation('python3', pure: false)
 
 # Add C++ compiler details
 cpp = meson.get_compiler('cpp')
 
 base = meson.current_source_dir() + '/core'
 
+dependencies = []
+
+dependencies += dependency('fftw3', version: '>= 3.0.0', required: true)
 
 sources = files([
     'linac/wrap_linacmodule.cc',
@@ -208,7 +209,8 @@ sources = files([
 	'teapot/teapotbase.cc',
 	'teapot/MatrixGenerator.cc'
 ]) 
-headers = include_directories([
+inc = include_directories([
+  python.get_variable('INCLUDEPY', ''),
     'main',
 	'orbit/SynchPartRedefinition',
 	'trackerrk4',
@@ -240,13 +242,13 @@ headers = include_directories([
     
 ])
 
-inc += headers
 
 core_lib = library('core',
     sources: sources,
     include_directories: inc,
     cpp_args: ['-fPIC', '-std=c++11'],
-    link_args: link_a,
+    override_options: ['b_lundef=false'],
+    dependencies: dependencies,
     install: true,
 
 )
