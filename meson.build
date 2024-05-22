@@ -1,4 +1,4 @@
-project('orbit', ['cpp'], version: '0.0.1')
+project('PyORBIT', ['cpp'], version: run_command('python', '-m',  'setuptools_scm').stdout().strip())
 
 subdir('src')
 subdir('py/orbit')

@@ -1,75 +1,92 @@
-# PyOrbit3 with meson
+# PyOrbit3 package installation
 
-This uses meson-python to build orbit package.
+## 1. Introduction
+This guide provides isntructions how to install PyORBIT code. <br>
+This guide doesn't cover MPI enabled installation. <br>
+The following configurations are included in CI testing, versions will change as the runner images progress.
 
-There is no **setup.py** file, instead we have **meson.build**.
-**pyproject.toml** is changed to use meson.
-
-This is experimental setup that is work in progress.
-The pure python part is built with hierarchical **meson.build** files in **py/**.
-The C++ setup is combined in one file **src/meson.build**.
-
-### Main modifications in C++ code
-1. **src/libmain/** is not used, still there for reference but will be gone soon.
-2. **src/core/** contains one C++ file per module inside _orbit.core_
-3. The files **wrap_XXXX.cc** were modified to correctly reference modules 
-```cpp
-// line
-PyObject* mod = PyImport_ImportModule("_bunch");
-// replaced with 
-PyObject* mod = PyImport_ImportModule("orbit.core.bunch");
-```
+| HW            | Architecture | OS            | Python  | Compiler     | Package      |
+|---------------|--------------|---------------|---------|--------------|--------------|
+| PC            | x86_64       | CentOS latest | 3.9.18  | gcc-11.4.1   | pip-24.0     |
+| PC            | x86_64       | Ubuntu latest | 3.12.3  | gcc-13.2.0   | pip-24.0     |
+| Apple Silicon | arm64        | macOS 14      | 3.12.3  | clang-15.0.0 | pip-24.0     |
+| PC            | x86_64       | Ubuntu latest | 3.10.14 | gcc-13.2.0   | conda-24.5.0 |
 
 
 
-# Setup
+## 2. Installation from source
 
-## 0. Required software
-
-One needs compilers, python and libfftw (and potentially mpi).
-See [PyORBIT3](https://github.com/PyORBIT-Collaboration/PyORBIT3) for external 
-requirements. 
-
-
-## 1. Preparing environment
-
-First step is to clone the source code from meson branch:
+First step is to clone the source code:
 
 ```bash
-git clone -b meson https://github.com/azukov/PyORBIT3.git
+git clone https://github.com/PyORBIT-Collaboration/PyORBIT3.git
 ```
 
-Initialize new virtual environment and install packages
+### Pip Setup
 
+On Ubuntu distributions:
 ```
-python -m venv .mes
-source .mes/bin/activate
-pip install -U pip 
-pip install -r requirements
+sudo apt-get update
+sudo apt-get install -y  build-essential python3 libfftw3-dev python3-venv libpython3-dev pkg-config git
 ```
-Edit **meson.build** and set correct paths/flags for python/fftw3 headers and libraries
 
-## 2. Build
+On CentOS distributions:
+```
+dnf group install -y "Development Tools"
+dnf install -y python3-devel fftw3-devel
+```
 
-To install orbit package in development mode run following:
+Make sure that you have the correct python version installed. We require python>3.9. <br>
+Create virtual environment.
+```
+python3 -m venv .po3
+. .po3/bin/activate
+pip install -U pip
+pip install -r requirements.txt
+pip install -U setuptools
+```
+
+### Conda Setup
+
+First of all make sure you have conda installed and development packages.<br>
+Development packages for Ubuntu:
+```
+apt update -y
+apt install -y curl gpg git build-essential
+```
+
+Then run the following:
+
 ```bash
- pip install --no-build-isolation --editable .
-```
-No rebuild is necessary, just edit **py/** or **src/** and meson will rebuild as needed when import happens.
-
-
-## 3. Run examples
-
-Special examples used for meson testing
-
-```bash
-cd examples/meson
-python imports_test.py
-python uspas_test.py
+cd pyorbit3
+conda env create -n po3 --file environment.yml
+conda activate po3
+pip install -U meson-python setuptools setuptools-scm
 ```
 
-SNS linac example
+
+## 3. Build
+
+If you plan to modify PyORBIT's code, install it in editable mode. 
+You will NOT need to rebuild after modifications to the code. [Meson](MesonBuild.md) will rebuild as necessary on import.
+```
+pip install --no-build-isolation --editable .
+```
+
+Alternatively if you don't plan to modify PyORBIT's code
+```
+pip install .
+```
+
+
+## 4. Run full SNS linac example
+
+Navigate to your **examples** directory and launch tracking of SNS linac.
+
 ```bash
 cd examples/SNS_Linac/pyorbit3_linac_model/
 python pyorbit3_sns_linac_mebt_hebt2.py
 ```
+
+
+

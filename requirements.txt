@@ -1,4 +1,4 @@
 ninja
 meson-python
-numpy
-matplotlib
+setuptools
+setuptools-scm
