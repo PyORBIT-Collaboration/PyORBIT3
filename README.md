@@ -1,7 +1,7 @@
 # PyOrbit3 package installation
 
 ## 1. Introduction
-This guide provides isntructions how to install PyORBIT code. <br>
+This guide provides instructions how to install PyORBIT code. <br>
 This guide doesn't cover MPI enabled installation. <br>
 The following configurations are included in CI testing, versions will change as the runner images progress.
 
