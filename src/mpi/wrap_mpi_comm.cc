@@ -170,7 +170,7 @@ extern "C" {
 	}
 
 	PyObject* getMPI_CommType(const char* name){
-		PyObject* mod = PyImport_ImportModule("_orbit_mpi");
+		PyObject* mod = PyImport_ImportModule("orbit.core.orbit_mpi");
 		PyObject* mpi_comm_mod = PyObject_GetAttrString(mod,"mpi_comm");
 		PyObject* pyType = PyObject_GetAttrString(mpi_comm_mod,name);
 		Py_DECREF(mpi_comm_mod);
