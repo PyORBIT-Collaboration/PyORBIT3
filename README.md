@@ -24,16 +24,22 @@ git clone https://github.com/PyORBIT-Collaboration/PyORBIT3.git
 
 ### Pip Setup
 
-On Ubuntu distributions:
+#### Ubuntu based distributions:
 ```
 sudo apt-get update
 sudo apt-get install -y  build-essential python3 libfftw3-dev python3-venv libpython3-dev pkg-config git
 ```
 
-On CentOS distributions:
+#### Redhat based distributions:
 ```
 dnf group install -y "Development Tools"
 dnf install -y python3-devel fftw3-devel
+```
+
+#### MacOS
+Install Homebrew, make sure that  homebrew programs are in the **$PATH** (optional step in Homebrew installation)
+```bash
+brew install pkg-config fftw
 ```
 
 Make sure that you have the correct python version installed. We require python>3.9. <br>
