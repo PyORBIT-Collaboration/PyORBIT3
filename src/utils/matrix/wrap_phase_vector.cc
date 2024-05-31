@@ -114,7 +114,7 @@ extern "C" {
     pyORBIT_Object* pyPhaseVector = (pyORBIT_Object*) self;
 		PhaseVector* cpp_PhaseVector = (PhaseVector*) pyPhaseVector->cpp_obj;
 		int n = cpp_PhaseVector->size();
-		PyObject* mod = PyImport_ImportModule("_orbit_utils");
+		PyObject* mod = PyImport_ImportModule("orbit.core.orbit_utils");
 		PyObject* pyVctr = PyObject_CallMethod(mod,const_cast<char*>("PhaseVector"),const_cast<char*>("i"),n);
 		pyORBIT_Object* pyPhaseVector_child = (pyORBIT_Object*) pyVctr;
 		PhaseVector* cpp_PhaseVector_child = (PhaseVector*) pyPhaseVector_child->cpp_obj;
@@ -165,7 +165,7 @@ extern "C" {
 			if(!PyArg_ParseTuple(args,"d:add",&val)){
 				error("Py PhaseVector- add(number) - input parameter is needed.");
 			}
-			PyObject* mod = PyImport_ImportModule("_orbit_utils");
+			PyObject* mod = PyImport_ImportModule("orbit.core.orbit_utils");
 			PyObject* pyVctr = PyObject_CallMethod(mod,const_cast<char*>("PhaseVector"),const_cast<char*>("O"),self);
 			PhaseVector* cpp_vctr = (PhaseVector*) ((pyORBIT_Object*) pyVctr)->cpp_obj;
 			cpp_vctr->add(val);
@@ -178,7 +178,7 @@ extern "C" {
 			if(cpp_PhaseVector->size() != cpp_PhaseVector_In->size()){
 				error("PyPhaseVector - add(vector) - unequal sizes of the vectors.");
 			}
-			PyObject* mod = PyImport_ImportModule("_orbit_utils");
+			PyObject* mod = PyImport_ImportModule("orbit.core.orbit_utils");
 			PyObject* pyVctr = PyObject_CallMethod(mod,const_cast<char*>("PhaseVector"),const_cast<char*>("O"),self);
 			PhaseVector* cpp_vctr = (PhaseVector*) ((pyORBIT_Object*) pyVctr)->cpp_obj;
 			cpp_vctr->add(cpp_PhaseVector_In);
@@ -203,7 +203,7 @@ extern "C" {
 			if(!PyArg_ParseTuple(args,"d:mult",&val)){
 				error("Py PhaseVector- mult(number) - input parameter is needed.");
 			}
-			PyObject* mod = PyImport_ImportModule("_orbit_utils");
+			PyObject* mod = PyImport_ImportModule("orbit.core.orbit_utils");
 			PyObject* pyVctr = PyObject_CallMethod(mod,const_cast<char*>("PhaseVector"),const_cast<char*>("O"),self);
 			PhaseVector* cpp_vctr = (PhaseVector*) ((pyORBIT_Object*) pyVctr)->cpp_obj;
 			cpp_vctr->mult(val);
@@ -224,7 +224,7 @@ extern "C" {
 			if(cpp_PhaseVector->size() != cpp_Matrix->rows()){
 				error("PyPhaseVector - mult(matrix) - unequal sizes of vectors and rows.");
 			}
-			PyObject* mod = PyImport_ImportModule("_orbit_utils");
+			PyObject* mod = PyImport_ImportModule("orbit.core.orbit_utils");
 			PyObject* pyVctr = PyObject_CallMethod(mod,const_cast<char*>("PhaseVector"),const_cast<char*>("i"),cpp_Matrix->columns());
 			MatrixOperations::mult(cpp_PhaseVector,cpp_Matrix,(PhaseVector*) ((pyORBIT_Object*)pyVctr)->cpp_obj);
 			Py_DECREF(mod);
@@ -249,7 +249,7 @@ extern "C" {
 			if(cpp_PhaseVector->size() != cpp_PhaseVector_In->size() || cpp_PhaseVector_In->size() != 3){
 				error("PyPhaseVector - vct_mult(vector) - vector sizes should be 3.");
 			}
-			PyObject* mod = PyImport_ImportModule("_orbit_utils");
+			PyObject* mod = PyImport_ImportModule("orbit.core.orbit_utils");
 			PyObject* pyVctr = PyObject_CallMethod(mod,const_cast<char*>("PhaseVector"),const_cast<char*>("i"),3);
 			double* v1 = cpp_PhaseVector->getArray();
 			double* v2 = cpp_PhaseVector_In->getArray();

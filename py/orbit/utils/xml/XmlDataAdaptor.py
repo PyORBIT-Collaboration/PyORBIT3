@@ -230,6 +230,14 @@ class XmlDataAdaptor(NamedObject, ParamsDictObject):
         xml_root_adaptor = XmlDataAdaptor(root.tag)
         XmlDataAdaptor._makeDataAdaptor(xml_root_adaptor, root)
         return xml_root_adaptor
+        
+    @staticmethod
+    def adaptorForString(txt):
+        """returns the new data adaptor created from the input text"""
+        root = ET.fromstring(txt)
+        xml_root_adaptor = XmlDataAdaptor(root.tag)
+        XmlDataAdaptor._makeDataAdaptor(xml_root_adaptor, root)
+        return xml_root_adaptor
 
     @staticmethod
     def _makeDataAdaptor(data_adaptor, dom_node):

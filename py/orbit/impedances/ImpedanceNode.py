@@ -218,7 +218,7 @@ class TImpedance_Node(DriftTEAPOT):
         self.timpedance.assignLatFuncs(qX, alphaX, betaX, qY, alphaY, betaY)
 
     def assignImpedance(self, XorY, py_cmplx_arrp, py_cmplx_arrm):
-        size = self.nBins / 2
+        size = self.nBins // 2
         if len(py_cmplx_arrp) < size:
             start = len(py_cmplx_arrp)
             for n in range(start, size):
@@ -229,7 +229,7 @@ class TImpedance_Node(DriftTEAPOT):
                 py_cmplx_arrm.append(py_cmplx_arrm[start - 1])
         Zp = []
         Zm = []
-        for n in range(self.nBins / 2):
+        for n in range(size):
             Zp.append(py_cmplx_arrp[n])
             Zm.append(py_cmplx_arrm[n])
         self.timpedance.assignImpedance(XorY, Zp, Zm)

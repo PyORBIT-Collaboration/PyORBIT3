@@ -32,7 +32,7 @@ PyMODINIT_FUNC initimpedances()
 
 PyObject* getImpedanceType(char* name)
 {
-  PyObject* mod = PyImport_ImportModule("_impedances");
+  PyObject* mod = PyImport_ImportModule("orbit.core.impedances");
   PyObject* pyType = PyObject_GetAttrString(mod, name);
   Py_DECREF(mod);
   Py_DECREF(pyType);

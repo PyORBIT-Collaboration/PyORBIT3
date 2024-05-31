@@ -61,7 +61,7 @@ extern "C" {
 			return cpp_grid3d->getPyWrapper();
 		}
 		//It will create a pyGrid3D object
-		PyObject* mod = PyImport_ImportModule("_spacecharge");
+		PyObject* mod = PyImport_ImportModule("orbit.core.spacecharge");
 		PyObject* pyGrid3D = PyObject_CallMethod(mod,const_cast<char*>("Grid3D"),const_cast<char*>("iii"),cpp_grid3d->getSizeX(),cpp_grid3d->getSizeY(),cpp_grid3d->getSizeZ());
 		//delete the c++ reference to the internal Grid3D inside pyGrid3D and assign the new one
 		delete ((Grid3D*)((pyORBIT_Object*) pyGrid3D)->cpp_obj);
@@ -82,7 +82,7 @@ extern "C" {
 			return cpp_grid3d->getPyWrapper();
 		}
 		//It will create a pyGrid3D object
-		PyObject* mod = PyImport_ImportModule("_spacecharge");
+		PyObject* mod = PyImport_ImportModule("orbit.core.spacecharge");
 		PyObject* pyGrid3D = PyObject_CallMethod(mod,const_cast<char*>("Grid3D"),const_cast<char*>("iii"),cpp_grid3d->getSizeX(),cpp_grid3d->getSizeY(),cpp_grid3d->getSizeZ());
 		//delete the c++ reference to the internal Grid3D inside pyGrid3D and assign the new one
 		delete ((Grid3D*)((pyORBIT_Object*) pyGrid3D)->cpp_obj);

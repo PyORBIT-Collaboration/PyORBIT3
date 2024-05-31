@@ -1,19 +1,20 @@
 # PyOrbit3 package installation
 
-## 0. Required software
+## 1. Introduction
+This guide provides instructions how to install PyORBIT code. <br>
+This guide doesn't cover MPI enabled installation. <br>
+The following configurations are included in CI testing, versions will change as the runner images progress.
 
-One needs compilers and python development packages, depending on  Linux flavor the package can be called **python-dev** or **python-devel**.
-
-This guide was tested on following configurations
-
-| CPU           | Architecture | OS           | Python  | Compiler     |
-|---------------|--------------|--------------|---------|--------------|
-| Intel i7-7700 | x86_64       | RHEL 8.7     | 3.9.13  | gcc-8.5      |
-|               | x86_64       | Arch         | 3.10.10 | gcc-12.2.1   |
-| Apple M2      | arm64        | macOS 13.3.1 | 3.9.6   | clang-14.0.3 |
+| HW            | Architecture | OS            | Python  | Compiler     | Package      |
+|---------------|--------------|---------------|---------|--------------|--------------|
+| PC            | x86_64       | CentOS latest | 3.9.18  | gcc-11.4.1   | pip-24.0     |
+| PC            | x86_64       | Ubuntu latest | 3.12.3  | gcc-13.2.0   | pip-24.0     |
+| Apple Silicon | arm64        | macOS 14      | 3.12.3  | clang-15.0.0 | pip-24.0     |
+| PC            | x86_64       | Ubuntu latest | 3.10.14 | gcc-13.2.0   | conda-24.5.0 |
 
 
-## 1. Installation from source
+
+## 2. Installation from source
 
 First step is to clone the source code:
 
@@ -21,98 +22,77 @@ First step is to clone the source code:
 git clone https://github.com/PyORBIT-Collaboration/PyORBIT3.git
 ```
 
-Make sure you have a C++ compiler.
+### Pip Setup
 
-On Debian based distributions:
+#### Ubuntu based distributions:
 ```
 sudo apt-get update
-sudo apt-get install build-essential
+sudo apt-get install -y  build-essential python3 libfftw3-dev python3-venv libpython3-dev pkg-config git
 ```
 
-On RedHat based distributions
+#### Redhat based distributions:
 ```
-sudo yum update
-sudo yum group install "Development Tools"
+dnf group install -y "Development Tools"
+dnf install -y python3-devel fftw3-devel
 ```
 
-You will also need to install the relevant packages in order to use PyOrbit. You can either do this through conda, or by installing the packages with your preferred package manager.
+#### MacOS
+Install Homebrew, make sure that  homebrew programs are in the **$PATH** (optional step in Homebrew installation)
+```bash
+brew install pkg-config fftw
+```
 
-### Conda Setup (Recommended):
+Make sure that you have the correct python version installed. We require python>3.9. <br>
+Create virtual environment.
+```
+python3 -m venv .po3
+. .po3/bin/activate
+pip install -U pip
+pip install -r requirements.txt
+pip install -U setuptools
+```
 
-First of all make sure you have conda installed. Then run the following:
+### Conda Setup
+
+First of all make sure you have conda installed and development packages.<br>
+Development packages for Ubuntu:
+```
+apt update -y
+apt install -y curl gpg git build-essential
+```
+
+Then run the following:
 
 ```bash
 cd pyorbit3
-conda env create -n pyorbit --file environment.yml
-conda activate pyorbit
+conda env create -n po3 --file environment.yml
+conda activate po3
+pip install -U meson-python setuptools setuptools-scm
 ```
 
-### Manual Setup:
 
-Make sure that you have the correct python version installed. We require python=3.10. Further the following packages are required, use your preferred packet manager to install them:
+## 3. Build
 
-- FFTW
-- Matplotlib
-- Numpy & Scipy
-- Mpich
-
-On Debian based distributions:
+If you plan to modify PyORBIT's code, install it in editable mode. 
+You will NOT need to rebuild after modifications to the code. [Meson](MesonBuild.md) will rebuild as necessary on import.
 ```
-sudo apt-get install python-dev libmpich-dev mpich  zlib1g-dev libfftw3-dev
+pip install --no-build-isolation --editable .
 ```
 
-On RedHat based distributions
+Alternatively if you don't plan to modify PyORBIT's code
 ```
-sudo yum install python-devel mpich mpich-devel zlib-devel fftw-devel
-```
-
-Then install the Python dependencies using PIP:
-```
-pip install numpy scipy matplotlib
-```
-
-For both of these methods these are the minimum requirements you need to run the examples. Additional packages will be required if you would like to modify and deploy to GitHub. These packages are pre-commit, flake8 and pytest to name a few.
-
-## 2. Build
-
-After you have installed everything, the next step is to build. In order to build the project, navigate to the root pyorbit directory and run the following:
-
-```bash
-python setup.py clean
 pip install .
 ```
 
-You need only build the project after a change is made to the core c++ or python classes.
 
-## 3. Run SNS linac example
+## 4. Run full SNS linac example
 
-Navigate to your examples directory:
+Navigate to your **examples** directory and launch tracking of SNS linac.
 
 ```bash
 cd examples/SNS_Linac/pyorbit3_linac_model/
 python pyorbit3_sns_linac_mebt_hebt2.py
 ```
 
-Additionally if you would like to run the example on multiple MPI nodes you can use the following:
 
-```bash
-mpirun -n 4 python pyorbit3_sns_linac_mebt_hebt2.py
-```
 
-In the above line you can change the number 4 for however many MPI nodes you would like to test it on.
-
-# Structure
-**./src**		- source code for the core ORBIT C++ classes, including
-		  wrappers, etc.
-
-**./py**		- python modules and wrapper classes for the core ORBIT
-		  classes.
-
-**./ext**		- source code for external modules. Compilations of this
-		  code should be placed into **./lib**.
-
-**./lib**  	- .so shared libraries to be used under pyORBIT interpreter.
-
-**./examples**		- pyORBIT3 examples.
-
-**./tests**		- pytests written for the CI Pipeline.

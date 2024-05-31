@@ -45,7 +45,7 @@ extern "C" {
     }
 
     PyObject* getLinacType(char* name){
-        PyObject* mod = PyImport_ImportModule("_linac");
+        PyObject* mod = PyImport_ImportModule("orbit.core.linac");
         PyObject* pyType = PyObject_GetAttrString(mod,name);
         Py_DECREF(mod);
         Py_DECREF(pyType);

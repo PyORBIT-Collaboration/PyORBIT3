@@ -38,20 +38,20 @@ namespace wrap_orbit_bunch{
   //initializator for python Bunch class
   //this is implementation of the __init__ method
   static int Bunch_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
-        //std::cerr<<"The Bunch __init__ has been called!"<<std::endl;
-        //instantiation of a new c++ Bunch
-        self->cpp_obj = (void*) new Bunch();
-        ((Bunch*) self->cpp_obj)->setPyWrapper((PyObject*) self);
-        //This is the way to create new class instance from the C-level
-        // Template: PyObject* PyObject_CallMethod(PyObject *o, char *method, char *format, ...)
-        //see Python/C API documentation
-        //It will create a SyncParticle object and set the reference to it from pyBunch
-        PyObject* mod = PyImport_ImportModule("_bunch");
-        PyObject* pySyncPart = PyObject_CallMethod(mod,const_cast<char*>("SyncParticle"),const_cast<char*>("O"),self);
+		//std::cerr<<"The Bunch __init__ has been called!"<<std::endl;
+		//instantiation of a new c++ Bunch
+		self->cpp_obj = (void*) new Bunch();
+		((Bunch*) self->cpp_obj)->setPyWrapper((PyObject*) self);
+		//This is the way to create new class instance from the C-level
+		// Template: PyObject* PyObject_CallMethod(	PyObject *o, char *method, char *format, ...)
+		//see Python/C API documentation
+		//It will create a SyncParticle object and set the reference to it from pyBunch
+		PyObject* mod = PyImport_ImportModule("orbit.core.bunch");
+		PyObject* pySyncPart = PyObject_CallMethod(mod,const_cast<char*>("SyncParticle"),const_cast<char*>("O"),self);
 
-        //the references should be decreased because they were created as "new reference"
-        Py_DECREF(pySyncPart);
-        Py_DECREF(mod);
+		//the references should be decreased because they were created as "new reference"
+		Py_DECREF(pySyncPart);
+		Py_DECREF(mod);
     return 0;
   }
 
@@ -1314,13 +1314,13 @@ extern "C" {
       return module;
   }
 
-    PyObject* getBunchType(const char* name){
-        PyObject* mod = PyImport_ImportModule("_bunch");
-        PyObject* pyType = PyObject_GetAttrString(mod,name);
-        Py_DECREF(mod);
-        Py_DECREF(pyType);
-        return pyType;
-    }
+	PyObject* getBunchType(const char* name){
+		PyObject* mod = PyImport_ImportModule("orbit.core.bunch");
+		PyObject* pyType = PyObject_GetAttrString(mod,name);
+		Py_DECREF(mod);
+		Py_DECREF(pyType);
+		return pyType;
+	}
 
 
 #ifdef __cplusplus

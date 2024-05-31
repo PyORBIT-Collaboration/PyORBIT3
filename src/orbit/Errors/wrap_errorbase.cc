@@ -389,7 +389,7 @@ extern "C"
 
   PyObject* getBaseERRORType(char* name)
   {
-    PyObject* mod = PyImport_ImportModule("_error_base");
+    PyObject* mod = PyImport_ImportModule("orbit.core.error_base");
     PyObject* pyType = PyObject_GetAttrString(mod, name);
     Py_DECREF(mod);
     Py_DECREF(pyType);
