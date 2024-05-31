@@ -427,7 +427,8 @@ expected_out = read_lines(os.path.join(script_dir, "expected_pyorbit_twiss_sizes
 
 
 def test_file():
-    assert out == expected_out
+    result = out == expected_out
+    assert result
 
 
 os.remove("pyorbit_twiss_sizes_ekin.dat")

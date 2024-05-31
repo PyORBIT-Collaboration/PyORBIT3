@@ -112,8 +112,14 @@ public:
   double getCharge();              // sign and value in abs(e-charge) only
   double getMacroSize();
 
+  /**
+   Return the B*Rho parameter of the particle
+   B*Rho = momentum/charge - [T*m]
+   or B*Rho = 3.335640952*momentum[GeV/c]/charge[electron charges]
+  */
+  double getB_Rho();
+
   double setMass(double mass);                // GeV
-  double setClassicalRadius(double clR);      // m
   double setCharge(double chrg);              // sign and value in abs(e-charge) only
   double setMacroSize(double mcrsz);
 
@@ -217,6 +223,9 @@ private:
   //array from ParticleAttributes class instance.
   //User is not supposed to use this method directly.
   double& getParticleAttributeVal(int ind, int attr_ind);
+
+  //Updates the classical radius of the particle according to mass and charge
+  void updateClassicalRadius();      // m
 
 protected:
 
