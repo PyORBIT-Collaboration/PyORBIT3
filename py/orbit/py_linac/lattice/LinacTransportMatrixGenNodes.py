@@ -60,7 +60,7 @@ class LinacTrMatrixGenNode(MarkerLinacNode):
 
     def getTrMatricesController(self):
         """
-        Returns the LinacTrMatricesContrioller that keeps the references to the TrMatrxGenNodes.
+        Returns the LinacTrMatricesController that keeps the references to the TrMatrxGenNodes.
         """
         return self.trMatricesController
 

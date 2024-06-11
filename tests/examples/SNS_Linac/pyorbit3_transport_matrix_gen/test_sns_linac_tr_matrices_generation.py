@@ -123,7 +123,7 @@ class SNS_Linac_BunchGenerator:
 
 script_dir = os.path.dirname(__file__)
 
-from orbit.py_linac.lattice import LinacTrMatricesContrioller
+from orbit.py_linac.lattice import LinacTrMatricesController
 
 random.seed(100)
 
@@ -240,7 +240,7 @@ for node in aprtNodes:
 
 print("===== Aperture Nodes Added =======")
 
-trMatricesGenerator = LinacTrMatricesContrioller()
+trMatricesGenerator = LinacTrMatricesController()
 
 # ----- prepare the nodes
 # ----- They could be just several nodes of interest or many nodes

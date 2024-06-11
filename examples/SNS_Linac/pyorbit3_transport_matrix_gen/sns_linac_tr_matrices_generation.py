@@ -40,7 +40,7 @@ from orbit.py_linac.lattice_modifications import Replace_BaseRF_Gap_to_AxisField
 sys.path.append("../pyorbit3_linac_model")
 from sns_linac_bunch_generator import SNS_Linac_BunchGenerator
 
-from orbit.py_linac.lattice import LinacTrMatricesContrioller
+from orbit.py_linac.lattice import LinacTrMatricesController
 
 from orbit.core.orbit_utils import Matrix
 
@@ -148,7 +148,7 @@ for node in aprtNodes:
 
 print("===== Aperture Nodes Added =======")
 
-trMatricesGenerator = LinacTrMatricesContrioller()
+trMatricesGenerator = LinacTrMatricesController()
 
 # ----- prepare the nodes
 # ----- They could be just several nodes of interest or many nodes
