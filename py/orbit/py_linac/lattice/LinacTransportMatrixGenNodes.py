@@ -208,7 +208,7 @@ class LinacTrMatricesController:
             node = self.trMatrxNodes[node_ind]
             node.setInternalIndex(node_ind)
 
-    def addTrMatrxGenNodes(self, accLattice, node_or_nodes, place=MarkerLinacNode.ENTRANCE):
+    def addTrMatrixGenNodes(self, accLattice, node_or_nodes, place=MarkerLinacNode.ENTRANCE):
         """
         Adds the LinacTrMatrixGenNode to the nodes as child nodes.
         """
@@ -239,14 +239,14 @@ class LinacTrMatricesController:
         self.init()
         return self.trMatrxNodes
 
-    def addTrMatrxGenNodesAtEntrance(self, accLattice, node_or_node):
+    def addTrMatrixGenNodesAtEntrance(self, accLattice, node_or_nodes):
         """
         Adds the LinacTrMatrixGenNode to the nodes as child nodes at the entrance.
         """
-        self.addTrMatrxGenNodes(accLattice, node_or_nodes, MarkerLinacNode.ENTRANCE)
+        self.addTrMatrixGenNodes(accLattice, node_or_nodes, MarkerLinacNode.ENTRANCE)
 
-    def addTrMatrxGenNodesAtExit(self, accLattice, node_or_node):
+    def addTrMatrixGenNodesAtExit(self, accLattice, node_or_nodes):
         """
         Adds the LinacTrMatrixGenNode to the nodes as child nodes at the exit.
         """
-        self.addTrMatrxGenNodes(accLattice, node_or_nodes, MarkerLinacNode.EXIT)
+        self.addTrMatrixGenNodes(accLattice, node_or_nodes, MarkerLinacNode.EXIT)
