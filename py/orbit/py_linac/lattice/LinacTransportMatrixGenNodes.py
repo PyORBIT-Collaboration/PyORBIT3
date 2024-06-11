@@ -179,9 +179,9 @@ class LinacTrMatrixGenNode(MarkerLinacNode):
             print("")
 
 
-class LinacTrMatricesContrioller:
+class LinacTrMatricesController:
     """
-    LinacTrMatricesContrioller keeps the references to the LinacTrMatrixGenNode
+    LinacTrMatricesController keeps the references to the LinacTrMatrixGenNode
     instances.
     """
 
