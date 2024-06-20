@@ -34,7 +34,7 @@ from orbit.py_linac.lattice.LinacAccLatticeFunc import getAllNodesInLattice
 from orbit.py_linac.lattice.LinacAccLatticeFunc import getAllMagnetsInLattice
 
 from orbit.py_linac.lattice.LinacTransportMatrixGenNodes import LinacTrMatrixGenNode
-from orbit.py_linac.lattice.LinacTransportMatrixGenNodes import LinacTrMatricesContrioller
+from orbit.py_linac.lattice.LinacTransportMatrixGenNodes import LinacTrMatricesController
 
 from orbit.py_linac.lattice.LinacDiagnosticsNodes import LinacBPM
 
@@ -86,6 +86,6 @@ __all__.append("getAllNodesInLattice")
 __all__.append("getAllMagnetsInLattice")
 
 __all__.append("LinacTrMatrixGenNode")
-__all__.append("LinacTrMatricesContrioller")
+__all__.append("LinacTrMatricesController")
 
 __all__.append("LinacBPM")
