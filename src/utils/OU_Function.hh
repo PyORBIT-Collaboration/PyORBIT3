@@ -44,6 +44,11 @@ namespace OrbitUtils{
 
 		void add(double x, double y);
 		void add(double x, double y, double err);
+		
+		void updatePoint(int index, double y);
+		void updatePoint(int index, double y, double err);
+		
+		void removePoint(int index);
 
 		int getSize();
 
@@ -105,6 +110,7 @@ namespace OrbitUtils{
 		//the private methods of the Function class
 		//------------------------------------------
 		void resize();
+		void findMinMaxXY();
 		void finalize(const char* message);
 
 	private:
