@@ -37,6 +37,78 @@ extern "C" {
 	  ((Function*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
+  
+	/** It will return Python Lists with x_arr, y_arr, err_arr */
+  static PyObject* Function_getLists(PyObject *self, PyObject *args){
+	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
+	  int size = cpp_Function->getSize();
+	  PyObject* xPyList = PyList_New(size);
+	  PyObject* yPyList = PyList_New(size);
+	  PyObject* errPyList = PyList_New(size);
+	  for(int ind = 0; ind < size; ind++){
+			if(PyList_SetItem(xPyList,ind,Py_BuildValue("d",cpp_Function->x(ind))) != 0){
+				error("pyFunction: getLists(...)  cannot create a resulting list for x_arr.");
+			}	
+			if(PyList_SetItem(yPyList,ind,Py_BuildValue("d",cpp_Function->y(ind))) != 0){
+				error("pyFunction: getLists(...)  cannot create a resulting list for y_arr.");
+			}
+			if(PyList_SetItem(errPyList,ind,Py_BuildValue("d",cpp_Function->err(ind))) != 0){
+				error("pyFunction: getLists(...)  cannot create a resulting list for err_arr.");
+			}			
+	  }
+	  PyObject* pyRes = PyTuple_New(3);
+	  if(PyTuple_SetItem(pyRes,0,xPyList) != 0){
+	  	error("pyFunction: getLists(...)  cannot put x_arr into resulting tuple.");
+	  }
+	  if(PyTuple_SetItem(pyRes,1,yPyList) != 0){
+	  	error("pyFunction: getLists(...)  cannot put y_arr into resulting tuple.");
+	  }
+	  if(PyTuple_SetItem(pyRes,2,errPyList) != 0){
+	  	error("pyFunction: getLists(...)  cannot put err_arr into resulting tuple.");
+	  }
+		return pyRes;
+  }
+  
+	/** It will init Function with Lists of x_arr, y_arr, err_arr */
+  static PyObject* Function_addLists(PyObject *self, PyObject *args){
+	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
+	  cpp_Function->cleanMemory();
+	  PyObject* xPyList = NULL;
+	  PyObject* yPyList = NULL;
+	  PyObject* errPyList = NULL;
+	  int errPyList_was_null = 0;
+	  int size = 0;
+		if(!PyArg_ParseTuple(	args,"OO|O:",&xPyList,&yPyList,&errPyList))
+			error("pyFunction addLists(x_arr,y_arr) or addLists(x_arr,y_arr,err_arr) - parameters are needed");
+		else{
+			if(PyList_Check(xPyList) == 0 || PyList_Check(yPyList) == 0)
+				error("pyFunction addLists(x_arr,y_arr) or addLists(x_arr,y_arr,err_arr) - parameters are not pyLists.");
+			size = PyList_Size(xPyList);
+			if(size != PyList_Size(yPyList)){
+				error("pyFunction addLists(x_arr,y_arr) or addLists(x_arr,y_arr,err_arr) - len(x_arr) != len(y_arr).");
+			}			
+			if(errPyList == NULL){
+				errPyList_was_null = 1;
+				errPyList = PyList_New(size);
+				for(int ind = 0; ind < size; ind++){
+					if(PyList_SetItem(errPyList,ind,Py_BuildValue("d",0.)) != 0)
+						error("pyFunction: addLists(...)  cannot create a zero values list for err_arr.");
+				}
+			} else {
+				if(PyList_Check(errPyList) == 0 || size != PyList_Size(errPyList))
+					error("pyFunction addLists(x_arr,y_arr,err_arr) - err_arr parameters is not correct pyLists.");				
+			}
+			for(int ind = 0; ind < size; ind++){
+				double x = PyFloat_AsDouble(PyList_GetItem(xPyList,ind));
+				double y = PyFloat_AsDouble(PyList_GetItem(yPyList,ind));
+				double err = PyFloat_AsDouble(PyList_GetItem(errPyList,ind));
+				cpp_Function->add(x,y,err);
+			}		
+		}
+		if(errPyList_was_null == 1) Py_DECREF(errPyList);
+	 	Py_INCREF(Py_None);
+		return Py_None;
+	}
 
 	/** It will add (x,y) or (x,y,err) point to the Function instance */
   static PyObject* Function_add(PyObject *self, PyObject *args){
@@ -80,7 +152,7 @@ extern "C" {
   }
 
 
- 	/** It will return y for a particular index ind */
+ 	/** It will return y for a particular index */
   static PyObject* Function_err(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
 		int ind = -1;
@@ -110,6 +182,33 @@ extern "C" {
 		return Py_BuildValue("(ddd)",cpp_Function->x(ind),cpp_Function->y(ind),cpp_Function->err(ind));
   }
 
+ 	/** It will remove a point with a particular index */
+  static PyObject* Function_removePoint(PyObject *self, PyObject *args){
+	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
+		int ind = -1;
+		if(!PyArg_ParseTuple(	args,"i:",&ind)){
+			error("pyFunction removePoint(index) - parameter is needed");
+		}
+		cpp_Function->removePoint(ind);
+	 	Py_INCREF(Py_None);
+		return Py_None;
+  }
+  
+	/** It will update (y) or (y,err) values for the point with index = index */
+  static PyObject* Function_updatePoint(PyObject *self, PyObject *args){
+	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
+	  int ind = -1;
+	  double y;
+		double err = 0.;
+		if(!PyArg_ParseTuple(	args,"id|d:",&ind,&y,&err))
+			error("pyFunction updatePoint(ind,y) or updatePoint(ind,y,err) - parameters are needed");
+		else {
+			cpp_Function->updatePoint(ind,y,err);
+		}
+		Py_INCREF(Py_None);
+		return Py_None;
+  }  
+  
  	/** It will return minimal x value in the Function */
   static PyObject* Function_getMinX(PyObject *self, PyObject *args){
 	  Function* cpp_Function = (Function*)((pyORBIT_Object*) self)->cpp_obj;
@@ -285,30 +384,34 @@ extern "C" {
 	// defenition of the methods of the python Function wrapper class
 	// they will be vailable from python level
   static PyMethodDef FunctionClassMethods[] = {
-		{ "add",				 	 Function_add,    	    METH_VARARGS,"Adds (x,y) to the Function container."},
-		{ "getSize",		 	 Function_getSize,    	METH_VARARGS,"Returns the number of (x,y) in Function"},
-		{ "x",				     Function_x,          	METH_VARARGS,"Returns x value for a point with a particular index"},
- 		{ "y",				     Function_y,    	      METH_VARARGS,"Returns y value for a point with a particular index"},
- 		{ "err",			     Function_err,    	    METH_VARARGS,"Returns err value for y with a particular index"},
- 		{ "xy",				     Function_xy,    	      METH_VARARGS,"Returns (x,y) value for a point with a particular index"},
- 		{ "xyErr",				 Function_xyErr,    	  METH_VARARGS,"Returns (x,y,err) value for a point with a particular index"},
- 		{ "getMinX",		 	 Function_getMinX,    	METH_VARARGS,"Returns the minimal x value in the Function"},
- 		{ "getMaxX",		 	 Function_getMaxX,    	METH_VARARGS,"Returns the maximal x value in the Function"},
- 		{ "getMinY",		 	 Function_getMinY,    	METH_VARARGS,"Returns the minimal y value in the Function"},
- 		{ "getMaxY",		 	 Function_getMaxY,    	METH_VARARGS,"Returns the maximal y value in the Function"},
- 		{ "clean",			 	 Function_clean,    	  METH_VARARGS,"It will remove all points in the Function"},
- 		{ "cleanMemory",	 Function_cleanMemory,  METH_VARARGS,"It will free the memory and remove all points in the Function"},
- 		{ "getY",				 	 Function_getY,    	    METH_VARARGS,"Returns y for a specified x value "},
- 		{ "getYP",				 Function_getYP,    	  METH_VARARGS,"Returns dy/dx for a specified x value "},
- 		{ "getX",				 	 Function_getX,    	    METH_VARARGS,"Returns x for a specified y value "},
- 		{ "getYErr",			 Function_getYErr,    	METH_VARARGS,"Returns err for a specified y value "},
- 		{ "setConstStep",  Function_setConstStep, METH_VARARGS,"It will set the constant step flag to 1 if it is possible"},
- 		{ "isStepConst", 	 Function_isStepConst,  METH_VARARGS,"It will return 1 if the step is const and 0 otherwise"},
- 		{ "getStepEps", 	 Function_getStepEps,   METH_VARARGS,"It will return the constant step tolerance for x variable"},
- 		{ "setStepEps", 	 Function_setStepEps,   METH_VARARGS,"It will set the constant step tolerance for x variable"},
- 		{ "setInverse",		 Function_setInverse,   METH_VARARGS,"It will build the reverse Function if it is possible and return 1 or 0"},
- 		{ "dump",				   Function_dump,    	    METH_VARARGS,"Prints Function into the std::cout stream or file"},
- 		{ "normalize",	   Function_normalize,    METH_VARARGS,"It will return 1 if it is success and 0 otherwise"},
+		{ "add",				 	   Function_add,    	    METH_VARARGS,"Adds (x,y) to the Function container."},
+		{ "getSize",		 	   Function_getSize,    	METH_VARARGS,"Returns the number of (x,y) in Function"},
+		{ "getXYErrLists",   Function_getLists,   	METH_VARARGS,"Returns tuple (x_arr,y_arr,err_arr) "},
+		{ "initFromLists",   Function_addLists,   	METH_VARARGS,"Initialize Function from lists of (x_arr,y_arr[,err_arr])."},
+		{ "x",				       Function_x,          	METH_VARARGS,"Returns x value for a point with a particular index"},
+ 		{ "y",				       Function_y,    	      METH_VARARGS,"Returns y value for a point with a particular index"},
+ 		{ "err",			       Function_err,    	    METH_VARARGS,"Returns err value for y with a particular index"},
+ 		{ "xy",				       Function_xy,    	      METH_VARARGS,"Returns (x,y) value for a point with a particular index"},
+ 		{ "xyErr",				   Function_xyErr,    	  METH_VARARGS,"Returns (x,y,err) value for a point with a particular index"},
+ 		{ "removePoint",	   Function_removePoint,  METH_VARARGS,"Removes a point with a particular index from the Function"},
+ 		{ "updatePoint",	   Function_updatePoint,  METH_VARARGS,"Updates y or y,err values for a point with a particular index"},
+ 		{ "getMinX",		 	   Function_getMinX,    	METH_VARARGS,"Returns the minimal x value in the Function"},
+ 		{ "getMaxX",		 	   Function_getMaxX,    	METH_VARARGS,"Returns the maximal x value in the Function"},
+ 		{ "getMinY",		 	   Function_getMinY,    	METH_VARARGS,"Returns the minimal y value in the Function"},
+ 		{ "getMaxY",		 	   Function_getMaxY,    	METH_VARARGS,"Returns the maximal y value in the Function"},
+ 		{ "clean",			 	   Function_clean,    	  METH_VARARGS,"It will remove all points in the Function"},
+ 		{ "cleanMemory",	   Function_cleanMemory,  METH_VARARGS,"It will free the memory and remove all points in the Function"},
+ 		{ "getY",				 	   Function_getY,    	    METH_VARARGS,"Returns y for a specified x value "},
+ 		{ "getYP",				   Function_getYP,    	  METH_VARARGS,"Returns dy/dx for a specified x value "},
+ 		{ "getX",				 	   Function_getX,    	    METH_VARARGS,"Returns x for a specified y value "},
+ 		{ "getYErr",			   Function_getYErr,    	METH_VARARGS,"Returns err for a specified y value "},
+ 		{ "setConstStep",    Function_setConstStep, METH_VARARGS,"It will set the constant step flag to 1 if it is possible"},
+ 		{ "isStepConst", 	   Function_isStepConst,  METH_VARARGS,"It will return 1 if the step is const and 0 otherwise"},
+ 		{ "getStepEps", 	   Function_getStepEps,   METH_VARARGS,"It will return the constant step tolerance for x variable"},
+ 		{ "setStepEps", 	   Function_setStepEps,   METH_VARARGS,"It will set the constant step tolerance for x variable"},
+ 		{ "setInverse",		   Function_setInverse,   METH_VARARGS,"It will build the reverse Function if it is possible and return 1 or 0"},
+ 		{ "dump",				     Function_dump,    	    METH_VARARGS,"Prints Function into the std::cout stream or file"},
+ 		{ "normalize",	     Function_normalize,    METH_VARARGS,"It will return 1 if it is success and 0 otherwise"},
     {NULL}
   };
 

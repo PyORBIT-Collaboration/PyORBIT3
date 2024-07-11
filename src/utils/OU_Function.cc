@@ -579,28 +579,89 @@ int Function::setInverse(Function* f_inv)
 	return 1;
 }
 
+void Function::updatePoint(int index, double y){
+	// update one point y value with index = index
+	if(index < 0 || index >= size){
+		return;
+	}
+	y_arr[index] = y;
+	if( y > yMax) { yMax = y;}
+	if( y < yMin) { yMin = y;}
+}
+
+void Function::updatePoint(int index, double y, double err){
+	// update one point y value and error with index = index
+	if(index < 0 || index >= size){
+		return;
+	}
+	y_arr[index] = y;
+	err_arr[index] = err;
+	if( y > yMax) { yMax = y;}
+	if( y < yMin) { yMin = y;}
+}
+
+void Function::removePoint(int index){
+	//Removes the point with index = index
+	if(index < 0 || index >= size){
+		return;
+	}
+	if(size == 1){
+		cleanMemory();
+		return;
+	}
+	double x = x_arr[index];
+	double y = y_arr[index];
+	size = size - 1;
+	for(int ind = index; ind < size; ind++){
+		x_arr[ind] = x_arr[ind+1];
+		y_arr[ind] = y_arr[ind+1];
+		err_arr[ind] = err_arr[ind+1];
+	}
+	if(x == xMin || x == xMax || y == yMin || y == yMax){
+		findMinMaxXY();
+	}
+	inf_const_step = 0;
+}
+
+void Function::findMinMaxXY(){
+	//Finds maximal and minimal values in x_arr and y_arr
+  xMin = 1.0e+300;
+  xMax = -1.0e+300;
+  yMin = 1.0e+300;
+  yMax = -1.0e+300;	
+  if(size == 0){
+  	return;
+  }
+	for(int ind = 0; ind < size; ind++){
+		if(x_arr[ind] < xMin) {xMin = x_arr[ind];}
+		if(x_arr[ind] > xMax) {xMax = x_arr[ind];}
+		if(y_arr[ind] < yMin) {yMin = y_arr[ind];}
+		if(y_arr[ind] > yMax) {yMax = y_arr[ind];}		
+	}
+}
+
 
 void Function::print(ostream& Out)
 {
   if(rank_MPI == 0){
 		Out<<std::setprecision(15)<< std::setiosflags(std::ios::scientific);
     Out<<"% size = "<< getSize() <<std::endl
-       <<"% minX = "<< getMinX() <<std::endl
-       <<"% maxX = "<< getMaxX() <<std::endl
-       <<"% minY = "<< getMinY() <<std::endl
-       <<"% maxY = "<< getMaxY() <<std::endl
-       <<"% x-step const = "<< isStepConst() <<std::endl;
-
-      Out<<"% #i      x     y      y_err "<<std::endl;
-
-        for(int i = 0; i < size; i++){
-          Out<<" "<< i
-	     <<"   \t"<< x_arr[i]
-	     <<"   \t"<< y_arr[i]
-	     <<"   \t"<< err_arr[i]
-             <<std::endl;
-	  if(i % 1000 == 0) Out.flush();
-	}
+    <<"% minX = "<< getMinX() <<std::endl
+    <<"% maxX = "<< getMaxX() <<std::endl
+    <<"% minY = "<< getMinY() <<std::endl
+    <<"% maxY = "<< getMaxY() <<std::endl
+    <<"% x-step const = "<< isStepConst() <<std::endl;
+    
+    Out<<"% #i      x     y      y_err "<<std::endl;
+    
+    for(int i = 0; i < size; i++){
+    	Out<<" "<< i
+    	<<"   \t"<< x_arr[i]
+    	<<"   \t"<< y_arr[i]
+    	<<"   \t"<< err_arr[i]
+    	<<std::endl;
+    	if(i % 1000 == 0) Out.flush();
+	  }
   }
 }
 
