@@ -4,15 +4,6 @@
   <accElement name="MEBT_START" length="0.0" pos="0.0" type="MARKER">
    <parameters/>
   </accElement>
-  <accElement name="MEBT_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="MEBT_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement length="0.0" name="MEBT_START" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
   <accElement length="0.061" name="MEBT_Mag:QH01" pos="0.128" type="QUAD">
    <parameters aperture="0.032" aprt_type="1" field="-34.636"/>
   </accElement>
@@ -62,9 +53,6 @@
    <parameters/>
   </accElement>
   <accElement length="0.0" name="MEBT:ChpPlt:Exit" pos="1.137" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement length="0.0" name="MEBT_Diag:WS04b" pos="1.193" type="MARKER">
    <parameters/>
   </accElement>
   <accElement length="0.0" name="MEBT_Diag:WS04b" pos="1.193" type="MARKER">
@@ -193,15 +181,6 @@
   <accElement length="0.0" name="MEBT_END" pos="3.633" type="MARKER">
    <parameters/>
   </accElement>
-  <accElement name="MEBT_END" length="0.0" pos="3.633" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="MEBT_END" length="0.0" pos="3.633" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="MEBT_END" length="0.0" pos="3.633" type="MARKER">
-   <parameters/>
-  </accElement>
   <Cavities>
    <Cavity ampl="1.0" frequency="   4.025e+08" name="MEBT1" pos="0.528"/>
    <Cavity ampl="1.0" frequency="   4.025e+08" name="MEBT2" pos="1.288"/>
@@ -211,15 +190,6 @@
  </MEBT>
  <DTL1 bpmFrequency="8.05E8" length="4.272517" name="DTL1">
   <accElement name="DTL1_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL1_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL1_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement length="0.0" name="DTL1_START" pos="0." type="MARKER">
    <parameters/>
   </accElement>
   <accElement length="0.035" name="DTL_Mag:PMQH100" pos="0.017500001" type="QUAD">
@@ -903,30 +873,12 @@
   <accElement length="0.0" name="DTL1_END" pos="4.272517" type="MARKER">
    <parameters/>
   </accElement>
-  <accElement name="DTL1_END" length="0.0" pos="4.272517" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL1_END" length="0.0" pos="4.272517" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL1_END" length="0.0" pos="4.272517" type="MARKER">
-   <parameters/>
-  </accElement>
   <Cavities>
    <Cavity ampl="1.0" frequency="   4.025e+08" name="DTL1" pos="2.136258"/>
   </Cavities>
  </DTL1>
  <DTL2 bpmFrequency="8.05E8" length="6.1961" name="DTL2">
   <accElement name="DTL2_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL2_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL2_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement length="0.0" name="DTL2_START" pos="0.0" type="MARKER">
    <parameters/>
   </accElement>
   <accElement length="0.0" name="DTL_RF:Cav02:Rg01" pos="0.0378323" type="RFGAP">
@@ -1481,30 +1433,12 @@
   <accElement length="0.0" name="DTL2_END" pos="6.1961" type="MARKER">
    <parameters/>
   </accElement>
-  <accElement name="DTL2_END" length="0.0" pos="6.1961" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL2_END" length="0.0" pos="6.1961" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL2_END" length="0.0" pos="6.1961" type="MARKER">
-   <parameters/>
-  </accElement>
   <Cavities>
    <Cavity ampl="1.0" frequency="   4.025e+08" name="DTL2" pos="3.09805"/>
   </Cavities>
  </DTL2>
  <DTL3 bpmFrequency="8.05E8" length="6.560294" name="DTL3">
   <accElement name="DTL3_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL3_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL3_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement length="0.0" name="DTL3_START" pos="0.0" type="MARKER">
    <parameters/>
   </accElement>
   <accElement length="0.035" name="DTL_Mag:PMQV300" pos="0.01750001" type="QUAD">
@@ -1909,30 +1843,12 @@
   <accElement length="0.0" name="DTL3_END" pos="6.560294" type="MARKER">
    <parameters/>
   </accElement>
-  <accElement name="DTL3_END" length="0.0" pos="6.560294" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL3_END" length="0.0" pos="6.560294" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL3_END" length="0.0" pos="6.560294" type="MARKER">
-   <parameters/>
-  </accElement>
   <Cavities>
    <Cavity ampl="1.0" frequency="   4.025e+08" name="DTL3" pos="3.280147"/>
   </Cavities>
  </DTL3>
  <DTL4 bpmFrequency="8.05E8" length="6.629533" name="DTL4">
   <accElement name="DTL4_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL4_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL4_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement length="0.0" name="DTL4_START" pos="0.0" type="MARKER">
    <parameters/>
   </accElement>
   <accElement length="0.0" name="DTL_RF:Cav04:Rg01" pos="0.0963756" type="RFGAP">
@@ -2268,30 +2184,12 @@
   <accElement length="0.0" name="DTL4_END" pos="6.629533" type="MARKER">
    <parameters/>
   </accElement>
-  <accElement name="DTL4_END" length="0.0" pos="6.629533" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL4_END" length="0.0" pos="6.629533" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL4_END" length="0.0" pos="6.629533" type="MARKER">
-   <parameters/>
-  </accElement>
   <Cavities>
    <Cavity ampl="1.0" frequency="   4.025e+08" name="DTL4" pos="3.314767"/>
   </Cavities>
  </DTL4>
  <DTL5 bpmFrequency="8.05E8" length="6.596593" name="DTL5">
   <accElement name="DTL5_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL5_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL5_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement length="0.0" name="DTL5_START" pos="0.0" type="MARKER">
    <parameters/>
   </accElement>
   <accElement length="0.035" name="DTL_Mag:PMQH500" pos="0.01750001" type="QUAD">
@@ -2585,30 +2483,12 @@
   <accElement length="0.0" name="DTL5_END" pos="6.596593" type="MARKER">
    <parameters/>
   </accElement>
-  <accElement name="DTL5_END" length="0.0" pos="6.596593" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL5_END" length="0.0" pos="6.596593" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL5_END" length="0.0" pos="6.596593" type="MARKER">
-   <parameters/>
-  </accElement>
   <Cavities>
    <Cavity ampl="1.0" frequency="   4.025e+08" name="DTL5" pos="3.298297"/>
   </Cavities>
  </DTL5>
  <DTL6 bpmFrequency="8.05E8" length="6.443724" name="DTL6">
   <accElement name="DTL6_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL6_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL6_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement length="0.0" name="DTL6_START" pos="0.0" type="MARKER">
    <parameters/>
   </accElement>
   <accElement length="0.0" name="DTL_RF:Cav06:Rg01" pos="0.129979" type="RFGAP">
@@ -2872,30 +2752,12 @@
   <accElement length="0.0" name="DTL6_END" pos="6.443724" type="MARKER">
    <parameters/>
   </accElement>
-  <accElement name="DTL6_END" length="0.0" pos="6.443724" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL6_END" length="0.0" pos="6.443724" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="DTL6_END" length="0.0" pos="6.443724" type="MARKER">
-   <parameters/>
-  </accElement>
   <Cavities>
    <Cavity ampl="1.0" frequency="   4.025e+08" name="DTL6" pos="3.221862"/>
   </Cavities>
  </DTL6>
  <CCL1 bpmFrequency="4.025E8" length="12.302676" name="CCL1">
   <accElement name="CCL1_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="CCL1_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="CCL1_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement length="0.0" name="CCL1_START" pos="0.0" type="MARKER">
    <parameters/>
   </accElement>
   <accElement length="0.06075" name="CCL_Mag:QH00" pos="0.04" type="QUAD">
@@ -3849,30 +3711,12 @@
   <accElement length="0.0" name="CCL1_END" pos="12.302676" type="MARKER">
    <parameters/>
   </accElement>
-  <accElement name="CCL1_END" length="0.0" pos="12.302676" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="CCL1_END" length="0.0" pos="12.302676" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="CCL1_END" length="0.0" pos="12.302676" type="MARKER">
-   <parameters/>
-  </accElement>
   <Cavities>
    <Cavity ampl="1.0" frequency="    8.05e+08" name="CCL1" pos="6.151338"/>
   </Cavities>
  </CCL1>
  <CCL2 bpmFrequency="4.025E8" length="13.392076" name="CCL2">
   <accElement name="CCL2_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="CCL2_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="CCL2_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement length="0.0" name="CCL2_START" pos="0.0" type="MARKER">
    <parameters/>
   </accElement>
   <accElement length="0.0" name="CCL_RF:Cav02:Rg01" pos="0.083837" type="RFGAP">
@@ -4814,30 +4658,12 @@
   <accElement length="0.0" name="CCL2_END" pos="13.392076" type="MARKER">
    <parameters/>
   </accElement>
-  <accElement name="CCL2_END" length="0.0" pos="13.392076" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="CCL2_END" length="0.0" pos="13.392076" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="CCL2_END" length="0.0" pos="13.392076" type="MARKER">
-   <parameters/>
-  </accElement>
   <Cavities>
    <Cavity ampl="1.0" frequency="    8.05e+08" name="CCL2" pos="6.696038"/>
   </Cavities>
  </CCL2>
  <CCL3 bpmFrequency="4.025E8" length="14.481755" name="CCL3">
   <accElement name="CCL3_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="CCL3_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="CCL3_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement length="0.0" name="CCL3_START" pos="0.0" type="MARKER">
    <parameters/>
   </accElement>
   <accElement length="0.0" name="CCL_RF:Cav03:Rg01" pos="0.167446" type="RFGAP">
@@ -5779,30 +5605,12 @@
   <accElement length="0.0" name="CCL3_END" pos="14.481755" type="MARKER">
    <parameters/>
   </accElement>
-  <accElement name="CCL3_END" length="0.0" pos="14.481755" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="CCL3_END" length="0.0" pos="14.481755" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="CCL3_END" length="0.0" pos="14.481755" type="MARKER">
-   <parameters/>
-  </accElement>
   <Cavities>
    <Cavity ampl="1.0" frequency="    8.05e+08" name="CCL3" pos="7.240877"/>
   </Cavities>
  </CCL3>
  <CCL4 bpmFrequency="4.025E8" length="15.097716" name="CCL4">
   <accElement name="CCL4_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="CCL4_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="CCL4_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement length="0.0" name="CCL4_START" pos="0.0" type="MARKER">
    <parameters/>
   </accElement>
   <accElement length="0.0" name="CCL_RF:Cav04:Rg01" pos="0.130816" type="RFGAP">
@@ -6750,30 +6558,12 @@
   <accElement length="0.0" name="CCL4_END" pos="15.097716" type="MARKER">
    <parameters/>
   </accElement>
-  <accElement name="CCL4_END" length="0.0" pos="15.097716" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="CCL4_END" length="0.0" pos="15.097716" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="CCL4_END" length="0.0" pos="15.097716" type="MARKER">
-   <parameters/>
-  </accElement>
   <Cavities>
    <Cavity ampl="1.0" frequency="    8.05e+08" name="CCL4" pos="7.548858"/>
   </Cavities>
  </CCL4>
  <SCLMed bpmFrequency="4.025E8" length="66.962" name="SCLMed">
   <accElement name="SCLMed_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="SCLMed_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="SCLMed_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement length="0.0" name="SCLMed_START" pos="0.0" type="MARKER">
    <parameters/>
   </accElement>
   <accElement length="0.0" name="SCL_Diag:BPM00a" pos="0.221842" type="MARKER">
@@ -8759,15 +8549,6 @@
   <accElement length="0.0" name="SCLMed_END" pos="66.962" type="MARKER">
    <parameters/>
   </accElement>
-  <accElement name="SCLMed_END" length="0.0" pos="66.962" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="SCLMed_END" length="0.0" pos="66.962" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="SCLMed_END" length="0.0" pos="66.962" type="MARKER">
-   <parameters/>
-  </accElement>
   <Cavities>
    <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav01a" pos="3.175812"/>
    <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav01b" pos="4.399238"/>
@@ -8806,15 +8587,6 @@
  </SCLMed>
  <SCLHigh bpmFrequency="4.025E8" length="171.294012" name="SCLHigh">
   <accElement name="SCLHigh_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="SCLHigh_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="SCLHigh_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement length="0.0" name="SCLHigh_START" pos="0.0" type="MARKER">
    <parameters/>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav12a:Rg01" pos="0.1553557" type="RFGAP">
@@ -11617,7 +11389,7 @@
    <parameters B="0.0" effLength="0.38"/>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25a:Rg01" pos="102.73836" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.00261914" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25a" mode="0" phase="-173.93"/>
+   <parameters E0L="0.00379833" E0TL="0.00261914" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25a" mode="0" phase=" 166.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -11626,7 +11398,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25a:Rg02" pos="102.8924" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00251993" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25a" mode="1" phase="177.77"/>
+   <parameters E0L="0.0031666" E0TL="0.00251993" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25a" mode="1" phase=" 157.0487"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -11635,7 +11407,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25a:Rg03" pos="103.0434" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252043" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25a" mode="0" phase="165.99"/>
+   <parameters E0L="0.00317036" E0TL="0.00252043" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25a" mode="0" phase=" 143.7384"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -11644,7 +11416,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25a:Rg04" pos="103.19439" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252092" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25a" mode="1" phase="154.14"/>
+   <parameters E0L="0.00317694" E0TL="0.00252092" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25a" mode="1" phase=" 130.3660"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -11653,7 +11425,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25a:Rg05" pos="103.34538" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252136" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25a" mode="0" phase="142.23"/>
+   <parameters E0L="0.00318647" E0TL="0.00252136" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25a" mode="0" phase=" 116.9526"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -11662,7 +11434,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25a:Rg06" pos="103.49823" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00262367" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25a" mode="1" phase="132.31"/>
+   <parameters E0L="0.00416173" E0TL="0.00262367" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25a" mode="1" phase=" 105.5624"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -11671,7 +11443,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25b:Rg01" pos="104.18578" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.0026245" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25b" mode="0" phase="-172.91"/>
+   <parameters E0L="0.00379833" E0TL="0.0026245" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25b" mode="0" phase=" 167.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -11680,7 +11452,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25b:Rg02" pos="104.33983" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.0025227" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25b" mode="1" phase="178.37"/>
+   <parameters E0L="0.0031666" E0TL="0.0025227" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25b" mode="1" phase=" 157.7691"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -11689,7 +11461,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25b:Rg03" pos="104.49082" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252319" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25b" mode="0" phase="166.19"/>
+   <parameters E0L="0.00317036" E0TL="0.00252319" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25b" mode="0" phase=" 144.1641"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -11698,7 +11470,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25b:Rg04" pos="104.64181" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252366" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25b" mode="1" phase="153.94"/>
+   <parameters E0L="0.00317694" E0TL="0.00252366" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25b" mode="1" phase=" 130.5088"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -11707,7 +11479,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25b:Rg05" pos="104.79281" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252409" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25b" mode="0" phase="141.63"/>
+   <parameters E0L="0.00318647" E0TL="0.00252409" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25b" mode="0" phase=" 116.8244"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -11716,7 +11488,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25b:Rg06" pos="104.94565" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.0026289" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25b" mode="1" phase="131.31"/>
+   <parameters E0L="0.00416173" E0TL="0.0026289" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25b" mode="1" phase=" 105.1384"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -11725,7 +11497,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25c:Rg01" pos="105.5012" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.0026297" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25c" mode="0" phase="-171.92"/>
+   <parameters E0L="0.00379833" E0TL="0.0026297" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25c" mode="0" phase=" 167.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -11734,7 +11506,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25c:Rg02" pos="105.65525" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00252538" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25c" mode="1" phase="178.96"/>
+   <parameters E0L="0.0031666" E0TL="0.00252538" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25c" mode="1" phase=" 157.4847"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -11743,7 +11515,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25c:Rg03" pos="105.80624" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252585" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25c" mode="0" phase="166.39"/>
+   <parameters E0L="0.00317036" E0TL="0.00252585" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25c" mode="0" phase=" 143.6023"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -11752,7 +11524,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25c:Rg04" pos="105.95724" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252631" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25c" mode="1" phase="153.75"/>
+   <parameters E0L="0.00317694" E0TL="0.00252631" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25c" mode="1" phase=" 129.6820"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -11761,7 +11533,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25c:Rg05" pos="106.10823" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252673" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25c" mode="0" phase="141.04"/>
+   <parameters E0L="0.00318647" E0TL="0.00252673" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25c" mode="0" phase=" 115.7122"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -11770,7 +11542,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25c:Rg06" pos="106.26108" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00263396" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25c" mode="1" phase="130.33"/>
+   <parameters E0L="0.00416173" E0TL="0.00263396" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25c" mode="1" phase=" 103.7611"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -11779,7 +11551,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25d:Rg01" pos="106.94863" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.00263473" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25d" mode="0" phase="-170.96"/>
+   <parameters E0L="0.00379833" E0TL="0.00263473" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25d" mode="0" phase=" 168.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -11788,7 +11560,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25d:Rg02" pos="107.10267" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00252797" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25d" mode="1" phase="179.53"/>
+   <parameters E0L="0.0031666" E0TL="0.00252797" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25d" mode="1" phase=" 158.1980"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -11797,7 +11569,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25d:Rg03" pos="107.25367" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252842" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25d" mode="0" phase="166.58"/>
+   <parameters E0L="0.00317036" E0TL="0.00252842" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25d" mode="0" phase=" 144.0576"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -11806,7 +11578,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25d:Rg04" pos="107.40466" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252886" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25d" mode="1" phase="153.56"/>
+   <parameters E0L="0.00317694" E0TL="0.00252886" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25d" mode="1" phase=" 129.8580"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -11815,7 +11587,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25d:Rg05" pos="107.55566" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252927" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25d" mode="0" phase="140.48"/>
+   <parameters E0L="0.00318647" E0TL="0.00252927" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25d" mode="0" phase=" 115.6316"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -11824,7 +11596,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav25d:Rg06" pos="107.7085" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00263886" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25d" mode="1" phase="129.39"/>
+   <parameters E0L="0.00416173" E0TL="0.00263886" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav25d" mode="1" phase=" 103.3993"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -11863,7 +11635,7 @@
    <parameters B="0.0" effLength="0.38"/>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27a:Rg01" pos="118.52036" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.00261914" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27a" mode="0" phase="-173.93"/>
+   <parameters E0L="0.00379833" E0TL="0.00261914" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27a" mode="0" phase=" 169.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -11872,7 +11644,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27a:Rg02" pos="118.6744" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00251993" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27a" mode="1" phase="177.77"/>
+   <parameters E0L="0.0031666" E0TL="0.00251993" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27a" mode="1" phase=" 158.9274"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -11881,7 +11653,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27a:Rg03" pos="118.8254" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252043" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27a" mode="0" phase="165.99"/>
+   <parameters E0L="0.00317036" E0TL="0.00252043" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27a" mode="0" phase=" 144.5226"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -11890,7 +11662,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27a:Rg04" pos="118.97639" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252092" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27a" mode="1" phase="154.14"/>
+   <parameters E0L="0.00317694" E0TL="0.00252092" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27a" mode="1" phase=" 130.0595"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -11899,7 +11671,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27a:Rg05" pos="119.12738" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252136" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27a" mode="0" phase="142.23"/>
+   <parameters E0L="0.00318647" E0TL="0.00252136" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27a" mode="0" phase=" 115.5592"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -11908,7 +11680,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27a:Rg06" pos="119.28023" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00262367" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27a" mode="1" phase="132.31"/>
+   <parameters E0L="0.00416173" E0TL="0.00262367" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27a" mode="1" phase=" 103.0724"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -11917,7 +11689,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27b:Rg01" pos="119.96778" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.0026245" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27b" mode="0" phase="-172.91"/>
+   <parameters E0L="0.00379833" E0TL="0.0026245" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27b" mode="0" phase=" 169.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -11926,7 +11698,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27b:Rg02" pos="120.12183" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.0025227" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27b" mode="1" phase="178.37"/>
+   <parameters E0L="0.0031666" E0TL="0.0025227" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27b" mode="1" phase=" 158.6730"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -11935,7 +11707,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27b:Rg03" pos="120.27282" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252319" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27b" mode="0" phase="166.19"/>
+   <parameters E0L="0.00317036" E0TL="0.00252319" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27b" mode="0" phase=" 143.9985"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -11944,7 +11716,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27b:Rg04" pos="120.42381" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252366" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27b" mode="1" phase="153.94"/>
+   <parameters E0L="0.00317694" E0TL="0.00252366" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27b" mode="1" phase=" 129.2780"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -11953,7 +11725,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27b:Rg05" pos="120.57481" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252409" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27b" mode="0" phase="141.63"/>
+   <parameters E0L="0.00318647" E0TL="0.00252409" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27b" mode="0" phase=" 114.5325"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -11962,7 +11734,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27b:Rg06" pos="120.72765" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.0026289" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27b" mode="1" phase="131.31"/>
+   <parameters E0L="0.00416173" E0TL="0.0026289" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27b" mode="1" phase=" 101.7770"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -11971,7 +11743,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27c:Rg01" pos="121.2832" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.0026297" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27c" mode="0" phase="-171.92"/>
+   <parameters E0L="0.00379833" E0TL="0.0026297" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27c" mode="0" phase=" 170.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -11980,7 +11752,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27c:Rg02" pos="121.43725" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00252538" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27c" mode="1" phase="178.96"/>
+   <parameters E0L="0.0031666" E0TL="0.00252538" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27c" mode="1" phase=" 159.4156"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -11989,7 +11761,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27c:Rg03" pos="121.58824" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252585" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27c" mode="0" phase="166.39"/>
+   <parameters E0L="0.00317036" E0TL="0.00252585" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27c" mode="0" phase=" 144.4899"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -11998,7 +11770,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27c:Rg04" pos="121.73924" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252631" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27c" mode="1" phase="153.75"/>
+   <parameters E0L="0.00317694" E0TL="0.00252631" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27c" mode="1" phase=" 129.5297"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -12007,7 +11779,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27c:Rg05" pos="121.89023" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252673" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27c" mode="0" phase="141.04"/>
+   <parameters E0L="0.00318647" E0TL="0.00252673" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27c" mode="0" phase=" 114.5232"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -12016,7 +11788,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27c:Rg06" pos="122.04308" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00263396" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27c" mode="1" phase="130.33"/>
+   <parameters E0L="0.00416173" E0TL="0.00263396" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27c" mode="1" phase=" 101.5260"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -12025,7 +11797,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27d:Rg01" pos="122.73063" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.00263473" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27d" mode="0" phase="-170.96"/>
+   <parameters E0L="0.00379833" E0TL="0.00263473" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27d" mode="0" phase=" 171.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -12034,7 +11806,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27d:Rg02" pos="122.88467" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00252797" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27d" mode="1" phase="179.53"/>
+   <parameters E0L="0.0031666" E0TL="0.00252797" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27d" mode="1" phase=" 160.1516"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -12043,7 +11815,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27d:Rg03" pos="123.03567" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252842" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27d" mode="0" phase="166.58"/>
+   <parameters E0L="0.00317036" E0TL="0.00252842" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27d" mode="0" phase=" 144.9896"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -12052,7 +11824,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27d:Rg04" pos="123.18666" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252886" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27d" mode="1" phase="153.56"/>
+   <parameters E0L="0.00317694" E0TL="0.00252886" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27d" mode="1" phase=" 129.7720"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -12061,7 +11833,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27d:Rg05" pos="123.33766" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252927" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27d" mode="0" phase="140.48"/>
+   <parameters E0L="0.00318647" E0TL="0.00252927" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27d" mode="0" phase=" 114.5306"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -12070,7 +11842,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav27d:Rg06" pos="123.4905" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00263886" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27d" mode="1" phase="129.39"/>
+   <parameters E0L="0.00416173" E0TL="0.00263886" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav27d" mode="1" phase=" 101.2740"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -12094,7 +11866,7 @@
    <parameters B="0.0" effLength="0.38"/>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28a:Rg01" pos="126.41136" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.00261914" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28a" mode="0" phase="-173.93"/>
+   <parameters E0L="0.00379833" E0TL="0.00261914" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28a" mode="0" phase=" 171.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -12103,7 +11875,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28a:Rg02" pos="126.5654" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00251993" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28a" mode="1" phase="177.77"/>
+   <parameters E0L="0.0031666" E0TL="0.00251993" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28a" mode="1" phase=" 159.9032"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -12112,7 +11884,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28a:Rg03" pos="126.7164" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252043" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28a" mode="0" phase="165.99"/>
+   <parameters E0L="0.00317036" E0TL="0.00252043" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28a" mode="0" phase=" 144.4989"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -12121,7 +11893,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28a:Rg04" pos="126.86739" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252092" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28a" mode="1" phase="154.14"/>
+   <parameters E0L="0.00317694" E0TL="0.00252092" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28a" mode="1" phase=" 129.0402"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -12130,7 +11902,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28a:Rg05" pos="127.01838" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252136" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28a" mode="0" phase="142.23"/>
+   <parameters E0L="0.00318647" E0TL="0.00252136" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28a" mode="0" phase=" 113.5480"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -12139,7 +11911,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28a:Rg06" pos="127.17123" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00262367" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28a" mode="1" phase="132.31"/>
+   <parameters E0L="0.00416173" E0TL="0.00262367" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28a" mode="1" phase=" 100.0608"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -12148,7 +11920,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28b:Rg01" pos="127.85878" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.0026245" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28b" mode="0" phase="-172.91"/>
+   <parameters E0L="0.00379833" E0TL="0.0026245" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28b" mode="0" phase=" 172.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -12157,7 +11929,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28b:Rg02" pos="128.01283" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.0025227" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28b" mode="1" phase="178.37"/>
+   <parameters E0L="0.0031666" E0TL="0.0025227" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28b" mode="1" phase=" 160.6729"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -12166,7 +11938,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28b:Rg03" pos="128.16382" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252319" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28b" mode="0" phase="166.19"/>
+   <parameters E0L="0.00317036" E0TL="0.00252319" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28b" mode="0" phase=" 145.0222"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -12175,7 +11947,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28b:Rg04" pos="128.31481" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252366" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28b" mode="1" phase="153.94"/>
+   <parameters E0L="0.00317694" E0TL="0.00252366" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28b" mode="1" phase=" 129.3286"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -12184,7 +11956,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28b:Rg05" pos="128.46581" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252409" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28b" mode="0" phase="141.63"/>
+   <parameters E0L="0.00318647" E0TL="0.00252409" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28b" mode="0" phase=" 113.6128"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -12193,7 +11965,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28b:Rg06" pos="128.61865" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.0026289" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28b" mode="1" phase="131.31"/>
+   <parameters E0L="0.00416173" E0TL="0.0026289" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28b" mode="1" phase="  99.8778"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -12202,7 +11974,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28c:Rg01" pos="129.1742" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.0026297" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28c" mode="0" phase="-171.92"/>
+   <parameters E0L="0.00379833" E0TL="0.0026297" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28c" mode="0" phase=" 172.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -12211,7 +11983,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28c:Rg02" pos="129.32825" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00252538" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28c" mode="1" phase="178.96"/>
+   <parameters E0L="0.0031666" E0TL="0.00252538" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28c" mode="1" phase=" 160.4359"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -12220,7 +11992,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28c:Rg03" pos="129.47924" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252585" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28c" mode="0" phase="166.39"/>
+   <parameters E0L="0.00317036" E0TL="0.00252585" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28c" mode="0" phase=" 144.5541"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -12229,7 +12001,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28c:Rg04" pos="129.63024" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252631" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28c" mode="1" phase="153.75"/>
+   <parameters E0L="0.00317694" E0TL="0.00252631" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28c" mode="1" phase=" 128.6413"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -12238,7 +12010,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28c:Rg05" pos="129.78123" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252673" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28c" mode="0" phase="141.04"/>
+   <parameters E0L="0.00318647" E0TL="0.00252673" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28c" mode="0" phase=" 112.6857"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -12247,7 +12019,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28c:Rg06" pos="129.93408" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00263396" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28c" mode="1" phase="130.33"/>
+   <parameters E0L="0.00416173" E0TL="0.00263396" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28c" mode="1" phase="  98.7311"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -12256,7 +12028,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28d:Rg01" pos="130.62163" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.00263473" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28d" mode="0" phase="-170.96"/>
+   <parameters E0L="0.00379833" E0TL="0.00263473" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28d" mode="0" phase=" 173.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -12265,7 +12037,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28d:Rg02" pos="130.77567" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00252797" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28d" mode="1" phase="179.53"/>
+   <parameters E0L="0.0031666" E0TL="0.00252797" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28d" mode="1" phase=" 161.1948"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -12274,7 +12046,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28d:Rg03" pos="130.92667" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252842" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28d" mode="0" phase="166.58"/>
+   <parameters E0L="0.00317036" E0TL="0.00252842" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28d" mode="0" phase=" 145.0990"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -12283,7 +12055,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28d:Rg04" pos="131.07766" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252886" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28d" mode="1" phase="153.56"/>
+   <parameters E0L="0.00317694" E0TL="0.00252886" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28d" mode="1" phase=" 128.9510"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -12292,7 +12064,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28d:Rg05" pos="131.22866" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252927" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28d" mode="0" phase="140.48"/>
+   <parameters E0L="0.00318647" E0TL="0.00252927" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28d" mode="0" phase=" 112.7824"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -12301,7 +12073,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav28d:Rg06" pos="131.3815" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00263886" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28d" mode="1" phase="129.39"/>
+   <parameters E0L="0.00416173" E0TL="0.00263886" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav28d" mode="1" phase="  98.5906"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -12325,7 +12097,7 @@
    <parameters B="0.0" effLength="0.38"/>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29a:Rg01" pos="134.30236" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.00261914" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29a" mode="0" phase="-173.93"/>
+   <parameters E0L="0.00379833" E0TL="0.00261914" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29a" mode="0" phase=" 174.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -12334,7 +12106,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29a:Rg02" pos="134.4564" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00251993" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29a" mode="1" phase="177.77"/>
+   <parameters E0L="0.0031666" E0TL="0.00251993" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29a" mode="1" phase=" 161.9679"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -12343,7 +12115,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29a:Rg03" pos="134.6074" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252043" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29a" mode="0" phase="165.99"/>
+   <parameters E0L="0.00317036" E0TL="0.00252043" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29a" mode="0" phase=" 145.6505"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -12352,7 +12124,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29a:Rg04" pos="134.75839" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252092" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29a" mode="1" phase="154.14"/>
+   <parameters E0L="0.00317694" E0TL="0.00252092" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29a" mode="1" phase=" 129.2816"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -12361,7 +12133,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29a:Rg05" pos="134.90938" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252136" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29a" mode="0" phase="142.23"/>
+   <parameters E0L="0.00318647" E0TL="0.00252136" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29a" mode="0" phase=" 112.8815"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -12370,7 +12142,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29a:Rg06" pos="135.06223" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00262367" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29a" mode="1" phase="132.31"/>
+   <parameters E0L="0.00416173" E0TL="0.00262367" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29a" mode="1" phase="  98.4775"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -12379,7 +12151,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29b:Rg01" pos="135.74978" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.0026245" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29b" mode="0" phase="-172.91"/>
+   <parameters E0L="0.00379833" E0TL="0.0026245" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29b" mode="0" phase=" 174.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -12388,7 +12160,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29b:Rg02" pos="135.90383" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.0025227" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29b" mode="1" phase="178.37"/>
+   <parameters E0L="0.0031666" E0TL="0.0025227" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29b" mode="1" phase=" 161.7556"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -12397,7 +12169,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29b:Rg03" pos="136.05482" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252319" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29b" mode="0" phase="166.19"/>
+   <parameters E0L="0.00317036" E0TL="0.00252319" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29b" mode="0" phase=" 145.2097"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -12406,7 +12178,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29b:Rg04" pos="136.20581" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252366" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29b" mode="1" phase="153.94"/>
+   <parameters E0L="0.00317694" E0TL="0.00252366" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29b" mode="1" phase=" 128.6241"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -12415,7 +12187,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29b:Rg05" pos="136.35681" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252409" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29b" mode="0" phase="141.63"/>
+   <parameters E0L="0.00318647" E0TL="0.00252409" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29b" mode="0" phase=" 112.0192"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -12424,7 +12196,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29b:Rg06" pos="136.50965" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.0026289" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29b" mode="1" phase="131.31"/>
+   <parameters E0L="0.00416173" E0TL="0.0026289" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29b" mode="1" phase="  97.3872"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -12433,7 +12205,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29c:Rg01" pos="137.0652" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.0026297" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29c" mode="0" phase="-171.92"/>
+   <parameters E0L="0.00379833" E0TL="0.0026297" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29c" mode="0" phase=" 175.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -12442,7 +12214,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29c:Rg02" pos="137.21925" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00252538" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29c" mode="1" phase="178.96"/>
+   <parameters E0L="0.0031666" E0TL="0.00252538" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29c" mode="1" phase=" 162.5386"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -12451,7 +12223,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29c:Rg03" pos="137.37024" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252585" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29c" mode="0" phase="166.39"/>
+   <parameters E0L="0.00317036" E0TL="0.00252585" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29c" mode="0" phase=" 145.7808"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -12460,7 +12232,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29c:Rg04" pos="137.52124" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252631" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29c" mode="1" phase="153.75"/>
+   <parameters E0L="0.00317694" E0TL="0.00252631" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29c" mode="1" phase=" 128.9945"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -12469,7 +12241,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29c:Rg05" pos="137.67223" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252673" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29c" mode="0" phase="141.04"/>
+   <parameters E0L="0.00318647" E0TL="0.00252673" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29c" mode="0" phase=" 112.1678"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -12478,7 +12250,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29c:Rg06" pos="137.82508" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00263396" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29c" mode="1" phase="130.33"/>
+   <parameters E0L="0.00416173" E0TL="0.00263396" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29c" mode="1" phase="  97.3331"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -12487,7 +12259,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29d:Rg01" pos="138.51263" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.00263473" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29d" mode="0" phase="-170.96"/>
+   <parameters E0L="0.00379833" E0TL="0.00263473" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29d" mode="0" phase=" 175.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -12496,7 +12268,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29d:Rg02" pos="138.66667" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00252797" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29d" mode="1" phase="179.53"/>
+   <parameters E0L="0.0031666" E0TL="0.00252797" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29d" mode="1" phase=" 162.3141"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -12505,7 +12277,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29d:Rg03" pos="138.81767" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252842" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29d" mode="0" phase="166.58"/>
+   <parameters E0L="0.00317036" E0TL="0.00252842" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29d" mode="0" phase=" 145.3587"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -12514,7 +12286,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29d:Rg04" pos="138.96866" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252886" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29d" mode="1" phase="153.56"/>
+   <parameters E0L="0.00317694" E0TL="0.00252886" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29d" mode="1" phase=" 128.3542"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -12523,7 +12295,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29d:Rg05" pos="139.11966" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252927" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29d" mode="0" phase="140.48"/>
+   <parameters E0L="0.00318647" E0TL="0.00252927" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29d" mode="0" phase=" 111.3317"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -12532,7 +12304,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav29d:Rg06" pos="139.2725" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00263886" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29d" mode="1" phase="129.39"/>
+   <parameters E0L="0.00416173" E0TL="0.00263886" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav29d" mode="1" phase="  96.2781"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -12556,7 +12328,7 @@
    <parameters B="0.0" effLength="0.38"/>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30a:Rg01" pos="142.19336" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.00261914" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30a" mode="0" phase="-173.93"/>
+   <parameters E0L="0.00379833" E0TL="0.00261914" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30a" mode="0" phase=" 176.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -12565,7 +12337,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30a:Rg02" pos="142.3474" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00251993" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30a" mode="1" phase="177.77"/>
+   <parameters E0L="0.0031666" E0TL="0.00251993" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30a" mode="1" phase=" 163.1062"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -12574,7 +12346,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30a:Rg03" pos="142.4984" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252043" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30a" mode="0" phase="165.99"/>
+   <parameters E0L="0.00317036" E0TL="0.00252043" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30a" mode="0" phase=" 145.9478"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -12583,7 +12355,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30a:Rg04" pos="142.64939" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252092" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30a" mode="1" phase="154.14"/>
+   <parameters E0L="0.00317694" E0TL="0.00252092" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30a" mode="1" phase=" 128.7407"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -12592,7 +12364,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30a:Rg05" pos="142.80038" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252136" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30a" mode="0" phase="142.23"/>
+   <parameters E0L="0.00318647" E0TL="0.00252136" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30a" mode="0" phase=" 111.5052"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -12601,7 +12373,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30a:Rg06" pos="142.95323" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00262367" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30a" mode="1" phase="132.31"/>
+   <parameters E0L="0.00416173" E0TL="0.00262367" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30a" mode="1" phase="  96.2579"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -12610,7 +12382,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30b:Rg01" pos="143.64078" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.0026245" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30b" mode="0" phase="-172.91"/>
+   <parameters E0L="0.00379833" E0TL="0.0026245" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30b" mode="0" phase=" 176.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -12619,7 +12391,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30b:Rg02" pos="143.79483" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.0025227" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30b" mode="1" phase="178.37"/>
+   <parameters E0L="0.0031666" E0TL="0.0025227" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30b" mode="1" phase=" 162.9122"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -12628,7 +12400,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30b:Rg03" pos="143.94582" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252319" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30b" mode="0" phase="166.19"/>
+   <parameters E0L="0.00317036" E0TL="0.00252319" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30b" mode="0" phase=" 145.5432"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -12637,7 +12409,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30b:Rg04" pos="144.09681" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252366" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30b" mode="1" phase="153.94"/>
+   <parameters E0L="0.00317694" E0TL="0.00252366" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30b" mode="1" phase=" 128.1372"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -12646,7 +12418,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30b:Rg05" pos="144.24781" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252409" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30b" mode="0" phase="141.63"/>
+   <parameters E0L="0.00318647" E0TL="0.00252409" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30b" mode="0" phase=" 110.7144"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -12655,7 +12427,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30b:Rg06" pos="144.40065" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.0026289" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30b" mode="1" phase="131.31"/>
+   <parameters E0L="0.00416173" E0TL="0.0026289" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30b" mode="1" phase="  95.2568"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -12664,7 +12436,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30c:Rg01" pos="144.9562" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.0026297" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30c" mode="0" phase="-171.92"/>
+   <parameters E0L="0.00379833" E0TL="0.0026297" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30c" mode="0" phase=" 177.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -12673,7 +12445,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30c:Rg02" pos="145.11025" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00252538" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30c" mode="1" phase="178.96"/>
+   <parameters E0L="0.0031666" E0TL="0.00252538" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30c" mode="1" phase=" 163.7128"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -12682,7 +12454,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30c:Rg03" pos="145.26124" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252585" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30c" mode="0" phase="166.39"/>
+   <parameters E0L="0.00317036" E0TL="0.00252585" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30c" mode="0" phase=" 146.1491"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -12691,7 +12463,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30c:Rg04" pos="145.41224" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252631" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30c" mode="1" phase="153.75"/>
+   <parameters E0L="0.00317694" E0TL="0.00252631" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30c" mode="1" phase=" 128.5595"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -12700,7 +12472,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30c:Rg05" pos="145.56323" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252673" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30c" mode="0" phase="141.04"/>
+   <parameters E0L="0.00318647" E0TL="0.00252673" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30c" mode="0" phase=" 110.9318"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -12709,7 +12481,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30c:Rg06" pos="145.71608" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00263396" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30c" mode="1" phase="130.33"/>
+   <parameters E0L="0.00416173" E0TL="0.00263396" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30c" mode="1" phase="  95.2887"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -12718,7 +12490,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30d:Rg01" pos="146.40363" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.00263473" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30d" mode="0" phase="-170.96"/>
+   <parameters E0L="0.00379833" E0TL="0.00263473" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30d" mode="0" phase=" 177.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -12727,7 +12499,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30d:Rg02" pos="146.55767" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00252797" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30d" mode="1" phase="179.53"/>
+   <parameters E0L="0.0031666" E0TL="0.00252797" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30d" mode="1" phase=" 163.5055"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -12736,7 +12508,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30d:Rg03" pos="146.70867" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252842" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30d" mode="0" phase="166.58"/>
+   <parameters E0L="0.00317036" E0TL="0.00252842" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30d" mode="0" phase=" 145.7606"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -12745,7 +12517,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30d:Rg04" pos="146.85966" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252886" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30d" mode="1" phase="153.56"/>
+   <parameters E0L="0.00317694" E0TL="0.00252886" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30d" mode="1" phase=" 127.9692"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -12754,7 +12526,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30d:Rg05" pos="147.01066" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252927" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30d" mode="0" phase="140.48"/>
+   <parameters E0L="0.00318647" E0TL="0.00252927" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30d" mode="0" phase=" 110.1622"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -12763,7 +12535,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav30d:Rg06" pos="147.1635" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00263886" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30d" mode="1" phase="129.39"/>
+   <parameters E0L="0.00416173" E0TL="0.00263886" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav30d" mode="1" phase="  94.3166"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -12787,7 +12559,7 @@
    <parameters B="0.0" effLength="0.38"/>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31a:Rg01" pos="150.08436" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.00261914" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31a" mode="0" phase="-173.93"/>
+   <parameters E0L="0.00379833" E0TL="0.00261914" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31a" mode="0" phase=" 178.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -12796,7 +12568,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31a:Rg02" pos="150.2384" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00251993" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31a" mode="1" phase="177.77"/>
+   <parameters E0L="0.0031666" E0TL="0.00251993" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31a" mode="1" phase=" 164.3139"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -12805,7 +12577,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31a:Rg03" pos="150.3894" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252043" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31a" mode="0" phase="165.99"/>
+   <parameters E0L="0.00317036" E0TL="0.00252043" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31a" mode="0" phase=" 146.3820"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -12814,7 +12586,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31a:Rg04" pos="150.54039" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252092" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31a" mode="1" phase="154.14"/>
+   <parameters E0L="0.00317694" E0TL="0.00252092" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31a" mode="1" phase=" 128.4040"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -12823,7 +12595,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31a:Rg05" pos="150.69138" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252136" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31a" mode="0" phase="142.23"/>
+   <parameters E0L="0.00318647" E0TL="0.00252136" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31a" mode="0" phase=" 110.3997"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -12832,7 +12604,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31a:Rg06" pos="150.84423" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00262367" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31a" mode="1" phase="132.31"/>
+   <parameters E0L="0.00416173" E0TL="0.00262367" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31a" mode="1" phase="  94.3763"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -12841,7 +12613,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31b:Rg01" pos="151.53178" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.0026245" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31b" mode="0" phase="-172.91"/>
+   <parameters E0L="0.00379833" E0TL="0.0026245" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31b" mode="0" phase=" 178.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -12850,7 +12622,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31b:Rg02" pos="151.68583" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.0025227" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31b" mode="1" phase="178.37"/>
+   <parameters E0L="0.0031666" E0TL="0.0025227" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31b" mode="1" phase=" 164.1357"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -12859,7 +12631,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31b:Rg03" pos="151.83682" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252319" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31b" mode="0" phase="166.19"/>
+   <parameters E0L="0.00317036" E0TL="0.00252319" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31b" mode="0" phase=" 146.0086"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -12868,7 +12640,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31b:Rg04" pos="151.98781" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252366" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31b" mode="1" phase="153.94"/>
+   <parameters E0L="0.00317694" E0TL="0.00252366" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31b" mode="1" phase=" 127.8470"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -12877,7 +12649,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31b:Rg05" pos="152.13881" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252409" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31b" mode="0" phase="141.63"/>
+   <parameters E0L="0.00318647" E0TL="0.00252409" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31b" mode="0" phase=" 109.6707"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -12886,7 +12658,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31b:Rg06" pos="152.29165" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.0026289" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31b" mode="1" phase="131.31"/>
+   <parameters E0L="0.00416173" E0TL="0.0026289" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31b" mode="1" phase="  93.4522"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -12895,7 +12667,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31c:Rg01" pos="152.8472" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.0026297" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31c" mode="0" phase="-171.92"/>
+   <parameters E0L="0.00379833" E0TL="0.0026297" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31c" mode="0" phase=" 178.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -12904,7 +12676,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31c:Rg02" pos="153.00125" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00252538" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31c" mode="1" phase="178.96"/>
+   <parameters E0L="0.0031666" E0TL="0.00252538" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31c" mode="1" phase=" 163.9518"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -12913,7 +12685,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31c:Rg03" pos="153.15224" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252585" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31c" mode="0" phase="166.39"/>
+   <parameters E0L="0.00317036" E0TL="0.00252585" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31c" mode="0" phase=" 145.6453"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -12922,7 +12694,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31c:Rg04" pos="153.30324" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252631" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31c" mode="1" phase="153.75"/>
+   <parameters E0L="0.00317694" E0TL="0.00252631" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31c" mode="1" phase=" 127.3156"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -12931,7 +12703,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31c:Rg05" pos="153.45423" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252673" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31c" mode="0" phase="141.04"/>
+   <parameters E0L="0.00318647" E0TL="0.00252673" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31c" mode="0" phase=" 108.9507"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -12940,7 +12712,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31c:Rg06" pos="153.60708" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00263396" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31c" mode="1" phase="130.33"/>
+   <parameters E0L="0.00416173" E0TL="0.00263396" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31c" mode="1" phase="  92.5635"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -12949,7 +12721,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31d:Rg01" pos="154.29463" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.00263473" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31d" mode="0" phase="-170.96"/>
+   <parameters E0L="0.00379833" E0TL="0.00263473" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31d" mode="0" phase=" 179.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -12958,7 +12730,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31d:Rg02" pos="154.44867" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00252797" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31d" mode="1" phase="179.53"/>
+   <parameters E0L="0.0031666" E0TL="0.00252797" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31d" mode="1" phase=" 164.7617"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -12967,7 +12739,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31d:Rg03" pos="154.59967" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252842" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31d" mode="0" phase="166.58"/>
+   <parameters E0L="0.00317036" E0TL="0.00252842" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31d" mode="0" phase=" 146.2907"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -12976,7 +12748,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31d:Rg04" pos="154.75066" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252886" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31d" mode="1" phase="153.56"/>
+   <parameters E0L="0.00317694" E0TL="0.00252886" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31d" mode="1" phase=" 127.7756"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -12985,7 +12757,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31d:Rg05" pos="154.90166" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252927" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31d" mode="0" phase="140.48"/>
+   <parameters E0L="0.00318647" E0TL="0.00252927" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31d" mode="0" phase=" 109.2466"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -12994,7 +12766,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav31d:Rg06" pos="155.0545" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00263886" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31d" mode="1" phase="129.39"/>
+   <parameters E0L="0.00416173" E0TL="0.00263886" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav31d" mode="1" phase="  92.6720"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -13018,7 +12790,7 @@
    <parameters B="0.0" effLength="0.38"/>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32a:Rg01" pos="157.97536" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.00261914" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32a" mode="0" phase="-173.93"/>
+   <parameters E0L="0.00379833" E0TL="0.00261914" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32a" mode="0" phase=" 179.9400"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -13027,7 +12799,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32a:Rg02" pos="158.1294" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00251993" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32a" mode="1" phase="177.77"/>
+   <parameters E0L="0.0031666" E0TL="0.00251993" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32a" mode="1" phase=" 164.5846"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -13036,7 +12808,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32a:Rg03" pos="158.2804" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252043" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32a" mode="0" phase="165.99"/>
+   <parameters E0L="0.00317036" E0TL="0.00252043" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32a" mode="0" phase=" 145.9407"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -13045,7 +12817,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32a:Rg04" pos="158.43139" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252092" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32a" mode="1" phase="154.14"/>
+   <parameters E0L="0.00317694" E0TL="0.00252092" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32a" mode="1" phase=" 127.2534"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -13054,7 +12826,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32a:Rg05" pos="158.58238" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252136" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32a" mode="0" phase="142.23"/>
+   <parameters E0L="0.00318647" E0TL="0.00252136" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32a" mode="0" phase=" 108.5423"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -13063,7 +12835,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32a:Rg06" pos="158.73523" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00262367" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32a" mode="1" phase="132.31"/>
+   <parameters E0L="0.00416173" E0TL="0.00262367" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32a" mode="1" phase="  91.8055"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -13072,7 +12844,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32b:Rg01" pos="159.42278" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.0026245" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32b" mode="0" phase="-172.91"/>
+   <parameters E0L="0.00379833" E0TL="0.0026245" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32b" mode="0" phase="-179.0600"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -13081,7 +12853,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32b:Rg02" pos="159.57683" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.0025227" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32b" mode="1" phase="178.37"/>
+   <parameters E0L="0.0031666" E0TL="0.0025227" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32b" mode="1" phase=" 165.4225"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -13090,7 +12862,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32b:Rg03" pos="159.72782" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252319" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32b" mode="0" phase="166.19"/>
+   <parameters E0L="0.00317036" E0TL="0.00252319" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32b" mode="0" phase=" 146.5991"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -13099,7 +12871,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32b:Rg04" pos="159.87881" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252366" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32b" mode="1" phase="153.94"/>
+   <parameters E0L="0.00317694" E0TL="0.00252366" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32b" mode="1" phase=" 127.7432"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -13108,7 +12880,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32b:Rg05" pos="160.02981" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252409" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32b" mode="0" phase="141.63"/>
+   <parameters E0L="0.00318647" E0TL="0.00252409" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32b" mode="0" phase=" 108.8745"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -13117,7 +12889,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32b:Rg06" pos="160.18265" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.0026289" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32b" mode="1" phase="131.31"/>
+   <parameters E0L="0.00416173" E0TL="0.0026289" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32b" mode="1" phase="  91.9566"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -13126,7 +12898,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32c:Rg01" pos="160.7382" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.0026297" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32c" mode="0" phase="-171.92"/>
+   <parameters E0L="0.00379833" E0TL="0.0026297" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32c" mode="0" phase="-179.0600"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -13135,7 +12907,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32c:Rg02" pos="160.89225" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00252538" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32c" mode="1" phase="178.96"/>
+   <parameters E0L="0.0031666" E0TL="0.00252538" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32c" mode="1" phase=" 165.2516"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -13144,7 +12916,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32c:Rg03" pos="161.04324" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252585" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32c" mode="0" phase="166.39"/>
+   <parameters E0L="0.00317036" E0TL="0.00252585" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32c" mode="0" phase=" 146.2615"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -13153,7 +12925,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32c:Rg04" pos="161.19424" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252631" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32c" mode="1" phase="153.75"/>
+   <parameters E0L="0.00317694" E0TL="0.00252631" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32c" mode="1" phase=" 127.2503"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -13162,7 +12934,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32c:Rg05" pos="161.34523" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252673" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32c" mode="0" phase="141.04"/>
+   <parameters E0L="0.00318647" E0TL="0.00252673" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32c" mode="0" phase=" 108.2055"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -13171,7 +12943,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32c:Rg06" pos="161.49808" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00263396" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32c" mode="1" phase="130.33"/>
+   <parameters E0L="0.00416173" E0TL="0.00263396" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32c" mode="1" phase="  91.1316"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -13180,7 +12952,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32d:Rg01" pos="162.18563" type="RFGAP">
-   <parameters E0L="0.00379833" E0TL="0.00263473" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32d" mode="0" phase="-170.96"/>
+   <parameters E0L="0.00379833" E0TL="0.00263473" EzFile="./axis_fields/SCLHigh_Rg1.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32d" mode="0" phase="-178.0600"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.967627477 0.00785702703 -0.00178094389 3.68930611e-05 -2.37248453e-07 "/>
     <polyS order="4" pcoefs="0.0341392765 -0.0165522233 0.000506994503 1.95020526e-06 -1.18107311e-07 "/>
@@ -13189,7 +12961,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32d:Rg02" pos="162.33967" type="RFGAP">
-   <parameters E0L="0.0031666" E0TL="0.00252797" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32d" mode="1" phase="179.53"/>
+   <parameters E0L="0.0031666" E0TL="0.00252797" EzFile="./axis_fields/SCLHigh_Rg2.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32d" mode="1" phase=" 166.0742"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993352243 0.0014385149 -0.000700431731 4.87908487e-06 3.47621498e-08 "/>
     <polyS order="4" pcoefs="3.47327177e-07 1.39437776e-06 1.35175069e-08 -2.41826066e-09 2.93718587e-11 "/>
@@ -13198,7 +12970,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32d:Rg03" pos="162.49067" type="RFGAP">
-   <parameters E0L="0.00317036" E0TL="0.00252842" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32d" mode="0" phase="166.58"/>
+   <parameters E0L="0.00317036" E0TL="0.00252842" EzFile="./axis_fields/SCLHigh_Rg3.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32d" mode="0" phase=" 146.9319"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351446 0.00143872396 -0.000700473553 4.8797957e-06 3.47634332e-08 "/>
     <polyS order="4" pcoefs="-1.16047298e-06 -4.6915419e-06 -2.94567887e-08 4.50549241e-09 -4.42793924e-11 "/>
@@ -13207,7 +12979,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32d:Rg04" pos="162.64166" type="RFGAP">
-   <parameters E0L="0.00317694" E0TL="0.00252886" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32d" mode="1" phase="153.56"/>
+   <parameters E0L="0.00317694" E0TL="0.00252886" EzFile="./axis_fields/SCLHigh_Rg4.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32d" mode="1" phase=" 127.7475"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993351383 0.00143867305 -0.000700474032 4.87977987e-06 3.47634248e-08 "/>
     <polyS order="4" pcoefs="-1.59726876e-06 -5.96614535e-06 -4.27461638e-08 6.63386238e-09 -6.84785701e-11 "/>
@@ -13216,7 +12988,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32d:Rg05" pos="162.79266" type="RFGAP">
-   <parameters E0L="0.00318647" E0TL="0.00252927" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32d" mode="0" phase="140.48"/>
+   <parameters E0L="0.00318647" E0TL="0.00252927" EzFile="./axis_fields/SCLHigh_Rg5.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32d" mode="0" phase=" 108.5508"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.993350245 0.00143891762 -0.000700520592 4.88062511e-06 3.47612681e-08 "/>
     <polyS order="4" pcoefs="-2.55842181e-06 -9.90625603e-06 -6.96552793e-08 1.09454461e-08 -1.13765487e-10 "/>
@@ -13225,7 +12997,7 @@
    </TTFs>
   </accElement>
   <accElement length="0.0" name="SCL_RF:Cav32d:Rg06" pos="162.9455" type="RFGAP">
-   <parameters E0L="0.00416173" E0TL="0.00263886" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32d" mode="1" phase="129.39"/>
+   <parameters E0L="0.00416173" E0TL="0.00263886" EzFile="./axis_fields/SCLHigh_Rg6.dat" aperture="0.098" aprt_type="1" cavity="SCL:Cav32d" mode="1" phase="  91.3018"/>
    <TTFs beta_max="0.915846380563" beta_min="0.613375720599">
     <polyT order="4" pcoefs="0.970055687 0.0104533497 -0.00288995179 8.46199798e-05 -8.02447419e-07 "/>
     <polyS order="4" pcoefs="-0.149691035 0.0509933856 -0.00248341955 3.80852352e-05 -1.42391898e-07 "/>
@@ -13258,15 +13030,6 @@
    <parameters B="0.0" effLength="0.38"/>
   </accElement>
   <accElement length="0.0" name="SCLHigh_END" pos="171.294012" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="SCLHigh_END" length="0.0" pos="171.294012" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="SCLHigh_END" length="0.0" pos="171.294012" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="SCLHigh_END" length="0.0" pos="171.294012" type="MARKER">
    <parameters/>
   </accElement>
   <Cavities>
@@ -13318,47 +13081,38 @@
    <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav23b" pos="88.78432"/>
    <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav23c" pos="90.09974"/>
    <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav23d" pos="91.54717"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav25a" pos="103.11869"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav25b" pos="104.56612"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav25c" pos="105.88154"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav25d" pos="107.32896"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav27a" pos="118.90069"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav27b" pos="120.34812"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav27c" pos="121.66354"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav27d" pos="123.11097"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav28a" pos="126.79169"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav28b" pos="128.23912"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav28c" pos="129.55454"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav28d" pos="131.00197"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav29a" pos="134.68269"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav29b" pos="136.13012"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav29c" pos="137.44554"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav29d" pos="138.89297"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav30a" pos="142.57369"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav30b" pos="144.02112"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav30c" pos="145.33654"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav30d" pos="146.78396"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav31a" pos="150.46469"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav31b" pos="151.91212"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav31c" pos="153.22754"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav31d" pos="154.67496"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav32a" pos="158.35569"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav32b" pos="159.80312"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav32c" pos="161.11854"/>
-   <Cavity ampl="0.0" frequency="    8.05e+08" name="SCL:Cav32d" pos="162.56597"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav25a" pos="103.11869"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav25b" pos="104.56612"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav25c" pos="105.88154"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav25d" pos="107.32896"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav27a" pos="118.90069"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav27b" pos="120.34812"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav27c" pos="121.66354"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav27d" pos="123.11097"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav28a" pos="126.79169"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav28b" pos="128.23912"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav28c" pos="129.55454"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav28d" pos="131.00197"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav29a" pos="134.68269"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav29b" pos="136.13012"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav29c" pos="137.44554"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav29d" pos="138.89297"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav30a" pos="142.57369"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav30b" pos="144.02112"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav30c" pos="145.33654"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav30d" pos="146.78396"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav31a" pos="150.46469"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav31b" pos="151.91212"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav31c" pos="153.22754"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav31d" pos="154.67496"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav32a" pos="158.35569"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav32b" pos="159.80312"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav32c" pos="161.11854"/>
+   <Cavity ampl="1.0" frequency="    8.05e+08" name="SCL:Cav32d" pos="162.56597"/>
   </Cavities>
  </SCLHigh>
  <HEBT1 bpmFrequency="4.025E8" length="41.973095" name="HEBT1">
   <accElement name="HEBT1_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="HEBT1_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="HEBT1_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement length="0.0" name="HEBT1_START" pos="0.0" type="MARKER">
    <parameters/>
   </accElement>
   <accElement length="0.505" name="HEBT_Mag:QV01" pos="1.0" type="QUAD">
@@ -13487,27 +13241,9 @@
   <accElement length="0.0" name="HEBT1_END" pos="41.973095" type="MARKER">
    <parameters/>
   </accElement>
-  <accElement name="HEBT1_END" length="0.0" pos="41.973095" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="HEBT1_END" length="0.0" pos="41.973095" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="HEBT1_END" length="0.0" pos="41.973095" type="MARKER">
-   <parameters/>
-  </accElement>
  </HEBT1>
  <HEBT2 bpmFrequency="4.025E8" length="132.053806" name="HEBT2">
   <accElement name="HEBT2_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="HEBT2_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="HEBT2_START" length="0.0" pos="0.0" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement length="0.0" name="HEBT2_START" pos="0.0" type="MARKER">
    <parameters/>
   </accElement>
   <accElement length="0.0" name="Begin_Of_HEBT2" pos="0.0" type="MARKER">
@@ -13739,15 +13475,6 @@
    <parameters/>
   </accElement>
   <accElement length="0.0" name="HEBT2_END" pos="132.053806" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="HEBT2_END" length="0.0" pos="132.053806" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="HEBT2_END" length="0.0" pos="132.053806" type="MARKER">
-   <parameters/>
-  </accElement>
-  <accElement name="HEBT2_END" length="0.0" pos="132.053806" type="MARKER">
    <parameters/>
   </accElement>
  </HEBT2>
