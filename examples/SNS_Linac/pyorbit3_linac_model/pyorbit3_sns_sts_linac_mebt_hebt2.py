@@ -34,6 +34,9 @@ import time
 
 from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
+# import the XmlDataAdaptor XML parser
+from orbit.utils.xml import XmlDataAdaptor
+
 # from linac import the C++ RF gap classes
 from orbit.core.linac import BaseRfGap, MatrixRfGap, RfGapTTF
 
@@ -86,7 +89,50 @@ def setSynchPhase(bunch_in, accLattice, cav_name, synchPhaseDeg):
     # print "debug cav=",cav_name," phase=",cav_phase," delta_e max=",(e_kin_max-e_kin_in)/1.0e-3
     return cav_phase
 
-
+def correctLatticeXML(xml_file_name,gap_phases_dict):
+	"""
+	This function will replace RF Gap phases in xml_file_name,
+	and it will return the new Data Adaptor with values.
+	The lattice XML file is in a file with the name 'xml_file_name'
+	and gap_phases_dict[rf_gap_name] = phase
+	"""
+	acc_da = XmlDataAdaptor.adaptorForFile(xml_file_name)
+	seq_names  = ["SCLHigh",]
+	for seq_name in seq_names:
+		#print ("========  Sequence = ",seq_name," ==========")
+		accSeq_da = acc_da.childAdaptors(seq_name)[0]
+		for node_da in accSeq_da.childAdaptors("accElement"):
+			if(node_da.hasAttribute("type") and (node_da.stringValue("type") == "RFGAP")):
+				rf_gap_name = node_da.stringValue("name")
+				params_da = node_da.childAdaptors("parameters")[0]
+				#print ("debug node=",rf_gap_name)
+				if(rf_gap_name in gap_phases_dict):
+					phase_new = gap_phases_dict[rf_gap_name]
+					phase_old = params_da.doubleValue("phase")
+					params_da.setValue("phase","%9.4f"%phase_new)
+					print ("debug gap=",rf_gap_name," old_phase= %+9.4f "%phase_old," new phase=  %+9.4f "%params_da.doubleValue("phase"))
+	return acc_da
+	
+def removeDuplicates(acc_da):
+	"""
+	It will remove the duplicates entries with the same names.
+	It will do this only for 1st level of accElement XML elements.
+	"""
+	acc_da = acc_da.getDeepCopy()
+	seqs_da = acc_da.childAdaptors()
+	for accSeq_da in seqs_da:
+		accElem_repeat_names = []
+		accElems_repeat_da = []
+		for accElem_da in accSeq_da.childAdaptors("accElement"):
+			if(accElem_da.stringValue("name") in accElem_repeat_names):
+				accElems_repeat_da.append(accElem_da)
+			else:
+				accElem_repeat_names.append(accElem_da.stringValue("name"))
+		#-------- remove reperted elements
+		for accElem_da in accElems_repeat_da:
+			accSeq_da.data_adaptors.remove(accElem_da)
+	return acc_da
+	
 # -------------------------------------------------------------------
 #          Start of the script
 # -------------------------------------------------------------------
@@ -411,6 +457,8 @@ cav_synch_phases["SCL:Cav32c"] = -30.0
 cav_synch_phases["SCL:Cav32d"] = -30.0
 # ------scl25 added -----stop----
 
+for key in cav_synch_phases:
+	cav_synch_phases[key] -= 12.06
 
 # -----TWISS Parameters at the entrance of MEBT ---------------
 # transverse emittances are unnormalized and in pi*mm*mrad
@@ -472,20 +520,48 @@ bunch_in = bunch_gen.getBunch(nParticles=100000, distributorClass=WaterBagDist3D
 print("Bunch Generation completed.")
 
 for cav_name in cav_names:
-    cav_synch_phase = cav_synch_phases[cav_name]
-    setSynchPhase(bunch_in, accLattice, cav_name, cav_synch_phase)
+	cav_synch_phase = cav_synch_phases[cav_name]
+	setSynchPhase(bunch_in, accLattice, cav_name, cav_synch_phase)
+	print ("debug cav=",cav_name," eKIn_In=",(bunch_in.getSyncParticle().kinEnergy() * 1.0e3))
 
 # set up design
-accLattice.trackDesignBunch(bunch_in)
+bunch_out = accLattice.trackDesignBunch(bunch_in)
+
 
 # ----- Print out the average phases for the RF gaps in SCL RF Cavities
 # ----- the charge of H- is negative, so the phases are shifted by -180.
 cavs = accLattice.getRF_Cavities()
 for cav in cavs:
     avg_phase = phaseNearTargetPhaseDeg(cav.getAvgGapPhaseDeg() - 180.0, 0.0)
-    print("debug cav=", cav.getName(), " gaps phaseAvg=", avg_phase, " cav_amp=", cav.getAmp())
+    print("debug cav=", cav.getName(), " gaps phaseAvg= %+8.3f "%avg_phase," cav phase= %+8.3f"%(cav.getPhase()*180./math.pi), " cav_amp=", cav.getAmp())
 
-print("Design tracking completed.")
+print("Design tracking completed. eKin_Out = ",(bunch_out.getSyncParticle().kinEnergy() * 1.0e3))
+
+cav_gap_phases_dict = {}
+gap_phases_dict = {}
+for cav in cavs:
+	if(cav.getName() in cav_synch_phases):
+		cav_gap_phases = []
+		print ("debug cav=",cav.getName()," ==========================")
+		rf_gaps = cav.getRF_GapNodes()
+		for rf_gap in rf_gaps:
+			phase = phaseNearTargetPhaseDeg(rf_gap.getGapPhase()*180./math.pi,0.)
+			gap_phases_dict[rf_gap.getName()] = phase
+			#print ("   gap name=",rf_gap.getName())
+			cav_gap_phases.append(phase)
+		cav_gap_phases_dict[cav.getName()] = cav_gap_phases
+		print ("cav=",cav.getName()," rf gap phases = %+6.3f %+6.3f %+6.3f %+6.3f %+6.3f %+6.3f "%tuple(cav_gap_phases))
+
+
+new_acc_da = correctLatticeXML(xml_file_name,gap_phases_dict)
+
+#----------------------------------------------------------------------
+# This was and addition to get the correct sts linac lattice XML file
+#----------------------------------------------------------------------
+#new_acc_da.writeToFile("../sns_linac_xml/sns_sts_linac_new.xml")
+#new_acc_da = removeDuplicates(new_acc_da)
+#new_acc_da.writeToFile("../sns_linac_xml/sns_sts_linac_new_new.xml")
+#sys.exit(0)
 
 # track through the lattice
 paramsDict = {"old_pos": -1.0, "count": 0, "pos_step": 0.1}
@@ -540,6 +616,7 @@ def action_entrance(paramsDict):
     s += "   %6.4f  %6.4f  %6.4f  %6.4f   " % (alphaY, betaY, emittY, norm_emittY)
     s += "   %6.4f  %6.4f  %6.4f  %6.4f   " % (alphaZ, betaZ, emittZ, phi_de_emittZ)
     s += "   %5.3f  %5.3f  %5.3f " % (x_rms, y_rms, z_rms_deg)
+    s += "  %10.6f   %8d " % (eKin, nParts)
     file_out.write(s + "\n")
     file_out.flush()
     s_prt = " %5d  %35s  %4.5f " % (paramsDict["count"], node.getName(), pos + pos_start)

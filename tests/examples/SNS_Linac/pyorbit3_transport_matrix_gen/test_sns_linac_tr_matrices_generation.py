@@ -123,7 +123,7 @@ class SNS_Linac_BunchGenerator:
 
 script_dir = os.path.dirname(__file__)
 
-from orbit.py_linac.lattice import LinacTrMatricesContrioller
+from orbit.py_linac.lattice import LinacTrMatricesController
 
 random.seed(100)
 
@@ -240,7 +240,7 @@ for node in aprtNodes:
 
 print("===== Aperture Nodes Added =======")
 
-trMatricesGenerator = LinacTrMatricesContrioller()
+trMatricesGenerator = LinacTrMatricesController()
 
 # ----- prepare the nodes
 # ----- They could be just several nodes of interest or many nodes
@@ -257,7 +257,7 @@ parent_tr_mtrx_nodes = space_charge_nodes
 # node1 = accLattice.getNodeForName("MEBT_Mag:QH14")
 # parent_tr_mtrx_nodes = [node0,node1]
 
-trMatrices = trMatricesGenerator.addTrMatrxGenNodes(accLattice, parent_tr_mtrx_nodes)
+trMatrices = trMatricesGenerator.addTrMatrixGenNodes(accLattice, parent_tr_mtrx_nodes)
 
 # ---- The use of Twiss weights makes transport matrices more accurate.
 for trMtrx in trMatrices:

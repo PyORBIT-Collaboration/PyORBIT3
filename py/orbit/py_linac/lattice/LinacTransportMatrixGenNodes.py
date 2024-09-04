@@ -60,7 +60,7 @@ class LinacTrMatrixGenNode(MarkerLinacNode):
 
     def getTrMatricesController(self):
         """
-        Returns the LinacTrMatricesContrioller that keeps the references to the TrMatrxGenNodes.
+        Returns the LinacTrMatricesController that keeps the references to the TrMatrxGenNodes.
         """
         return self.trMatricesController
 
@@ -186,9 +186,9 @@ class LinacTrMatrixGenNode(MarkerLinacNode):
             print(" ")
 
 
-class LinacTrMatricesContrioller:
+class LinacTrMatricesController:
     """
-    LinacTrMatricesContrioller keeps the references to the LinacTrMatrixGenNode
+    LinacTrMatricesController keeps the references to the LinacTrMatrixGenNode
     instances.
     """
 
@@ -215,7 +215,7 @@ class LinacTrMatricesContrioller:
             node = self.trMatrxNodes[node_ind]
             node.setInternalIndex(node_ind)
 
-    def addTrMatrxGenNodes(self, accLattice, node_or_nodes, place=MarkerLinacNode.ENTRANCE):
+    def addTrMatrixGenNodes(self, accLattice, node_or_nodes, place=MarkerLinacNode.ENTRANCE):
         """
         Adds the LinacTrMatrixGenNode to the nodes as child nodes.
         """
@@ -246,14 +246,14 @@ class LinacTrMatricesContrioller:
         self.init()
         return self.trMatrxNodes
 
-    def addTrMatrxGenNodesAtEntrance(self, accLattice, node_or_nodes):
+    def addTrMatrixGenNodesAtEntrance(self, accLattice, node_or_nodes):
         """
         Adds the LinacTrMatrixGenNode to the nodes as child nodes at the entrance.
         """
-        return self.addTrMatrxGenNodes(accLattice, node_or_nodes, MarkerLinacNode.ENTRANCE)
+        self.addTrMatrixGenNodes(accLattice, node_or_nodes, MarkerLinacNode.ENTRANCE)
 
-    def addTrMatrxGenNodesAtExit(self, accLattice, node_or_nodes):
+    def addTrMatrixGenNodesAtExit(self, accLattice, node_or_nodes):
         """
         Adds the LinacTrMatrixGenNode to the nodes as child nodes at the exit.
         """
-        return self.addTrMatrxGenNodes(accLattice, node_or_nodes, MarkerLinacNode.EXIT)
+        self.addTrMatrixGenNodes(accLattice, node_or_nodes, MarkerLinacNode.EXIT)
