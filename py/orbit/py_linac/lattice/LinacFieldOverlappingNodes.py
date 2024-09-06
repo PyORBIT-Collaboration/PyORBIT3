@@ -288,6 +288,7 @@ class AxisField_and_Quad_RF_Gap(AbstractRF_Gap):
         index = self.getActivePartIndex()
         part_length = self.getLength(index)
         bunch = paramsDict["bunch"]
+        charge = bunch.charge()
         syncPart = bunch.getSyncParticle()
         eKin_in = syncPart.kinEnergy()
         momentum = syncPart.momentum()
@@ -300,7 +301,10 @@ class AxisField_and_Quad_RF_Gap(AbstractRF_Gap):
         phase_shift = rfCavity.getPhase() - rfCavity.getDesignPhase()
         phase = rfCavity.getFirstGapEtnrancePhase() + phase_shift
         # ----------------------------------------
-        phase = math.fmod(frequency * (arrival_time - designArrivalTime) * 2.0 * math.pi + phase, 2.0 * math.pi)
+        phase = math.fmod(
+            frequency * (arrival_time - designArrivalTime) * 2.0 * math.pi + phase,
+            2.0 * math.pi,
+        )
         if index == 0:
             self.part_pos = self.z_min
             self.gap_phase_vs_z_arr = [
@@ -314,11 +318,11 @@ class AxisField_and_Quad_RF_Gap(AbstractRF_Gap):
         Ep = self.getEzFiledInternal(zp, rfCavity, E0L, rf_ampl)
         # ------- track through a quad
         G = self.getTotalField((zm + z0) / 2)
-        GP = 0.0
+        dB_dz = 0.0
         if self.useLongField == True:
-            GP = self.getTotalFieldDerivative((zm + z0) / 2)
+            dB_dz = self.getTotalFieldDerivative((zm + z0) / 2)
         if abs(G) != 0.0:
-            kq = G / (3.335640952 * momentum)
+            kq = G / bunch.B_Rho()
             # ------- track through a quad
             step = part_length / 2
             self.tracking_module.quad1(bunch, step / 4.0, kq)
@@ -326,9 +330,8 @@ class AxisField_and_Quad_RF_Gap(AbstractRF_Gap):
             self.tracking_module.quad1(bunch, step / 2.0, kq)
             self.tracking_module.quad2(bunch, step / 2.0)
             self.tracking_module.quad1(bunch, step / 4.0, kq)
-            if abs(GP) != 0.0:
-                kqP = GP / (3.335640952 * momentum)
-                self.tracking_module.quad3(bunch, step, kqP)
+            if abs(dB_dz) != 0.0:
+                self.tracking_module.quad3(bunch, step, dB_dz)
         else:
             self.tracking_module.drift(bunch, part_length / 2)
         self.part_pos += part_length / 2
@@ -344,23 +347,30 @@ class AxisField_and_Quad_RF_Gap(AbstractRF_Gap):
         # s += " dE= %9.6f "%((eKin_out-eKin_in)*1000.)
         # print s
         # ---- this part is the debugging ---STOP---
-        self.cppGapModel.trackBunch(bunch, part_length / 2, Em, E0, Ep, frequency, phase + delta_phase + modePhase)
+        self.cppGapModel.trackBunch(
+            bunch,
+            part_length / 2,
+            Em,
+            E0,
+            Ep,
+            frequency,
+            phase + delta_phase + modePhase,
+        )
         # ------- track through a quad
         G = self.getTotalField((z0 + zp) / 2)
-        GP = 0.0
+        dB_dz = 0.0
         if self.useLongField == True:
-            GP = self.getTotalFieldDerivative((z0 + zp) / 2)
+            dB_dz = self.getTotalFieldDerivative((z0 + zp) / 2)
         if abs(G) != 0.0:
-            kq = G / (3.335640952 * momentum)
+            kq = G / bunch.B_Rho()
             step = part_length / 2
             self.tracking_module.quad1(bunch, step / 4.0, kq)
             self.tracking_module.quad2(bunch, step / 2.0)
             self.tracking_module.quad1(bunch, step / 2.0, kq)
             self.tracking_module.quad2(bunch, step / 2.0)
             self.tracking_module.quad1(bunch, step / 4.0, kq)
-            if abs(GP) != 0.0:
-                kqP = GP / (3.335640952 * momentum)
-                self.tracking_module.quad3(bunch, step, kqP)
+            if abs(dB_dz) != 0.0:
+                self.tracking_module.quad3(bunch, step, dB_dz)
         else:
             self.tracking_module.drift(bunch, part_length / 2)
         # ---- advance the particle position
@@ -436,7 +446,10 @@ class AxisField_and_Quad_RF_Gap(AbstractRF_Gap):
         else:
             first_gap_arr_time = rfCavity.getDesignArrivalTime()
             # print "debug name=",self.getName()," delta_phase=",frequency*(arrival_time - first_gap_arr_time)*360.0," phase=",phase*180/math.pi
-            phase = math.fmod(frequency * (arrival_time - first_gap_arr_time) * 2.0 * math.pi + phase, 2.0 * math.pi)
+            phase = math.fmod(
+                frequency * (arrival_time - first_gap_arr_time) * 2.0 * math.pi + phase,
+                2.0 * math.pi,
+            )
         # print "debug design name=",self.getName()," arr_time=",arrival_time," phase=",phase*180./math.pi," E0TL=",E0TL*1.0e+3," freq=",frequency
         if index == 0:
             self.part_pos = self.z_min
@@ -464,7 +477,15 @@ class AxisField_and_Quad_RF_Gap(AbstractRF_Gap):
         # s += " dE= %9.6f "%((eKin_out-eKin_in)*1000.)
         # print s
         # ---- this part is the debugging ---STOP---
-        self.cppGapModel.trackBunch(bunch, part_length / 2, Em, E0, Ep, frequency, phase + delta_phase + modePhase)
+        self.cppGapModel.trackBunch(
+            bunch,
+            part_length / 2,
+            Em,
+            E0,
+            Ep,
+            frequency,
+            phase + delta_phase + modePhase,
+        )
         self.tracking_module.drift(bunch, part_length / 2)
         # ---- advance the particle position
         self.part_pos += part_length / 2
@@ -627,16 +648,17 @@ class OverlappingQuadsNode(BaseLinacNode):
         if index == 0:
             self.z_value = -self.getLength() / 2
         bunch = paramsDict["bunch"]
+        charge = bunch.charge()
         momentum = bunch.getSyncParticle().momentum()
         n_steps = int(length / self.z_step) + 1
         z_step = length / n_steps
         for z_ind in range(n_steps):
             z = self.z_value + z_step * (z_ind + 0.5)
             G = self.getTotalField(z)
-            GP = 0.0
+            dB_dz = 0.0
             if self.useLongField == True:
-                GP = self.getTotalFieldDerivative(z)
-            kq = G / (3.335640952 * momentum)
+                dB_dz = self.getTotalFieldDerivative(z)
+            kq = G / bunch.B_Rho()
             if abs(kq) == 0.0:
                 self.tracking_module.drift(bunch, z_step)
                 continue
@@ -646,9 +668,8 @@ class OverlappingQuadsNode(BaseLinacNode):
             self.tracking_module.quad1(bunch, z_step / 2.0, kq)
             self.tracking_module.quad2(bunch, z_step / 2.0)
             self.tracking_module.quad1(bunch, z_step / 4.0, kq)
-            if abs(GP) != 0.0:
-                kqP = GP / (3.335640952 * momentum)
-                self.tracking_module.quad3(bunch, z_step, kqP)
+            if abs(dB_dz) != 0.0:
+                self.tracking_module.quad3(bunch, z_step, dB_dz)
         self.z_value += length
 
     def getTotalField(self, z_from_center):

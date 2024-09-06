@@ -1,0 +1,18 @@
+% PARTICLE_ATTRIBUTES_CONTROLLERS_NAMES 
+% BUNCH_ATTRIBUTE_DOUBLE charge   31 
+% BUNCH_ATTRIBUTE_DOUBLE classical_radius   7.541e-18 
+% BUNCH_ATTRIBUTE_DOUBLE macro_size   0 
+% BUNCH_ATTRIBUTE_DOUBLE mass   183.504 
+%  SYNC_PART_COORDS 0 0 0  x, y, z positions in [m]
+%  SYNC_PART_MOMENTUM 0 0 15.223655014142  px, py, pz momentum component in GeV/c
+%  SYNC_PART_X_AXIS 1 0 0  nxx, nxy, pxz - x-axis ort coordinates
+%  info only: energy of the synchronous particle [GeV] = 0.6304 
+%  info only: momentum of the synchronous particle [GeV/c] = 15.223655014142 
+%  info only: beta=v/c of the synchronous particle = 0.082676714232309 
+%  info only: gamma=1/sqrt(1-(v/c)**2) of the synchronous particle = 1.0034353411533 
+%  SYNC_PART_TIME 4.034559165727e-08  time in [sec]
+% x[m] px[rad] y[m] py[rad] z[m]  (pz or dE [GeV]) 
+5.4030231e-05 -8.4147099e-05 0 0 -1.1492442e-09 0 
+0.0001682942 0.00010806046 0 0 -1.5403023e-08 0 
+0 0 0.00015430806 0.00011752012 -1.3577015e-09 0 
+0 0 0.00023504024 0.00030861612 -2.5430806e-08 0 

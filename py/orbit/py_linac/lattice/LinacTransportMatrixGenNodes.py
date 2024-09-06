@@ -100,7 +100,11 @@ class LinacTrMatrixGenNode(MarkerLinacNode):
             bunch_utils_functions.copyCoordsToInitCoordsAttr(bunch)
         else:
             bunch_utils_functions.transportMtrxFromInitCoords(
-                bunch, self.trMtrx, self.use_twiss_weight_x, self.use_twiss_weight_y, self.use_twiss_weight_z
+                bunch,
+                self.trMtrx,
+                self.use_twiss_weight_x,
+                self.use_twiss_weight_y,
+                self.use_twiss_weight_z,
             )
 
     def trackDesign(self, paramsDict):
@@ -150,7 +154,11 @@ class LinacTrMatrixGenNode(MarkerLinacNode):
         gb_in = beta_in * gamma_in
         gb_out = beta_out * gamma_out
         (det_x, det_y, det_z) = self.getDetXYZ(self.trMtrx)
-        return ((gb_out / gb_in) * det_x, (gb_out / gb_in) * det_y, (beta_in / beta_out) * det_z)
+        return (
+            (gb_out / gb_in) * det_x,
+            (gb_out / gb_in) * det_y,
+            (beta_in / beta_out) * det_z,
+        )
 
     def getTwoNodes(self):
         """
@@ -170,13 +178,12 @@ class LinacTrMatrixGenNode(MarkerLinacNode):
         if self.trMtrxNode_ind > 0:
             name0 = self.trMatricesController.getNode(self.trMtrxNode_ind - 1).getName()
         name1 = self.trMatricesController.getNode(self.trMtrxNode_ind).getName()
-        st = "----Transport matrix--- from name0=" + name0 + " to name1=" + name1
-        print(st)
+        print("----Transport matrix--- from name0=", name0, " to name1=", name1)
         m = self.trMtrx
         for i in range(m.size()[0]):
             for j in range(m.size()[1]):
-                print("m(" + str(i) + "," + str(j) + ")=" + "%12.5g" % m.get(i, j) + " "),
-            print("")
+                print("m(" + str(i) + "," + str(j) + ")=" + "%12.5g" % m.get(i, j) + " ")
+            print(" ")
 
 
 class LinacTrMatricesController:
