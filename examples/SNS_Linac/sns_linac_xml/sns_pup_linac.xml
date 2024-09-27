@@ -13462,8 +13462,8 @@
         <accElement length="3.064" name="HEBT_Mag:InjSptm" pos="126.343479" type="BEND">
             <parameters aperture_x="0.21" aperture_y="0.08" aprt_type="3" ea1="0.0" ea2="0.0" kls="0.0" poles="1.0" skews="0.0" theta="-0.11084586079415987"/>
         </accElement>
-        <accElement length="0.94" name="Ring_Mag:DH_A11" pos="130.516322" type="BEND">
-            <parameters aperture_x="0.21" aperture_y="0.08" aprt_type="3" ea1="-0.042000004545719505" ea2="-0.011099997336711095" kls="0.0" poles="1.0" skews="0.0" theta="-0.05310000188243061"/>
+        <accElement length="1.435022" name="Ring_Mag:DH_A11" pos="130.516322" type="BEND">
+            <parameters aperture_x="0.21" aperture_y="0.08" aprt_type="3" ea1="-0.042000004545719505" ea2="-0.008092952115157547" kls="0.0" poles="1.0" skews="0.0" theta="-0.05009296102420018"/>
         </accElement>
         <accElement length="0.0" name="Ring_Inj:Foil" pos="131.053695" type="MARKER">
             <parameters/>
