@@ -23,34 +23,48 @@ git clone https://github.com/PyORBIT-Collaboration/PyORBIT3.git
 ```
 
 ### Pip Setup
+**PIP** based setup is more involved, we recommend using **conda** if unsure.
+#### Prepare OS
+The following commands may require root access.
 
-#### Ubuntu based distributions:
-```
-sudo apt-get update
-sudo apt-get install -y  build-essential python3 libfftw3-dev python3-venv libpython3-dev pkg-config git
-```
+<details>
+  <summary> Click for Ubuntu-based distributions</summary>
+  
+  ```bash
+  apt-get update
+  apt-get install -y  build-essential python3 libfftw3-dev python3-venv libpython3-dev pkg-config git
+  ```    
+</details>
 
-#### Redhat based distributions:
-```
-dnf group install -y "Development Tools"
-dnf install -y python3-devel fftw3-devel
-```
+<details>
+  <summary> Click for Redhat-based distributions</summary>
+  
+  ```bash
+  dnf group install -y "Development Tools"
+  dnf install -y python3-devel fftw3-devel
+  ```
+</details>
 
-#### MacOS
-Install Homebrew, make sure that  homebrew programs are in the **$PATH** (optional step in Homebrew installation)
-```bash
-brew install pkg-config fftw
-```
+<details>
+  <summary> Click for Mac</summary>
+  
+  Install Homebrew, make sure that  homebrew programs are in the **$PATH** (optional step in Homebrew installation)
+  ```bash
+  brew install pkg-config fftw
+  ```
+</details>
+  
+  #### Create Python virtual environment
+  Make sure that you have the correct python version installed. We require python>3.9. <br>
+  Create virtual environment.
+  ```
+  python3 -m venv .po3
+  . .po3/bin/activate
+  pip install -U pip
+  pip install -r requirements.txt
+  pip install -U setuptools
+  ```
 
-Make sure that you have the correct python version installed. We require python>3.9. <br>
-Create virtual environment.
-```
-python3 -m venv .po3
-. .po3/bin/activate
-pip install -U pip
-pip install -r requirements.txt
-pip install -U setuptools
-```
 
 ### Conda Setup
 
@@ -93,6 +107,3 @@ Navigate to your **examples** directory and launch tracking of SNS linac.
 cd examples/SNS_Linac/pyorbit3_linac_model/
 python pyorbit3_sns_linac_mebt_hebt2.py
 ```
-
-
-
