@@ -10,6 +10,23 @@ RF fields at the axis of the RF gap to track the bunch.
 The usual BaseRF_Gap nodes have a zero length.
 
 The apertures are added to the lattice.
+
+There are two possible configurations:
+
+1. SCL Linac last cavity is 23d - final energy 1 GeV
+xml_file_name = "../sns_linac_xml/sns_linac.xml"
+
+2. SCL Linac last cavity is 32d - final energy 1.3 GeV
+xml_file_name = "../sns_linac_xml/sns_pup_linac.xml"
+
+The output files will be:
+
+file_out = open("pyorbit_twiss_sizes_ekin.dat", "w")
+or
+file_out = open("pyorbit_twiss_sizes_ekin_pup.dat", "w")
+
+You have to edit script manually.
+
 """
 
 import sys
@@ -57,7 +74,8 @@ sns_linac_factory = SNS_LinacLatticeFactory()
 sns_linac_factory.setMaxDriftLength(0.01)
 
 # ---- the XML file name with the structure
-xml_file_name = "../sns_linac_xml/sns_linac.xml"
+#xml_file_name = "../sns_linac_xml/sns_linac.xml"
+xml_file_name = "../sns_linac_xml/sns_pup_linac.xml"
 
 # ---- make lattice from XML file
 accLattice = sns_linac_factory.getLinacAccLattice(names, xml_file_name)
@@ -103,8 +121,9 @@ z_step = 0.002
 # Replace_BaseRF_Gap_to_AxisField_Nodes(accLattice,z_step,dir_location,["MEBT","CCL1","CCL2","CCL3","CCL4","SCLMed"])
 
 # ------------------------------------------------------------------------------
-# accSeq_names = ["MEBT","DTL1","DTL2","DTL3","DTL4","DTL5","DTL6","CCL1","CCL2","CCL3","CCL4","SCLMed"]
-accSeq_names = ["MEBT", "DTL1", "DTL2", "DTL3", "DTL4", "DTL5", "DTL6"]
+accSeq_names  = ["MEBT", "DTL1", "DTL2", "DTL3", "DTL4", "DTL5", "DTL6"]
+accSeq_names += ["CCL1","CCL2","CCL3","CCL4"]
+accSeq_names += ["SCLMed","SCLHigh"]
 
 # ---- hard-edge quad models will be replaced with soft-edge models
 # ---- It is possible for DTL also - if the RF gap models are zero-length ones
@@ -273,7 +292,8 @@ pos_start = 0.0
 
 twiss_analysis = BunchTwissAnalysis()
 
-file_out = open("pyorbit_twiss_sizes_ekin.dat", "w")
+#file_out = open("pyorbit_twiss_sizes_ekin.dat", "w")
+file_out = open("pyorbit_twiss_sizes_ekin_pup.dat", "w")
 
 s = " Node   position "
 s += "   alphaX betaX emittX  normEmittX"
@@ -312,7 +332,7 @@ def action_entrance(paramsDict):
     # ---- phi_de_emittZ will be in [pi*deg*MeV]
     phi_de_emittZ = z_to_phase_coeff * emittZ
     eKin = bunch.getSyncParticle().kinEnergy() * 1.0e3
-    s = " %35s  %4.5f " % (node.getName(), pos + pos_start)
+    s = " %45s  %4.5f " % (node.getName(), pos + pos_start)
     s += "   %6.4f  %6.4f  %6.4f  %6.4f   " % (alphaX, betaX, emittX, norm_emittX)
     s += "   %6.4f  %6.4f  %6.4f  %6.4f   " % (alphaY, betaY, emittY, norm_emittY)
     s += "   %6.4f  %6.4f  %6.4f  %6.4f   " % (alphaZ, betaZ, emittZ, phi_de_emittZ)
@@ -322,7 +342,7 @@ def action_entrance(paramsDict):
     file_out.flush()
     s_prt = " %5d  %35s  %4.5f " % (paramsDict["count"], node.getName(), pos + pos_start)
     s_prt += "  %5.3f  %5.3f   %5.3f " % (x_rms, y_rms, z_rms_deg)
-    s_prt += "  %10.6f   %8d " % (eKin, nParts)
+    s_prt += "  %10.4f   %8d " % (eKin, nParts)
     print(s_prt)
 
 
