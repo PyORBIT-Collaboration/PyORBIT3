@@ -485,7 +485,8 @@ class QuadFieldsErrorsDeployment(NamedObject, TypedObject):
 
     def setGaussDistributedRealtiveErrors(self, relative_error, cut_off_level=3.0, comm=mpi_comm.MPI_COMM_WORLD):
         """
-        Sets the random generated error field for all quads.
+        Sets the random generated error fields for all quads.
+        Changes will be different for all quads.
         """
         for [quad, field_init] in self.quad_and_field_arr:
             rel_err = random.gauss(0.0, relative_error)
@@ -496,6 +497,19 @@ class QuadFieldsErrorsDeployment(NamedObject, TypedObject):
             field = field_init * (1.0 + rel_err)
             quad.setParam("dB/dr", field)
 
+    def setGaussDistributedRealtiveErrorToGroup(self,relative_error,cut_off_level = 3.0,comm = mpi_comm.MPI_COMM_WORLD):
+        """
+        Sets the random generated error fields for all quads in the string.
+        Changes will be the same for all quads. We assume one PS for all quads.
+        """
+        rel_err = random.gauss(0.,relative_error)
+        while(abs(rel_err) > abs(relative_error)*cut_off_level):
+            rel_err = random.gauss(0.,relative_error)
+        main_rank = 0
+        rel_err = orbit_mpi.MPI_Bcast(rel_err,mpi_datatype.MPI_DOUBLE,main_rank,comm)
+        for [quad,field_init] in self.quad_and_field_arr:
+            field = field_init*(1.0 + rel_err)
+            quad.setParam("dB/dr",field)
 
 class BendFieldNodesModification(ErrorForNodesModification):
     """
