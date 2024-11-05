@@ -849,6 +849,32 @@ class ThickKick(LinacMagnetNode):
         self.tracking_module.kick(bunch, kickX, kickY, 0.0)
         self.tracking_module.drift(bunch, length / 2.0)
 
+class Solenoid(BaseLinacNode):
+    """
+    Solenoid TEAPOT based element.
+    """
+
+    def __init__(self, name="solenoid no name"):
+        """
+        Constructor. Creates the Solenoid TEAPOT based element.
+        """
+        BaseLinacNode.__init__(self, name)
+        self.setType("solenoid")
+        self.addParam("B", 0.0)
+
+    def track(self, paramsDict):
+        """
+        The Solenoid TEAPOT class implementation of the
+        AccNodeBunchTracker class track(probe) method.
+        """
+        index = self.getActivePartIndex()
+        length = self.getLength(index)
+        B = self.getParam("B")
+        bunch = paramsDict["bunch"]
+        useCharge = 1
+        if "useCharge" in paramsDict:
+            useCharge = paramsDict["useCharge"]
+        TPB.soln(bunch, length, B, useCharge)
 
 class AbstractRF_Gap(BaseLinacNode):
     """

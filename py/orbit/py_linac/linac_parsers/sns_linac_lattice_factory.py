@@ -19,6 +19,7 @@ from orbit.py_linac.lattice import LinacAccNodes
 
 from orbit.py_linac.lattice import BaseLinacNode, LinacNode, LinacMagnetNode, MarkerLinacNode, Drift, Quad, AbstractRF_Gap, Bend
 from orbit.py_linac.lattice import DCorrectorH, DCorrectorV, ThickKick
+from orbit.py_linac.lattice import Solenoid
 from orbit.py_linac.lattice import RF_Cavity, Sequence
 from orbit.py_linac.lattice import BaseRF_Gap
 
@@ -199,6 +200,12 @@ class SNS_LinacLatticeFactory:
                     accNode.setLength(node_length)
                     if accNode.getLength() > self.maxDriftLength:
                         accNode.setnParts(2 * int(accNode.getLength() / self.maxDriftLength + 1.5 - 1.0e-12))
+                    accNode.setParam("pos", node_pos)
+                    accSeq.addNode(accNode)
+                elif node_type == "SOLENOID":
+                    accNode = Solenoid(node_da.stringValue("name"))
+                    accNode.setParam("B",params_da.doubleValue("B"))
+                    accNode.setLength(node_length)
                     accNode.setParam("pos", node_pos)
                     accSeq.addNode(accNode)
                 # ------------RF_Gap-----------------
