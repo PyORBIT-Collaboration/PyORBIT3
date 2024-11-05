@@ -111,7 +111,6 @@ sources = files([
 	'trackerrk4/PyExternalEffects.cc',
 	'trackerrk4/RungeKuttaTracker.cc',
 	'trackerrk4/wrap_ext_effects_container.cc',
-	'libmain/libmain.cc',
 	'mpi/wrap_orbit_mpi.cc',
 	'mpi/wrap_mpi_comm.cc',
 	'mpi/orbit_mpi.cc',
@@ -237,7 +236,6 @@ inc = include_directories([
 	'orbit/BunchDiagnostics',
 	'orbit',
 	'utils/integration',
-	'libmain',
 	'orbit/Apertures'
     
 ])
