@@ -14,12 +14,16 @@ dependencies = []
 
 dependencies += dependency('fftw3', version: '>= 3.0.0', required: true)
 
-# Detecting if MPICH is installed and enabling support if present
-mpi_dependency = dependency('mpich', version: '>= 4.0.0', required: false)
+# Detecting if MPICH or OPENMPI are installed and enabling support if present
+mpich_dependency = dependency('mpich', version: '>= 4.0.0', required: false)
+openmpi_dependency = dependency('ompi', version: '>= 5.0.0', required: false)
 
-if mpi_dependency.found()
+if mpich_dependency.found()
 	cpp_args = ['-fPIC', '-std=c++11', '-DUSE_MPI=1']
-	dependencies += mpi_dependency
+	dependencies += mpich_dependency
+elif openmpi_dependency.found()
+	cpp_args = ['-fPIC', '-std=c++11', '-DUSE_MPI=1']
+	dependencies += openmpi_dependency
 else
 	cpp_args = ['-fPIC', '-std=c++11']
 endif
@@ -217,7 +221,7 @@ sources = files([
 	'teapot/wrap_matrix_generator.cc',
 	'teapot/teapotbase.cc',
 	'teapot/MatrixGenerator.cc'
-]) 
+])
 inc = include_directories([
   python.get_variable('INCLUDEPY', ''),
     'main',
@@ -247,7 +251,7 @@ inc = include_directories([
 	'orbit',
 	'utils/integration',
 	'orbit/Apertures'
-    
+
 ])
 
 
@@ -397,9 +401,3 @@ python.extension_module('error_base',
     install: true,
    subdir: 'orbit/core',
 )
-
-
-
-
-    
-
