@@ -13,7 +13,16 @@ base = meson.current_source_dir() + '/core'
 dependencies = []
 
 dependencies += dependency('fftw3', version: '>= 3.0.0', required: true)
-dependencies += dependency('mpich', version: '>= 4.0.0', required: true)
+
+# Detecting if MPICH is installed and enabling support if present
+mpi_dependency = dependency('mpich', version: '>= 4.0.0', required: false)
+
+if mpi_dependency.found()
+	cpp_args = ['-fPIC', '-std=c++11', '-DUSE_MPI=1']
+	dependencies += mpi_dependency
+else
+	cpp_args = ['-fPIC', '-std=c++11']
+endif
 
 sources = files([
     'linac/wrap_linacmodule.cc',
@@ -245,20 +254,18 @@ inc = include_directories([
 core_lib = library('core',
     sources: sources,
     include_directories: inc,
-    cpp_args: ['-fPIC', '-std=c++11', '-DUSE_MPI=1'],
+    cpp_args: cpp_args,
     override_options: ['b_lundef=false'],
     dependencies: dependencies,
     install: true,
-
 )
 
 core_dep = declare_dependency(link_with : core_lib)
 
-
 python.extension_module('orbit_mpi',
       sources: [base + '/mpi_init.cc'],
       include_directories: inc,
-      cpp_args: ['-fPIC', '-std=c++11'],
+      cpp_args: cpp_args,
       dependencies: [core_dep],
       install: true,
       subdir: 'orbit/core',
