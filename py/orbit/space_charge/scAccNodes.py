@@ -50,7 +50,7 @@ class SC_Base_AccNode(AccNodeBunchTracker):
         """
         Sets the boolean parameter that define if the calculations will be performed. True of False.
         """
-        self.switcher = True
+        self.switcher = switcher
 
     def getCalculationOn(self):
         """
