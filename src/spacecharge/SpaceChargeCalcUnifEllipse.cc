@@ -146,7 +146,12 @@ void SpaceChargeCalcUnifEllipse::bunchAnalysis(Bunch* bunch){
 	ORBIT_MPI_Allreduce(coord_avg,coord_avg_out,7,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local()->comm);
 
 	total_macrosize = coord_avg_out[6];
-	if(total_macrosize == 0.) return;
+	if(total_macrosize == 0.){
+	  //free resources
+	  OrbitUtils::BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index0);
+	  OrbitUtils::BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index1);		
+		return;
+	}
 
 	//calculate the parameters of the biggest ellipse
 	x_center = coord_avg_out[0]/total_macrosize;

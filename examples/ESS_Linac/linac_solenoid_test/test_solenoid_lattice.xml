@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<ess>
+	<TEST_Seq bpmFrequency="7.0442E8" length="3" name="MEBT">
+		<accElement length="0.0" name="TEST_START" pos="0.0" type="MARKER">
+			<parameters/>
+		</accElement>
+		<accElement length="0.10" name="QV01" pos="0.5" type="QUAD">
+			<parameters aperture="0.5" aprt_type="1" field="-10.0"/>
+		</accElement>
+		<accElement length="1" name="SL00" pos="1.5" type="SOLENOID">
+			<parameters aperture="0.5" aprt_type="1" B="10.0"/>
+		</accElement>
+		<accElement length="0.10" name="QV01" pos="2.5" type="QUAD">
+			<parameters aperture="0.5" aprt_type="1" field="+10.0"/>
+		</accElement>
+		<accElement length="0.0" name="TEST_EDN" pos="2.9999999" type="MARKER">
+			<parameters/>
+		</accElement>
+	</TEST_Seq>
+</ess>
