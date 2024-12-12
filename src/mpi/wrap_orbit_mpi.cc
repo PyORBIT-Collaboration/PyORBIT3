@@ -178,7 +178,7 @@ namespace wrap_orbit_mpi{
 		};
 
 		PyMODINIT_FUNC initorbit_mpi(void) {
-					// Initialize MPI
+			// Initialize MPI
 			ORBIT_MPI_Init();
 
 			PyObject *m, *d;

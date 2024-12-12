@@ -1,5 +1,6 @@
 
 subdir('bumps')
+subdir('core')
 subdir('matching')
 subdir('time_dep')
 subdir('bunch_utils')
