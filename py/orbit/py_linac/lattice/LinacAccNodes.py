@@ -791,7 +791,7 @@ class ThickKick(LinacMagnetNode):
         """
         LinacMagnetNode.__init__(self, name)
         self.addParam("Bx", 0.0)
-        self.addParam("By", [])
+        self.addParam("By", 0.0)
         self.setnParts(1)
         self.setType("thickKick")
 
