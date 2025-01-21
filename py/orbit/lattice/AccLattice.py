@@ -117,7 +117,7 @@ class AccLattice(NamedObject, TypedObject):
         """
         nodes = []
         for node in self.__children:
-            if node.getName().find(name) == 0:
+            if node.getName() == name:
                 nodes.append(node)
         if len(nodes) == 1:
             return nodes[0]
