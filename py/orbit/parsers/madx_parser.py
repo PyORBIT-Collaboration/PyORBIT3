@@ -274,17 +274,17 @@ class StringFunctions:
         to make them readable for python eval().
         """
         # replace .e by .0e
-        str_out = re.sub("\.e", ".0e", str_in)
+        str_out = re.sub(r"\.e", ".0e", str_in)
         # check the math operatons
-        str_out = re.sub("sin\(", "math.sin(", str_out)
-        str_out = re.sub("cos\(", "math.cos(", str_out)
-        str_out = re.sub("tan\(", "math.tan(", str_out)
-        str_out = re.sub("exp\(", "math.exp(", str_out)
-        str_out = re.sub("log\(", "math.log(", str_out)
-        str_out = re.sub("acos\(", "math.acos(", str_out)
-        str_out = re.sub("asin\(", "math.asin(", str_out)
-        str_out = re.sub("atan\(", "math.atan(", str_out)
-        str_out = re.sub("sqrt\(", "math.sqrt(", str_out)
+        str_out = re.sub(r"sin\(", "math.sin(", str_out)
+        str_out = re.sub(r"cos\(", "math.cos(", str_out)
+        str_out = re.sub(r"tan\(", "math.tan(", str_out)
+        str_out = re.sub(r"exp\(", "math.exp(", str_out)
+        str_out = re.sub(r"log\(", "math.log(", str_out)
+        str_out = re.sub(r"acos\(", "math.acos(", str_out)
+        str_out = re.sub(r"asin\(", "math.asin(", str_out)
+        str_out = re.sub(r"atan\(", "math.atan(", str_out)
+        str_out = re.sub(r"sqrt\(", "math.sqrt(", str_out)
         str_out = re.sub("pi", "math.pi", str_out)
         return str_out
 
