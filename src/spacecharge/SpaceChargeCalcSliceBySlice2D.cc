@@ -213,6 +213,6 @@ void SpaceChargeCalcSliceBySlice2D::bunchAnalysis(Bunch* bunch, double& totalMac
 
 	//bin Bunch to the Grid
 	rhoGrid3D->setZero();
-	rhoGrid3D->binBunch(bunch);
+	rhoGrid3D->binBunchSlice2D(bunch);
 	rhoGrid3D->synchronizeMPI(bunch->getMPI_Comm_Local());
 }

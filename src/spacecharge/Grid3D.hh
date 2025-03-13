@@ -132,12 +132,27 @@ public:
 	  */
 	void binBunch(Bunch* bunch);
 
-  /** Bins the Bunch into the 2D grid. If bunch has a
-	    macrosize particle attribute it will be used.
-	    The coordinates of the particles will be wrapped
-	    longitudinally with period of lambda.
-  */
+   /** Bins the Bunch into the 2D grid. If bunch has a
+	     macrosize particle attribute it will be used.
+	     The coordinates of the particles will be wrapped
+	     longitudinally with period of lambda.
+   */
 	void binBunch(Bunch* bunch, double lambda);
+	
+   /** 
+     Bins the Bunch into the 3D grid slice by slice.
+     No interpolation between x-y 2D slices during the binning.
+     If bunch has a macrosize particle attribute it will be used.
+     This method is used in SpaceChargeCalcSliceBySlice2D.cc.
+   */
+    void binBunchSlice2D(Bunch* bunch);
+    
+   /** 
+      Bins the value into the grid 3D slice by slice.
+      No interpolation between x-y 2D slices during the binning.
+      This method is used in SpaceChargeCalcSliceBySlice2D.cc.
+   */
+    void binValueSlice2D(double macroSize, double x, double y, double z);    
 
   /** Bins the value onto grid */
   void binValue(double macroSize, double x, double y, double z);
