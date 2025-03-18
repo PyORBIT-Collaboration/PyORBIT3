@@ -65,7 +65,7 @@ bunch_radius = 0.005        # m
 bunch_length = 10.0       # m
 nParts = 3000000
 total_macroSize = 1.0e+14
-energy = 0.4               # GeV
+energy = 1.4               # GeV
 
 #---- In PoissonSolverFFT2D.cc we use our own definition of the field and potential
 #---- for charged cylinder Er = lambda/r instead of CGS standard 
@@ -105,7 +105,7 @@ syncPart.kinEnergy(energy)
 nboundarypoints = 128
 n_freespacemodes = 32
 #---- boundary diameter
-d_boundary = 0.030
+d_boundary = 0.020
 boundary = Boundary2D(nboundarypoints, n_freespacemodes, "Circle", d_boundary, d_boundary)
 
 #----------------------------------------------
@@ -113,7 +113,7 @@ boundary = Boundary2D(nboundarypoints, n_freespacemodes, "Circle", d_boundary, d
 #----------------------------------------------
 sizeX = 64   #number of grid points in horizontal direction
 sizeY = 64   #number of grid points in vertical direction
-sizeZ = 40   #number of longitudinal slices in the 2.5D space charge solver
+sizeZ = 15   #number of longitudinal slices in the 2.5D space charge solver
 calcsliced = SpaceChargeCalcSliceBySlice2D(sizeX, sizeY, sizeZ)
 
 
@@ -128,6 +128,20 @@ sc_distance = 1.
 #---- Transverse is always working 
 #calcsliced.trackBunch(b_init,sc_distance)
 calcsliced.trackBunch(b_init,sc_distance,boundary)
+
+#---- N.B. after calcsliced.trackBunch(...) the sizes and values of
+#---- rhoGrid3d changed to get correct physical values for potential
+#---- in phiGrid3d.
+#---- The bin longitudinal size of rhoGrid3d (and accordingly in phiGrid3d)
+#---- increased by gamma for Lorentz transformation from lab. system to bunch
+#---- rest system of coordinates.
+#---- After 3D bunch binning into rhoGrid3d we have to multiply each rho value
+#---- by 2/grid_step_size_z because we have to transform the charge at all
+#---- point of rhoGrid3d from point-like charge to thin thread charge per 
+#---- meter. We have to do this because we will solve 2D problem for each X-Y 
+#---- slice as a set of longitudinal charged threads. Also we have to account 
+#---- for 2D solver Green function been lambda/r (it was used for simplicity :( ) 
+#---- instead of 2*lambda/ as it should be in the CGS system of units.
 
 rhoGrid3d = calcsliced.getRhoGrid()
 phiGrid3d = calcsliced.getPhiGrid()
@@ -163,24 +177,28 @@ rho_slice_old = 0.
 for iz in range(rhoGrid3d.getSizeZ()):
 	z_grid = rhoGrid3d.getGridZ(iz)
 	rho_slice = rho_slice_arr[iz]
-	#----------------------------
-	#---- gradXY_theory should not depend on number of slices and z_step
-	gradXY_theory = (rho_slice/z_step)/bunch_radius
+	#---------------------------------------------------------------------
 	#---- gradZ_theory should not depend on number of slices and z_step
-	gradZ_theory = 0.5*((rho_slice - rho_slice_old)/(z_step**2))*(1. + 2.0*math.log(d_boundary/(2*bunch_radius)))
+	#---- The 0.5 coefficient should be used because rho_slice was corrected
+	#---- during the bunch tracking to accout for SC 2D solver with lambda/r
+	#---- Green function instead of 2*lambda/r in CSG system of units.
+	gradZ_theory = 0.5*((rho_slice - rho_slice_old)/(z_step))*(1+2.0*math.log(d_boundary/(2*bunch_radius)))
+	#---- gradXY_theory should not depend on number of slices and z_step
+	gradXY_theory = 0.5*(2*rho_slice/bunch_radius)
+	#---------------------------------------------------------------------
 	rho_slice_old = rho_slice
 	#----------------------------
 	x = 0.
 	y = 0.
 	ez0 = phiGrid3d.calcGradient(x,y,z_grid)[2]
-	gradZ = ez0/z_step
+	gradZ = ez0
 	phi0 = phiGrid3d.getValue(x,y,z_grid)
 	theta = math.pi/4
 	x = (bunch_radius/2)*math.cos(theta)
 	y = (bunch_radius/2)*math.sin(theta)
 	r = math.sqrt(x**2 + y**2)
 	(ex,ey,ez) = phiGrid3d.calcGradient(x,y,z_grid)
-	gradXY = math.sqrt(ex**2 + ey**2)/z_step
+	gradXY = math.sqrt(ex**2 + ey**2)
 	st  = "%2d "%iz + " %+8.4f "%z_grid + " %12.5g "%rho_slice
 	st += "   %+8.4f  %12.5g  %12.5g  "%(r,gradXY, gradXY_theory*(r/bunch_radius))
 	st += " %+12.5g "%gradZ + " %+12.5g "%gradZ_theory + " %+12.5g "%phi0
@@ -190,9 +208,12 @@ for iz in range(rhoGrid3d.getSizeZ()):
 
 fl_out.close()
 
-print ("==================================")
+print ("=============================================================")
+print ("This charge is different form total_macroSize = %12.5g "%total_macroSize)
 print ("rho_total = %12.5g "%rho_total)
-print ("==================================")
+print ("Reasons for that are explaned in the text of the script.")
+print ("Corrected with (z_step/2) rho_total = %12.5g "%(rho_total*z_step/2))
+print ("=============================================================")
 
 print ("Stop.")
 sys.exit(0)

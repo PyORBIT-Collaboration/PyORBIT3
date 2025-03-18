@@ -24,6 +24,7 @@ using namespace OrbitUtils;
 SpaceChargeCalcSliceBySlice2D::SpaceChargeCalcSliceBySlice2D(int xSize, int ySize, int zSize, double xy_ratio_in): CppPyWrapper(NULL)
 {
 	xy_ratio = xy_ratio_in;
+	useLongTracking = 0;
 	poissonSolver = new PoissonSolverFFT2D(xSize, ySize, -xy_ratio, xy_ratio, -1.0, 1.0);
 	rhoGrid3D = new Grid3D(xSize, ySize, zSize);
 	phiGrid3D = new Grid3D(xSize, ySize, zSize);
@@ -33,6 +34,7 @@ SpaceChargeCalcSliceBySlice2D::SpaceChargeCalcSliceBySlice2D(int xSize, int ySiz
 SpaceChargeCalcSliceBySlice2D::SpaceChargeCalcSliceBySlice2D(int xSize, int ySize, int zSize): CppPyWrapper(NULL)
 {
 	xy_ratio = 1.0;
+	useLongTracking = 0;
 	poissonSolver = new PoissonSolverFFT2D(xSize, ySize, -xy_ratio, xy_ratio, -1.0, 1.0);
 	rhoGrid3D = new Grid3D(xSize, ySize, zSize);
 	phiGrid3D = new Grid3D(xSize, ySize, zSize);
@@ -52,6 +54,15 @@ SpaceChargeCalcSliceBySlice2D::~SpaceChargeCalcSliceBySlice2D(){
 		delete phiGrid3D;
 	}
 	delete bunchExtremaCalc;
+}
+
+void SpaceChargeCalcSliceBySlice2D::longTracking(int useLongTracking){
+	this->useLongTracking = useLongTracking;
+}
+
+int SpaceChargeCalcSliceBySlice2D::getLongitudinalTracking()
+{
+	return useLongTracking;
 }
 
 Grid3D* SpaceChargeCalcSliceBySlice2D::getRhoGrid(){
@@ -95,22 +106,37 @@ void SpaceChargeCalcSliceBySlice2D::trackBunch(Bunch* bunch, double length, Base
 
 	// synchronize the 3D phiGrid
 	phiGrid3D->synchronizeMPI(bunch->getMPI_Comm_Local());
-
+	
 	SyncPart* syncPart = bunch->getSyncPart();
-	double factor = 2*length/rhoGrid3D->getStepZ()*bunch->getClassicalRadius()/(pow(syncPart->getBeta(),2)*pow(syncPart->getGamma(),3));
+	
+	double beta = syncPart->getBeta();
+	double gamma = syncPart->getGamma();
+
+	double trans_factor = length*bunch->getClassicalRadius()/(pow(beta,2)*pow(gamma,2));
+	double long_factor = length*bunch->getClassicalRadius()*bunch->getMass();
 
 	double x,y,z,ex,ey,ez;
+	
+	// defines if we use longitudinal electric field in particles tracking
+	int long_tracking = useLongTracking;
+	if(boundary == NULL){
+		long_tracking = 0;
+	}
 
 	for (int i = 0, n = bunch->getSize(); i < n; i++){
 		x = bunch->x(i);
 		y = bunch->y(i);
-		z = bunch->z(i);
+		z = bunch->z(i)*gamma;
 
 		if(boundary == NULL || (boundary != NULL && boundary->isInside(x,y) == BaseBoundary2D::IS_INSIDE)){
 			phiGrid3D->calcGradient(x,ex,y,ey,z,ez);
 
-			bunch->xp(i) -= ex * factor;
-			bunch->yp(i) -= ey * factor;
+			bunch->xp(i) -= ex * trans_factor;
+			bunch->yp(i) -= ey * trans_factor;
+			
+			if(long_tracking == 1){
+				bunch->dE(i) -= ez * long_factor;
+			}
 		}
 	}
 }
@@ -214,5 +240,23 @@ void SpaceChargeCalcSliceBySlice2D::bunchAnalysis(Bunch* bunch, double& totalMac
 	//bin Bunch to the Grid
 	rhoGrid3D->setZero();
 	rhoGrid3D->binBunchSlice2D(bunch);
+	// Before we solve 2D Poisson problem for 2D potentials 
+	// we have to redefine the rho values because for 2D
+	// problem we will treat them as linear density not like
+	// point-like charges.
+	// Also we have a factor 2 missing from from our Poisson 2D solver
+	// because we use lambda/r_transv instead of 2*lambda/r_transv.
+	// We also have to take into account
+	// the Lorentz length transformation from moving bunch length
+	// to the synch. particle rest system of coordinates.
+	// N.B. - after this the sum of all elements will not be equal to
+	// the total macro-size of the bunch
+	double gamma = bunch->getSyncPart()->getGamma();
+	zMin *= gamma;
+	zMax *= gamma;
+	rhoGrid3D->setGridZ(zMin,zMax);
+	phiGrid3D->setGridZ(zMin,zMax);
+	rhoGrid3D->multiply(2./rhoGrid3D->getStepZ());
+	//-----------------------------
 	rhoGrid3D->synchronizeMPI(bunch->getMPI_Comm_Local());
 }
