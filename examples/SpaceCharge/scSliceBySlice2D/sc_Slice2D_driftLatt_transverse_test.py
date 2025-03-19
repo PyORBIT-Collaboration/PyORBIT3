@@ -133,11 +133,14 @@ lattice.trackBunch(b)
 #  The theory dp = r * 2 * r0 * total_macrosize * charge^2 * drift_length / (gamma^3*beta^2*bunch_radius^2*bunch_length)
 #  r0 is a classical radius of the particle
 #---------------------------------------
-n_graph_points = 1000
+n_graph_points = 10000
 n_step = int(b.getSize()/n_graph_points) + 1
 
+st = " z[m]  r[m]  dp[rad] dp_theory[rad] "
+print (st)
+
 #--- r angle angle_theory
-r_dp_arr = [[],[],[]]
+r_dp_arr = [[],[],[],[]]
 for ip in range(0,b.getSize(),n_step):
 	z = b.z(ip)
 	x = b.x(ip)
@@ -151,17 +154,23 @@ for ip in range(0,b.getSize(),n_step):
 	r = math.sqrt(x0**2+y0**2)
 	dp = math.sqrt((xp - xp0)**2 + (yp - yp0)**2)
 	dp_th = 2.0*r*b.classicalRadius()*total_macroSize*(b.charge())**2*lattice_length / (b.getSyncParticle().gamma()**3*b.getSyncParticle().beta()**2*bunch_radius**2*bunch_length)	
-	print (" %12.5e %12.5e %12.5e  %12.5e "%(z,r,dp,dp_th))
-	r_dp_arr[0].append(r)
-	r_dp_arr[1].append(dp)
-	r_dp_arr[2].append(dp_th)
+	print (" %+12.5e  %12.5e  %12.5e  %12.5e "%(z,r,dp,dp_th))
+	r_dp_arr[0].append(z)
+	r_dp_arr[1].append(r)
+	r_dp_arr[2].append(dp)
+	r_dp_arr[3].append(dp_th)
 	
 fl_out = open("test_slice2d_uniform_cylinder_result_slices_"+str(sizeZ) +".dat","w")
+
+st = " z[m]  r[m]  dp[rad] dp_theory[rad] "
+fl_out.write(st + "\n")
+
 for ind in range(len(r_dp_arr[0])):
-	r = r_dp_arr[0][ind]
-	dp = r_dp_arr[1][ind]
-	dp_th = r_dp_arr[2][ind]
-	st = "%12.5e %12.5e %12.5e"%(r,dp,dp_th)
+	z = r_dp_arr[0][ind]
+	r = r_dp_arr[1][ind]
+	dp = r_dp_arr[2][ind]
+	dp_th = r_dp_arr[3][ind]
+	st = "%+12.5e %12.5e %12.5e %12.5e"%(z,r,dp,dp_th)
 	fl_out.write(st + "\n")
 fl_out.close()
 

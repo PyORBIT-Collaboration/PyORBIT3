@@ -166,6 +166,7 @@ r_max = bunch_radius/100
 print ("=============================================")
 
 st = "index   z[m]   dE[keV]    dE_th[keV]  "
+print (st)
 
 n_points_count = 0
 for ip in range(b.getSize()):
