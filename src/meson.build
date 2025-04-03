@@ -220,7 +220,12 @@ sources = files([
 	'teapot/wrap_teapotbase.cc',
 	'teapot/wrap_matrix_generator.cc',
 	'teapot/teapotbase.cc',
-	'teapot/MatrixGenerator.cc'
+	'teapot/MatrixGenerator.cc',
+	'danilov_envelope/DanilovEnvelopeSolver20.cc',
+	'danilov_envelope/DanilovEnvelopeSolver22.cc',
+	'danilov_envelope/wrap_DanilovEnvelopeSolver20.cc',
+	'danilov_envelope/wrap_DanilovEnvelopeSolver22.cc',
+	'danilov_envelope/wrap_danilov_envelope.cc',
 ])
 inc = include_directories([
   python.get_variable('INCLUDEPY', ''),
@@ -250,8 +255,8 @@ inc = include_directories([
 	'orbit/BunchDiagnostics',
 	'orbit',
 	'utils/integration',
-	'orbit/Apertures'
-
+	'orbit/Apertures',
+	'danilov_envelope',
 ])
 
 
@@ -395,6 +400,15 @@ python.extension_module('collimator',
 
 python.extension_module('error_base',
    sources: [base + '/error_base_init.cc'],
+    include_directories: inc,
+    cpp_args: ['-fPIC', '-std=c++11'],
+    dependencies: [core_dep],
+    install: true,
+   subdir: 'orbit/core',
+)
+
+python.extension_module('danilov_envelope',
+   sources: [base + '/danilov_envelope.cc'],
     include_directories: inc,
     cpp_args: ['-fPIC', '-std=c++11'],
     dependencies: [core_dep],
