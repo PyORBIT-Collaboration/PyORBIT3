@@ -29,9 +29,64 @@ from orbit.core.spacecharge import SpaceChargeCalc2p5Drb
 #------------------------------
 random.seed(10)
 
-#-------------------------------------
-# Longitudinal distribution functions
-#-------------------------------------
+#------------------------------
+# Auxilary functions
+#------------------------------
+
+def func_theory(x):
+	"""
+	The function used in the charged sphere expansion dynamics calculation.
+	See the presentation.
+	"""
+	val = math.sqrt(abs(x**2-1))
+	val = math.log(x+val)/2 + x*val/2
+	return val
+	
+def getR_Theory(s_path,r_init,R,Ntot,bunch):
+	"""
+	The root finding in the charged sphere expansion dynamics calculation.
+	See the presentation.
+	s_path - path length / drift length []
+	r_init - initial distance from the sphere center [m]
+	R - bunch sphere radius [m]
+	Ntot - total macro-size of the bunch
+	beta - relativistic beta
+	r_classic - classical radius of particle
+	"""
+	r_classic = bunch.classicalRadius()
+	gamma = bunch.getSyncParticle().gamma()
+	beta = bunch.getSyncParticle().beta()
+	val = math.sqrt((r_classic*Ntot/R**3)/2)*s_path/(gamma*beta)
+	#---- Now we solve equation val = func_theory(x) for x 
+	x_min = 1.000000001
+	x_max = 10.
+	x = (x_min + x_max)/2.
+	#print ("debug s_path=",s_path," val=",val)
+	n_iter = 15
+	count = 0
+	f_min = func_theory(x_min)
+	f_max = func_theory(x_max)
+	f_val = func_theory((x_min + x_max)/2.)
+	while(count < n_iter):
+		x = (x_min + x_max)/2.
+		f_val = func_theory(x)
+		if(val <= f_val):
+			f_max = f_val
+			x_max = x
+			count += 1
+			continue
+		if(val >= f_val):
+			f_min = f_val
+			x_min = x
+			count += 1
+			continue
+	r_res = 1000.*r_init*x**2
+	#print ("debug s_path=",s_path," val=",val," f_val=",f_val," x=",x," r_res=",r_res)
+	return r_res
+
+#----------------------------------------
+# Uniform sphere distribution functions
+#----------------------------------------
 
 def getUniformXYZ(radius,gamma):
 	""" 
@@ -41,9 +96,9 @@ def getUniformXYZ(radius,gamma):
 	(x,y,z) = (radius,radius,radius)
 	r = math.sqrt(x**2 + y**2 + z**2)
 	while(r > radius):
-		x = radius*0.5*(1.0 - 2*random.random())
-		y = radius*0.5*(1.0 - 2*random.random())
-		z = radius*0.5*(1.0 - 2*random.random())
+		x = radius*(1.0 - 2*random.random())
+		y = radius*(1.0 - 2*random.random())
+		z = radius*(1.0 - 2*random.random())
 		r = math.sqrt(x**2 + y**2 + z**2)
 	return (x,y,z/gamma)
 
@@ -56,7 +111,7 @@ bunch_radius = 0.005        # m
 bunch_length = 10.0       # m
 nParts = 1000000
 total_macroSize = 1.0e+11
-energy = 1.0               # GeV
+energy = 1.4               # GeV
 
 syncPart = b_init.getSyncParticle()
 syncPart.kinEnergy(energy)
@@ -124,7 +179,7 @@ def getLattice(lattice_length,n_parts,calc3d):
 nEllipses = 1
 calc3d = SpaceChargeCalcUnifEllipse(nEllipses)
 
-lattice_length = 10.0    # the length of the drift
+lattice_length = 0.5    # the length of the drift
 n_parts = 30  # number of parts on what the drift will be chopped, or the number of SC nodes
 lattice = getLattice(lattice_length,n_parts,calc3d)
 
@@ -137,24 +192,63 @@ print ("Number of parts in the lattice = ",n_parts)
 bunch = Bunch()
 b_init.copyBunchTo(bunch)
 
-#---------------------------------------
-#track the bunch through the lattice
-#---------------------------------------
-lattice.trackBunch(bunch)
+#-------------------------------------------------------------------
+#---- Here we add three particles - along x,y,z axises at 
+#---- r_bunch/2 disstance from the center. We will use them to 
+#---- compare analytical solution with the PyORBIT tracking,
+#---- N.B. : adding 3 particles did not change total charge much.
+#-------------------------------------------------------------------
+ip_arr = [nParticlesGlobal,nParticlesGlobal+1,nParticlesGlobal+2]
+r_in = 0.5*bunch_radius
+bunch.addParticle(-r_in,0.,0.,0.,0.,0.)
+bunch.addParticle(0.,0.,r_in,0.,0.,0.)
+bunch.addParticle(0.,0.,0.,0.,r_in/gamma,0.)
+r_in *= 1000    # now in [mm]
 
-#----------------------------------------------
-#---- Analysis of the final bunch
-#----------------------------------------------
-twiss_analysis.analyzeBunch(bunch)
+#-------------------------------------------------------
+#---- Let's track bunch through the drift several times
+#-------------------------------------------------------
+s_path = 0.
 
-x_rms = math.sqrt(twiss_analysis.getCorrelation(0,0)) * 1000.0
-y_rms = math.sqrt(twiss_analysis.getCorrelation(2,2)) * 1000.0
-z_rms = math.sqrt(twiss_analysis.getCorrelation(4,4)) * 1000.0
+print ("s[m] r_rms[mm] r1[mm]  r2[mm] r3[mm] r_theory[mm] ")
 
+for ind in range(20):
+	#---------------------------------------
+	#track the bunch through the lattice
+	#---------------------------------------
+	lattice.trackBunch(bunch)
+	
+	s_path += lattice_length
+	
+	#----------------------------------------------
+	#---- Analysis of the final bunch
+	#----------------------------------------------
+	twiss_analysis.analyzeBunch(bunch)
+	
+	x_rms = math.sqrt(twiss_analysis.getCorrelation(0,0)) * 1000.0
+	y_rms = math.sqrt(twiss_analysis.getCorrelation(2,2)) * 1000.0
+	z_rms = math.sqrt(twiss_analysis.getCorrelation(4,4)) * 1000.0
+	r_rms = math.sqrt(x_rms**2 + y_rms**2 + (z_rms*gamma)**2)
+	
+	st = ""
+	r_out = 0.
+	for ip in ip_arr:
+		z = bunch.z(ip)*gamma
+		x = bunch.x(ip)
+		y = bunch.y(ip)
+		xp = bunch.xp(ip)*1000
+		r_out = 1000.*math.sqrt(x**2 + y**2 + z**2)
+		st += " %6.3f "%(r_out)
+		
+	
+	r_out_th = getR_Theory(s_path,0.5*bunch_radius,bunch_radius,total_macroSize,bunch)
+	
+	print (" %4.3f  %6.3f  "%(s_path,r_rms),st," %6.3f "%r_out_th)
+	
 print ("==========After Traking=======================")
-print ("Initial x_rms[mm] = %6.5f  x_rms/y_rms         = %6.5f "%(x_rms,x_rms/y_rms))
-print ("Initial y_rms[mm] = %6.5f  x_rms/(z_rms*gamma) = %6.5f "%(y_rms,x_rms/(z_rms*gamma)))
-print ("Initial z_rms[mm] = %6.5f  x_rms/(z_rms*gamma) = %6.5f "%(z_rms,x_rms/(z_rms*gamma)))
+print ("x_rms[mm] = %6.5f  x_rms/y_rms         = %6.5f "%(x_rms,x_rms/y_rms))
+print ("y_rms[mm] = %6.5f  y_rms/(z_rms*gamma) = %6.5f "%(y_rms,y_rms/(z_rms*gamma)))
+print ("z_rms[mm] = %6.5f  x_rms/(z_rms*gamma) = %6.5f "%(z_rms,x_rms/(z_rms*gamma)))
 print ("=============================================")
 
 print("Finish.")
