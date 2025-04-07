@@ -62,6 +62,7 @@ class DanilovEnvelopeSolverNode20(DanilovEnvelopeSolverNode):
         self.solver.setEmittanceX(eps_x)
         self.solver.setEmittanceY(eps_y)
 
+
 class DanilovEnvelopeSolverNode22(DanilovEnvelopeSolverNode):
     def __init__(self, **kwargs) -> None:
         super().__init__(solver=None, **kwargs)

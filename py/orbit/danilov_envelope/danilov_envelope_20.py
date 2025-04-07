@@ -1,5 +1,6 @@
 """Envelope model for {2, 0} Danilov distribution (KV distribution)."""
 import copy
+import math
 import time
 from typing import Callable
 from typing import Iterable
@@ -248,7 +249,9 @@ class DanilovEnvelope20:
 class DanilovEnvelopeMonitor20:
     def __init__(self, verbose: int = 0) -> None:
         self.verbose = verbose
-        self.position = 0.0
+        self.distance = 0.0
+        self._pos_old = 0.0
+        self._pos_new = 0.0
 
         self.history = {}
         for key in [
@@ -257,25 +260,33 @@ class DanilovEnvelopeMonitor20:
             "yrms",
         ]:
             self.history[key] = []
+
+    def package(self) -> None:
+        history = copy.deepcopy(self.history)
+        for key in history:
+            history[key] = np.array(history[key])
+        history["s"] -= history["s"][0]
+        return history        
     
     def __call__(self, params_dict: dict) -> None:   
         bunch = params_dict["bunch"]
         node = params_dict["node"]
-
-        if params_dict["path_length"] >= self.position:
-            self.position = params_dict["path_length"]
-        else:
-            self.position = self.position + params_dict["path_length"]
-
+        
+        self._pos_new = params_dict["path_length"]
+        if self._pos_old > self._pos_new:
+            self._pos_old = 0.0
+        self.distance += self._pos_new - self._pos_old
+        self._pos_old = self._pos_new
+        
         x_rms = bunch.x(0) * 0.5
         y_rms = bunch.y(0) * 0.5
 
-        self.history["s"].append(self.position)
+        self.history["s"].append(self.distance)
         self.history["xrms"].append(x_rms)
         self.history["yrms"].append(y_rms)
 
         if self.verbose:
-            print("s={:0.3f} x_rms={:0.2f}, y_rms={:0.2f}".format(position, x_rms, y_rms))
+            print("s={:0.3f} x_rms={:0.2f}, y_rms={:0.2f}".format(self.distance, x_rms, y_rms))
     
 
 class DanilovEnvelopeTracker20:
@@ -338,9 +349,7 @@ class DanilovEnvelopeTracker20:
         envelope.from_bunch(bunch)
 
         if history:
-            for key in  monitor.history:
-                monitor.history[key] = np.array(monitor.history[key])
-            return monitor.history
+            return monitor.package()
     
     def get_transfer_matrix(self, envelope: DanilovEnvelope20) -> np.ndarray:
         bunch = envelope.to_bunch(size=0, env=False)
@@ -391,17 +400,20 @@ class DanilovEnvelopeTracker20:
         beta_y = lattice_params["beta y [m]"]
         envelope.set_twiss(alpha_x, beta_x, alpha_y, beta_y)
                         
-    def match(self, envelope: DanilovEnvelope20, method: str = "least_squares", **kwargs) -> None:
+    def match(self, envelope: DanilovEnvelope20, periods: int = 1, method: str = "least_squares", **kwargs) -> None:
         if envelope.perveance == 0.0:
             return self.match_zero_sc(envelope)
                 
         def loss_function(params: np.ndarray) -> np.ndarray:   
             envelope.set_params(params)
-            self.track(envelope)
-            residuals = envelope.params - params
-            residuals = 1000.0 * residuals        
-            loss = np.mean(np.abs(residuals))
-            return loss
+
+            loss = 0.0
+            for period in range(periods):
+                self.track(envelope)
+                residuals = envelope.params - params
+                residuals = 1000.0 * residuals        
+                loss += np.mean(np.abs(residuals))
+            return loss / float(periods)
 
         if method == "least_squares":
             kwargs.setdefault("xtol", 1.00e-12)
@@ -416,5 +428,12 @@ class DanilovEnvelopeTracker20:
                 **kwargs
             )
             return result
+        elif method == "minimize":
+            result = scipy.optimize.minimize(
+                loss_function,
+                envelope.params.copy(),
+                bounds=scipy.optimize.Bounds(self.lb, self.ub),
+                **kwargs
+            )
         else:
             raise ValueError

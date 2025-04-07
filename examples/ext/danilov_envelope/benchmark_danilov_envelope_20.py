@@ -126,13 +126,17 @@ histories["bunch"] = copy.deepcopy(history)
 # Plot comparison
 # --------------------------------------------------------------------------------------
 
-fig, ax = plt.subplots(figsize=(9.0, 2.5), constrained_layout=True)
+figwidth = 4.0 * args.periods
+figwidth = min(figwidth, 10.0)
+
+fig, ax = plt.subplots(figsize=(figwidth, 2.5), constrained_layout=True)
 for i, key in enumerate(histories):
     history = histories[key]
     
     plot_kws = {}
     if key == "envelope":
         plot_kws["ls"] = "-"
+        plot_kws["marker"] = "."
     if key == "bunch":
         plot_kws["ls"] = "-"
         plot_kws["lw"] = 0.0

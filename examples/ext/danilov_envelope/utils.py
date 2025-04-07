@@ -196,7 +196,9 @@ def get_bunch_cov(bunch: Bunch) -> np.ndarray:
 
 class BunchMonitor:
     def __init__(self) -> None:
-        self.position = 0.0
+        self.distance = 0.0
+        self._pos_old = 0.0
+        self._pos_new = 0.0
 
         self.history = {}
         for key in [
@@ -217,10 +219,11 @@ class BunchMonitor:
         bunch = params_dict["bunch"]
         node = params_dict["node"]
 
-        if params_dict["path_length"] >= self.position:
-            self.position = params_dict["path_length"]
-        else:
-            self.position += params_dict["path_length"]
+        self._pos_new = params_dict["path_length"]
+        if self._pos_old > self._pos_new:
+            self._pos_old = 0.0
+        self.distance += self._pos_new - self._pos_old
+        self._pos_old = self._pos_new
 
         # Compute covariance matrix
         cov_matrix = get_bunch_cov(bunch)
@@ -228,9 +231,9 @@ class BunchMonitor:
         y_rms = np.sqrt(cov_matrix[2, 2])
 
         # Append to history array
-        self.history["s"].append(self.position)
+        self.history["s"].append(self.distance)
         self.history["xrms"].append(x_rms)
         self.history["yrms"].append(y_rms)
 
         # Print update
-        print("s={:0.3f} x_rms={:0.2f}, y_rms={:0.2f}".format(self.position, x_rms * 1000.0, y_rms * 1000.0))
+        print("s={:0.3f} x_rms={:0.2f}, y_rms={:0.2f}".format(self.distance, x_rms * 1000.0, y_rms * 1000.0))
