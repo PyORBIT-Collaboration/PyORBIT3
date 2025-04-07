@@ -18,6 +18,10 @@ void DanilovEnvelopeSolver22::trackBunch(Bunch *bunch, double length) {
   double b = bunch->x(1);
   double e = bunch->y(0);
   double f = bunch->y(1);
+  double ap = bunch->xp(0);
+  double bp = bunch->xp(1);
+  double ep = bunch->yp(0);
+  double fp = bunch->yp(1);
 
   double cov_xx = a * a + b * b; // 4 * <x^2>
   double cov_yy = e * e + f * f; // 4 * <y^2>

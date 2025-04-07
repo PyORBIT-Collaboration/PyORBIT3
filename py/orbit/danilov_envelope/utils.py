@@ -1,6 +1,8 @@
 import numpy as np
 
 from orbit.core.bunch import Bunch
+from orbit.lattice import AccLattice
+from orbit.lattice import AccNode
 from orbit.teapot import TEAPOT_Lattice
 from orbit.teapot import TEAPOT_MATRIX_Lattice
 
@@ -10,7 +12,7 @@ def rotation_matrix(angle: float) -> np.ndarray:
     return np.array([[c, s], [-s, c]])
 
 
-def rotation_matrix_xy(angle: float) -> np.ndarray::
+def rotation_matrix_xy(angle: float) -> np.ndarray:
     """4 x 4 matrix to rotate [x, x', y, y'] clockwise in the x-y plane (angle in radians)."""
     c, s = np.cos(angle), np.sin(angle)
     return np.array([[c, 0, s, 0], [0, c, 0, s], [-s, 0, c, 0], [0, -s, 0, c]])
@@ -37,29 +39,47 @@ def phase_advance_matrix(*phase_advances) -> np.ndarray:
     return M
 
 
-def get_transfer_matrix(lattice: AccLattice, mass: float, kin_energy: float) -> np.ndarray:
-    """Return 6 x 6 transfer matrix from periodic linear lattice.
-
-    Parameters
-    ----------
-    lattice : TEAPOT_Lattice
-        Periodic lattice passed to `TEAPOT_MATRIX_Lattice` constructor.
-    mass, energy : float
-        Particle mass [GeV/c^2] and kinetic energy [GeV].
-
-    Returns
-    -------
-    np.ndarray, shape (6, 6)
-        Transverse transfer matrix.
-    """
-    bunch = Bunch()
-    bunch.mass(mass)
-    bunch.getSyncParticle().kinEnergy(kin_energy)
+def get_transfer_matrix(lattice: AccLattice, bunch: Bunch) -> np.ndarray:
     matrix_lattice = TEAPOT_MATRIX_Lattice(lattice, bunch)
-    M = np.zeros((6, 6))
-    for i in range(6):
-        for j in range(6):
+    M = np.zeros((4, 4))
+    for i in range(4):
+        for j in range(4):
             M[i, j] = matrix_lattice.oneTurnMatrix.get(i, j)
+    return M
+
+
+def fit_transfer_matrix(lattice: AccLattice, bunch: Bunch) -> np.ndarray:
+    step_arr_init = np.full(4, 1.00e-06)
+    step_arr = np.copy(step_arr_init)
+    step_reduce = 20.0
+
+    _bunch = Bunch()
+    bunch.copyEmptyBunchTo(_bunch)
+
+    _bunch.addParticle(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    _bunch.addParticle(step_arr[0] / step_reduce, 0.0, 0.0, 0.0, 0.0, 0.0)
+    _bunch.addParticle(0.0, step_arr[1] / step_reduce, 0.0, 0.0, 0.0, 0.0)
+    _bunch.addParticle(0.0, 0.0, step_arr[2] / step_reduce, 0.0, 0.0, 0.0)
+    _bunch.addParticle(0.0, 0.0, 0.0, step_arr[3] / step_reduce, 0.0, 0.0)
+    _bunch.addParticle(step_arr[0], 0.0, 0.0, 0.0, 0.0, 0.0)
+    _bunch.addParticle(0.0, step_arr[1], 0.0, 0.0, 0.0, 0.0)
+    _bunch.addParticle(0.0, 0.0, step_arr[2], 0.0, 0.0, 0.0)
+    _bunch.addParticle(0.0, 0.0, 0.0, step_arr[3], 0.0, 0.0)
+
+    lattice.trackBunch(_bunch)
+
+    X = get_bunch_coords(bunch)
+    X = X[:, (0, 2, 3, 4)]
+
+    M = np.zeros((4, 4))
+    for i in range(4):
+        for j in range(4):
+            x1 = step_arr[i] / step_reduce
+            x2 = step_arr[i]
+            y0 = X[0, j]
+            y1 = X[i + 1, j]
+            y2 = X[i + 1 + 4, j]
+            M[j, i] = ((y1 - y0) * x2 * x2 - (y2 - y0) * x1 * x1) / (x1 * x2 * (x2 - x1))
     return M
 
 
@@ -91,3 +111,10 @@ def calc_twiss_2d(cov_matrix: np.ndarray) -> tuple[float, float, float]:
     alpha = -cov_matrix[0, 1] / emittance
     beta = cov_matrix[0, 0] / emittance
     return (alpha, beta, emittance)
+
+
+def get_bunch_coords(bunch: Bunch) -> np.ndarray:
+    x = np.zeros((bunch.getSize(), 6))
+    for i in range(bunch.getSize()):
+        x[i, :] = [bunch.x(i), bunch.xp(i), bunch.y(i), bunch.yp(i), bunch.z(i), bunch.dE(i)]
+    return x

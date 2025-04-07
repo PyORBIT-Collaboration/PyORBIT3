@@ -2,3 +2,4 @@ project('PyORBIT', ['cpp'], version: run_command('python', '-m',  'setuptools_sc
 
 subdir('src')
 subdir('py/orbit')
+subdir('ext')
