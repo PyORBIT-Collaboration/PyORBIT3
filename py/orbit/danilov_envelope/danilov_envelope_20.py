@@ -351,10 +351,10 @@ class DanilovEnvelopeTracker20:
         if history:
             return monitor.package()
     
-    def get_transfer_matrix(self, envelope: DanilovEnvelope20) -> np.ndarray:
+    def transfer_matrix(self, envelope: DanilovEnvelope20) -> np.ndarray:
         bunch = envelope.to_bunch(size=0, env=True)
 
-        if self.perveance == 0:
+        if envelope.perveance == 0:
             self.toggle_solver_nodes(False)
             matrix = get_transfer_matrix(self.lattice, bunch)
             self.toggle_solver_nodes(True)

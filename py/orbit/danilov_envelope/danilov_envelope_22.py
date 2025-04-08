@@ -13,6 +13,7 @@ from orbit.core.bunch import Bunch
 
 from ..bunch_generators import KVDist2D
 from ..bunch_generators import TwissContainer
+from ..lattice import AccActionsContainer
 from ..lattice import AccLattice
 from ..lattice import AccNode
 from ..teapot import TEAPOT_Lattice
@@ -21,8 +22,12 @@ from ..utils import consts
 
 from .danilov_envelope_solver_nodes import DanilovEnvelopeSolverNode22
 from .danilov_envelope_solver_lattice_modifications import add_danilov_envelope_solver_nodes_22
-from .transfer_matrix import norm_matrix_from_twiss_cs
-from .transfer_matrix import norm_matrix_from_twiss_lb_one_mode
+from .transfer_matrix import cs_norm_matrix_from_params
+from .transfer_matrix import cs_params_from_transfer_matrix
+from .transfer_matrix import lb_norm_matrix_from_params_one_mode
+from .transfer_matrix import lb_norm_matrix_from_transfer_matrix
+from .transfer_matrix import is_coupled
+from .transfer_matrix import is_stable
 from .utils import get_bunch_coords
 from .utils import get_perveance
 from .utils import get_transfer_matrix
@@ -169,64 +174,6 @@ class DanilovEnvelope22:
     def rotate(self, angle: float) -> None:
         """Apply clockwise rotation by `angle`` radians in x-y plane."""
         self.transform(rotation_matrix_xy(angle))
-
-    def normalization_matrix(self, kind: str = "2d") -> np.ndarray:
-        if kind == "2d":
-            norm_matrix = CS.normalization_matrix_from_twiss(*self.twiss_2d())
-        elif kind == "4D":
-            alpha_lx, beta_lx, alpha_ly, beta_ly, u, nu = self.twiss_4d()
-            norm_matrix = LB.normalization_matrix_from_twiss_one_mode(
-                alpha_lx=alpha_lx,
-                beta_lx=beta_lx,
-                alpha_ly=alpha_ly,
-                beta_ly=beta_ly,
-                u=u,
-                nu=nu,
-                mode=self.mode,
-            )
-        else:
-            raise ValueError(f"Invalid normalization {kind}")
-        return norm_matrix
-    
-    def normalize(self, kind: str = "2d", scale: bool = False) -> None:
-        """Normalize the phase space coordinates.
-
-        Parameters
-        ----------
-        kind : {"2d", "4d"}
-            - "2d": The x-x' and y-y' ellipses will be circles of radius sqrt(eps_x)
-                    and sqrt(eps_y), where eps_x and eps_y are the rms projected
-                    emittances.
-            - "4d": The 4 x 4 covariance matrix becomes diagonal. The x-x' and y-y'
-                    ellipses wil be circles of radius radius sqrt(eps_1) and
-                    sqrt(eps_2), where eps_1, and eps_2 are the rms intrinsic
-                    emittances.
-        scale : bool
-            Whether to divide by the emittances to scale all coordinates to unit
-            variance. This converts all circles to unit circles.
-        """
-        if kind == "2d":
-            self.transform(self.normalization_matrix(kind=kind))
-            if scale:
-                eps_x, eps_y = self.projected_emittances()
-                if eps_x > 0.0:
-                    self.params[0:4] /= np.sqrt(4.0 * eps_x)
-                if eps_y > 0.0:
-                    self.params[4:0] /= np.sqrt(4.0 * eps_y)
-            return self.params
-        
-        elif kind == "4d":
-            r_n = np.sqrt(4.0 * self.intrinsic_emittance)
-            if self.mode == 1:
-                self.params = np.array([r_n, 0, 0, r_n, 0, 0, 0, 0])
-            else:
-                self.params = np.array([0, 0, 0, 0, 0, r_n, r_n, 0])
-            if scale:
-                self.params = self.params / r_n
-            return self.params
-        
-        else:
-            raise ValueError(f"Invalid normalization {kind}")
         
     def projected_tilt_angle(self, axis: tuple[int, int] = (0, 2)) -> float:
         """Return angle of projected ellipse."""
@@ -315,7 +262,7 @@ class DanilovEnvelope22:
             return 2.0 * np.pi - nu
         
     def u(self) -> float:
-        cov_matrix = self.cov
+        cov_matrix = self.cov()
         if self.mode == 1:
             determinant = np.linalg.det(cov_matrix[2:4, 2:4])
             eps_y = 0.0
@@ -377,26 +324,62 @@ class DanilovEnvelope22:
             "nu": nu,
         }
     
-    def set_twiss_2d(
-        self, 
-        alpha_x: float = None, 
-        beta_x: float = None,
-        alpha_y: float = None,
-        beta_y: float = None,
-        eps_x_frac: float = None,
-    ) -> None:
-        
-        twiss_params = self.twiss_2d()
-        if alpha_x is None:
-            alpha_x = twiss_params["alpha_x"]
-        if alpha_y is None:
-            alpha_y = twiss_params["alpha_y"]
-        if beta_x is None:
-            beta_x = twiss_params["beta_x"]  
-        if beta_y is None:      
-            beta_y = twiss_params["beta_y"]
+    def norm_matrix(self, method: str = "2d") -> np.ndarray:
+        norm_matrix = None
+        if method == "2d":
+            twiss_params = self.twiss_2d()
+            norm_matrix = cs_norm_matrix_from_params(**twiss_params)
+        elif method == "4d":
+            twiss_params = self.twiss_4d()
+            norm_matrix = lb_norm_matrix_from_params_one_mode(mode=self.mode, **twiss_params)
+        else:
+            raise ValueError(f"Invalid normalization {method}")
+        return norm_matrix
+    
+    def normalize(self, method: str = "2d", scale: bool = False) -> None:
+        """Normalize the phase space coordinates.
 
-        V_inv = norm_matrix_from_twiss_cs(alpha_x=alpha_x, beta_x=beta_x, alpha_y=alpha_y, beta_y=beta_y)
+        Parameters
+        ----------
+        method : {"2d", "4d"}
+            - "2d": The x-x' and y-y' ellipses will be circles of radius sqrt(eps_x)
+                    and sqrt(eps_y), where eps_x and eps_y are the rms projected
+                    emittances.
+            - "4d": The 4 x 4 covariance matrix becomes diagonal. The x-x' and y-y'
+                    ellipses wil be circles of radius radius sqrt(eps_1) and
+                    sqrt(eps_2), where eps_1, and eps_2 are the rms intrinsic
+                    emittances.
+        scale : bool
+            Whether to divide by the emittances to scale all coordinates to unit
+            variance. This converts all circles to unit circles.
+        """
+        if method == "2d":
+            self.transform(self.norm_matrix(method))
+            if scale:
+                eps_x, eps_y = self.projected_emittances()
+                if eps_x > 0.0:
+                    self.params[0:4] /= np.sqrt(4.0 * eps_x)
+                if eps_y > 0.0:
+                    self.params[4:0] /= np.sqrt(4.0 * eps_y)
+            return self.params
+        elif method == "4d":
+            r_n = np.sqrt(4.0 * self.intrinsic_emittance)
+            if self.mode == 1:
+                self.params = np.array([r_n, 0, 0, r_n, 0, 0, 0, 0])
+            else:
+                self.params = np.array([0, 0, 0, 0, 0, r_n, r_n, 0])
+            if scale:
+                self.params = self.params / r_n
+            return self.params
+        else:
+            raise ValueError(f"Invalid normalization {method}")
+
+    def set_twiss_2d(self, eps_x_frac: float = None, **twiss_params) -> None:        
+        twiss_params_old = self.twiss_2d()
+        twiss_params_old.update(twiss_params)
+        twiss_params = twiss_params_old
+
+        V_inv = cs_norm_matrix_from_params(**twiss_params)
         V = np.linalg.inv(V_inv)
 
         if eps_x_frac is None:
@@ -410,15 +393,7 @@ class DanilovEnvelope22:
         self.normalize(method="2d", scale=True)
         self.transform(V)
 
-    def set_twiss_4d(
-        self, 
-        alpha_lx: float = None,
-        beta_lx: float = None, 
-        alpha_ly: float = None, 
-        beta_ly: float = None, 
-        u: float = None, 
-        nu: float = None
-    ) -> None:
+    def set_twiss_4d(self, **twiss_params) -> None:
         """Set 4D Twiss parameters.
 
         Parameters
@@ -430,20 +405,11 @@ class DanilovEnvelope22:
         - u : Coupling parameter in range [0, 1] (eps_y / epsl if mode=1, eps_x / epsl if mode=2).
         - nu : The x-y phase difference in range [0, pi].
         """
-        twiss_params = self.twiss_4d()
-        for i, value in enumerate([alpha_lx, beta_lx, alpha_ly, beta_ly, u, nu]):
-            if value is not None:
-                twiss_params[i] = value
+        twiss_params_old = self.twiss_4d()
+        twiss_params_old.update(twiss_params)
+        twiss_params = twiss_params_old
 
-        V_inv = norm_matrix_from_twiss_lb_one_mode(
-            alpha_lx=alpha_lx,
-            beta_lx=beta_lx,
-            alpha_ly=alpha_ly,
-            beta_ly=beta_ly,
-            u=u,
-            nu=nu,
-            mode=1,
-        )
+        V_inv = lb_norm_matrix_from_params_one_mode(mode=self.mode, **twiss_params)
         V = np.linalg.inv(V_inv)
 
         self.normalize(method="4d")
@@ -515,9 +481,8 @@ class DanilovEnvelope22:
     def sample(self, size: int, dist: str = "kv") -> np.ndarray:
         if dist == "kv":
             psis = np.linspace(0.0, 2.0 * np.pi, size)
-            samples = [self.get_coordinates(psi) for psi in psis]
-            samples = np.array(samples)
-            radii = np.random.uniform(0.0, 1.0, size=size) ** -0.5
+            samples = np.array([self.get_coordinates(psi) for psi in psis])
+            radii = np.random.uniform(0.0, 1.0, size=size) ** 0.5
             samples = samples * radii[:, None]
             return samples
         elif dist == "gaussian":
@@ -646,10 +611,10 @@ class DanilovEnvelopeTracker22:
         if history:
             return monitor.package()
         
-    def get_transfer_matrix(self, envelope: DanilovEnvelope22) -> np.ndarray:
+    def transfer_matrix(self, envelope: DanilovEnvelope22) -> np.ndarray:
         bunch = envelope.to_bunch(size=0, env=True)
 
-        if self.perveance == 0:
+        if envelope.perveance == 0:
             self.toggle_solver_nodes(False)
             matrix = get_transfer_matrix(self.lattice, bunch)
             self.toggle_solver_nodes(True)
@@ -684,3 +649,30 @@ class DanilovEnvelopeTracker22:
                 y2 = X[i + 1 + 4, j]
                 M[j, i] = ((y1 - y0) * x2 * x2 - (y2 - y0) * x1 * x1) / (x1 * x2 * (x2 - x1))
         return M
+    
+    def match_zero_sc(self, envelope: DanilovEnvelope22, method: str = "auto") -> None:
+        self.toggle_solver_nodes(False)
+        bunch = Bunch()
+        bunch.mass(envelope.mass)
+        bunch.getSyncParticle().kinEnergy(envelope.kin_energy)
+        transfer_matrix = get_transfer_matrix(self.lattice, bunch)
+        self.toggle_solver_nodes(True)
+
+        # Match to the bare lattice.
+        if method == "auto":
+            if is_coupled(transfer_matrix):
+                method = "4d"
+            else:
+                method = "2d"
+                
+        if method == "2d":
+            twiss_params = cs_params_from_transfer_matrix(transfer_matrix)
+            envelope.set_twiss_2d(**twiss_params)
+        elif method == "4d":
+            norm_matrix = lb_norm_matrix_from_transfer_matrix(transfer_matrix)
+            norm_matrix_inv = np.linalg.inv(norm_matrix)
+            envelope.normalize(method="4d")
+            envelope.transform(norm_matrix_inv)
+        else:
+            raise ValueError
+        
