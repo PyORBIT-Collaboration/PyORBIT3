@@ -4,6 +4,7 @@ py_sources = files([
     'danilov_envelope_22.py',
     'danilov_envelope_solver_nodes.py',
     'danilov_envelope_solver_lattice_modifications.py',
+    'transfer_matrix.py',
     'utils.py',
 ])
 

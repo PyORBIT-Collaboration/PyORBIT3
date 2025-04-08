@@ -19,13 +19,14 @@ from ..teapot import TEAPOT_Lattice
 from ..teapot import TEAPOT_MATRIX_Lattice
 from ..utils import consts
 
-# from .danilove_envelope_
-from .utils import calc_twiss_2d
 from .utils import get_bunch_coords
 from .utils import get_perveance
 from .utils import get_transfer_matrix
 from .utils import fit_transfer_matrix
 from .utils import rotation_matrix_xy
+
+from .transfer_matrix import norm_matrix_from_twiss_cs
+from .transfer_matrix import norm_matrix_from_twiss_lb_one_mode
 
 
 def cov_matrix_to_vector(cov_matrix: np.ndarray) -> np.ndarray:
@@ -36,7 +37,7 @@ def cov_matrix_to_vector(cov_matrix: np.ndarray) -> np.ndarray:
 def env_matrix_to_vector(env_matrix: np.ndarray) -> np.ndarray:
     """Return list of envelope parameters from envelope matrix."""
     return env_matrix.ravel()
-
+    
 
 class DanilovEnvelope22:
     """Represents envelope of {2, 2} Danilov distribution (KV distribution with zero emittance in one plane).
@@ -250,25 +251,19 @@ class DanilovEnvelope22:
     
     def projected_emittances(self) -> tuple[float, float]:
         """Return rms apparent emittances eps_x, eps_y [m * rad]."""
-        eps_x = 0.0
-        eps_y = 0.0
-
+        eps_x = eps_y = 0.0
         cov_matrix = self.cov()
-        
         determinant = np.linalg.det(cov_matrix[0:2, 0:2])
         if determinant > 0.0:
             eps_x = np.sqrt(determinant)
-
         determinant = np.linalg.det(cov_matrix[2:4, 2:4])
         if determinant > 0.0:
             eps_y = np.sqrt(determinant)
-        
         return (eps_x, eps_y)
 
     def intrinsic_emittances(self) -> tuple[float, float]:
         """Return rms intrinsic emittances eps1, eps2 [m * rad]."""
-        eps_1 = 0.0
-        eps_2 = 0.0
+        eps_1 = eps_2 = 0.0
         if self.mode == 1:
             eps_1 = self.intrinsic_emittance
         else:
@@ -382,7 +377,7 @@ class DanilovEnvelope22:
         if beta_y is None:      
             beta_y = twiss_params["beta_y"]
 
-        V_inv = norm_matrix_from_twiss_2d(alpha_x=alpha_x, beta_x=beta_x, alpha_y=alpha_y, beta_y=beta_y)
+        V_inv = norm_matrix_from_twiss_cs(alpha_x=alpha_x, beta_x=beta_x, alpha_y=alpha_y, beta_y=beta_y)
         V = np.linalg.inv(V_inv)
 
         if eps_x_frac is None:
@@ -421,7 +416,7 @@ class DanilovEnvelope22:
             if value is not None:
                 twiss_params[i] = value
 
-        V_inv = normalization_matrix_from_twiss_one_mode(
+        V_inv = norm_matrix_from_twiss_lb_one_mode(
             alpha_lx=alpha_lx,
             beta_lx=beta_lx,
             alpha_ly=alpha_ly,
