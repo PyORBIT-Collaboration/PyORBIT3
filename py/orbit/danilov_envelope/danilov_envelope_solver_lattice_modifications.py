@@ -122,7 +122,7 @@ def add_danilov_envelope_solver_nodes_22(
         path_length_max=path_length_max,
         path_length_min=path_length_min, 
         solver_node_constructor=DanilovEnvelopeSolverNode22, 
-        solver_node_constructor_args=kwargs
+        solver_node_constructor_kwargs=kwargs
     )
     for solver_node in solver_nodes:
         name = "".join([solver_node.getName(), ":", "danilov_env_solver_22"])
