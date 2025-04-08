@@ -503,7 +503,15 @@ class DanilovEnvelope22:
         return bunch
         
     def sample(self, size: int, dist: str = "kv") -> np.ndarray:
-        raise NotImplementedError
+        if dist == "kv":
+            psis = np.linspace(0.0, 2.0 * np.pi, size)
+            samples = [self.get_coordinates(psi) for psi in psis]
+            samples = np.array(samples)
+            radii = np.random.uniform(0.0, 1.0, size=size) ** -0.5
+            samples = samples * radii[:, None]
+            return samples
+        elif dist == "gaussian":
+            return np.random.multivariate_normal(np.zeros(4), self.cov(), size=size)
     
     
 class DanilovEnvelopeTracker22:
