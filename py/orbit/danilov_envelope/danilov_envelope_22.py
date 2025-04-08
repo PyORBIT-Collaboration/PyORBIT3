@@ -646,7 +646,7 @@ class DanilovEnvelopeTracker22:
         if history:
             return monitor.package()
         
-     def get_transfer_matrix(self, envelope: DanilovEnvelope22) -> np.ndarray:
+    def get_transfer_matrix(self, envelope: DanilovEnvelope22) -> np.ndarray:
         bunch = envelope.to_bunch(size=0, env=True)
 
         if self.perveance == 0:
