@@ -360,7 +360,7 @@ class DanilovEnvelope22:
                 if eps_x > 0.0:
                     self.params[0:4] /= np.sqrt(4.0 * eps_x)
                 if eps_y > 0.0:
-                    self.params[4:0] /= np.sqrt(4.0 * eps_y)
+                    self.params[4:8] /= np.sqrt(4.0 * eps_y)
             return self.params
         elif method == "4d":
             r_n = np.sqrt(4.0 * self.intrinsic_emittance)

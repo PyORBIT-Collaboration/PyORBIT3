@@ -34,7 +34,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--intensity", type=float, default=0.0)
 parser.add_argument("--max-part-length", type=float, default=0.1)
 parser.add_argument("--mismatch", type=float, default=0.0)
-parser.add_argument("--periods", type=int, default=1)
+parser.add_argument("--periods", type=int, default=5)
 args = parser.parse_args()
 
 
@@ -55,7 +55,7 @@ envelope = DanilovEnvelope22(
     mass=0.938,
     kin_energy=1.0,
     length=100.0,
-    intensity=0.0,
+    intensity=args.intensity * 1.0e+14,
     mode=1,
     params=None
 )
@@ -74,22 +74,7 @@ tracker = DanilovEnvelopeTracker22(lattice, path_length_max=args.max_part_length
 tracker.match_zero_sc(envelope, method="2d")    
 envelope_init = envelope.copy()
 
-
-# x = envelope.sample(100_000)
-# xmax = np.std(x, axis=0) * 3.0
-# limits = list(zip(-xmax, xmax))
-
-# fig, axs = plt.subplots(ncols=4, nrows=4, figsize=(6, 6), constrained_layout=True)
-# for i in range(4):
-#     for j in range(4):
-#         ax = axs[i, j]
-#         ax.hist2d(x[:, j], x[:, i], bins=50, range=[limits[j], limits[i]])
-# for ax in axs.flat:
-#     ax.set_xticks([])
-#     ax.set_yticks([])
-# plt.show()
-
-history = tracker.track(envelope, periods=args.periods, history=True)
+history = tracker.track(envelope_init.copy(), periods=args.periods, history=True)
 
 figwidth = 4.0 * args.periods
 figwidth = min(figwidth, 10.0)
@@ -101,3 +86,6 @@ ax.set_ylim(0.0, ax.get_ylim()[1])
 ax.set_xlabel("Distance [m]")
 ax.set_ylabel("Size [mm]")
 plt.show()
+
+
+
