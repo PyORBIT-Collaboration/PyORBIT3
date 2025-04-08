@@ -37,7 +37,25 @@ def cov_matrix_to_vector(cov_matrix: np.ndarray) -> np.ndarray:
 def env_matrix_to_vector(env_matrix: np.ndarray) -> np.ndarray:
     """Return list of envelope parameters from envelope matrix."""
     return env_matrix.ravel()
-    
+
+
+def env_vector_to_matrix(env_vector: np.ndarray) -> np.ndarray:
+    return env_vector.reshape(4, 2)
+
+
+def env_params_from_bunch(bunch: Bunch) -> np.ndarray:
+    a = bunch.x(0)
+    b = bunch.x(1)
+    e = bunch.y(0)
+    f = bunch.y(1)
+    ap = bunch.xp(0)
+    bp = bunch.xp(1)
+    ep = bunch.yp(0)
+    fp = bunch.yp(1)
+    params = [a, b, ap, bp, e, f, ep, fp]
+    params = np.array(params)
+    return params
+
 
 class DanilovEnvelope22:
     """Represents envelope of {2, 2} Danilov distribution (KV distribution with zero emittance in one plane).
@@ -132,14 +150,14 @@ class DanilovEnvelope22:
         any transformation to the phase space coordinate vector x is also done to
         P. For example, if x -> Mx, then P -> MP.
         """
-        (a, b, ap, bp, e, f, ep, fp) = self.params
-        return np.array([[a, b], [ap, bp], [e, f], [ep, fp]])
-    
+        return env_vector_to_matrix(self.params)
+
     def param_vector(self, axis: int) -> np.ndarray:
         """Return vector of envelope parameters [a, b, a', b', e, f, e', f']."""
         if axis is None:
             return self.params
-        return self.param_matrix()[axis, :]
+        param_matrix = self.param_matrix()
+        return param_matrix[axis, :]
     
     def transform(self, matrix: np.ndarray) -> None:
         """Linearly transform phase space coordinates."""
@@ -454,16 +472,7 @@ class DanilovEnvelope22:
         
     def from_bunch(self, bunch: Bunch) -> None:
         """Set the envelope parameters from a Bunch object."""
-        a = bunch.x(0)
-        b = bunch.x(1)
-        e = bunch.y(0)
-        f = bunch.y(1)
-        ap = bunch.xp(0)
-        bp = bunch.xp(1)
-        ep = bunch.yp(0)
-        fp = bunch.yp(1)
-        params = [a, b, ap, bp, e, f, ep, fp]
-        self.set_params(params)
+        self.set_params(env_params_from_bunch(bunch))
 
     def to_bunch(self, size: int = 0, env: bool = True) -> Bunch:
         """Create Bunch object from envelope parameters.
@@ -512,7 +521,71 @@ class DanilovEnvelope22:
             return samples
         elif dist == "gaussian":
             return np.random.multivariate_normal(np.zeros(4), self.cov(), size=size)
+        else:
+            raise ValueError
+        
+
+class DanilovEnvelopeMonitor22:
+    def __init__(self, verbose: int = 0) -> None:
+        self.verbose = verbose
+        self.distance = 0.0
+        self._pos_old = 0.0
+        self._pos_new = 0.0
+
+        self.history = {}
+        for key in [
+            "s",
+            "xrms",
+            "yrms",
+            "cov_00",
+            "cov_01",
+            "cov_02",
+            "cov_03",
+            "cov_11",
+            "cov_12",
+            "cov_13",
+            "cov_22",
+            "cov_23",
+            "cov_33",
+        ]:
+            self.history[key] = []
+
+    def package(self) -> None:
+        history = copy.deepcopy(self.history)
+        for key in history:
+            history[key] = np.array(history[key])
+        history["s"] -= history["s"][0]
+        return history        
     
+    def __call__(self, params_dict: dict) -> None:   
+        bunch = params_dict["bunch"]
+        node = params_dict["node"]
+        
+        self._pos_new = params_dict["path_length"]
+        if self._pos_old > self._pos_new:
+            self._pos_old = 0.0
+        self.distance += self._pos_new - self._pos_old
+        self._pos_old = self._pos_new
+        
+        params = env_params_from_bunch(bunch)
+        param_matrix = env_vector_to_matrix(params)
+        cov_matrix = 0.25 * np.matmul(param_matrix, param_matrix.T)
+
+        self.history["s"].append(self.distance)
+        self.history["xrms"].append(np.sqrt(cov_matrix[0, 0]))
+        self.history["yrms"].append(np.sqrt(cov_matrix[2, 2]))
+
+        for i in range(4):
+            for j in range(i, 4):
+                key = f"cov_{i}{j}"
+                self.history[key] = cov_matrix[i, j]
+
+        if self.verbose:
+            message = ""
+            message += "s={:0.3f} ".format(self.history["s"][-1])
+            message += "xrms={:0.3f} ".format(self.history["xrms"][-1])
+            message += "yrms={:0.3f} ".format(self.history["yrms"][-1])
+            
     
 class DanilovEnvelopeTracker22:
     def __init__(self, lattice: AccLattice, path_length_min: float= 1.00e-06) -> None:
