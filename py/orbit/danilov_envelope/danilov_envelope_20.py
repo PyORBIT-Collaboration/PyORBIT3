@@ -352,10 +352,13 @@ class DanilovEnvelopeTracker20:
             return monitor.package()
     
     def get_transfer_matrix(self, envelope: DanilovEnvelope20) -> np.ndarray:
-        bunch = envelope.to_bunch(size=0, env=False)
+        bunch = envelope.to_bunch(size=0, env=True)
 
         if self.perveance == 0:
-            return get_transfer_matrix(self.lattice, bunch)
+            self.toggle_solver_nodes(False)
+            matrix = get_transfer_matrix(self.lattice, bunch)
+            self.toggle_solver_nodes(True)
+            return matrix
 
         step_arr = np.ones(6) * 1.00e-06
         step_reduce = 20.0
@@ -374,7 +377,7 @@ class DanilovEnvelopeTracker20:
         
         X = get_bunch_coords(bunch)
         X = X[:, (0, 1, 2, 3)]
-        X = X[1:, :]
+        X = X[1:, :]  # ignore first particle, which tracks envelope parameters
 
         M = np.zeros((4, 4))
         for i in range(4):

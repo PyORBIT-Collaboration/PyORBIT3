@@ -19,14 +19,15 @@ from ..teapot import TEAPOT_Lattice
 from ..teapot import TEAPOT_MATRIX_Lattice
 from ..utils import consts
 
+from .danilov_envelope_solver_nodes import DanilovEnvelopeSolverNode22
+from .danilov_envelope_solver_lattice_modifications import add_danilov_envelope_solver_nodes_22
+from .transfer_matrix import norm_matrix_from_twiss_cs
+from .transfer_matrix import norm_matrix_from_twiss_lb_one_mode
 from .utils import get_bunch_coords
 from .utils import get_perveance
 from .utils import get_transfer_matrix
 from .utils import fit_transfer_matrix
 from .utils import rotation_matrix_xy
-
-from .transfer_matrix import norm_matrix_from_twiss_cs
-from .transfer_matrix import norm_matrix_from_twiss_lb_one_mode
 
 
 def cov_matrix_to_vector(cov_matrix: np.ndarray) -> np.ndarray:
@@ -585,8 +586,101 @@ class DanilovEnvelopeMonitor22:
             message += "s={:0.3f} ".format(self.history["s"][-1])
             message += "xrms={:0.3f} ".format(self.history["xrms"][-1])
             message += "yrms={:0.3f} ".format(self.history["yrms"][-1])
-            
+
     
 class DanilovEnvelopeTracker22:
-    def __init__(self, lattice: AccLattice, path_length_min: float= 1.00e-06) -> None:
-        raise NotImplementedError
+    def __init__(self, lattice: AccLattice, path_length_max: float = None) -> None:
+        self.lattice = lattice
+        self.solver_nodes = self.add_solver_nodes(path_length_min=1.00e-06, path_length_max=path_length_max)
+
+        # Bounds on LB twiss parameters
+        pad = 1.00e-07
+        alpha_min = -np.inf
+        alpha_max = +np.inf
+        beta_min = pad
+        beta_max = np.inf
+        u_min = pad
+        u_max = 1.0 - pad
+        nu_min = pad
+        nu_max = np.pi - pad
+        self.twiss_lb = (alpha_min, beta_min, alpha_min, beta_min, u_min, nu_min)
+        self.twiss_ub = (alpha_max, beta_max, alpha_max, beta_max, u_max, nu_max)
+
+    def add_solver_nodes(
+        self, 
+        path_length_min: float, 
+        path_length_max: float,
+    ) -> list[DanilovEnvelopeSolverNode22]:
+        
+        self.solver_nodes = add_danilov_envelope_solver_nodes_22(
+            lattice=self.lattice,
+            path_length_min=path_length_min,
+            path_length_max=path_length_max,
+            perveance=0.0,  # will update based on envelope
+        )
+        return self.solver_nodes
+    
+    def toggle_solver_nodes(self, setting: bool) -> None:
+        for node in self.solver_nodes:
+            node.active = setting
+
+    def update_solver_node_parameters(self, envelope: DanilovEnvelope22) -> None:
+       for solver_node in self.solver_nodes:
+            solver_node.set_perveance(envelope.perveance)
+
+    def track(self, envelope: DanilovEnvelope22, periods: int = 1, history: bool = False) -> None | dict[str, np.ndarray]:
+        self.update_solver_node_parameters(envelope)
+
+        monitor = DanilovEnvelopeMonitor22()
+        action_container = AccActionsContainer()
+        if history:
+            action_container.addAction(monitor, AccActionsContainer.ENTRANCE)
+            action_container.addAction(monitor, AccActionsContainer.EXIT)
+
+        bunch = envelope.to_bunch()
+        for period in range(periods):
+            self.lattice.trackBunch(bunch, actionContainer=action_container)
+
+        envelope.from_bunch(bunch)
+
+        if history:
+            return monitor.package()
+        
+     def get_transfer_matrix(self, envelope: DanilovEnvelope22) -> np.ndarray:
+        bunch = envelope.to_bunch(size=0, env=True)
+
+        if self.perveance == 0:
+            self.toggle_solver_nodes(False)
+            matrix = get_transfer_matrix(self.lattice, bunch)
+            self.toggle_solver_nodes(True)
+            return matrix
+
+        step_arr = np.ones(6) * 1.00e-06
+        step_reduce = 20.0
+
+        bunch.addParticle(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+        bunch.addParticle(step_arr[0] / step_reduce, 0.0, 0.0, 0.0, 0.0, 0.0)
+        bunch.addParticle(0.0, step_arr[1] / step_reduce, 0.0, 0.0, 0.0, 0.0)
+        bunch.addParticle(0.0, 0.0, step_arr[2] / step_reduce, 0.0, 0.0, 0.0)
+        bunch.addParticle(0.0, 0.0, 0.0, step_arr[3] / step_reduce, 0.0, 0.0)
+        bunch.addParticle(step_arr[0], 0.0, 0.0, 0.0, 0.0, 0.0)
+        bunch.addParticle(0.0, step_arr[1], 0.0, 0.0, 0.0, 0.0)
+        bunch.addParticle(0.0, 0.0, step_arr[2], 0.0, 0.0, 0.0)
+        bunch.addParticle(0.0, 0.0, 0.0, step_arr[3], 0.0, 0.0)
+
+        self.lattice.trackBunch(bunch)
+        
+        X = get_bunch_coords(bunch)
+        X = X[:, (0, 1, 2, 3)]
+        X = X[2:, :]  # ignore first two particles, which track envelope parameters
+
+        M = np.zeros((4, 4))
+        for i in range(4):
+            for j in range(4):
+                x1 = step_arr[i] / step_reduce
+                x2 = step_arr[i]
+                y0 = X[0, j]
+                y1 = X[i + 1, j]
+                y2 = X[i + 1 + 4, j]
+                M[j, i] = ((y1 - y0) * x2 * x2 - (y2 - y0) * x1 * x1) / (x1 * x2 * (x2 - x1))
+        return M
