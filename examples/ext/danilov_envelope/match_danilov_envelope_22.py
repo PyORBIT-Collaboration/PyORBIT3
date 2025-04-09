@@ -72,7 +72,69 @@ envelopes = {}
 tracker.match_zero_sc(envelope, method="2d")
 envelopes["mismatched"] = envelope.copy()
 
-tracker.match(envelope, periods=args.periods, method="replace_avg")
+# tracker.match(envelope, periods=args.periods, method="replace_avg")
+
+
+
+###################################### TEMP
+import scipy.optimize
+
+periods = args.periods
+
+def loss_function(theta: np.ndarray) -> float:
+    envelope.set_twiss_4d_vector(theta)
+    envelope_copy = envelope.copy()
+
+    cov_matrix_init = envelope_copy.cov()
+
+    loss = 0.0
+    for period in range(periods):
+        tracker.track(envelope_copy)
+        cov_matrix = envelope_copy.cov()
+        loss += np.mean(np.square(cov_matrix - cov_matrix_init))
+    loss = loss / periods
+    loss = loss * 1.00e+06
+    return loss
+
+
+theta0 = envelope.twiss_4d_vector() 
+
+# lb = tracker.twiss_lb
+# ub = tracker.twiss_ub
+# opt_result = scipy.optimize.least_squares(
+#     loss_function,
+#     theta0,
+#     bounds=(lb, ub),
+#     verbose=2,
+#     xtol=1.00e-12,
+# )
+
+
+# theta = envelope.twiss_4d_vector()
+# for iteration in range(10):
+#     theta_tbt = []
+#     for period in range(20):
+#         tracker.track(envelope)
+#         theta_tbt.append(envelope.twiss_4d_vector())
+
+#     theta = np.mean(theta_tbt, axis=0)
+#     envelope.set_twiss_4d_vector(theta)
+    
+#     loss = loss_function(theta)
+#     print(f"iter={iteration}, loss={loss}")
+
+
+######################################
+
+
+
+
+
+
+
+
+
+
 envelopes["matched"] = envelope.copy()
 
 

@@ -243,6 +243,6 @@ class BunchMonitor:
         if self.verbose:
             message = ""
             message += "s={:0.3f} ".format(self.history["s"][-1])
-            message += "xrms={:0.3f} ".format(self.history["xrms"][-1])
-            message += "yrms={:0.3f} ".format(self.history["yrms"][-1])
+            message += "xrms={:0.3f} ".format(self.history["xrms"][-1] * 1000.0)
+            message += "yrms={:0.3f} ".format(self.history["yrms"][-1] * 1000.0)
             print(message)

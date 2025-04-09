@@ -591,7 +591,7 @@ class DanilovEnvelopeTracker22:
         self.solver_nodes = self.add_solver_nodes(path_length_min=1.00e-06, path_length_max=path_length_max)
 
         # Bounds on LB twiss parameters
-        pad = 1.00e-07
+        pad = 1.00e-05
         alpha_min = -np.inf
         alpha_max = +np.inf
         beta_min = pad
