@@ -1,3 +1,4 @@
+"""Benchmark {2, 2} Danilov envelope solver vs. PIC."""
 import argparse
 import copy
 import os
@@ -31,12 +32,14 @@ from utils import BunchMonitor
 # --------------------------------------------------------------------------------------
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--intensity", type=float, default=0.0)
+parser.add_argument("--phase-adv-x", type=float, default=85.0)
+parser.add_argument("--phase-adv-y", type=float, default=85.0)
+parser.add_argument("--intensity", type=float, default=50.0)
 parser.add_argument("--eps_x", type=float, default=10.00e-06)
 parser.add_argument("--eps_y", type=float, default=10.00e-06)
 parser.add_argument("--max-part-length", type=float, default=0.1)
 parser.add_argument("--mismatch", type=float, default=0.0)
-parser.add_argument("--periods", type=int, default=1)
+parser.add_argument("--periods", type=int, default=5)
 args = parser.parse_args()
 
 
@@ -62,8 +65,8 @@ envelope = DanilovEnvelope20(
 )
 
 lattice = make_fodo_lattice(
-    phase_adv_x=np.radians(85.0),
-    phase_adv_y=np.radians(85.0),
+    phase_adv_x=np.radians(args.phase_adv_x),
+    phase_adv_y=np.radians(args.phase_adv_y),
     length=5.0,
     mass=envelope.mass,
     kin_energy=envelope.kin_energy,
@@ -71,12 +74,8 @@ lattice = make_fodo_lattice(
     verbose=1,
 )
 
-matrix_lattice = TEAPOT_MATRIX_Lattice(lattice, envelope.to_bunch())
-lattice_params = matrix_lattice.getRingParametersDict()
-
 tracker = DanilovEnvelopeTracker20(lattice, path_length_max=args.max_part_length)
 tracker.match_zero_sc(envelope)
-    
 envelope_init = envelope.copy()
 
 
@@ -94,8 +93,8 @@ histories["envelope"] = copy.deepcopy(history)
 # --------------------------------------------------------------------------------------
 
 lattice = make_fodo_lattice(
-    phase_adv_x=np.radians(85.0),
-    phase_adv_y=np.radians(85.0),
+    phase_adv_x=np.radians(args.phase_adv_x),
+    phase_adv_y=np.radians(args.phase_adv_y),
     length=5.0,
     mass=envelope.mass,
     kin_energy=envelope.kin_energy,
@@ -108,14 +107,11 @@ action_container = AccActionsContainer()
 action_container.addAction(monitor, AccActionsContainer.ENTRANCE)
 action_container.addAction(monitor, AccActionsContainer.EXIT)
 
-bunch = envelope_init.to_bunch(env=False, size=100_000)
-if envelope_init.intensity > 0.0:
-    bunch.macroSize(envelope_init.intensity / bunch.getSize())
-
 sc_calc = SpaceChargeCalc2p5D(64, 64, 1)
 sc_path_length_min = 1.00e-06
 sc_nodes = setSC2p5DAccNodes(lattice, sc_path_length_min, sc_calc)
 
+bunch = envelope_init.to_bunch(env=False, size=100_000)
 for periods in range(args.periods):
     lattice.trackBunch(bunch, actionContainer=action_container)
 
@@ -136,7 +132,8 @@ for i, key in enumerate(histories):
     plot_kws = {}
     if key == "envelope":
         plot_kws["ls"] = "-"
-        plot_kws["marker"] = "."
+        plot_kws["lw"] = 2.5
+        plot_kws["marker"] = None
     if key == "bunch":
         plot_kws["ls"] = "-"
         plot_kws["lw"] = 0.0

@@ -45,7 +45,6 @@ def make_fodo_lattice(
     mass: float,
     kin_energy: float,
     fill_factor: float = 0.5,
-    angle: float = 0.0,
     start: str = "drift",
     fringe: bool = False,
     max_part_length: float = 0.1,
@@ -63,9 +62,6 @@ def make_fodo_lattice(
         Mass [GeV/c^2] and kinetic energy [GeV] of synchronous particle.
     fill_fac : float
         The fraction of the lattice occupied by quadrupoles.
-    angle : float
-        The skew or tilt angle of the quads [deg]. The focusing quad is
-        rotated clockwise and the defocusing quad is rotated counterclockwise.
     fringe : bool
         Whether to include nonlinear fringe fields in the lattice.
     start : str
@@ -78,8 +74,6 @@ def make_fodo_lattice(
     -------
     TEAPOT_Lattice
     """
-    angle = np.radians(angle)
-
     def _make_lattice(k1: float, k2: float) -> AccLattice:
         """Create FODO lattice with specified focusing strengths.
 
@@ -127,19 +121,12 @@ def make_fodo_lattice(
             lattice.addNode(drift2)
             lattice.addNode(qf_half2)
 
+        # Toggle fringe fields
         for node in lattice.getNodes():
             node.setUsageFringeFieldIN(fringe)
             node.setUsageFringeFieldOUT(fringe)
 
         lattice.initialize()
-
-        for node in lattice.getNodes():
-            name = node.getName()
-            if "qf" in name:
-                node.setTiltAngle(+angle)
-            elif "qd" in name:
-                node.setTiltAngle(-angle)
-
         return lattice
 
     def function(k: np.ndarray) -> float:
@@ -195,16 +182,29 @@ def get_bunch_cov(bunch: Bunch) -> np.ndarray:
 
 
 class BunchMonitor:
-    def __init__(self) -> None:
+    def __init__(self, verbose: int = 1) -> None:
         self.distance = 0.0
         self._pos_old = 0.0
         self._pos_new = 0.0
+        self.verbose = verbose
 
         self.history = {}
         for key in [
             "s",
             "xrms",
             "yrms",
+            "epsx",
+            "epsy",
+            "cov_00",
+            "cov_01",
+            "cov_02",
+            "cov_03",
+            "cov_11",
+            "cov_12",
+            "cov_13",
+            "cov_22",
+            "cov_23",
+            "cov_33",
         ]:
             self.history[key] = []
 
@@ -225,15 +225,22 @@ class BunchMonitor:
         self.distance += self._pos_new - self._pos_old
         self._pos_old = self._pos_new
 
-        # Compute covariance matrix
         cov_matrix = get_bunch_cov(bunch)
-        x_rms = np.sqrt(cov_matrix[0, 0])
-        y_rms = np.sqrt(cov_matrix[2, 2])
 
-        # Append to history array
+        for i in range(4):
+            for j in range(i, 4):
+                key = f"cov_{i}{j}"
+                self.history[key].append(cov_matrix[i, j])
+
         self.history["s"].append(self.distance)
-        self.history["xrms"].append(x_rms)
-        self.history["yrms"].append(y_rms)
+        self.history["xrms"].append(np.sqrt(cov_matrix[0, 0]))
+        self.history["yrms"].append(np.sqrt(cov_matrix[2, 2]))
+        self.history["epsx"].append(np.sqrt(np.linalg.det(cov_matrix[0:2, 0:2])))
+        self.history["epsy"].append(np.sqrt(np.linalg.det(cov_matrix[2:4, 2:4])))
 
-        # Print update
-        print("s={:0.3f} x_rms={:0.2f}, y_rms={:0.2f}".format(self.distance, x_rms * 1000.0, y_rms * 1000.0))
+        if self.verbose:
+            message = ""
+            message += "s={:0.3f} ".format(self.history["s"][-1])
+            message += "xrms={:0.3f} ".format(self.history["xrms"][-1])
+            message += "yrms={:0.3f} ".format(self.history["yrms"][-1])
+            print(message)
