@@ -436,6 +436,20 @@ class DanilovEnvelope22:
         """
         param_matrix = self.param_matrix()
         return np.matmul(param_matrix, [np.cos(psi), np.sin(psi)])
+    
+    def sample(self, size: int, dist: str = "kv") -> np.ndarray:
+        samples = np.zeros((size, 6))
+        samples[:, 4] = np.random.uniform(-0.5 * self.length, 0.5 * self.length, size=size)
+        if dist == "kv":
+            psis = np.linspace(0.0, 2.0 * np.pi, size)
+            samples[:, :4] = np.array([self.get_coordinates(psi) for psi in psis])
+            radii = np.random.uniform(0.0, 1.0, size=size) ** 0.5
+            samples[:, :4] = samples[:, :4] * radii[:, None]
+        elif dist == "gaussian":
+            samples[:, :4] = np.random.multivariate_normal(np.zeros(4), self.cov(), size=size)
+        else:
+            raise ValueError
+        return samples
         
     def from_bunch(self, bunch: Bunch) -> None:
         """Set the envelope parameters from a Bunch object."""
@@ -469,7 +483,7 @@ class DanilovEnvelope22:
         if size:
             samples = self.sample(size)
             for i in range(size):
-                bunch.addParticle(*samples[i])
+                bunch.addParticle(*samples[i, :])
 
             macrosize = self.intensity / size
             if self.intensity == 0.0:
@@ -477,18 +491,6 @@ class DanilovEnvelope22:
             bunch.macroSize(macrosize)
 
         return bunch
-        
-    def sample(self, size: int, dist: str = "kv") -> np.ndarray:
-        if dist == "kv":
-            psis = np.linspace(0.0, 2.0 * np.pi, size)
-            samples = np.array([self.get_coordinates(psi) for psi in psis])
-            radii = np.random.uniform(0.0, 1.0, size=size) ** 0.5
-            samples = samples * radii[:, None]
-            return samples
-        elif dist == "gaussian":
-            return np.random.multivariate_normal(np.zeros(4), self.cov(), size=size)
-        else:
-            raise ValueError
         
 
 class DanilovEnvelopeMonitor22:
@@ -513,6 +515,8 @@ class DanilovEnvelopeMonitor22:
             "cov_22",
             "cov_23",
             "cov_33",
+            "epsx",
+            "epsy",
         ]:
             self.history[key] = []
 
@@ -537,14 +541,16 @@ class DanilovEnvelopeMonitor22:
         param_matrix = env_vector_to_matrix(params)
         cov_matrix = 0.25 * np.matmul(param_matrix, param_matrix.T)
 
-        self.history["s"].append(self.distance)
-        self.history["xrms"].append(np.sqrt(cov_matrix[0, 0]))
-        self.history["yrms"].append(np.sqrt(cov_matrix[2, 2]))
-
         for i in range(4):
             for j in range(i, 4):
                 key = f"cov_{i}{j}"
-                self.history[key] = cov_matrix[i, j]
+                self.history[key].append(cov_matrix[i, j])
+
+        self.history["s"].append(self.distance)
+        self.history["xrms"].append(np.sqrt(cov_matrix[0, 0]))
+        self.history["yrms"].append(np.sqrt(cov_matrix[2, 2]))
+        self.history["epsx"].append(np.sqrt(np.linalg.det(cov_matrix[0:2, 0:2])))
+        self.history["epsy"].append(np.sqrt(np.linalg.det(cov_matrix[2:4, 2:4])))
 
         if self.verbose:
             message = ""
