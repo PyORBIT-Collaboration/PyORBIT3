@@ -24,8 +24,8 @@ from .danilov_envelope_solver_nodes import DanilovEnvelopeSolverNode22
 from .danilov_envelope_solver_lattice_modifications import add_danilov_envelope_solver_nodes_22
 from .transfer_matrix import cs_norm_matrix_from_params
 from .transfer_matrix import cs_params_from_transfer_matrix
-from .transfer_matrix import lb_norm_matrix_from_params_one_mode
 from .transfer_matrix import lb_norm_matrix_from_transfer_matrix
+from .transfer_matrix import lb_inv_norm_matrix_from_params_one_mode
 from .transfer_matrix import is_coupled
 from .transfer_matrix import is_stable
 from .utils import get_bunch_coords
@@ -324,17 +324,31 @@ class DanilovEnvelope22:
             "nu": nu,
         }
     
-    def norm_matrix(self, method: str = "2d") -> np.ndarray:
-        norm_matrix = None
+    def twiss_4d_vector(self) -> np.ndarray:
+        twiss_params = self.twiss_4d()
+        twiss_params = [
+            twiss_params["alpha_lx"],
+            twiss_params["beta_lx"],
+            twiss_params["alpha_ly"],
+            twiss_params["beta_ly"],
+            twiss_params["u"],
+            twiss_params["nu"],
+        ]
+        twiss_params = np.array(twiss_params)
+        return twiss_params
+ 
+    def inv_norm_matrix(self, method: str = "2d") -> np.ndarray:
+        inv_norm_matrix = None
         if method == "2d":
             twiss_params = self.twiss_2d()
             norm_matrix = cs_norm_matrix_from_params(**twiss_params)
+            inv_norm_matrix = np.linalg.inv(norm_matrix)
         elif method == "4d":
             twiss_params = self.twiss_4d()
-            norm_matrix = lb_norm_matrix_from_params_one_mode(mode=self.mode, **twiss_params)
+            inv_norm_matrix = lb_inv_norm_matrix_from_params_one_mode(mode=self.mode, **twiss_params)
         else:
             raise ValueError(f"Invalid normalization {method}")
-        return norm_matrix
+        return inv_norm_matrix
     
     def normalize(self, method: str = "2d", scale: bool = False) -> None:
         """Normalize the phase space coordinates.
@@ -354,7 +368,7 @@ class DanilovEnvelope22:
             variance. This converts all circles to unit circles.
         """
         if method == "2d":
-            self.transform(self.norm_matrix(method))
+            self.transform(np.linalg.inv(self.inv_norm_matrix(method)))
             if scale:
                 eps_x, eps_y = self.projected_emittances()
                 if eps_x > 0.0:
@@ -409,11 +423,21 @@ class DanilovEnvelope22:
         twiss_params_old.update(twiss_params)
         twiss_params = twiss_params_old
 
-        V_inv = lb_norm_matrix_from_params_one_mode(mode=self.mode, **twiss_params)
-        V = np.linalg.inv(V_inv)
+        V = lb_inv_norm_matrix_from_params_one_mode(mode=self.mode, **twiss_params)
 
         self.normalize(method="4d")
         self.transform(V)
+
+    def set_twiss_4d_vector(self, twiss_params: np.ndarray) -> None:
+        twiss_params_dict = {
+            "alpha_lx": twiss_params[0],   
+            "beta_lx": twiss_params[1],
+            "alpha_lx": twiss_params[2],
+            "beta_ly": twiss_params[3], 
+            "u": twiss_params[4],
+            "nu": twiss_params[5],
+        }        
+        return self.set_twiss_4d(**twiss_params_dict)
 
     def set_cov(self, cov_matrix: np.ndarray, verbose: int = 0) -> scipy.optimize.OptimizeResult:
         """Set envelope parameters from covariance matrix."""
@@ -517,6 +541,7 @@ class DanilovEnvelopeMonitor22:
             "cov_33",
             "epsx",
             "epsy",
+            "rxy",
         ]:
             self.history[key] = []
 
@@ -551,6 +576,7 @@ class DanilovEnvelopeMonitor22:
         self.history["yrms"].append(np.sqrt(cov_matrix[2, 2]))
         self.history["epsx"].append(np.sqrt(np.linalg.det(cov_matrix[0:2, 0:2])))
         self.history["epsy"].append(np.sqrt(np.linalg.det(cov_matrix[2:4, 2:4])))
+        self.history["rxy"].append(self.history["cov_02"][-1] / np.sqrt(self.history["cov_00"][-1] * self.history["cov_22"][-1]))
 
         if self.verbose:
             message = ""
@@ -682,3 +708,52 @@ class DanilovEnvelopeTracker22:
         else:
             raise ValueError
         
+    def match(
+        self,
+        envelope: DanilovEnvelope22,
+        periods: int = 1, 
+        method: str = "least_squares", 
+        **kwargs
+    ) -> None:
+        if envelope.intensity == 0.0:
+            return self.match_zero_sc(envelope)
+
+        def loss_function(theta: np.ndarray) -> float:
+            envelope.set_twiss_4d_vector(theta)
+
+            loss = 0.0
+            for period in range(periods):
+                envelope_copy = envelope.copy()
+                cov_matrix_0 = envelope_copy.cov()
+                self.track(envelope_copy, periods=periods)
+                cov_matrix_1 = envelope_copy.cov()
+                loss += np.mean(np.square(cov_matrix_1 - cov_matrix_0))
+
+            loss = loss * 1.00e+06
+            return loss
+        
+        if method == "least_squares":
+            kwargs.setdefault("xtol", 1.00e-12)
+            kwargs.setdefault("ftol", 1.00e-12)
+            kwargs.setdefault("gtol", 1.00e-12)
+
+            result = scipy.optimize.least_squares(
+                loss_function,
+                envelope.twiss_4d_vector(),
+                bounds=(self.twiss_lb, self.twiss_ub),
+                **kwargs
+            )
+
+        elif method == "replace_avg":
+            theta = envelope.twiss_4d_vector()
+            for _ in range(10):
+                theta_tbt = []
+                for period in range(20):
+                    self.track(envelope)
+                    theta_tbt.append(envelope.twiss_4d_vector())
+
+                theta = np.mean(theta_tbt, axis=0)
+                envelope.set_twiss_4d_vector(theta)
+                
+                loss = loss_function(theta)
+                print(loss)

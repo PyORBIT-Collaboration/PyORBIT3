@@ -142,15 +142,14 @@ for i, key in enumerate(histories):
 
     axs[0].plot(history["s"], history["xrms"] * 1.00e+03, **plot_kws)
     axs[0].plot(history["s"], history["yrms"] * 1.00e+03, **plot_kws)
-    axs[1].plot(history["s"], history["epsx"] * 1.00e+06, **plot_kws)
-    axs[1].plot(history["s"], history["epsy"] * 1.00e+06, **plot_kws)
+    axs[1].plot(history["s"], history["rxy"], **plot_kws)
 
-for ax in axs:
-    ax.set_ylim(0.0, ax.get_ylim()[1])
+axs[0].set_ylim(0.0, axs[0].get_ylim()[1])
+axs[1].set_ylim(-1.0, 1.0)
 
 axs[0].set_xlabel("Distance [m]")
 axs[0].set_ylabel("Size [mm]")
-axs[1].set_ylabel("Emittance [mm mrad]")
+axs[1].set_ylabel("rxy")
 
 filename = "fig_benchmark.png"
 filename = os.path.join(output_dir, filename)

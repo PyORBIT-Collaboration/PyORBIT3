@@ -205,6 +205,7 @@ class BunchMonitor:
             "cov_22",
             "cov_23",
             "cov_33",
+            "rxy",
         ]:
             self.history[key] = []
 
@@ -237,6 +238,7 @@ class BunchMonitor:
         self.history["yrms"].append(np.sqrt(cov_matrix[2, 2]))
         self.history["epsx"].append(np.sqrt(np.linalg.det(cov_matrix[0:2, 0:2])))
         self.history["epsy"].append(np.sqrt(np.linalg.det(cov_matrix[2:4, 2:4])))
+        self.history["rxy"].append(self.history["cov_02"][-1] / np.sqrt(self.history["cov_00"][-1] * self.history["cov_22"][-1]))
 
         if self.verbose:
             message = ""

@@ -154,7 +154,7 @@ def lb_params_from_transfer_matrix(M: np.ndarray) -> dict[str, float]:
     }
 
 
-def lb_norm_matrix_from_params_one_mode(
+def lb_inv_norm_matrix_from_params_one_mode(
     alpha_lx: float, 
     alpha_ly: float, 
     beta_lx: float, 
@@ -185,4 +185,4 @@ def lb_norm_matrix_from_params_one_mode(
         V[2, 3] = 0.0
         V[3, 2] = -alpha_ly / np.sqrt(beta_ly)
         V[3, 3] = (1.0 - u) / np.sqrt(beta_ly)
-    return np.linalg.inv(V)
+    return V
