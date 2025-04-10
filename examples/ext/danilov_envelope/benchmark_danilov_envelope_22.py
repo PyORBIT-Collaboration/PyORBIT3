@@ -54,7 +54,6 @@ os.makedirs(output_dir, exist_ok=True)
 
 envelope = DanilovEnvelope22(
     intrinsic_emittance=20.00e-06,
-    eps_x_frac=0.5,
     mass=0.938,
     kin_energy=1.0,
     length=100.0,
@@ -122,7 +121,7 @@ histories["bunch"] = copy.deepcopy(history)
 # --------------------------------------------------------------------------------------
 
 figwidth = 4.0 * args.periods
-figwidth = min(figwidth, 10.0)
+figwidth = min(figwidth, 6.0)
 
 fig, axs = plt.subplots(figsize=(figwidth, 4.0), nrows=2, sharex=True, constrained_layout=True)
 for i, key in enumerate(histories):
@@ -136,7 +135,7 @@ for i, key in enumerate(histories):
     if key == "bunch":
         plot_kws["ls"] = "-"
         plot_kws["lw"] = 0.0
-        plot_kws["marker"] = "."
+        plot_kws["marker"] = "+"
         plot_kws["ms"] = 3.0
         plot_kws["color"] = "black"
 

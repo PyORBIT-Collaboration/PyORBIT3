@@ -22,26 +22,17 @@ from ..utils import consts
 
 from .danilov_envelope_solver_nodes import DanilovEnvelopeSolverNode22
 from .danilov_envelope_solver_lattice_modifications import add_danilov_envelope_solver_nodes_22
-from .transfer_matrix import cs_norm_matrix_from_params
+from .transfer_matrix import cs_inv_norm_matrix_from_params
 from .transfer_matrix import cs_params_from_transfer_matrix
-from .transfer_matrix import lb_norm_matrix_from_transfer_matrix
 from .transfer_matrix import lb_inv_norm_matrix_from_params_one_mode
 from .transfer_matrix import is_coupled
-from .transfer_matrix import is_stable
 from .utils import get_bunch_coords
 from .utils import get_perveance
 from .utils import get_transfer_matrix
-from .utils import fit_transfer_matrix
 from .utils import rotation_matrix_xy
 
 
-def cov_matrix_to_vector(cov_matrix: np.ndarray) -> np.ndarray:
-    """Return array of 10 unique elements of covariance matrix."""
-    return cov_matrix[np.triu_indices(4)]
-
-
 def env_matrix_to_vector(env_matrix: np.ndarray) -> np.ndarray:
-    """Return list of envelope parameters from envelope matrix."""
     return env_matrix.ravel()
 
 
@@ -97,7 +88,6 @@ class DanilovEnvelope22:
     def __init__(
         self,
         intrinsic_emittance: float,
-        eps_x_frac: float,
         mass: float,
         kin_energy: float,
         length: float,
@@ -107,7 +97,6 @@ class DanilovEnvelope22:
     ) -> None:
         self.intrinsic_emittance = intrinsic_emittance
         self.mode = mode
-        self.eps_x_frac = eps_x_frac
         self.mass = mass
         self.kin_energy = kin_energy
 
@@ -117,8 +106,8 @@ class DanilovEnvelope22:
         self.set_intensity(intensity)
 
         if params is None:
-            eps_x = self.intrinsic_emittance * self.eps_x_frac
-            eps_y = self.intrinsic_emittance * (1.0 - self.eps_x_frac)
+            eps_x = self.intrinsic_emittance * 0.5
+            eps_y = self.intrinsic_emittance * 0.5
             rx = 2.0 * np.sqrt(eps_x)
             ry = 2.0 * np.sqrt(eps_y)
             if mode == 1:
@@ -143,21 +132,18 @@ class DanilovEnvelope22:
 
     def set_params(self, params: np.ndarray) -> None:
         self.params = np.copy(params)    
-
-        eps_x, eps_y = self.projected_emittances()
-        self.intrinsic_emittance = eps_x + eps_y
-        self.eps_x_frac = eps_x / self.intrinsic_emittance    
+        self.intrinsic_emittance = sum(self.projected_emittances())
 
     def param_matrix(self) -> np.ndarray:
         """Build envelope matrix.
 
-        The envelope matrix P defined by x = Pc, where x = [x, x', y, y']^T and 
+        The envelope matrix P defined by x = Wc, where x = [x, x', y, y']^T and 
         c = [cos(psi), sin(psi)], with 0 <= psi <= 2pi. This is useful because 
         any transformation to the phase space coordinate vector x is also done to
-        P. For example, if x -> Mx, then P -> MP.
+        W. For example, if x -> Mx, then W -> MW.
         """
         return env_vector_to_matrix(self.params)
-
+        
     def param_vector(self, axis: int) -> np.ndarray:
         """Return vector of envelope parameters [a, b, a', b', e, f, e', f']."""
         if axis is None:
@@ -169,7 +155,7 @@ class DanilovEnvelope22:
         """Linearly transform phase space coordinates."""
         param_matrix = self.param_matrix()
         param_matrix = np.matmul(matrix, param_matrix)
-        self.params = np.ravel(param_matrix)
+        self.set_params(np.ravel(param_matrix))
 
     def rotate(self, angle: float) -> None:
         """Apply clockwise rotation by `angle`` radians in x-y plane."""
@@ -217,19 +203,15 @@ class DanilovEnvelope22:
     
     def projected_emittances(self) -> tuple[float, float]:
         """Return rms apparent emittances eps_x, eps_y [m * rad]."""
-        eps_x = eps_y = 0.0
         cov_matrix = self.cov()
-        determinant = np.linalg.det(cov_matrix[0:2, 0:2])
-        if determinant > 0.0:
-            eps_x = np.sqrt(determinant)
-        determinant = np.linalg.det(cov_matrix[2:4, 2:4])
-        if determinant > 0.0:
-            eps_y = np.sqrt(determinant)
+        eps_x = np.sqrt(np.clip(np.linalg.det(cov_matrix[0:2, 0:2]), 0.0, None))
+        eps_y = np.sqrt(np.clip(np.linalg.det(cov_matrix[2:4, 2:4]), 0.0, None))
         return (eps_x, eps_y)
 
     def intrinsic_emittances(self) -> tuple[float, float]:
         """Return rms intrinsic emittances eps1, eps2 [m * rad]."""
-        eps_1 = eps_2 = 0.0
+        eps_1 = 0.0
+        eps_2 = 0.0
         if self.mode == 1:
             eps_1 = self.intrinsic_emittance
         else:
@@ -238,7 +220,7 @@ class DanilovEnvelope22:
     
     def phases_xy(self) -> tuple[float, float]:
         envelope = self.copy()
-        envelope.normalize("2d")
+        envelope.normalize(method="2d", scale=True)     
         a, b, ap, bp, e, f, ep, fp = envelope.params
         phase_x = -np.arctan2(ap, a)
         phase_y = -np.arctan2(ep, e)
@@ -248,77 +230,50 @@ class DanilovEnvelope22:
             phase_y += 2.0 * np.pi
         return (phase_x, phase_y)
         
-    def nu(self) -> float:
-        """Return the x-y phase difference (nu) of all particles in the beam.
-
-        The value returned is in the range [0, pi]. This can also be found from
-        the equation cos(nu) = r, where r is the x-y correlation coefficient.
-        """
-        phase_x, phase_y = self.phases_xy()
-        nu = abs(phase_y - phase_x)
-        if nu < np.pi:
-            return nu
-        else:
-            return 2.0 * np.pi - nu
-        
-    def u(self) -> float:
-        cov_matrix = self.cov()
-        if self.mode == 1:
-            determinant = np.linalg.det(cov_matrix[2:4, 2:4])
-            eps_y = 0.0
-            if determinant > 0.0:
-                eps_y = np.sqrt(determinant)
-            u = eps_y / self.intrinsic_emittance
-        else:
-            determinant = np.linalg.det(cov_matrix[0:2, 0:2])
-            eps_x = 0.0
-            if determinant > 0.0:
-                eps_x = np.sqrt(determinant)
-            u = eps_x / self.intrinsic_emittance
-        return u
-    
     def twiss_2d(self) -> dict[str, float]:
-        """Return Twiss parameters in x-x', y-y' planes."""
-        eps_x = 0.0
-        eps_y = 0.0
-        beta_x = np.inf
-        beta_y = np.inf
-        alpha_x = np.inf
-        alpha_y = np.inf
-
+        """Return twiss parameters in x-x', y-y' planes."""
         cov_matrix = self.cov()
-        determinant = np.linalg.det(cov_matrix[:2, :2])
-        if determinant > 0.0:
-            eps_x = np.sqrt(determinant)
+        (eps_x, eps_y) = self.projected_emittances()
+
+        beta_x = beta_y = alpha_x = alpha_y = None
+        if eps_x > 0.0:
             beta_x = cov_matrix[0, 0] / eps_x
             alpha_x = -cov_matrix[0, 1] / eps_x
-
-        determinant = np.linalg.det(cov_matrix[2:, 2:])
-        if determinant > 0.0:
-            eps_y = np.sqrt(determinant)
+        if eps_y > 0.0:
             beta_y = cov_matrix[2, 2] / eps_y
             alpha_y = -cov_matrix[2, 3] / eps_y
 
         return {
             "alpha_x": alpha_x,
-            "alpha_y": alpha_y,
             "beta_x": beta_x,
+            "alpha_y": alpha_y,
             "beta_y": beta_y,
         }
     
     def twiss_4d(self) -> dict[str, float]:
-        """Return Bogacz/Lebedev 4D Twiss parameters for occupied mode."""
+        """Return Lebedev-Bogacz parameters for occupied mode."""
         cov_matrix = self.cov()
         beta_lx = cov_matrix[0, 0] / self.intrinsic_emittance
         beta_ly = cov_matrix[2, 2] / self.intrinsic_emittance
         alpha_lx = -cov_matrix[0, 1] / self.intrinsic_emittance
         alpha_ly = -cov_matrix[2, 3] / self.intrinsic_emittance
-        u = self.u()
-        nu = self.nu()
+
+        u = 0.0
+        (eps_x, eps_y) = self.projected_emittances()
+        if self.mode == 1:
+            u = eps_y / self.intrinsic_emittance
+        else:
+            u = eps_x / self.intrinsic_emittance
+
+        (phase_x, phase_y) = self.phases_xy()
+        nu = abs(phase_y - phase_x)
+        if nu > np.pi:
+            nu = 2.0 * np.pi - nu
+
         return {
             "alpha_lx": alpha_lx,
-            "alpha_ly": alpha_ly,
             "beta_lx": beta_lx,
+            "alpha_ly": alpha_ly,
             "beta_ly": beta_ly,
             "u": u,
             "nu": nu,
@@ -341,8 +296,7 @@ class DanilovEnvelope22:
         inv_norm_matrix = None
         if method == "2d":
             twiss_params = self.twiss_2d()
-            norm_matrix = cs_norm_matrix_from_params(**twiss_params)
-            inv_norm_matrix = np.linalg.inv(norm_matrix)
+            inv_norm_matrix = cs_inv_norm_matrix_from_params(**twiss_params)
         elif method == "4d":
             twiss_params = self.twiss_4d()
             inv_norm_matrix = lb_inv_norm_matrix_from_params_one_mode(mode=self.mode, **twiss_params)
@@ -356,27 +310,42 @@ class DanilovEnvelope22:
         Parameters
         ----------
         method : {"2d", "4d"}
-            - "2d": The x-x' and y-y' ellipses will be circles of radius sqrt(eps_x)
-                    and sqrt(eps_y), where eps_x and eps_y are the rms projected
+            "2d": The x-x' and y-y' ellipses will be circles of radius sqrt(eps_x)
+                  and sqrt(eps_y), where eps_x and eps_y are the rms projected
                     emittances.
-            - "4d": The 4 x 4 covariance matrix becomes diagonal. The x-x' and y-y'
-                    ellipses wil be circles of radius radius sqrt(eps_1) and
-                    sqrt(eps_2), where eps_1, and eps_2 are the rms intrinsic
-                    emittances.
+            "4d": The 4 x 4 covariance matrix becomes diagonal. The x-x' and y-y'
+                  ellipses wil be circles of radius radius sqrt(eps_1) and
+                  sqrt(eps_2), where eps_1, and eps_2 are the rms intrinsic
+                  emittances.
         scale : bool
             Whether to divide by the emittances to scale all coordinates to unit
             variance. This converts all circles to unit circles.
         """
         if method == "2d":
-            self.transform(np.linalg.inv(self.inv_norm_matrix(method)))
+            inv_norm_matrix = np.eye(4)
+
+            cov_matrix = self.cov()
+            eps_x, eps_y = self.projected_emittances()
+            if eps_x > 0.0:
+                beta_x = cov_matrix[0, 0] / eps_x
+                alpha_x = -cov_matrix[0, 1] / eps_x
+                inv_norm_matrix[0:2, 0:2] = np.array([[beta_x, 0.0], [-alpha_x, 1.0]]) / np.sqrt(beta_x)
+            if eps_y > 0.0:
+                beta_y = cov_matrix[2, 2] / eps_y
+                alpha_y = -cov_matrix[2, 3] / eps_y
+                inv_norm_matrix[2:4, 2:4] = np.array([[beta_y, 0.0], [-alpha_y, 1.0]]) / np.sqrt(beta_y)      
+
+            self.transform(np.linalg.inv(inv_norm_matrix))
+            
             if scale:
-                eps_x, eps_y = self.projected_emittances()
                 if eps_x > 0.0:
                     self.params[0:4] /= np.sqrt(4.0 * eps_x)
                 if eps_y > 0.0:
                     self.params[4:8] /= np.sqrt(4.0 * eps_y)
-            return self.params
+
         elif method == "4d":
+            # Cannot invert V (singular matrix). However we know the envelope parameters in the
+            # normalized frame.
             r_n = np.sqrt(4.0 * self.intrinsic_emittance)
             if self.mode == 1:
                 self.params = np.array([r_n, 0, 0, r_n, 0, 0, 0, 0])
@@ -384,27 +353,15 @@ class DanilovEnvelope22:
                 self.params = np.array([0, 0, 0, 0, 0, r_n, r_n, 0])
             if scale:
                 self.params = self.params / r_n
-            return self.params
         else:
             raise ValueError(f"Invalid normalization {method}")
 
-    def set_twiss_2d(self, eps_x_frac: float = None, **twiss_params) -> None:        
-        twiss_params_old = self.twiss_2d()
-        twiss_params_old.update(twiss_params)
-        twiss_params = twiss_params_old
+    def set_twiss_2d(self, **twiss_params) -> None:        
+        _twiss_params = self.twiss_2d()
+        _twiss_params.update(twiss_params)
 
-        V_inv = cs_norm_matrix_from_params(**twiss_params)
-        V = np.linalg.inv(V_inv)
-
-        if eps_x_frac is None:
-            eps_x_frac = self.eps_x_frac
-
-        eps_x = self.intrinsic_emittance * eps_x_frac
-        eps_y = self.intrinsic_emittance * (1.0 - eps_x_frac)
-        A = np.sqrt(4.0 * np.diag([eps_x, eps_x, eps_y, eps_y]))
-        V = np.matmul(V, A)
-        
-        self.normalize(method="2d", scale=True)
+        V = cs_inv_norm_matrix_from_params(**_twiss_params)
+        self.normalize(method="2d", scale=False)
         self.transform(V)
 
     def set_twiss_4d(self, **twiss_params) -> None:
@@ -419,24 +376,20 @@ class DanilovEnvelope22:
         - u : Coupling parameter in range [0, 1] (eps_y / epsl if mode=1, eps_x / epsl if mode=2).
         - nu : The x-y phase difference in range [0, pi].
         """
-        twiss_params_old = self.twiss_4d()
-        twiss_params_old.update(twiss_params)
-        twiss_params = twiss_params_old
+        _twiss_params = self.twiss_4d()
+        _twiss_params.update(twiss_params)
 
         V = lb_inv_norm_matrix_from_params_one_mode(mode=self.mode, **twiss_params)
-
-        self.normalize(method="4d")
+        self.normalize(method="4d", scale=False)
         self.transform(V)
 
     def set_twiss_4d_vector(self, twiss_params: np.ndarray) -> None:
-        twiss_params_dict = {
-            "alpha_lx": twiss_params[0],   
-            "beta_lx": twiss_params[1],
-            "alpha_lx": twiss_params[2],
-            "beta_ly": twiss_params[3], 
-            "u": twiss_params[4],
-            "nu": twiss_params[5],
-        }        
+        keys = ["alpha_lx", "beta_lx", "alpha_ly", "beta_ly", "u", "nu"]
+        
+        twiss_params_dict = {}
+        for i, key in enumerate(keys):
+            twiss_params_dict[key] = twiss_params[i]
+
         return self.set_twiss_4d(**twiss_params_dict)
 
     def set_cov(self, cov_matrix: np.ndarray, verbose: int = 0) -> scipy.optimize.OptimizeResult:
@@ -444,12 +397,16 @@ class DanilovEnvelope22:
 
         def loss_function(params: np.ndarray, cov_matrix: np.ndarray) -> np.ndarray:
             self.set_params(params)
-            loss = cov_matrix_to_vector(cov_matrix - self.cov())
+            loss = np.mean(np.abs(cov_matrix - self.cov()))
             loss = loss * 1.00e+06
             return loss
 
         result = scipy.optimize.least_squares(
-            loss_function, self.params, args=(cov_matrix,), xtol=1.00e-12, verbose=verbose
+            loss_function, 
+            self.params, 
+            args=(cov_matrix,), 
+            xtol=1.00e-12, 
+            verbose=verbose
         )
         return result
     
@@ -458,10 +415,13 @@ class DanilovEnvelope22:
 
         psi is in the range [0, 2 * pi].
         """
-        param_matrix = self.param_matrix()
-        return np.matmul(param_matrix, [np.cos(psi), np.sin(psi)])
+        W = self.param_matrix()
+        c = [np.cos(psi), np.sin(psi)]
+        return np.matmul(W, c)
     
     def sample(self, size: int, dist: str = "kv") -> np.ndarray:
+        # To do: sample 4D distribution, then flatten along x-x' or y-y' (depending on mode),
+        # then unnormalize using V.
         samples = np.zeros((size, 6))
         samples[:, 4] = np.random.uniform(-0.5 * self.length, 0.5 * self.length, size=size)
         if dist == "kv":
@@ -720,22 +680,24 @@ class DanilovEnvelopeTracker22:
 
         def loss_function(theta: np.ndarray) -> float:
             envelope.set_twiss_4d_vector(theta)
+            envelope_copy = envelope.copy()
+
+            cov_matrix_init = envelope_copy.cov()
 
             loss = 0.0
             for period in range(periods):
-                envelope_copy = envelope.copy()
-                cov_matrix_0 = envelope_copy.cov()
-                self.track(envelope_copy, periods=periods)
-                cov_matrix_1 = envelope_copy.cov()
-                loss += np.mean(np.square(cov_matrix_1 - cov_matrix_0))
-
+                self.track(envelope_copy)
+                cov_matrix = envelope_copy.cov()
+                loss += np.mean(np.square(cov_matrix - cov_matrix_init))
+            loss = loss / periods
             loss = loss * 1.00e+06
             return loss
         
         if method == "least_squares":
-            kwargs.setdefault("xtol", 1.00e-12)
-            kwargs.setdefault("ftol", 1.00e-12)
-            kwargs.setdefault("gtol", 1.00e-12)
+            kwargs.setdefault("xtol", 1.00e-15)
+            kwargs.setdefault("ftol", 1.00e-15)
+            kwargs.setdefault("gtol", 1.00e-15)
+            kwargs.setdefault("verbose", 2)
 
             result = scipy.optimize.least_squares(
                 loss_function,
@@ -745,15 +707,39 @@ class DanilovEnvelopeTracker22:
             )
 
         elif method == "replace_avg":
-            theta = envelope.twiss_4d_vector()
-            for _ in range(10):
-                theta_tbt = []
-                for period in range(20):
+            periods_avg = kwargs.get("periods_avg", 20)
+            iters = kwargs.get("iters", 20)
+            rtol = kwargs.get("rtol", 1.00e-03)
+
+            converged = False
+            message = ""
+            theta_old = envelope.twiss_4d_vector()
+ 
+            for iteration in range(iters):
+                theta_tbt = np.zeros((periods_avg + 1, 6))
+                for i in range(theta_tbt.shape[0]):
                     self.track(envelope)
-                    theta_tbt.append(envelope.twiss_4d_vector())
+                    theta_tbt[i, :] = envelope.twiss_4d_vector()
 
                 theta = np.mean(theta_tbt, axis=0)
                 envelope.set_twiss_4d_vector(theta)
-                
+            
                 loss = loss_function(theta)
-                print(loss)
+
+                # Check relative change in parameter vector norm
+                theta_norm = np.linalg.norm(theta)
+                theta_norm_old = np.linalg.norm(theta_old)
+
+                theta_norm_rel_change = abs(theta_norm - theta_norm_old) / (theta_norm_old + 1.00e-15)
+                if theta_norm_rel_change < rtol:
+                    converged = True
+                    message = f"Relative change in parameter vector norm {theta_norm_rel_change} < rtol ({rtol})"
+                    
+                print("{} {} {}".format(iteration, loss, theta_norm))
+
+                if converged:
+                    print("CONVERGED")
+                    print(message)
+                    break
+
+                theta_old = np.copy(theta)    

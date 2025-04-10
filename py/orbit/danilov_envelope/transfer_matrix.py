@@ -53,7 +53,7 @@ def phase_advance_matrix(*phase_advances) -> np.ndarray:
     return M
 
 
-def cs_norm_matrix_from_params(
+def cs_inv_norm_matrix_from_params(
     alpha_x: float,
     beta_x: float,
     alpha_y: float,
@@ -65,7 +65,7 @@ def cs_norm_matrix_from_params(
     V = np.zeros((4, 4))
     V[0:2, 0:2] = _build_matrix_2x2(alpha_x, beta_x)
     V[2:4, 2:4] = _build_matrix_2x2(alpha_y, beta_y)
-    return np.linalg.inv(V)
+    return V
 
 
 def cs_params_from_transfer_matrix_2x2(M: np.ndarray) -> np.ndarray:
@@ -110,23 +110,54 @@ def lb_normalize_eigvecs(eigvecs: np.ndarray) -> np.ndarray:
     return eigvecs
 
 
-def lb_norm_matrix_from_eigvecs(eigvecs: np.ndarray) -> np.ndarray:
+def lb_inv_norm_matrix_from_eigvecs(eigvecs: np.ndarray) -> np.ndarray:
     V = np.zeros(eigvecs.shape)
     for i in range(0, V.shape[1], 2):
         V[:, i] = eigvecs[:, i].real
         V[:, i + 1] = (1j * eigvecs[:, i]).real
-    return np.linalg.inv(V)
+    return V
 
 
-def lb_norm_matrix_from_transfer_matrix(M: np.ndarray) -> np.ndarray:
+def lb_inv_norm_matrix_from_transfer_matrix(M: np.ndarray) -> np.ndarray:
     eigvals, eigvecs = np.linalg.eig(M)
     eigvecs = lb_normalize_eigvecs(eigvecs)
-    return lb_norm_matrix_from_eigvecs(eigvecs)
+    return lb_inv_norm_matrix_from_eigvecs(eigvecs)
+
+
+def lb_inv_norm_matrix_from_params_one_mode(
+    alpha_lx: float, 
+    beta_lx: float, 
+    alpha_ly: float, 
+    beta_ly: float, 
+    u: float,
+    nu: float,
+    mode: int,
+) -> np.ndarray:
+    
+    V = np.zeros((4, 4))
+    if mode == 1:
+        V[0, 0] = np.sqrt(beta_lx)
+        V[0, 1] = 0.0
+        V[1, 0] = -alpha_lx / np.sqrt(beta_lx)
+        V[1, 1] = (1.0 - u) / np.sqrt(beta_lx)
+        V[2, 0] = +np.sqrt(beta_ly) * np.cos(nu)
+        V[2, 1] = -np.sqrt(beta_ly) * np.sin(nu)
+        V[3, 0] = (u * np.sin(nu) - alpha_ly * np.cos(nu)) / np.sqrt(beta_ly)
+        V[3, 1] = (u * np.cos(nu) + alpha_ly * np.sin(nu)) / np.sqrt(beta_ly)
+    elif mode == 2:
+        V[0, 2] = +np.sqrt(beta_lx) * np.cos(nu)
+        V[0, 3] = -np.sqrt(beta_lx) * np.sin(nu)
+        V[1, 2] = (u * np.sin(nu) - alpha_lx * np.cos(nu)) / np.sqrt(beta_lx)
+        V[1, 3] = (u * np.cos(nu) + alpha_lx * np.sin(nu)) / np.sqrt(beta_lx)
+        V[2, 2] = np.sqrt(beta_ly)
+        V[2, 3] = 0.0
+        V[3, 2] = -alpha_ly / np.sqrt(beta_ly)
+        V[3, 3] = (1.0 - u) / np.sqrt(beta_ly)
+    return V
 
 
 def lb_params_from_transfer_matrix(M: np.ndarray) -> dict[str, float]:
-    V_inv = lb_norm_matrix_from_transfer_matrix(M)
-    V = np.linalg.inv(V_inv)
+    V = lb_inv_norm_matrix_from_eigvecs(M)
 
     beta_1x = V[0, 0] ** 2
     beta_2y = V[2, 2] ** 2
@@ -152,37 +183,3 @@ def lb_params_from_transfer_matrix(M: np.ndarray) -> dict[str, float]:
         "nu1": nu1,
         "nu2": nu2,
     }
-
-
-def lb_inv_norm_matrix_from_params_one_mode(
-    alpha_lx: float, 
-    alpha_ly: float, 
-    beta_lx: float, 
-    beta_ly: float, 
-    nu: float,
-    u: float,
-    mode: int,
-) -> np.ndarray:
-    _cos = np.cos(nu)
-    _sin = np.sin(nu)
-    
-    V = np.zeros((4, 4))
-    if mode == 1:
-        V[0, 0] = np.sqrt(beta_lx)
-        V[0, 1] = 0.0
-        V[1, 0] = -alpha_lx / np.sqrt(beta_lx)
-        V[1, 1] = (1.0 - u) / np.sqrt(beta_lx)
-        V[2, 0] = +np.sqrt(beta_ly) * _cos
-        V[2, 1] = -np.sqrt(beta_ly) * _sin
-        V[3, 0] = (u * _sin - alpha_ly * _cos) / np.sqrt(beta_ly)
-        V[3, 1] = (u * _cos + alpha_ly * _sin) / np.sqrt(beta_ly)
-    else:
-        V[0, 2] = +np.sqrt(beta_lx) * _cos
-        V[0, 3] = -np.sqrt(beta_lx) * _sin
-        V[1, 2] = (u * _sin - alpha_lx * _cos) / np.sqrt(beta_lx)
-        V[1, 3] = (u * _cos + alpha_lx * _sin) / np.sqrt(beta_lx)
-        V[2, 2] = np.sqrt(beta_ly)
-        V[2, 3] = 0.0
-        V[3, 2] = -alpha_ly / np.sqrt(beta_ly)
-        V[3, 3] = (1.0 - u) / np.sqrt(beta_ly)
-    return V
