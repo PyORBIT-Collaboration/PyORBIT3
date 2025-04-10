@@ -135,6 +135,24 @@ extern "C" {
 		Py_INCREF(Py_None);
 		return Py_None;
   }
+  
+  //Sets or returns True or False parameter for logitudinal field use
+  static PyObject* SpaceChargeCalcSliceBySlice2D_longTracking(PyObject *self, PyObject *args){
+  	  int nVars = PyTuple_Size(args);
+  	  pyORBIT_Object* pySpaceChargeCalcSliceBySlice2D = (pyORBIT_Object*) self;
+  	  SpaceChargeCalcSliceBySlice2D* cpp_SpaceChargeCalcSliceBySlice2D = (SpaceChargeCalcSliceBySlice2D*) pySpaceChargeCalcSliceBySlice2D->cpp_obj;
+  	  int useLongTracking;
+	  if(nVars == 1){
+	  	  if(!PyArg_ParseTuple(args,"i:longTracking",&useLongTracking)){
+	  	  	  ORBIT_MPI_Finalize("PySpaceChargeCalcSliceBySlice2D.longTracking(int useLongTracking) - method needs parameter.");
+	  	  }
+	  	  cpp_SpaceChargeCalcSliceBySlice2D->longTracking(useLongTracking);
+	  }
+  	  useLongTracking = cpp_SpaceChargeCalcSliceBySlice2D->getLongitudinalTracking();
+  	  if(useLongTracking == 1){ return Py_BuildValue("O",Py_True);}
+  	  if(useLongTracking == 0){ return Py_BuildValue("O",Py_False);}
+  	  return Py_BuildValue("i",useLongTracking);
+  }
 
   //-----------------------------------------------------
   //destructor for python SpaceChargeCalcSliceBySlice2D class (__del__ method).
@@ -150,9 +168,10 @@ extern "C" {
   // defenition of the methods of the python SpaceChargeCalcSliceBySlice2D wrapper class
   // they will be vailable from python level
   static PyMethodDef SpaceChargeCalcSliceBySlice2DClassMethods[] = {
-		{ "trackBunch",  SpaceChargeCalcSliceBySlice2D_trackBunch, METH_VARARGS,"track the bunch - trackBunch(pyBunch,length,boundary)"},
-		{ "getRhoGrid",  SpaceChargeCalcSliceBySlice2D_getRhoGrid, METH_VARARGS,"returns the Grid3D with a space charge density"},
-		{ "getPhiGrid",  SpaceChargeCalcSliceBySlice2D_getPhiGrid, METH_VARARGS,"returns the Grid3D with a space charge potential"},
+		{ "trackBunch",    SpaceChargeCalcSliceBySlice2D_trackBunch,   METH_VARARGS,"track the bunch - trackBunch(pyBunch,length,boundary)"},
+		{ "getRhoGrid",    SpaceChargeCalcSliceBySlice2D_getRhoGrid,   METH_VARARGS,"returns the Grid3D with a space charge density"},
+		{ "getPhiGrid",    SpaceChargeCalcSliceBySlice2D_getPhiGrid,   METH_VARARGS,"returns the Grid3D with a space charge potential"},
+		{ "longTracking",  SpaceChargeCalcSliceBySlice2D_longTracking, METH_VARARGS,"sets or returns True or False parameter for logitudinal field use"},
 		{NULL}
   };
 
