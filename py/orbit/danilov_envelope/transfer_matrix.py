@@ -4,7 +4,7 @@ import numpy as np
 def unit_symplectic_matrix(ndim: int) -> np.ndarray:
     U = np.zeros((ndim, ndim))
     for i in range(0, ndim, 2):
-        U[i: i + 2, i: i + 2] = [[0.0, 1.0], [-1.0, 0.0]]
+        U[i : i + 2, i : i + 2] = [[0.0, 1.0], [-1.0, 0.0]]
     return U
 
 
@@ -19,7 +19,7 @@ def is_coupled(M: np.ndarray) -> bool:
         return False
     mask = np.zeros(M.shape)
     for i in range(0, M.shape[0], 2):
-        mask[i: i + 2, i: i + 2] = 1.0
+        mask[i : i + 2, i : i + 2] = 1.0
     return np.any(np.ma.masked_array(M, mask=mask))
 
 
@@ -37,7 +37,7 @@ def all_eigvals_on_unit_circle(eigvals: np.ndarray, tol: float = 1.00e-08) -> bo
 def eigtunes_from_eigvals(eigvals: np.ndarray) -> np.ndarray:
     def eigtune_from_eigval(eigval: np.complex) -> float:
         return np.arccos(eigval.real) / (2.0 * np.pi)
-    
+
     return np.array([eigtune_from_eigval(eigvals[k]) for k in (0, 2)])
 
 
@@ -49,7 +49,7 @@ def phase_advance_matrix(*phase_advances) -> np.ndarray:
     ndim = 2 * len(phase_advances)
     M = np.zeros((ndim, ndim))
     for i in range(0, ndim, 2):
-        M[i: i + 2, i: i + 2] = _rotation_matrix(phase_advances[i])
+        M[i : i + 2, i : i + 2] = _rotation_matrix(phase_advances[i])
     return M
 
 
@@ -125,15 +125,15 @@ def lb_inv_norm_matrix_from_transfer_matrix(M: np.ndarray) -> np.ndarray:
 
 
 def lb_inv_norm_matrix_from_params_one_mode(
-    alpha_lx: float, 
-    beta_lx: float, 
-    alpha_ly: float, 
-    beta_ly: float, 
+    alpha_lx: float,
+    beta_lx: float,
+    alpha_ly: float,
+    beta_ly: float,
     u: float,
     nu: float,
     mode: int,
 ) -> np.ndarray:
-    
+
     V = np.zeros((4, 4))
     if mode == 1:
         V[0, 0] = np.sqrt(beta_lx)

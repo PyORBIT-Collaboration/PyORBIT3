@@ -45,9 +45,9 @@ envelope = DanilovEnvelope22(
     mass=0.938,
     kin_energy=1.0,
     length=100.0,
-    intensity=args.intensity * 1.0e+14,
+    intensity=args.intensity * 1.0e14,
     mode=1,
-    params=None
+    params=None,
 )
 
 lattice = make_fodo_lattice(

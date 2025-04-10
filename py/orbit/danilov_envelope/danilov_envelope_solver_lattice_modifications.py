@@ -16,7 +16,7 @@ class Parent:
         self.part_index = part_index
         self.position = position
         self.path_length = path_length
-        
+
 
 def set_max_path_length(lattice: AccLattice, length: float) -> AccLattice:
     if length:
@@ -27,26 +27,28 @@ def set_max_path_length(lattice: AccLattice, length: float) -> AccLattice:
 
 
 def add_danilov_envolope_solver_nodes(
-    lattice: AccLattice, 
+    lattice: AccLattice,
     path_length_max: float,
-    path_length_min: float, 
-    solver_node_constructor: DanilovEnvelopeSolverNode20 | DanilovEnvelopeSolverNode22, 
+    path_length_min: float,
+    solver_node_constructor: DanilovEnvelopeSolverNode20 | DanilovEnvelopeSolverNode22,
     solver_node_constructor_kwargs: dict,
 ) -> list[DanilovEnvelopeSolverNode20 | DanilovEnvelopeSolverNode22]:
-    
+
     nodes = lattice.getNodes()
     if not nodes:
         return
-    
+
     lattice = set_max_path_length(lattice, path_length_max)
-    
+
     parents = []
     length_total = running_path = rest_length = 0.0
     for node in nodes:
         for part_index in range(node.getnParts()):
             part_length = node.getLength(part_index)
             if part_length > 1.0:
-                message  = "Warning! Node {} has length {} > 1 m. ".format(node.getName(), part_length)
+                message = "Warning! Node {} has length {} > 1 m. ".format(
+                    node.getName(), part_length
+                )
                 message += "Space charge algorithm may be innacurate!"
                 print(message)
 
@@ -57,14 +59,14 @@ def add_danilov_envolope_solver_nodes(
 
             running_path += part_length
             length_total += part_length
-            
+
     if len(parents) > 0:
         rest_length = length_total - parents[-1].position
     else:
         rest_length = length_total
 
     parents.insert(0, Parent(node=nodes[0], part_index=0, position=0.0, path_length=rest_length))
-    
+
     solver_nodes = []
     for i in range(len(parents) - 1):
         parent = parents[i]
@@ -74,16 +76,18 @@ def add_danilov_envolope_solver_nodes(
         solver_node = solver_node_constructor(
             name=solver_node_name,
             kick_length=parent_new.path_length,
-            **solver_node_constructor_kwargs
+            **solver_node_constructor_kwargs,
         )
-        parent.node.addChildNode(solver_node, parent.node.BODY, parent.part_index, parent.node.BEFORE)
+        parent.node.addChildNode(
+            solver_node, parent.node.BODY, parent.part_index, parent.node.BEFORE
+        )
         solver_nodes.append(solver_node)
-        
+
     parent = parents[-1]
     solver_node = solver_node_constructor(
         name="{}:{}:".format(parent.node.getName(), parent.part_index),
         kick_length=rest_length,
-        **solver_node_constructor_kwargs
+        **solver_node_constructor_kwargs,
     )
     solver_nodes.append(solver_node)
     parent.node.addChildNode(solver_node, parent.node.BODY, parent.part_index, parent.node.BEFORE)
@@ -92,17 +96,14 @@ def add_danilov_envolope_solver_nodes(
 
 
 def add_danilov_envelope_solver_nodes_20(
-    lattice: AccLattice, 
-    path_length_max: float = None,
-    path_length_min: float = 1.00e-06,   
-    **kwargs  
+    lattice: AccLattice, path_length_max: float = None, path_length_min: float = 1.00e-06, **kwargs
 ) -> None:
     solver_nodes = add_danilov_envolope_solver_nodes(
-        lattice=lattice, 
+        lattice=lattice,
         path_length_max=path_length_max,
-        path_length_min=path_length_min, 
-        solver_node_constructor=DanilovEnvelopeSolverNode20, 
-        solver_node_constructor_kwargs=kwargs
+        path_length_min=path_length_min,
+        solver_node_constructor=DanilovEnvelopeSolverNode20,
+        solver_node_constructor_kwargs=kwargs,
     )
     for solver_node in solver_nodes:
         name = "".join([solver_node.getName(), ":", "danilov_env_solver_20"])
@@ -112,17 +113,14 @@ def add_danilov_envelope_solver_nodes_20(
 
 
 def add_danilov_envelope_solver_nodes_22(
-    lattice: AccLattice, 
-    path_length_max: float = None,
-    path_length_min: float = 1.00e-06,   
-    **kwargs  
+    lattice: AccLattice, path_length_max: float = None, path_length_min: float = 1.00e-06, **kwargs
 ) -> None:
     solver_nodes = add_danilov_envolope_solver_nodes(
-        lattice=lattice, 
+        lattice=lattice,
         path_length_max=path_length_max,
-        path_length_min=path_length_min, 
-        solver_node_constructor=DanilovEnvelopeSolverNode22, 
-        solver_node_constructor_kwargs=kwargs
+        path_length_min=path_length_min,
+        solver_node_constructor=DanilovEnvelopeSolverNode22,
+        solver_node_constructor_kwargs=kwargs,
     )
     for solver_node in solver_nodes:
         name = "".join([solver_node.getName(), ":", "danilov_env_solver_22"])

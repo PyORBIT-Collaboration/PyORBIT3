@@ -11,7 +11,7 @@ envelope = DanilovEnvelope22(
     length=100.0,
     intensity=0.0,
     mode=1,
-    params=None
+    params=None,
 )
 
 x = envelope.sample(100_000)

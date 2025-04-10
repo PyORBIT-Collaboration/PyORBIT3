@@ -46,7 +46,7 @@ envelope = DanilovEnvelope20(
     mass=mass_proton,
     kin_energy=1.000,
     length=100.0,
-    intensity=(args.intensity * 1.00e+14),
+    intensity=(args.intensity * 1.00e14),
     params=None,
 )
 
@@ -74,7 +74,7 @@ tracker.match_zero_sc(envelope)
 envelope_unmatched = envelope.copy()
 
 tracker.match(envelope, periods=args.periods, verbose=2)
-    
+
 
 # Plot results bunch
 # --------------------------------------------------------------------------------------
@@ -87,9 +87,9 @@ figwidth = min(figwidth, 10.0)
 
 fig, ax = plt.subplots(figsize=(figwidth, 2.5), constrained_layout=True)
 ax.plot(history["s"], history["xrms"] * 1000.0, color="blue", alpha=1.0)
-ax.plot(history["s"], history["yrms"] * 1000.0, color="red",  alpha=1.0)
+ax.plot(history["s"], history["yrms"] * 1000.0, color="red", alpha=1.0)
 ax.plot(history_unmatched["s"], history_unmatched["xrms"] * 1000.0, color="blue", alpha=0.2)
-ax.plot(history_unmatched["s"], history_unmatched["yrms"] * 1000.0, color="red",  alpha=0.2)
+ax.plot(history_unmatched["s"], history_unmatched["yrms"] * 1000.0, color="red", alpha=0.2)
 ax.set_ylim(0.0, ax.get_ylim()[1])
 ax.set_xlabel("Distance [m]")
 ax.set_ylabel("Size [mm]")

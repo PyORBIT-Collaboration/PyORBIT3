@@ -1,4 +1,5 @@
 """Benchmark {2, 2} Danilov envelope solver vs. PIC."""
+
 import argparse
 import copy
 import os
@@ -57,9 +58,9 @@ envelope = DanilovEnvelope22(
     mass=0.938,
     kin_energy=1.0,
     length=100.0,
-    intensity=args.intensity * 1.0e+14,
+    intensity=args.intensity * 1.0e14,
     mode=1,
-    params=None
+    params=None,
 )
 
 lattice = make_fodo_lattice(
@@ -73,7 +74,7 @@ lattice = make_fodo_lattice(
 )
 
 tracker = DanilovEnvelopeTracker22(lattice, path_length_max=args.max_part_length)
-tracker.match_zero_sc(envelope, method="2d")    
+tracker.match_zero_sc(envelope, method="2d")
 envelope_init = envelope.copy()
 
 
@@ -126,7 +127,7 @@ figwidth = min(figwidth, 6.0)
 fig, axs = plt.subplots(figsize=(figwidth, 4.0), nrows=2, sharex=True, constrained_layout=True)
 for i, key in enumerate(histories):
     history = histories[key]
-    
+
     plot_kws = {}
     if key == "envelope":
         plot_kws["ls"] = "-"
@@ -139,8 +140,8 @@ for i, key in enumerate(histories):
         plot_kws["ms"] = 3.0
         plot_kws["color"] = "black"
 
-    axs[0].plot(history["s"], history["xrms"] * 1.00e+03, **plot_kws)
-    axs[0].plot(history["s"], history["yrms"] * 1.00e+03, **plot_kws)
+    axs[0].plot(history["s"], history["xrms"] * 1.00e03, **plot_kws)
+    axs[0].plot(history["s"], history["yrms"] * 1.00e03, **plot_kws)
     axs[1].plot(history["s"], history["rxy"], **plot_kws)
 
 axs[0].set_ylim(0.0, axs[0].get_ylim()[1])

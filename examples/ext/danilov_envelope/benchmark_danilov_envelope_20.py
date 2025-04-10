@@ -1,4 +1,5 @@
 """Benchmark {2, 2} Danilov envelope solver vs. PIC."""
+
 import argparse
 import copy
 import os
@@ -60,7 +61,7 @@ envelope = DanilovEnvelope20(
     mass=mass_proton,
     kin_energy=1.000,
     length=100.0,
-    intensity=(args.intensity * 1.00e+14),
+    intensity=(args.intensity * 1.00e14),
     params=None,
 )
 
@@ -128,7 +129,7 @@ figwidth = min(figwidth, 10.0)
 fig, ax = plt.subplots(figsize=(figwidth, 2.5), constrained_layout=True)
 for i, key in enumerate(histories):
     history = histories[key]
-    
+
     plot_kws = {}
     if key == "envelope":
         plot_kws["ls"] = "-"

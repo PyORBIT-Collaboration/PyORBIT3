@@ -21,7 +21,7 @@ def split_node(node: AccNode, max_part_length: float = None) -> AccNode:
         if node.getLength() > max_part_length:
             node.setnParts(1 + int(node.getLength() / max_part_length))
     return node
-    
+
 
 def get_phase_adv(lattice: AccLattice, mass: float, kin_energy: float) -> np.ndarray:
     bunch = Bunch()
@@ -36,7 +36,7 @@ def get_phase_adv(lattice: AccLattice, mass: float, kin_energy: float) -> np.nda
     phase_adv = np.array(phase_adv)
     phase_adv = phase_adv * 2.0 * np.pi
     return phase_adv
-    
+
 
 def make_fodo_lattice(
     phase_adv_x: float,
@@ -74,6 +74,7 @@ def make_fodo_lattice(
     -------
     TEAPOT_Lattice
     """
+
     def _make_lattice(k1: float, k2: float) -> AccLattice:
         """Create FODO lattice with specified focusing strengths.
 
@@ -216,7 +217,7 @@ class BunchMonitor:
         history["s"] -= history["s"][0]
         return history
 
-    def __call__(self, params_dict: dict) -> None:   
+    def __call__(self, params_dict: dict) -> None:
         bunch = params_dict["bunch"]
         node = params_dict["node"]
 
@@ -238,7 +239,10 @@ class BunchMonitor:
         self.history["yrms"].append(np.sqrt(cov_matrix[2, 2]))
         self.history["epsx"].append(np.sqrt(np.linalg.det(cov_matrix[0:2, 0:2])))
         self.history["epsy"].append(np.sqrt(np.linalg.det(cov_matrix[2:4, 2:4])))
-        self.history["rxy"].append(self.history["cov_02"][-1] / np.sqrt(self.history["cov_00"][-1] * self.history["cov_22"][-1]))
+        self.history["rxy"].append(
+            self.history["cov_02"][-1]
+            / np.sqrt(self.history["cov_00"][-1] * self.history["cov_22"][-1])
+        )
 
         if self.verbose:
             message = ""

@@ -10,7 +10,7 @@ from orbit.ext.danilov_envelope import DanilovEnvelopeSolver22
 
 class DanilovEnvelopeSolverNode(AccNodeBunchTracker):
     def __init__(
-        self, 
+        self,
         solver: DanilovEnvelopeSolver20 | DanilovEnvelopeSolver22,
         name: str = None,
         kick_length: float = 0.0,
