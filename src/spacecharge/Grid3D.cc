@@ -431,6 +431,82 @@ void Grid3D::binValue(double macroSize, double x, double y, double z)
   }
 }
 
+/** 
+   Bins the Bunch into the 3D grid slice by slice.
+   No interpolation between x-y 2D slices during the binning.
+   If bunch has a macrosize particle attribute it will be used.
+   This method is used in SpaceChargeCalcSliceBySlice2D.cc.
+*/	
+void Grid3D::binBunchSlice2D(Bunch* bunch){
+	double z;
+	bunch->compress();
+	double** part_coord_arr = bunch->coordArr();
+	int has_msize = bunch->hasParticleAttributes("macrosize");
+	if(has_msize > 0){
+		ParticleMacroSize* macroSizeAttr = (ParticleMacroSize*) bunch->getParticleAttributes("macrosize");
+		double m_size = 0.;
+		for(int i = 0, n = bunch->getSize(); i < n; i++){
+			m_size = macroSizeAttr->macrosize(i);
+			z = part_coord_arr[i][4];
+			this->binValueSlice2D(m_size,part_coord_arr[i][0],part_coord_arr[i][2],z);
+		}	
+		return;
+	}
+	double m_size = bunch->getMacroSize();
+	int nParts = bunch->getSize();
+	for(int i = 0; i < nParts; i++){
+		z = part_coord_arr[i][4];
+		this->binValueSlice2D(m_size,part_coord_arr[i][0],part_coord_arr[i][2],z);	
+	}
+}
+
+/** 
+   Bins the value into the grid 3D slice by slice.
+   No interpolation between x-y 2D slices during the binning.
+   This method is used in SpaceChargeCalcSliceBySlice2D.cc.
+*/
+void Grid3D::binValueSlice2D(double macroSize, double x, double y, double z)
+{
+	if(x < xMin_ || x > xMax_ || y < yMin_ || y > yMax_ || z < zMin_ || z > zMax_) return;	
+  int iX, iY, iZ;
+  double xFrac, yFrac, zFrac;
+  
+  this->getIndAndFracX( x, iX, xFrac);
+  this->getIndAndFracY( y, iY, yFrac);
+
+  if( nZ_ > 1){
+    iZ  = int(0.999999*(z - zMin_)/dz_);
+  }
+  else {
+  	iZ = 0;
+  }
+  
+  //Calculate interpolation weight and indexes
+  double Wxm,Wx0,Wxp,Wym,Wy0,Wyp;
+ 
+  Wxm = 0.5 * (0.5 - xFrac) * (0.5 - xFrac);
+  Wx0 = 0.75 - xFrac * xFrac;
+  Wxp = 0.5 * (0.5 + xFrac) * (0.5 + xFrac);
+  Wym = 0.5 * (0.5 - yFrac) * (0.5 - yFrac);
+  Wy0 = 0.75 - yFrac * yFrac;
+  Wyp = 0.5 * (0.5 + yFrac) * (0.5 + yFrac);
+
+  double tmp;
+  
+  tmp = Wym * macroSize;
+  Arr3D[iZ][iX-1][iY-1] += Wxm * tmp;
+  Arr3D[iZ][iX  ][iY-1] += Wx0 * tmp;
+  Arr3D[iZ][iX+1][iY-1] += Wxp * tmp;
+  tmp = Wy0 * macroSize;
+  Arr3D[iZ][iX-1][iY  ] += Wxm * tmp;
+  Arr3D[iZ][iX  ][iY  ] += Wx0 * tmp;
+  Arr3D[iZ][iX+1][iY  ] += Wxp * tmp;
+  tmp = Wyp * macroSize;
+  Arr3D[iZ][iX-1][iY+1] += Wxm * tmp;
+  Arr3D[iZ][iX  ][iY+1] += Wx0 * tmp;
+  Arr3D[iZ][iX+1][iY+1] += Wxp * tmp;
+}
+
 /**
 	Calculates gradient of Arr3D. gradX = gradient_x(Arr3D),
   and so on for longitudinally wrapped grid

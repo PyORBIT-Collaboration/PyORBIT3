@@ -44,11 +44,20 @@ public:
 
 	/** Returns the 3D phi grid with a transverse potential. */
 	Grid3D* getPhiGrid();
-
+	
+	/** 
+	    Sets if we will use the longitudinal dynamics for bunch tracking.
+	    Remember if there is no boundary this settings is irrelevant,
+	    we cannot perform longitudinal electric field from the Space Charge 
+	    Solver. useLongTracking = 1 - will use, 0 - no. 
+	*/
+	void longTracking(int useLongTracking);
+	int getLongitudinalTracking();
 
 private:
 	/** Analyses the bunch and does bining. */
 	void bunchAnalysis(Bunch* bunch, double& totalMacrosize, BaseBoundary2D* boundary);
+	int useLongTracking;	
 
 
 protected:
