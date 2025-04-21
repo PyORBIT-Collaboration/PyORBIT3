@@ -19,12 +19,12 @@ from orbit.core.bunch import Bunch
 
 
 mpi_init = orbit_mpi.MPI_Initialized()
-print ("debug mpi is initialized =",mpi_init," should be not zero.")
 
 rank = orbit_mpi.MPI_Comm_rank(mpi_comm.MPI_COMM_WORLD)
 size = orbit_mpi.MPI_Comm_size(mpi_comm.MPI_COMM_WORLD)
 
 if(rank == 0):
+	print("debug mpi is initialized =", mpi_init, " should be not zero.")
 	print ("debug there should only one line like this rank=",rank," N CPUs = ",size)
 
 n_particles = 10
