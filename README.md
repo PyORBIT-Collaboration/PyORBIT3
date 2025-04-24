@@ -1,4 +1,4 @@
-# PyOrbit3 package installation
+# PyORBIT3 package installation
 
 ## 1. Introduction
 This guide provides instructions how to install PyORBIT code. <br>
