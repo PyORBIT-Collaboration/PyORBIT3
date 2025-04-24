@@ -107,3 +107,15 @@ Navigate to your **examples** directory and launch tracking of SNS linac.
 cd examples/SNS_Linac/pyorbit3_linac_model/
 python pyorbit3_sns_linac_mebt_hebt2.py
 ```
+
+## 5. MPI consideration
+By default, the build system will try to find MPI and compile against it. You can control which MPI to use with command line option when building.
+```bash
+pip install --config-settings=setup-args="-DMPI_USE=none" .
+```
+Above will build PyORBIT without MPI even if MPI is present. You can change that option to `mpich`, `ompi`, `none` or `auto` (default).<br>
+Meson uses PKG_CONFIG to discover packages. It could be useful to help it to find your MPI installation:
+
+```bash
+PKG_CONFIG_PATH=/opt/lib/pkgconfig pip install --verbose .
+```
