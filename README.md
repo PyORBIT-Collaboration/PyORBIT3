@@ -111,9 +111,16 @@ python pyorbit3_sns_linac_mebt_hebt2.py
 ## 5. MPI consideration
 By default, the build system will try to find MPI and compile against it. You can control which MPI to use with command line option when building.
 ```bash
-pip install --config-settings=setup-args="-DMPI_USE=none" .
+pip install --config-settings=setup-args="-DUSE_MPI=none" .
 ```
 Above will build PyORBIT without MPI even if MPI is present. You can change that option to `mpich`, `ompi`, `none` or `auto` (default).<br>
+| MPI flavor            | Installation command |
+|---------------|--------------|
+| No MPI                                  | `pip install --config-settings=setup-args="-DUSE_MPI=none" .`       | 
+| The first found MPI installation if any | `pip install --config-settings=setup-args="-DUSE_MPI=auto" .`       | 
+| OpenMPI | `pip install --config-settings=setup-args="-DUSE_MPI=ompi" .`       | 
+| MPICH | `pip install --config-settings=setup-args="-DUSE_MPI=mpich" .`       |
+
 Meson uses PKG_CONFIG to discover packages. It could be useful to help it to find your MPI installation:
 
 ```bash
