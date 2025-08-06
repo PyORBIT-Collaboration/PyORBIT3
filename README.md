@@ -108,6 +108,11 @@ cd examples/SNS_Linac/pyorbit3_linac_model/
 python pyorbit3_sns_linac_mebt_hebt2.py
 ```
 
+to run using jupyter, you may need to add the virtual environment to your kernels:
+```
+ipython kernel install --user --name=po3
+```
+
 ## 5. MPI consideration
 By default, the build system will try to find MPI and compile against it. You can control which MPI to use with command line option when building.
 ```bash
