@@ -47,7 +47,8 @@ The following commands may require root access.
 
 <details>
   <summary> Click for Mac</summary>
-  
+ **### Setup without Conda**
+
   Install Homebrew, make sure that  homebrew programs are in the **$PATH** (optional step in Homebrew installation)
   ```bash
   brew install pkg-config fftw
@@ -59,13 +60,20 @@ The following commands may require root access.
   Create virtual environment.
   ```
   python3 -m venv .po3
-  . .po3/bin/activate
+  . .po3/bin/activate _or_ source .po3/bin/activate
+  ```
+  within the environment you created (.po3):
+  ```
   pip install -U pip
   pip install -r requirements.txt
   pip install -U setuptools
   ```
-
-
+  outside of the environment, (use _deactivate_ to leave the environment) install the following packages using homebrew
+  ```
+  brew install curl git gpg
+  xcode-select --install
+  ```
+  
 ### Conda Setup
 
 First of all make sure you have conda installed and development packages.<br>
