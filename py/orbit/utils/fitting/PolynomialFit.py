@@ -7,7 +7,9 @@
 import sys
 import math
 
-from orbit.core.orbit_utils import Function, SplineCH, Matrix, Polynomial
+from orbit.core.orbit_utils import Function, SplineCH
+from orbit.core.orbit_utils import PhaseVector, Matrix
+from orbit.core.orbit_utils import Polynomial
 
 
 class PolynomialFit:
@@ -60,68 +62,42 @@ class PolynomialFit:
 
     def _makePolynomial(self):
         nPoints = len(self.x_y_err_arr)
-        if nPoints < (self.order + 1):
+        if(nPoints < (self.order + 1)):
             self.order = nPoints - 1
-        # check if just one of errors is zero
-        infoZeroErr = 1.0
-        for [x, y, err] in self.x_y_err_arr:
-            infoZeroErr *= err
+        #---- now make A and A^T matrices and y-vector
+        aMtr = Matrix(nPoints, self.order + 1)
+        yVct = PhaseVector(nPoints)
         for i in range(nPoints):
-            [x, y, err] = self.x_y_err_arr[i]
-            sigma = 1.0
-            if infoZeroErr != 0.0:
-                sigma = 1.0 / (err * err)
-            self.x_y_err_arr[i][2] = sigma
-        # now make A matrix
-        aMatr = Matrix(nPoints, self.order + 1)
-        for i in range(nPoints):
+            y = self.x_y_err_arr[i][1]
+            yVct.set(i,y)
             for j in range(self.order + 1):
                 x = self.x_y_err_arr[i][0]
-                aMatr.set(i, j, math.pow(x, j))
-        aTCa = Matrix(self.order + 1, self.order + 1)
-        for i in range(self.order + 1):
-            for j in range(self.order + 1):
-                a = 0.0
-                for k in range(nPoints):
-                    sigma = self.x_y_err_arr[k][2]
-                    a += aMatr.get(k, i) * sigma * aMatr.get(k, j)
-                aTCa.set(i, j, a)
+                aMtr.set(i, j, math.pow(x, j))
+        aMtrT = aMtr.transpose()
         # now the resuting coefficients and errors
-        aTCaI = aTCa.invert()
-        if aTCaI == None:
-            print("python PolynomialFit: Problem with data.")
-            for i in range(nPoints):
-                x = self.x_y_err_arr[i][0]
-                y = self.x_y_err_arr[i][1]
-                err = self.x_y_err_arr[i][2]
-                print(" x,y,err = %12.5g %12.5g %12.5g " % (x, y, err))
-            print("Stop.")
-            sys.exit(1)
-        e = aTCaI.mult(aTCa)
-        coef_arr = [0.0] * (self.order + 1)
-        err_arr = [0.0] * (self.order + 1)
-        for i in range(self.order + 1):
-            err_arr[i] = math.sqrt(math.fabs(aTCaI.get(i, i)))
-        for i in range(self.order + 1):
-            coef_arr[i] = 0.0
-            for j in range(self.order + 1):
-                for k in range(nPoints):
-                    sigma = self.x_y_err_arr[k][2]
-                    y = self.x_y_err_arr[k][1]
-                    coef_arr[i] += aTCaI.get(i, j) * aMatr.get(k, j) * sigma * y
-        # polinimial coefficients have been found
+        ATA_inv = (aMtrT.mult(aMtr)).invert()
+        coeffVct = (ATA_inv.mult(aMtrT)).mult(yVct)
+        # polinimial coefficients have been found -> coeffVct
+        coef_arr = [0.0] * (self.order + 1)   
         self.polynomial.order(self.order)
-        for i in range(len(coef_arr)):
-            self.polynomial.coefficient(i, coef_arr[i])
-        # now let's calculate errors
-        if infoZeroErr == 0.0:
-            total_sigma = 0.0
-            for k in range(nPoints):
-                x = self.x_y_err_arr[k][0]
-                y = self.x_y_err_arr[k][1]
-                total_sigma += (self.polynomial.value(x) - y) ** 2
-            total_sigma = math.sqrt(total_sigma / (nPoints - 2))
-            for i in range(len(err_arr)):
-                err_arr[i] *= total_sigma
+        for i in range(self.order + 1):
+            coef_arr[i] = coeffVct.get(i)
+            self.polynomial.coefficient(i,coef_arr[i])
+        #---- here we estimate errors by deviation y_fit from y_init only
+        #---- It means that we do not pay attention to different weights
+        #---- of the initial Y data errors
+        coeff_err_arr = [0.0] * (self.order + 1)
+        for i in range(self.order + 1):
+           coeff_err_arr[i] = math.sqrt(ATA_inv.get(i,i))
+        total_sigma = 0.0
+        for k in range(nPoints):
+            x = self.x_y_err_arr[k][0]
+            y = self.x_y_err_arr[k][1]
+            total_sigma += (self.polynomial.value(x) - y) ** 2
+        degrees_of_freedom = int(abs(nPoints - (self.order + 1)))
+        if(degrees_of_freedom == 0): degrees_of_freedom = 1
+        total_sigma = math.sqrt(total_sigma / degrees_of_freedom)
+        for i in range(self.order + 1):
+            coeff_err_arr[i] *= total_sigma
         # set the resulting coefficients and errors array
-        self.coef_err_arr = [coef_arr, err_arr]
+        self.coef_err_arr = [coef_arr, coeff_err_arr]
