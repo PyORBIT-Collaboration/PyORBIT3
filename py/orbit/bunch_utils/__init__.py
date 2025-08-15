@@ -6,6 +6,7 @@
 #
 
 from orbit.bunch_utils.particleidnumber import ParticleIdNumber
+from orbit.bunch_utils.collect_bunch import collect_bunch
 
 __all__ = []
 __all__.append("addParticleIdNumbers")
