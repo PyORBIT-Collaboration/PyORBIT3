@@ -488,7 +488,7 @@ void SyncPart::print(std::ostream& Out)
 		Out << getY()  <<" ";
 		Out << getZ()  <<" ";
 		Out <<" x, y, z positions in [m]";
-    Out << std::endl;
+    Out << '\n';
 
     //print momentum
     Out << "%  SYNC_PART_MOMENTUM ";
@@ -496,7 +496,7 @@ void SyncPart::print(std::ostream& Out)
 		Out << getPY()  <<" ";
 		Out << getPZ()  <<" ";
 		Out <<" px, py, pz momentum component in GeV/c";
-    Out << std::endl;
+    Out << '\n';
 
     //print x-axis ort
     Out << "%  SYNC_PART_X_AXIS ";
@@ -504,35 +504,33 @@ void SyncPart::print(std::ostream& Out)
 		Out << getNormalXY()  <<" ";
 		Out << getNormalXZ()  <<" ";
 		Out <<" nxx, nxy, pxz - x-axis ort coordinates";
-    Out << std::endl;
+    Out << '\n';
 
     //print energy
     Out << "%  info only: energy of the synchronous particle [GeV] = ";
 		Out << getEnergy()  <<" ";
-    Out << std::endl;
+    Out << '\n';
 
     //print momentum
     Out << "%  info only: momentum of the synchronous particle [GeV/c] = ";
 		Out << getMomentum()  <<" ";
-    Out << std::endl;
+    Out << '\n';
 
     //print beta
     Out << "%  info only: beta=v/c of the synchronous particle = ";
 		Out << getBeta()  <<" ";
-    Out << std::endl;
+    Out << '\n';
 
     //print gamma
     Out << "%  info only: gamma=1/sqrt(1-(v/c)**2) of the synchronous particle = ";
 		Out << getGamma()  <<" ";
-    Out << std::endl;
+    Out << '\n';
 
     //print time
     Out << "%  SYNC_PART_TIME ";
 		Out << getTime()  <<" ";
 		Out <<" time in [sec]";
-    Out << std::endl;
+    Out << '\n';
   }
-
-  if(rank_MPI == 0){Out.flush();}
   // ===== MPI end =====
 }
