@@ -34,11 +34,7 @@ class BunchCoord(IntEnum):
     DE = 5
 
 
-def collect_bunch(
-    bunch: Bunch,
-    return_memmap: bool = True,
-    output_fname: Optional[str] = None,
-) -> BunchDict | None:
+def collect_bunch(bunch: Bunch, return_memmap: bool = True) -> BunchDict | None:
     """Collects attributes from a PyOrbit Bunch across all MPI ranks and returns it as a dictionary.
     Parameters
     ----------
