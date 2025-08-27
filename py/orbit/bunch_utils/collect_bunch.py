@@ -54,7 +54,7 @@ def collect_bunch(
         BunchDict structure:
             {
                 "coords": NDArray[np.float64] of shape (N, 6) where N is the total number of macroparticles,
-                    and the 6 columns correspond to [x, xp, y, yp, z, dE] in units of [m, rad, m, rad, m, eV], respectively.
+                    and the 6 columns correspond to [x, xp, y, yp, z, dE] in units of [m, rad, m, rad, m, GeV], respectively.
                 "sync_part": {
                     "coords": NDArray[np.float64] of shape (3,),
                     "kin_energy": np.float64,
