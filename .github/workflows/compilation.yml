@@ -121,3 +121,28 @@ jobs:
          - name: Print Versions
            run: |
              .github/workflows/conda-versions.sh              
+
+  mpich:
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/centos/centos:stream9
+    steps:
+         - name: Install packages
+           run: |
+             dnf group install -y "Development Tools"
+             dnf install -y python3-devel fftw3-devel mpich-devel hwloc-devel
+
+         - uses: actions/checkout@v4
+           with:
+            fetch-depth: 0
+         - name: Build
+           run: |
+             .github/workflows/pip-build-mpich.sh
+
+         - name: Test
+           run: |
+             .github/workflows/pip-tests-mpi.sh
+
+         - name: Print Versions
+           run: |
+             .github/workflows/pip-versions.sh

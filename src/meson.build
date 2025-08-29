@@ -15,17 +15,43 @@ dependencies = []
 dependencies += dependency('fftw3', version: '>= 3.0.0', required: true)
 
 # Detecting if MPICH or OPENMPI are installed and enabling support if present
-mpich_dependency = dependency('mpich', version: '>= 4.0.0', required: false)
-openmpi_dependency = dependency('ompi', version: '>= 5.0.0', required: false)
 
-if mpich_dependency.found()
-	cpp_args = ['-fPIC', '-std=c++11', '-DUSE_MPI=1']
-	dependencies += mpich_dependency
-elif openmpi_dependency.found()
-	cpp_args = ['-fPIC', '-std=c++11', '-DUSE_MPI=1']
-	dependencies += openmpi_dependency
+
+mpi_use = get_option('USE_MPI')
+# message('MPI_USE is set to', mpi_use)
+
+if mpi_use == 'mpich'
+    message('Requested to use MPICH as the MPI implementation.')
+    dependencies += dependency('mpich', version: '>= 4.0.0', required: true)
+    cpp_args = ['-fPIC', '-std=c++11', '-DUSE_MPI=1']
+
+    # Configure dependencies or settings specific to MPICH
+elif mpi_use == 'ompi'
+    message('Requested to use OpenMPI as the MPI implementation.')
+    dependencies += dependency('ompi', version: '>= 4.0.0', required: true)
+    cpp_args = ['-fPIC', '-std=c++11', '-DUSE_MPI=1']
+
+elif mpi_use == 'none'
+    message('Requested to not use MPI.')
+    cpp_args = ['-fPIC', '-std=c++11']
+
 else
-	cpp_args = ['-fPIC', '-std=c++11']
+   mpich_dependency = dependency('mpich', version: '>= 4.0.0', required: false)
+   openmpi_dependency = dependency('ompi', version: '>= 4.0.0', required: false)
+
+   if mpich_dependency.found()
+        cpp_args = ['-fPIC', '-std=c++11', '-DUSE_MPI=1']
+        dependencies += mpich_dependency
+        message('Using MPICH as the MPI implementation.')
+   elif openmpi_dependency.found()
+        cpp_args = ['-fPIC', '-std=c++11', '-DUSE_MPI=1']
+        dependencies += openmpi_dependency
+        message('Using OpenMPI as the MPI implementation.')
+   else
+        cpp_args = ['-fPIC', '-std=c++11']
+        message('MPI will not be used.')
+   endif
+
 endif
 
 sources = files([

@@ -73,8 +73,8 @@ print("Linac lattice is ready. L=", accLattice.getLength())
 # ---- MatrixRfGap uses a matrix approach like envelope codes
 # ---- RfGapTTF uses Transit Time Factors (TTF) like PARMILA
 # cppGapModel = BaseRfGap
-cppGapModel = MatrixRfGap
-# cppGapModel = RfGapTTF
+#cppGapModel = MatrixRfGap
+cppGapModel = RfGapTTF
 rf_gaps = accLattice.getRF_Gaps()
 for rf_gap in rf_gaps:
     rf_gap.setCppGapModel(cppGapModel())
@@ -100,7 +100,7 @@ print "Linac lattice has been modified. New L[m] = ",accLattice.getLength()
 from orbit.space_charge.sc3d import setSC3DAccNodes, setUniformEllipsesSCAccNodes
 from orbit.core.spacecharge import SpaceChargeCalcUnifEllipse, SpaceChargeCalc3D
 
-sc_path_length_min = 0.02
+sc_path_length_min = 0.05
 
 print("Set up Space Charge nodes. ")
 
@@ -158,7 +158,10 @@ trMatricesGenerator = LinacTrMatricesController()
 # ws14_node = accLattice.getNodeForName("MEBT_Diag:WS14")
 # parent_tr_mtrx_nodes = [slit2_node,ws14_node]
 
-parent_tr_mtrx_nodes = space_charge_nodes
+nodes = accLattice.getNodes()
+parent_tr_mtrx_nodes = []
+for node in nodes:
+    parent_tr_mtrx_nodes.append(node)
 
 # node0 = accLattice.getNodeForName("MEBT_Mag:QH01")
 # node1 = accLattice.getNodeForName("DTL_Mag:PMQH160")
@@ -224,19 +227,21 @@ bunch_gen.setKinEnergy(e_kin_ini)
 # set the beam peak current in mA
 bunch_gen.setBeamCurrent(38.0)
 
-bunch_in = bunch_gen.getBunch(nParticles=10000, distributorClass=WaterBagDist3D)
+bunch_in = bunch_gen.getBunch(nParticles=1000, distributorClass=WaterBagDist3D)
 # bunch_in = bunch_gen.getBunch(nParticles = 100000, distributorClass = GaussDist3D)
 # bunch_in = bunch_gen.getBunch(nParticles = 10000, distributorClass = KVDist3D)
 
 print("Bunch Generation completed.")
 
 # set up design
-accLattice.trackDesignBunch(bunch_in)
+bunch = Bunch()
+bunch_in.copyBunchTo(bunch)
+accLattice.trackDesignBunch(bunch)
 
 print("Design tracking completed.")
 
 # track through the lattice
-paramsDict = {"old_pos": -1.0, "count": 0, "pos_step": 0.1}
+paramsDict = {"old_pos": -1.0, "count": 0, "pos_step": 0.001}
 actionContainer = AccActionsContainer("Test Design Bunch Tracking")
 
 pos_start = 0.0
@@ -249,10 +254,10 @@ s = " Node   position "
 s += "   alphaX betaX emittX  normEmittX"
 s += "   alphaY betaY emittY  normEmittY"
 s += "   alphaZ betaZ emittZ  emittZphiMeV"
-s += "   sizeX sizeY sizeZ_deg"
+s += "   sizeX[mm] sizeY[mm] sizeZ[mm] sizeZ[deg]"
 s += "   eKin Nparts "
 file_out.write(s + "\n")
-print(" N node   position    sizeX  sizeY  sizeZdeg  eKin Nparts ")
+print(" N node   position    sizeX  sizeY  sizeZ  sizeZdeg  eKin Nparts ")
 
 
 def action_entrance(paramsDict):
@@ -286,12 +291,12 @@ def action_entrance(paramsDict):
     s += "   %6.4f  %6.4f  %6.4f  %6.4f   " % (alphaX, betaX, emittX, norm_emittX)
     s += "   %6.4f  %6.4f  %6.4f  %6.4f   " % (alphaY, betaY, emittY, norm_emittY)
     s += "   %6.4f  %6.4f  %6.4f  %6.4f   " % (alphaZ, betaZ, emittZ, phi_de_emittZ)
-    s += "   %5.3f  %5.3f  %5.3f " % (x_rms, y_rms, z_rms_deg)
+    s += "   %5.3f  %5.3f  %5.3f   %5.3f" % (x_rms, y_rms, z_rms, z_rms_deg)
     s += "  %10.6f   %8d " % (eKin, nParts)
     file_out.write(s + "\n")
     file_out.flush()
     s_prt = " %5d  %35s  %4.5f " % (paramsDict["count"], node.getName(), pos + pos_start)
-    s_prt += "  %5.3f  %5.3f   %5.3f " % (x_rms, y_rms, z_rms_deg)
+    s_prt += "  %5.3f  %5.3f   %5.3f   %5.3f " % (x_rms, y_rms, z_rms, z_rms_deg)
     s_prt += "  %10.6f   %8d " % (eKin, nParts)
     print(s_prt)
 
@@ -305,20 +310,34 @@ actionContainer.addAction(action_exit, AccActionsContainer.EXIT)
 
 time_start = time.process_time()
 
-accLattice.trackBunch(bunch_in, paramsDict=paramsDict, actionContainer=actionContainer)
+accLattice.trackBunch(bunch, paramsDict=paramsDict, actionContainer=actionContainer)
 
 time_exec = time.process_time() - time_start
 print("time[sec]=", time_exec)
 
 file_out.close()
 
-# ---- print out (and write to the file) the Det of the transport matrices
-file_out = open("pyorbit_transport_mtrx.dat", "w")
+#-----------------------------------------------------------------------------
+#---- FINAL STEP. Tracking the bunch through transport matrices.
+#---- print out (and write to the file) the determinant of the transport 
+#---- matrices and tracking the initial bunch though the matrices.
+#---- The RMS bunch sizes should be close to the results of usual bunch tracking
+#---- through the linac lattice.
+#-----------------------------------------------------------------------------
+file_out = open("pyorbit_transport_mtrx_trajectory.dat", "w")
 for trMtrx_ind in range(len(trMatrices)):
+    bunch = Bunch()
+    bunch_in.copyBunchTo(bunch)   
     trMtrx = trMatrices[trMtrx_ind]
     s = " %03d " % trMtrx_ind + "  %55s " % trMtrx.getName()
     s += " pos[m] = %4.5f " % trMtrx.getPosition()
     s += " det(M) = %8.6f  %8.6f  %8.6f " % trMtrx.getNormDetXYZ()
+    trMtrx.getTransportMatrix().track(bunch)
+    twiss_analysis.analyzeBunch(bunch)
+    x_rms = math.sqrt(twiss_analysis.getTwiss(0)[1] * twiss_analysis.getTwiss(0)[3]) * 1000.0
+    y_rms = math.sqrt(twiss_analysis.getTwiss(1)[1] * twiss_analysis.getTwiss(1)[3]) * 1000.0
+    z_rms = math.sqrt(twiss_analysis.getTwiss(2)[1] * twiss_analysis.getTwiss(2)[3]) * 1000.0
+    s += " rms_xyz =  %5.3f  %5.3f  %5.3f " % (x_rms, y_rms, z_rms)
     print(s)
     file_out.write(s + "\n")
     file_out.flush()
