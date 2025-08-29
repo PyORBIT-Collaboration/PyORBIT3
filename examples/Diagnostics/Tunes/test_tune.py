@@ -141,6 +141,17 @@ def main(args: argparse.Namespace) -> None:
     # Analysis    
     # ------------------------------------------------------------------------------------
 
+    # Collect phase information from bunch
+    phase_info = {}
+    for j, key in enumerate(["phase_x", "phase_y", "tune_x", "tune_y", "action_x", "action_y"]):
+        phase_info[key] = []
+        for i in range(bunch.getSize()):
+            phase_info[key].append(bunch.partAttrValue("ParticlePhaseAttributes", i, j))
+    
+    phase_info = pd.DataFrame(phase_info)
+    print(phase_info)
+
+    # Read phase information from bunch file
     particles = np.loadtxt(filename, comments="%")
     particles = pd.DataFrame(
         particles, 
@@ -159,7 +170,6 @@ def main(args: argparse.Namespace) -> None:
             "action_y",
         ] 
     )
-
     print(particles.iloc[:, 6:])
 
 
