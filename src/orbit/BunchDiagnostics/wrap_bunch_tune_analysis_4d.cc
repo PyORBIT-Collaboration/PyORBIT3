@@ -54,6 +54,7 @@ static PyObject* BunchTuneAnalysis4D_analyzeBunch(PyObject *self, PyObject *args
 }
 
 /** Sets normalization matrix. */
+// [TO DO] How to parse 2D Python list?
 static PyObject* BunchTuneAnalysis4D_setMatrix(PyObject *self, PyObject *args){
 	BunchTuneAnalysis4D* cpp_BunchTuneAnalysis4D = (BunchTuneAnalysis4D*)((pyORBIT_Object*) self)->cpp_obj;
 	double dummy;
@@ -76,17 +77,17 @@ static void BunchTuneAnalysis4D_del(pyORBIT_Object* self){
 // They will be available from python level.
 static PyMethodDef BunchTuneAnalysis4DClassMethods[] = {
 	{ "analyzeBunch", BunchTuneAnalysis4D_analyzeBunch, METH_VARARGS,"Analyzes the bunch."},
-	{ "setMatrix", BunchTuneAnalysis4D_assignTwiss, METH_VARARGS,"Sets normalization matrix."},
+	{ "setMatrix", BunchTuneAnalysis4D_setMatrix, METH_VARARGS,"Sets normalization matrix."},
 	{NULL}
 };
 
-// Definition of the memebers of the python BunchTwissAnalysis wrapper class.
+// Definition of the memebers of the python BunchTuneAnalysis4D wrapper class.
 // They will be vailable from python level.
 static PyMemberDef BunchTuneAnalysis4DClassMembers [] = {
 	{NULL}
 };
 
-// New python BunchTwissAnalysis wrapper type definition.
+// New python BunchTuneAnalysis4D wrapper type definition.
 static PyTypeObject pyORBIT_BunchTuneAnalysis4D_Type = {
 	PyVarObject_HEAD_INIT(NULL, 0)
 	"BunchTuneAnalysis4D", /*tp_name*/
@@ -128,7 +129,7 @@ static PyTypeObject pyORBIT_BunchTuneAnalysis4D_Type = {
 	BunchTuneAnalysis4D_new, /* tp_new */
 };
 
-// Initialization of the pyBunchTwissAnalysis4D class.
+// Initialization of the pyBunchTuneAnalysis4D class.
 void initbunchtuneanalysis4d(PyObject* module){
 	if (PyType_Ready(&pyORBIT_BunchTuneAnalysis4D_Type) < 0) return;
 	Py_INCREF(&pyORBIT_BunchTuneAnalysis4D_Type);
