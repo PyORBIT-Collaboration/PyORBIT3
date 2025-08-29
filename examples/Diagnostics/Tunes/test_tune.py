@@ -144,20 +144,20 @@ def main(args: argparse.Namespace) -> None:
     particles = np.loadtxt(filename, comments="%")
     particles = pd.DataFrame(
         particles, 
-        columns=[
+        columns=[  # https://github.com/PyORBIT-Collaboration/PyORBIT3/issues/78
             "x", 
             "xp", 
             "y", 
             "yp", 
             "z",
-            "dE", 
-            "action_x", 
-            "phase_x", 
-            "tune_x",
-            "action_y",
+            "dE",   
+            "phase_x",
             "phase_y",
+            "tune_x",
             "tune_y",
-        ]
+            "action_x",
+            "action_y",
+        ] 
     )
 
     print(particles.iloc[:, 6:])
