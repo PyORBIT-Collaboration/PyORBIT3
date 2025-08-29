@@ -16,6 +16,10 @@ BunchTuneAnalysis::BunchTuneAnalysis(): CppPyWrapper(NULL)
 	etapx = 0;
 	betay = 0;
 	alphay = 0;
+
+	nturns = 0;
+	xPhaseSum = 0.0;
+	yPhaseSum = 0.0;
 }
 
 /** Destructor */
@@ -54,6 +58,11 @@ void BunchTuneAnalysis::analyzeBunch(Bunch* bunch){
 	}
 
 	if(bunch->hasParticleAttributes("ParticlePhaseAttributes")){
+
+		nturns = nturns + 1;
+
+		// std::cout << "debug nturns=" << nturns << " xPhaseSum=" << xPhaseSum << " yPhaseSum=" << yPhaseSum << std::endl;
+
 		for (int i=0; i < bunch->getSize(); i++)
 		{
 			double x = part_coord_arr[i][0];
