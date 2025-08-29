@@ -32,9 +32,6 @@ class BunchTuneAnalysis: public OrbitUtils::CppPyWrapper
 		/** Returns the average value for coordinate with index ic */
 		double getTune(int ic);
 
-		/** Returns number of turns (number of `analyzeBunch` calls) */
-		int getNTurns();
-
 
 	private:
 		//** Twiss */
@@ -44,9 +41,7 @@ class BunchTuneAnalysis: public OrbitUtils::CppPyWrapper
 		double etapx;
 		double betay;
 		double alphay;
-		double nturns;
-		double xPhaseSum;
-		double yPhaseSum;
+
 };
 
 #endif
