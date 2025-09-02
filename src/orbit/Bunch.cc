@@ -893,8 +893,6 @@ int Bunch::getCapacity(){
 
 void Bunch::print(std::ostream& Out)
 {
-  int N_flush = 10000;
-
   //single CPU case
   if(rank_MPI == 0){
 
@@ -905,7 +903,7 @@ void Bunch::print(std::ostream& Out)
       ParticleAttributes* attrCntr = *pos;
       Out << attrCntr->name()<<" ";
     }
-    Out << std::endl;
+    Out << '\n';
 
     for (pos = attrCntrVect.begin(); pos != attrCntrVect.end(); ++pos) {
       ParticleAttributes* attrCntr = *pos;
@@ -918,7 +916,7 @@ void Bunch::print(std::ostream& Out)
                     double val = params_pos->second;
                     Out << name <<" " << val << " ";
                 }
-                Out << std::endl;
+                Out << '\n';
             }
         }
 
@@ -927,13 +925,13 @@ void Bunch::print(std::ostream& Out)
     bunchAttr->getIntAttributeNames(bunch_attr_names);
     for(int i = 0, n = bunch_attr_names.size(); i < n; i++){
       Out << "% BUNCH_ATTRIBUTE_INT "<<bunch_attr_names[i]<<"   ";
-      Out << bunchAttr->intVal(bunch_attr_names[i]) <<" "<< std::endl;
+      Out << bunchAttr->intVal(bunch_attr_names[i]) <<" "<< '\n';
     }
     bunch_attr_names.clear();
     bunchAttr->getDoubleAttributeNames(bunch_attr_names);
     for(int i = 0, n = bunch_attr_names.size(); i < n; i++){
       Out << "% BUNCH_ATTRIBUTE_DOUBLE "<<bunch_attr_names[i]<<"   ";
-      Out << bunchAttr->doubleVal(bunch_attr_names[i]) <<" "<< std::endl;
+      Out << bunchAttr->doubleVal(bunch_attr_names[i]) <<" "<< '\n';
     }
 
         //print synchronous particle parameters to the stream
@@ -946,7 +944,7 @@ void Bunch::print(std::ostream& Out)
       Out << attrCntr->attrDescription()<<" ";
     }
 
-    Out << std::endl;
+    Out << '\n';
 
     Out <<std::setprecision(8); //<< std::setiosflags(ios::scientific);
 
@@ -967,12 +965,9 @@ void Bunch::print(std::ostream& Out)
           Out << getParticleAttributeVal(i,j)  <<" ";
         }
 
-        Out <<std::endl;
+        Out <<'\n';
       }
-
-      if (i % N_flush == 0){Out.flush();}
     }
-    Out.flush();
     if(size_MPI == 1) return;
   }
 
@@ -1046,16 +1041,13 @@ void Bunch::print(std::ostream& Out)
               Out<<   dump_arr[(nDimAndAttr)*j + 7 + k] << " ";
             }
 
-            Out << std::endl;
+            Out << '\n';
           }
-
-          if (j % N_flush == 0){ Out.flush();}
         }
       }
     }
   }
 
-  if(rank_MPI == 0){Out.flush();}
     BufferStore::getBufferStore()->setUnusedIntArr(buff_index0);
     BufferStore::getBufferStore()->setUnusedIntArr(buff_index1);
     BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index2);
