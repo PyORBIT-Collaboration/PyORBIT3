@@ -7,8 +7,9 @@
 extern "C" {
 #endif
 
-  namespace wrap_bunch_tune_analysis{
+  namespace wrap_bunch_tune_analysis {
     void initbunchtuneanalysis(PyObject* module);
+    void initbunchtuneanalysis4d(PyObject* module);
   }
 
 #ifdef __cplusplus

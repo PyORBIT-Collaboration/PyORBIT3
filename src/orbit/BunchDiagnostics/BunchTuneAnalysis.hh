@@ -1,7 +1,6 @@
 #ifndef BUNCH_TUNE_ANALYSIS_H
 #define BUNCH_TUNE_ANALYSIS_H
 
-//pyORBIT utils
 #include "CppPyWrapper.hh"
 
 #include "Bunch.hh"
@@ -9,10 +8,10 @@
 
 using namespace std;
 
+
 /**
   The BunchTuneAnalysis class calculates the particle tunes
 */
-
 class BunchTuneAnalysis: public OrbitUtils::CppPyWrapper
 {
 	public:
@@ -43,6 +42,29 @@ class BunchTuneAnalysis: public OrbitUtils::CppPyWrapper
 		double alphay;
 
 };
+
+
+/**
+  Calculates tunes using 4D normalization.
+*/
+class BunchTuneAnalysis4D: public OrbitUtils::CppPyWrapper
+{
+	public:
+		BunchTuneAnalysis4D();
+
+		virtual ~BunchTuneAnalysis4D();
+
+		void analyzeBunch(Bunch* bunch);
+
+		// void setMatrix(double _matrix[4][4]);
+		void setMatrix(double dummy);
+
+		double getTune(int ic);
+
+	private:
+		double matrix[4][4];
+};
+
 
 #endif
 //endif for BUNCH_TUNE_ANALYSIS_H

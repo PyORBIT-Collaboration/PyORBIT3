@@ -12,7 +12,6 @@
 #include "wrap_syncpart.hh"
 #include "wrap_bunch_twiss_analysis.hh"
 #include "wrap_bunch_tune_analysis.hh"
-#include "wrap_bunch_tune_analysis_4d.hh"
 #include "wrap_synch_part_redefinition_z_de.hh"
 
 #include "pyORBIT_Object.hh"
@@ -1311,7 +1310,7 @@ extern "C" {
       wrap_orbit_syncpart::initsyncpart(module);
       wrap_bunch_twiss_analysis::initbunchtwissanalysis(module);
       wrap_bunch_tune_analysis::initbunchtuneanalysis(module);
-      wrap_bunch_tune_analysis_4d::initbunchtuneanalysis4d(module);
+      wrap_bunch_tune_analysis::initbunchtuneanalysis4d(module);
       wrap_synch_part_redefinition::initsynchpartredefinition(module);
       return module;
   }
