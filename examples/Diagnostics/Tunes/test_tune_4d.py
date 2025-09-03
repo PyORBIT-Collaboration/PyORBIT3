@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 from orbit.core import orbit_mpi
 from orbit.core.bunch import Bunch
-from orbit.core.bunch import BunchTuneAnalysis
+from orbit.core.bunch import BunchTuneAnalysis4D
 from orbit.core.bunch import BunchTwissAnalysis
 from orbit.bunch_generators import TwissContainer
 from orbit.bunch_generators import GaussDist2D
@@ -34,7 +34,7 @@ output_dir = os.path.join("outputs", path.stem)
 os.makedirs(output_dir, exist_ok=True)
 
 
-# Lattice
+# Initialize lattice and bunch
 # ------------------------------------------------------------------------------------
 
 lattice = make_lattice()
@@ -43,69 +43,45 @@ bunch = Bunch()
 bunch.mass(mass_proton)
 bunch.getSyncParticle().kinEnergy(1.000)
 
-# Compute lattice parameters from one-turn transfer matrix
+
+# Analyze transfer matrix
+# ------------------------------------------------------------------------------------
+
 matrix_lattice = TEAPOT_MATRIX_Lattice(lattice, bunch)
 lattice_params = matrix_lattice.getRingParametersDict()
-pprint(lattice_params)
 
-# Store some parameters as variables
-lattice_alpha_x = lattice_params["alpha x"]
-lattice_alpha_y = lattice_params["alpha y"]
-lattice_beta_x = lattice_params["beta x [m]"]
-lattice_beta_y = lattice_params["beta y [m]"]
-lattice_eta_x = lattice_params["dispersion x [m]"]
-lattice_etap_x = lattice_params["dispersion x [m]"]
+norm_matrix = None
 
 
-# Tune diagnostics node
+# Add tune diagnostic node
 # ------------------------------------------------------------------------------------
 
 class TuneAnalysisNode(DriftTEAPOT):
-    def __init__(self, name: str = "tuneanalysis no name") -> None:
+    def __init__(self, name: str = "tune_analysis_no_name") -> None:
         DriftTEAPOT.__init__(self, name)
-        self.setType("tune calculator teapot")
         self.setLength(0.0)
-        self.calc = BunchTuneAnalysis()
+        self._tune_analysis = BunchTuneAnalysis4D()
 
     def track(self, params_dict: dict) -> None:
-        length = self.getLength(self.getActivePartIndex())
         bunch = params_dict["bunch"]
-        self.calc.analyzeBunch(bunch)
+        self._tune_analysis.analyzeBunch(bunch)
 
-    def set_twiss(
-        self, 
-        beta_x: float,
-        alpha_x: float,
-        eta_x: float,
-        etap_x: float,
-        beta_y: float,
-        alpha_y: float,
-    ) -> None:
-        self.calc.assignTwiss(beta_x, alpha_x, eta_x, etap_x, beta_y, alpha_y)
+    def set_matrix(self, norm_matrix: np.ndarray) -> None:
+        self._tune_analysis.setMatrix(norm_matrix.tolist())
 
 
 tune_node = TuneAnalysisNode()
-tune_node.set_twiss(
-    beta_x=lattice_beta_x,
-    beta_y=lattice_beta_y,
-    alpha_x=lattice_alpha_x,
-    alpha_y=lattice_alpha_y,
-    eta_x=lattice_eta_x,
-    etap_x=lattice_etap_x,
-)
+# tune_node.set_matrix(norm_matrix)
 lattice.getNodes()[0].addChildNode(tune_node, 0)
 
 
-# Bunch
+# Generate phase space distribution
 # ------------------------------------------------------------------------------------
 
-# Generate a matched transverse phase space distribution. The longitudinal 
-# distribution will be uniform in position (z) and a delta function in energy 
-# deviation (dE).
 emittance_x = 25.0e-06
 emittance_y = 25.0e-06
-bunch_twiss_x = TwissContainer(lattice_alpha_x, lattice_beta_x, emittance_x)
-bunch_twiss_y = TwissContainer(lattice_alpha_y, lattice_beta_y, emittance_y)
+bunch_twiss_x = TwissContainer(lattice_params["alpha x"], lattice_params["beta x [m]"], emittance_x)
+bunch_twiss_y = TwissContainer(lattice_params["alpha y"], lattice_params["beta y [m]"], emittance_y)
 bunch_dist = GaussDist2D(bunch_twiss_x, bunch_twiss_y)
 
 n_parts = 1000
@@ -116,7 +92,7 @@ for index in range(n_parts):
     bunch.addParticle(x, xp, y, yp, z, dE)
 
 
-# Tracking
+# Track bunch
 # ------------------------------------------------------------------------------------
 
 n_turns = 10
@@ -138,7 +114,6 @@ bunch.dumpBunch(filename)
 # Analysis    
 # ------------------------------------------------------------------------------------
 
-# Collect phase information from bunch
 phase_info = {}
 for j, key in enumerate(["phase_x", "phase_y", "tune_x", "tune_y", "action_x", "action_y"]):
     phase_info[key] = []
@@ -147,24 +122,3 @@ for j, key in enumerate(["phase_x", "phase_y", "tune_x", "tune_y", "action_x", "
 
 phase_info = pd.DataFrame(phase_info)
 print(phase_info)
-
-# Read phase information from bunch file
-particles = np.loadtxt(filename, comments="%")
-particles = pd.DataFrame(
-    particles, 
-    columns=[  # https://github.com/PyORBIT-Collaboration/PyORBIT3/issues/78
-        "x", 
-        "xp", 
-        "y", 
-        "yp", 
-        "z",
-        "dE",   
-        "phase_x",
-        "phase_y",
-        "tune_x",
-        "tune_y",
-        "action_x",
-        "action_y",
-    ] 
-)
-print(particles.iloc[:, 6:])
