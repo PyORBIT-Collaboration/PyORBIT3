@@ -1,3 +1,23 @@
+"""Test one-turn tune calculation using 4D normalization.
+
+See comments on `test_tune.py`. This example is the same, but the tunes are
+estimated using the `BunchTuneAnalysis4D` class. This class normalizes the
+coordinates by applying a 4 x 4 matrix V^{-1}. For the calculation to work,
+the motion must be decoupled in the normalized frame; i.e., particles should 
+advance in phase along circles in x-x' and y-y'. The fractional tunes (also
+called "eigentunes" or "mode tunes") are defined by the change in phase angle
+divided by 2 pi.
+
+
+The calculation will only be correct if the distribution's covariance matrix
+(in each 2D phase space) is (approximately) unchanged after one turn. This is
+true in this example because the distribution is generated from the periodic
+lattice parameters.
+
+This node accepts any normalization matrix (V^{-1}). It is up to the user to
+ensure that the matrix is symplectic and that it removes the coupling between
+planes.
+"""
 import math
 import os
 import pathlib

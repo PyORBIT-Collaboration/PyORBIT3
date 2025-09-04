@@ -1,3 +1,21 @@
+"""Test one-turn tune calculation.
+
+This example tracks a Gaussian distribution through a FODO lattice. The tunes
+are estimated from the phase space coordinates before/after tracking using the
+`BunchTuneAnalysis` class. This class "normalizes" the coordinates in each 
+2D phase plane (x-x', y-y') using the periodic lattice parameters (alpha, beta).
+In the normalized frame, the turn-by-turn coordinates advance in phase around
+a circle; the different in phase angle is equal to the fractional tune multiplied
+by 2 pi.
+
+The calculation will only be correct if the distribution's covariance matrix
+(in each 2D phase space) is (approximately) unchanged after one turn. This is
+true in this example because the distribution is generated from the periodic
+lattice parameters.
+
+Note that the `BunchTuneAnalysis` class also accounts for dispersion, but there
+is no disperion in this lattice at the tune diagnostic node.
+"""
 import math
 import os
 import pathlib
