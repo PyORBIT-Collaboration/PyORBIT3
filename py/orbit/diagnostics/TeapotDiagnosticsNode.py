@@ -16,6 +16,7 @@ from .diagnostics import Moments
 from .diagnostics import MomentsSetMember
 from .diagnostics import BPMSignal
 
+from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTuneAnalysis
 from orbit.core.bunch import BunchTuneAnalysis4D
 
@@ -234,6 +235,14 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
         """
         self.bunchtune.assignTwiss(betax, alphax, etax, etapx, betay, alphay)
 
+    def getData(self, bunch: Bunch, index: int) -> dict[str, float]:
+        """Return phase advances, tunes, and actions for a single particle."""
+        keys = ["phase_x", "phase_y", "tune_x", "tune_y", "action_x", "action_y"]
+        data = {}
+        for j, key in enumerate(keys):
+            data[key] = bunch.partAttrValue("ParticlePhaseAttributes", index, j)
+        return data
+
 
 class TeapotTuneAnalysis4DNode(DriftTEAPOT):
     """Tune analysis node with 4D normalization.
@@ -287,6 +296,14 @@ class TeapotTuneAnalysis4DNode(DriftTEAPOT):
             for j in range(4):
                 norm_matrix[i][j] = self.bunchtune.getNormMatrixElement(i, j)
         return norm_matrix
+    
+    def getData(self, bunch: Bunch, index: int) -> dict[str, float]:
+        """Return phase advances, tunes, and actions for a single particle."""
+        keys = ["phase_1", "phase_2", "tune_1", "tune_2", "action_1", "action_2"]
+        data = {}
+        for j, key in enumerate(keys):
+            data[key] = bunch.partAttrValue("ParticlePhaseAttributes", index, j)
+        return data
 
 
 class TeapotBPMSignalNode(DriftTEAPOT):

@@ -124,17 +124,20 @@ bunch.dumpBunch(filename)
 # Analysis    
 # ------------------------------------------------------------------------------------
 
-# Collect phase information from bunch
-phase_info = {}
-for j, key in enumerate(["phase_1", "phase_2", "tune_1", "tune_2", "action_1", "action_2"]):
-    phase_info[key] = []
-    for i in range(bunch.getSize()):
-        phase_info[key].append(bunch.partAttrValue("ParticlePhaseAttributes", i, j))
+# Collect phase data from bunch
+phase_data = {}
+for i in range(bunch.getSize()):
+    data = tune_node.getData(bunch, i)
+    for key in data:
+        if key in phase_data:
+            phase_data[key].append(data[key])
+    else:
+        phase_data[key] = []
 
-phase_info = pd.DataFrame(phase_info)
-print(phase_info)
+phase_data = pd.DataFrame(phase_data)
+print(phase_data)
 
-# Read phase information from file
+# Read phase data from file
 particles = np.loadtxt(filename, comments="%")
 particles = pd.DataFrame(
     particles, 
