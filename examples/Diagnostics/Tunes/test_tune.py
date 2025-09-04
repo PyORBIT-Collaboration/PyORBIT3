@@ -1,20 +1,8 @@
-"""Test one-turn tune calculation.
+"""Test one-turn tune estimation in uncoupled lattice.
 
 This example tracks a Gaussian distribution through a FODO lattice. The tunes
 are estimated from the phase space coordinates before/after tracking using the
-`BunchTuneAnalysis` class. This class "normalizes" the coordinates in each 
-2D phase plane (x-x', y-y') using the periodic lattice parameters (alpha, beta).
-In the normalized frame, the turn-by-turn coordinates advance in phase around
-a circle; the different in phase angle is equal to the fractional tune multiplied
-by 2 pi.
-
-The calculation will only be correct if the distribution's covariance matrix
-(in each 2D phase space) is (approximately) unchanged after one turn. This is
-true in this example because the distribution is generated from the periodic
-lattice parameters.
-
-Note that the `BunchTuneAnalysis` class also accounts for dispersion, but there
-is no disperion in this lattice at the tune diagnostic node.
+`BunchTuneAnalysis` class.
 """
 import math
 import os
@@ -73,7 +61,7 @@ lattice_alpha_y = lattice_params["alpha y"]
 lattice_beta_x = lattice_params["beta x [m]"]
 lattice_beta_y = lattice_params["beta y [m]"]
 lattice_eta_x = lattice_params["dispersion x [m]"]
-lattice_etap_x = lattice_params["dispersion x [m]"]
+lattice_etap_x = lattice_params["dispersion prime x"]
 
 
 # Tune diagnostics node
@@ -81,12 +69,12 @@ lattice_etap_x = lattice_params["dispersion x [m]"]
 
 tune_node = TeapotTuneAnalysisNode()
 tune_node.assignTwiss(
-    lattice_beta_x, 
-    lattice_alpha_x, 
-    lattice_eta_x, 
-    lattice_etap_x, 
-    lattice_beta_y,
-    lattice_alpha_y,
+    betax=lattice_beta_x, 
+    alphax=lattice_alpha_x, 
+    etax=lattice_eta_x, 
+    etapx=lattice_etap_x, 
+    betay=lattice_beta_y,
+    alphay=lattice_alpha_y,
 )
 lattice.getNodes()[0].addChildNode(tune_node, 0)
 

@@ -1,29 +1,23 @@
-"""
-This module is a collimator node class for TEAPOT lattice
-"""
+"""TEAPOT-style bunch diagnostic nodes."""
 
-import os
-import math
+from ..utils import orbitFinalize
+from ..utils import NamedObject
+from ..utils import ParamsDictObject
 
-# import the auxiliary classes
-from ..utils import orbitFinalize, NamedObject, ParamsDictObject
+from ..lattice import AccNode
+from ..lattice import AccActionsContainer
+from ..lattice import AccNodeBunchTracker
 
-# import general accelerator elements and lattice
-from ..lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
-
-
-# import Diagnostics classes
-from .diagnostics import StatLats, StatLatsSetMember
-from .diagnostics import Moments, MomentsSetMember, BPMSignal
-
-# import teapot drift class
 from ..teapot import DriftTEAPOT
 
+from .diagnostics import StatLats
+from .diagnostics import StatLatsSetMember
+from .diagnostics import Moments
+from .diagnostics import MomentsSetMember
+from .diagnostics import BPMSignal
 
-# import Bunch diagnostics
-from orbit.core import bunch
-
-BunchTuneAnalysis = bunch.BunchTuneAnalysis
+from orbit.core.bunch import BunchTuneAnalysis
+from orbit.core.bunch import BunchTuneAnalysis4D
 
 
 class TeapotStatLatsNode(DriftTEAPOT):
@@ -186,10 +180,23 @@ class TeapotMomentsNodeSetMember(DriftTEAPOT):
 
 
 class TeapotTuneAnalysisNode(DriftTEAPOT):
-    def __init__(self, name="tuneanalysis no name"):
-        """
-        Constructor. Creates the StatLats TEAPOT element.
-        """
+    """Tune analysis node.
+    
+    The tunes are estimated from the particle phase space coordinates on
+    neighboring turns. The coordinates are "normalized" in each 2D phase 
+    plane (x-x', y-y') using provided twiss parameters (alpha, beta) as 
+    well as the dispersion in the x plane. In the normalized frame, the 
+    turn-by-turn coordinates advance in phase around a circle. The fractional
+    tune is defined by the change in angle for a single turn.
+
+    The calculation will be incorrect if the normalization matrix does not
+    map the turn-by-turn coordinates to a circle. In a linear lattice
+    without space charge, the normalization will be correct if the provided
+    twiss parameters are the same as the periodic lattice twiss parameters
+    at the location of the node.
+    """
+    def __init__(self, name: str = "tuneanalysis no name") -> None:
+        """Constructor."""
         DriftTEAPOT.__init__(self, name)
         self.bunchtune = BunchTuneAnalysis()
         self.setType("tune calculator teapot")
@@ -197,10 +204,8 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
         self.setLength(0.0)
         self.position = 0.0
 
-    def track(self, paramsDict):
-        """
-        The bunchtuneanalysis-teapot class implementation of the AccNodeBunchTracker class track(probe) method.
-        """
+    def track(self, paramsDict: dict) -> None:
+        """Implementation of the AccNodeBunchTracker class track(probe) method."""
         length = self.getLength(self.getActivePartIndex())
         bunch = paramsDict["bunch"]
         self.bunchtune.analyzeBunch(bunch)
@@ -211,8 +216,77 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
     def setLatticeLength(self, lattlength):
         self.lattlength = lattlength
 
-    def assignTwiss(self, betax, alphax, etax, etapx, betay, alphay):
+    def assignTwiss(
+        self, 
+        betax: float, 
+        alphax: float, 
+        etax: float, 
+        etapx: float, 
+        betay: float, 
+        alphay: float,
+    ) -> None:
+        """Set the twiss parameters for the coordinate normalization.
+        
+        betax{y}: Beta parameter in x{y} plane.
+        alphax{y}: Alpha parameter in x{y} plane.
+        etax: Dispersion in x plane.
+        etapx: Disperion prime in x plane.
+        """
         self.bunchtune.assignTwiss(betax, alphax, etax, etapx, betay, alphay)
+
+
+class TeapotTuneAnalysis4DNode(DriftTEAPOT):
+    """Tune analysis node with 4D normalization.
+    
+    The tunes are estimated from the particle phase space coordinates on
+    neighboring turns. Each set of 4D phase space coordinates is normalized
+    with the provided 4 x 4 matrix.
+
+    In the normalized frame (if the matrix is properly chosen), the 
+    turn-by-turn coordinates advance in phase around a circle. The fractional
+    tune is defined by the change in angle on a single turn, divided by
+    2 pi.
+
+    Note that any normalization matrix is allowed. It is up to the user 
+    to ensure proper normalization, i.e., based on the one-turn transfer
+    matrix.
+    """
+    def __init__(self, name: str = "tuneanalysis4d no name") -> None:
+        DriftTEAPOT.__init__(self, name)
+        self.bunchtune = BunchTuneAnalysis4D()
+        self.setType("tune calculator 4d teapot")
+        self.lattlength = 0.0
+        self.setLength(0.0)
+        self.position = 0.0
+
+    def track(self, paramsDict: dict) -> None:
+        bunch = paramsDict["bunch"]
+        self.bunchtune.analyzeBunch(bunch)
+
+    def setPosition(self, pos: float) -> None:
+        self.position = pos
+
+    def setLatticeLength(self, lattlength: float) -> None:
+        self.lattlength = lattlength
+
+    def setNormMatrix(self, norm_matrix: list[list[float]]) -> None:
+        norm_matrix_list = list(norm_matrix)
+        for i in range(4):
+            for j in range(4):
+                value = float(norm_matrix_list[i][j])
+                self.bunchtune.setNormMatrixElement(i, j, value)
+
+    def getNormMatrix(self) -> list[list[float]]:
+        norm_matrix = [
+            [0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0],
+        ]
+        for i in range(4):
+            for j in range(4):
+                norm_matrix[i][j] = self.bunchtune.getNormMatrixElement(i, j)
+        return norm_matrix
 
 
 class TeapotBPMSignalNode(DriftTEAPOT):

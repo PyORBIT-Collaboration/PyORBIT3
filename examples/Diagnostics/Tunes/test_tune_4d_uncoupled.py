@@ -1,22 +1,9 @@
-"""Test one-turn tune calculation using 4D normalization.
+"""Test one-turn tune estimation in uncoupled lattice using 4D normalization.
 
 See comments on `test_tune.py`. This example is the same, but the tunes are
-estimated using the `BunchTuneAnalysis4D` class. This class normalizes the
-coordinates by applying a 4 x 4 matrix V^{-1}. For the calculation to work,
-the motion must be decoupled in the normalized frame; i.e., particles should 
-advance in phase along circles in x-x' and y-y'. The fractional tunes (also
-called "eigentunes" or "mode tunes") are defined by the change in phase angle
-divided by 2 pi.
-
-
-The calculation will only be correct if the distribution's covariance matrix
-(in each 2D phase space) is (approximately) unchanged after one turn. This is
-true in this example because the distribution is generated from the periodic
-lattice parameters.
-
-This node accepts any normalization matrix (V^{-1}). It is up to the user to
-ensure that the matrix is symplectic and that it removes the coupling between
-planes. In this example, the tunes {nu1, nu2} should be the same as {nux, nuy}.
+estimated using the `BunchTuneAnalysis4D` class.  Since there is no coupling
+in the lattice, the (eigen)tunes {nu1, nu2} should be the same as horizontal
+and vertical tunes {nux, nuy}.
 """
 import math
 import os
@@ -35,6 +22,7 @@ from orbit.core.bunch import BunchTwissAnalysis
 from orbit.bunch_generators import TwissContainer
 from orbit.bunch_generators import GaussDist2D
 from orbit.bunch_generators import WaterBagDist2D
+from orbit.diagnostics import TeapotTuneAnalysis4DNode
 from orbit.lattice import AccLattice
 from orbit.lattice import AccNode
 from orbit.teapot import TEAPOT_Lattice
@@ -75,6 +63,7 @@ def build_norm_matrix_from_twiss_2d(alpha: float, beta: float) -> np.ndarray:
 
 matrix_lattice = TEAPOT_MATRIX_Lattice(lattice, bunch)
 lattice_params = matrix_lattice.getRingParametersDict()
+pprint(lattice_params)
 
 lattice_alpha_x = lattice_params["alpha x"]
 lattice_alpha_y = lattice_params["alpha y"]
@@ -91,39 +80,9 @@ print(norm_matrix)
 
 # Add tune diagnostic node
 # ------------------------------------------------------------------------------------
-
-class TuneAnalysisNode(DriftTEAPOT):
-    def __init__(self, name: str = "tune_analysis_4d_no_name") -> None:
-        DriftTEAPOT.__init__(self, name)
-        self.setLength(0.0)
-        self.tune_calc = BunchTuneAnalysis4D()
-
-    def track(self, params_dict: dict) -> None:
-        bunch = params_dict["bunch"]
-        self.tune_calc.analyzeBunch(bunch)
-
-    def set_norm_matrix(self, norm_matrix: list[list[float]]) -> None:
-        norm_matrix_list = list(norm_matrix)
-        for i in range(4):
-            for j in range(4):
-                value = float(norm_matrix_list[i][j])
-                self.tune_calc.setNormMatrixElement(i, j, value)
-
-    def get_norm_matrix(self) -> list[list[float]]:
-        norm_matrix = [
-            [0.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0],
-        ]
-        for i in range(4):
-            for j in range(4):
-                norm_matrix[i][j] = self.tune_calc.getNormMatrixElement(i, j)
-        return norm_matrix
     
-    
-tune_node = TuneAnalysisNode()
-tune_node.set_norm_matrix(norm_matrix)
+tune_node = TeapotTuneAnalysis4DNode()
+tune_node.setNormMatrix(norm_matrix)
 lattice.getNodes()[0].addChildNode(tune_node, 0)
 
 
