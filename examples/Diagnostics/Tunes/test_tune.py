@@ -33,6 +33,7 @@ from orbit.core.bunch import BunchTwissAnalysis
 from orbit.bunch_generators import TwissContainer
 from orbit.bunch_generators import GaussDist2D
 from orbit.bunch_generators import WaterBagDist2D
+from orbit.diagnostics import TeapotTuneAnalysisNode
 from orbit.lattice import AccLattice
 from orbit.lattice import AccNode
 from orbit.teapot import TEAPOT_Lattice
@@ -78,38 +79,14 @@ lattice_etap_x = lattice_params["dispersion x [m]"]
 # Tune diagnostics node
 # ------------------------------------------------------------------------------------
 
-class TuneAnalysisNode(DriftTEAPOT):
-    def __init__(self, name: str = "tuneanalysis no name") -> None:
-        DriftTEAPOT.__init__(self, name)
-        self.setType("tune calculator teapot")
-        self.setLength(0.0)
-        self.calc = BunchTuneAnalysis()
-
-    def track(self, params_dict: dict) -> None:
-        length = self.getLength(self.getActivePartIndex())
-        bunch = params_dict["bunch"]
-        self.calc.analyzeBunch(bunch)
-
-    def set_twiss(
-        self, 
-        beta_x: float,
-        alpha_x: float,
-        eta_x: float,
-        etap_x: float,
-        beta_y: float,
-        alpha_y: float,
-    ) -> None:
-        self.calc.assignTwiss(beta_x, alpha_x, eta_x, etap_x, beta_y, alpha_y)
-
-
-tune_node = TuneAnalysisNode()
-tune_node.set_twiss(
-    beta_x=lattice_beta_x,
-    beta_y=lattice_beta_y,
-    alpha_x=lattice_alpha_x,
-    alpha_y=lattice_alpha_y,
-    eta_x=lattice_eta_x,
-    etap_x=lattice_etap_x,
+tune_node = TeapotTuneAnalysisNode()
+tune_node.assignTwiss(
+    lattice_beta_x, 
+    lattice_alpha_x, 
+    lattice_eta_x, 
+    lattice_etap_x, 
+    lattice_beta_y,
+    lattice_alpha_y,
 )
 lattice.getNodes()[0].addChildNode(tune_node, 0)
 
