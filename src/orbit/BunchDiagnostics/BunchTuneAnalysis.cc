@@ -114,20 +114,17 @@ BunchTuneAnalysis4D::BunchTuneAnalysis4D(): CppPyWrapper(NULL)
 	};
 }
 
-
 BunchTuneAnalysis4D::~BunchTuneAnalysis4D()
 {
 }
 
-
-void BunchTuneAnalysis4D::setMatrix(double dummy) {	
-	// for (int i = 0; i < 4; i++) {
-	// 	for (int j = 0; j < 4; j++) {
-	// 		matrix[i][j] = _matrix[i][j];
-	// 	}
-	// }
+void BunchTuneAnalysis4D::setMatrixElement(int i, int j, double value) {	
+	matrix[i][j] = value;
 }
 
+double BunchTuneAnalysis4D::getMatrixElement(int i, int j) {	
+	return matrix[i][j];
+}
 
 void BunchTuneAnalysis4D::analyzeBunch(Bunch* bunch){
 

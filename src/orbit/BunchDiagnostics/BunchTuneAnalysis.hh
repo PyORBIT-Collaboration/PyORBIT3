@@ -28,9 +28,6 @@ class BunchTuneAnalysis: public OrbitUtils::CppPyWrapper
 		//** Assigns Twiss values at location of calculator */
 		void assignTwiss(double bx, double ax, double dx, double dpx, double by, double ay);
 
-		/** Returns the average value for coordinate with index ic */
-		double getTune(int ic);
-
 
 	private:
 		//** Twiss */
@@ -56,10 +53,9 @@ class BunchTuneAnalysis4D: public OrbitUtils::CppPyWrapper
 
 		void analyzeBunch(Bunch* bunch);
 
-		// void setMatrix(double _matrix[4][4]);
-		void setMatrix(double dummy);
+		void setMatrixElement(int i, int j, double value);
 
-		double getTune(int ic);
+		double getMatrixElement(int i, int j);
 
 	private:
 		double matrix[4][4];

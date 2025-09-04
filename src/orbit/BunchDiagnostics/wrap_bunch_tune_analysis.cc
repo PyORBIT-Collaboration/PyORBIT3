@@ -176,7 +176,7 @@ static int BunchTuneAnalysis4D_init(pyORBIT_Object *self, PyObject *args, PyObje
 static PyObject* BunchTuneAnalysis4D_analyzeBunch(PyObject *self, PyObject *args){
 	BunchTuneAnalysis4D* cpp_BunchTuneAnalysis4D = (BunchTuneAnalysis4D*)((pyORBIT_Object*) self)->cpp_obj;
 	PyObject* pyBunch;
-	if(!PyArg_ParseTuple(args,"O:analyzeBunch",&pyBunch)){
+	if(!PyArg_ParseTuple(args,"O:analyzeBunch", &pyBunch)){
 		ORBIT_MPI_Finalize("BunchTuneAnalysis4D - analyzeBunch(Bunch* bunch) - parameter are needed.");
 	}
 	PyObject* pyORBIT_Bunch_Type = wrap_orbit_bunch::getBunchType("Bunch");
@@ -189,20 +189,36 @@ static PyObject* BunchTuneAnalysis4D_analyzeBunch(PyObject *self, PyObject *args
 	return Py_None;
 }
 
-/** Sets normalization matrix. */
-// [TO DO] How to parse 2D Python list?
-static PyObject* BunchTuneAnalysis4D_setMatrix(PyObject *self, PyObject *args){
+/** Set normalization matrix element. */
+static PyObject* BunchTuneAnalysis4D_setMatrixElement(PyObject *self, PyObject *args){
 	BunchTuneAnalysis4D* cpp_BunchTuneAnalysis4D = (BunchTuneAnalysis4D*)((pyORBIT_Object*) self)->cpp_obj;
-	double dummy;
-	if(!PyArg_ParseTuple(args,"d:setMatrix",&dummy)){
-		ORBIT_MPI_Finalize("BunchTuneAnalysis4D - setMatrix(double dummy) - parameters are needed.");
+	double value;
+	int i;
+	int j;
+	if(!PyArg_ParseTuple(args,"iid:setMatrixElement", &i, &j, &value)){
+		ORBIT_MPI_Finalize("BunchTuneAnalysis4D - setMatrixElement(int i, int j, double value) - parameters are needed.");
 	}
-	cpp_BunchTuneAnalysis4D->setMatrix(dummy);
+	cpp_BunchTuneAnalysis4D->setMatrixElement(i, j, value);
 	Py_INCREF(Py_None);
 	return Py_None;
 }
 
-// Destructor for python BunchTuneAnalysis4D class (__del__ method).
+/** Get normalization matrix element. */
+static PyObject* BunchTuneAnalysis4D_getMatrixElement(PyObject *self, PyObject *args){
+	BunchTuneAnalysis4D* cpp_BunchTuneAnalysis4D = (BunchTuneAnalysis4D*)((pyORBIT_Object*) self)->cpp_obj;
+	int i;
+	int j;
+	if(!PyArg_ParseTuple(args,"ii:getMatrixElement", &i, &j)){
+		ORBIT_MPI_Finalize("BunchTuneAnalysis4D - getMatrixElement(int i, int j) - parameters are needed.");
+	}
+	double value = cpp_BunchTuneAnalysis4D->getMatrixElement(i, j);
+	return Py_BuildValue("d", value);
+
+	Py_INCREF(Py_None);
+	return Py_None;
+}
+
+/** Destructor for python BunchTuneAnalysis4D class (__del__ method). */
 static void BunchTuneAnalysis4D_del(pyORBIT_Object* self){
 	//std::cerr<<"The BunchTuneAnalysis4D __del__ has been called!"<<std::endl;
 	delete ((BunchTuneAnalysis4D*)self->cpp_obj);
@@ -213,7 +229,8 @@ static void BunchTuneAnalysis4D_del(pyORBIT_Object* self){
 // They will be available from python level.
 static PyMethodDef BunchTuneAnalysis4DClassMethods[] = {
 	{ "analyzeBunch", BunchTuneAnalysis4D_analyzeBunch, METH_VARARGS,"Analyzes the bunch."},
-	{ "setMatrix", BunchTuneAnalysis4D_setMatrix, METH_VARARGS,"Sets normalization matrix."},
+	{ "setMatrixElement", BunchTuneAnalysis4D_setMatrixElement, METH_VARARGS,"Sets normalization matrix element."},
+	{ "getMatrixElement", BunchTuneAnalysis4D_getMatrixElement, METH_VARARGS,"Gets normalization matrix element."},
 	{NULL}
 };
 
