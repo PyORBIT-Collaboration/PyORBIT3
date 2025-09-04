@@ -118,11 +118,11 @@ BunchTuneAnalysis4D::~BunchTuneAnalysis4D()
 {
 }
 
-void BunchTuneAnalysis4D::setMatrixElement(int i, int j, double value) {	
+void BunchTuneAnalysis4D::setNormMatrixElement(int i, int j, double value) {	
 	matrix[i][j] = value;
 }
 
-double BunchTuneAnalysis4D::getMatrixElement(int i, int j) {	
+double BunchTuneAnalysis4D::getNormMatrixElement(int i, int j) {	
 	return matrix[i][j];
 }
 

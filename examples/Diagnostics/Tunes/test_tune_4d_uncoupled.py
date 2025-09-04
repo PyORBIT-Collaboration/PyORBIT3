@@ -50,7 +50,7 @@ bunch.getSyncParticle().kinEnergy(1.000)
 def build_norm_matrix_from_twiss_2d(alpha: float, beta: float) -> np.ndarray:
     norm_matrix_inv = np.array([[beta, 0.0], [-alpha, 1.0]]) * np.sqrt(1.0 / beta)
     norm_matrix = np.linalg.inv(norm_matrix_inv)
-    print(norm_matrix)
+    return norm_matrix
 
 
 matrix_lattice = TEAPOT_MATRIX_Lattice(lattice, bunch)
@@ -58,12 +58,15 @@ lattice_params = matrix_lattice.getRingParametersDict()
 
 lattice_alpha_x = lattice_params["alpha x"]
 lattice_alpha_y = lattice_params["alpha y"]
-lattice_beta_x = lattice_params["beta x"]
-lattice_beta_y = lattice_params["beta y"]
+lattice_beta_x = lattice_params["beta x [m]"]
+lattice_beta_y = lattice_params["beta y [m]"]
 
 norm_matrix = np.zeros((4, 4))
 norm_matrix[0:2, 0:2] = build_norm_matrix_from_twiss_2d(lattice_alpha_x, lattice_beta_x)
-norm_matrix[2:4, 2:4] = build_norm_matrix_from_twiss_2d(lattice_alpha_x, lattice_beta_y)
+norm_matrix[2:4, 2:4] = build_norm_matrix_from_twiss_2d(lattice_alpha_y, lattice_beta_y)
+
+print("Normalization matrix V^{-1}:")
+print(norm_matrix)
 
 
 # Add tune diagnostic node
@@ -73,17 +76,18 @@ class TuneAnalysisNode(DriftTEAPOT):
     def __init__(self, name: str = "tune_analysis_4d_no_name") -> None:
         DriftTEAPOT.__init__(self, name)
         self.setLength(0.0)
-        self._tune_analysis = BunchTuneAnalysis4D()
+        self.tune_calc = BunchTuneAnalysis4D()
 
     def track(self, params_dict: dict) -> None:
         bunch = params_dict["bunch"]
-        self._tune_analysis.analyzeBunch(bunch)
+        self.tune_calc.analyzeBunch(bunch)
 
     def set_norm_matrix(self, norm_matrix: list[list[float]]) -> None:
         norm_matrix_list = list(norm_matrix)
         for i in range(4):
             for j in range(4):
-                self._tune_analysis.setMatrixElement(i, j, norm_matrix_list[i][j])
+                value = float(norm_matrix_list[i][j])
+                self.tune_calc.setNormMatrixElement(i, j, value)
 
     def get_norm_matrix(self) -> list[list[float]]:
         norm_matrix = [
@@ -94,11 +98,12 @@ class TuneAnalysisNode(DriftTEAPOT):
         ]
         for i in range(4):
             for j in range(4):
-                norm_matrix[i][j] = self._tune_analysis.getMatrixElement(i, j)
-
-
+                norm_matrix[i][j] = self.tune_calc.getNormMatrixElement(i, j)
+        return norm_matrix
+    
+    
 tune_node = TuneAnalysisNode()
-tune_node.set_matrix(norm_matrix)
+tune_node.set_norm_matrix(norm_matrix)
 lattice.getNodes()[0].addChildNode(tune_node, 0)
 
 

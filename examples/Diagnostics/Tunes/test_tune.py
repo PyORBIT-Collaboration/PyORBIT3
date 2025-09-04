@@ -148,7 +148,7 @@ for j, key in enumerate(["phase_x", "phase_y", "tune_x", "tune_y", "action_x", "
 phase_info = pd.DataFrame(phase_info)
 print(phase_info)
 
-# Read phase information from bunch file
+# Read phase information from file
 particles = np.loadtxt(filename, comments="%")
 particles = pd.DataFrame(
     particles, 

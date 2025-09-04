@@ -53,9 +53,9 @@ class BunchTuneAnalysis4D: public OrbitUtils::CppPyWrapper
 
 		void analyzeBunch(Bunch* bunch);
 
-		void setMatrixElement(int i, int j, double value);
+		void setNormMatrixElement(int i, int j, double value);
 
-		double getMatrixElement(int i, int j);
+		double getNormMatrixElement(int i, int j);
 
 	private:
 		double matrix[4][4];

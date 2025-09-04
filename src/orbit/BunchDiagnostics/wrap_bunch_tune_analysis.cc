@@ -190,28 +190,28 @@ static PyObject* BunchTuneAnalysis4D_analyzeBunch(PyObject *self, PyObject *args
 }
 
 /** Set normalization matrix element. */
-static PyObject* BunchTuneAnalysis4D_setMatrixElement(PyObject *self, PyObject *args){
+static PyObject* BunchTuneAnalysis4D_setNormMatrixElement(PyObject *self, PyObject *args){
 	BunchTuneAnalysis4D* cpp_BunchTuneAnalysis4D = (BunchTuneAnalysis4D*)((pyORBIT_Object*) self)->cpp_obj;
 	double value;
 	int i;
 	int j;
-	if(!PyArg_ParseTuple(args,"iid:setMatrixElement", &i, &j, &value)){
-		ORBIT_MPI_Finalize("BunchTuneAnalysis4D - setMatrixElement(int i, int j, double value) - parameters are needed.");
+	if(!PyArg_ParseTuple(args,"iid:setNormMatrixElement", &i, &j, &value)){
+		ORBIT_MPI_Finalize("BunchTuneAnalysis4D - setNormMatrixElement(int i, int j, double value) - parameters are needed.");
 	}
-	cpp_BunchTuneAnalysis4D->setMatrixElement(i, j, value);
+	cpp_BunchTuneAnalysis4D->setNormMatrixElement(i, j, value);
 	Py_INCREF(Py_None);
 	return Py_None;
 }
 
 /** Get normalization matrix element. */
-static PyObject* BunchTuneAnalysis4D_getMatrixElement(PyObject *self, PyObject *args){
+static PyObject* BunchTuneAnalysis4D_getNormMatrixElement(PyObject *self, PyObject *args){
 	BunchTuneAnalysis4D* cpp_BunchTuneAnalysis4D = (BunchTuneAnalysis4D*)((pyORBIT_Object*) self)->cpp_obj;
 	int i;
 	int j;
-	if(!PyArg_ParseTuple(args,"ii:getMatrixElement", &i, &j)){
-		ORBIT_MPI_Finalize("BunchTuneAnalysis4D - getMatrixElement(int i, int j) - parameters are needed.");
+	if(!PyArg_ParseTuple(args,"ii:getNormMatrixElement", &i, &j)){
+		ORBIT_MPI_Finalize("BunchTuneAnalysis4D - getNormMatrixElement(int i, int j) - parameters are needed.");
 	}
-	double value = cpp_BunchTuneAnalysis4D->getMatrixElement(i, j);
+	double value = cpp_BunchTuneAnalysis4D->getNormMatrixElement(i, j);
 	return Py_BuildValue("d", value);
 
 	Py_INCREF(Py_None);
@@ -229,8 +229,8 @@ static void BunchTuneAnalysis4D_del(pyORBIT_Object* self){
 // They will be available from python level.
 static PyMethodDef BunchTuneAnalysis4DClassMethods[] = {
 	{ "analyzeBunch", BunchTuneAnalysis4D_analyzeBunch, METH_VARARGS,"Analyzes the bunch."},
-	{ "setMatrixElement", BunchTuneAnalysis4D_setMatrixElement, METH_VARARGS,"Sets normalization matrix element."},
-	{ "getMatrixElement", BunchTuneAnalysis4D_getMatrixElement, METH_VARARGS,"Gets normalization matrix element."},
+	{ "setNormMatrixElement", BunchTuneAnalysis4D_setNormMatrixElement, METH_VARARGS,"Sets normalization matrix element."},
+	{ "getNormMatrixElement", BunchTuneAnalysis4D_getNormMatrixElement, METH_VARARGS,"Gets normalization matrix element."},
 	{NULL}
 };
 
