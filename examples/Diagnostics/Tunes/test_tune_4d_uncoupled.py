@@ -16,7 +16,7 @@ lattice parameters.
 
 This node accepts any normalization matrix (V^{-1}). It is up to the user to
 ensure that the matrix is symplectic and that it removes the coupling between
-planes.
+planes. In this example, the tunes {nu1, nu2} should be the same as {nux, nuy}.
 """
 import math
 import os
