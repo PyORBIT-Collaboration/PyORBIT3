@@ -131,8 +131,8 @@ for i in range(bunch.getSize()):
     for key in data:
         if key in phase_data:
             phase_data[key].append(data[key])
-    else:
-        phase_data[key] = []
+        else:
+            phase_data[key] = []
 
 phase_data = pd.DataFrame(phase_data)
 print(phase_data)
