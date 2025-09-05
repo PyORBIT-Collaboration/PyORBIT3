@@ -246,7 +246,7 @@ sources = files([
 	'teapot/wrap_teapotbase.cc',
 	'teapot/wrap_matrix_generator.cc',
 	'teapot/teapotbase.cc',
-	'teapot/MatrixGenerator.cc'
+	'teapot/MatrixGenerator.cc',
 ])
 inc = include_directories([
   python.get_variable('INCLUDEPY', ''),
@@ -276,8 +276,7 @@ inc = include_directories([
 	'orbit/BunchDiagnostics',
 	'orbit',
 	'utils/integration',
-	'orbit/Apertures'
-
+	'orbit/Apertures',
 ])
 
 
@@ -427,3 +426,4 @@ python.extension_module('error_base',
     install: true,
    subdir: 'orbit/core',
 )
+
