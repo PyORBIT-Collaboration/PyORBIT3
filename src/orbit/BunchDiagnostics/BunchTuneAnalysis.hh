@@ -1,7 +1,6 @@
 #ifndef BUNCH_TUNE_ANALYSIS_H
 #define BUNCH_TUNE_ANALYSIS_H
 
-//pyORBIT utils
 #include "CppPyWrapper.hh"
 
 #include "Bunch.hh"
@@ -9,10 +8,10 @@
 
 using namespace std;
 
+
 /**
   The BunchTuneAnalysis class calculates the particle tunes
 */
-
 class BunchTuneAnalysis: public OrbitUtils::CppPyWrapper
 {
 	public:
@@ -29,9 +28,6 @@ class BunchTuneAnalysis: public OrbitUtils::CppPyWrapper
 		//** Assigns Twiss values at location of calculator */
 		void assignTwiss(double bx, double ax, double dx, double dpx, double by, double ay);
 
-		/** Returns the average value for coordinate with index ic */
-		double getTune(int ic);
-
 
 	private:
 		//** Twiss */
@@ -43,6 +39,28 @@ class BunchTuneAnalysis: public OrbitUtils::CppPyWrapper
 		double alphay;
 
 };
+
+
+/**
+  Calculates tunes using 4D normalization.
+*/
+class BunchTuneAnalysis4D: public OrbitUtils::CppPyWrapper
+{
+	public:
+		BunchTuneAnalysis4D();
+
+		virtual ~BunchTuneAnalysis4D();
+
+		void analyzeBunch(Bunch* bunch);
+
+		void setNormMatrixElement(int i, int j, double value);
+
+		double getNormMatrixElement(int i, int j);
+
+	private:
+		double matrix[4][4];
+};
+
 
 #endif
 //endif for BUNCH_TUNE_ANALYSIS_H
