@@ -267,16 +267,23 @@ class TeapotTuneAnalysis4DNode(DriftTEAPOT):
         self.lattlength = 0.0
         self.setLength(0.0)
         self.position = 0.0
+        self.active = True
 
-    def track(self, paramsDict: dict) -> None:
-        bunch = paramsDict["bunch"]
+    def track(self, params_dict: dict) -> None:
+        if not self.active:
+            return
+        
+        bunch = params_dict["bunch"]
         self.bunchtune.analyzeBunch(bunch)
 
-    def setPosition(self, pos: float) -> None:
-        self.position = pos
+    def setActive(self, active: bool) -> None:
+        self.active = active
+        
+    def setPosition(self, position: float) -> None:
+        self.position = position
 
-    def setLatticeLength(self, lattlength: float) -> None:
-        self.lattlength = lattlength
+    def setLatticeLength(self, length: float) -> None:
+        self.lattlength = length
 
     def setNormMatrix(self, norm_matrix: list[list[float]]) -> None:
         norm_matrix_list = list(norm_matrix)
