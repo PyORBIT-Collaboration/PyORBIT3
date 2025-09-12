@@ -17,12 +17,12 @@ import matplotlib.pyplot as plt
 
 from orbit.core import orbit_mpi
 from orbit.core.bunch import Bunch
-from orbit.core.bunch import BunchTuneAnalysis4D
+from orbit.core.bunch import BunchTuneAnalysis
 from orbit.core.bunch import BunchTwissAnalysis
 from orbit.bunch_generators import TwissContainer
 from orbit.bunch_generators import GaussDist2D
 from orbit.bunch_generators import WaterBagDist2D
-from orbit.diagnostics import TeapotTuneAnalysis4DNode
+from orbit.diagnostics import TeapotTuneAnalysisNode
 from orbit.lattice import AccLattice
 from orbit.lattice import AccNode
 from orbit.teapot import TEAPOT_Lattice
@@ -81,7 +81,7 @@ print(norm_matrix)
 # Add tune diagnostic node
 # ------------------------------------------------------------------------------------
     
-tune_node = TeapotTuneAnalysis4DNode()
+tune_node = TeapotTuneAnalysisNode()
 tune_node.setNormMatrix(norm_matrix)
 lattice.getNodes()[0].addChildNode(tune_node, 0)
 
