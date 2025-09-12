@@ -1310,7 +1310,6 @@ extern "C" {
       wrap_orbit_syncpart::initsyncpart(module);
       wrap_bunch_twiss_analysis::initbunchtwissanalysis(module);
       wrap_bunch_tune_analysis::initbunchtuneanalysis(module);
-      wrap_bunch_tune_analysis::initbunchtuneanalysis4d(module);
       wrap_synch_part_redefinition::initsynchpartredefinition(module);
       return module;
   }
