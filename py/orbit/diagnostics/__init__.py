@@ -13,7 +13,6 @@ from .diagnosticsLatticeModifications import addTeapotMomentsNodeSet
 from .TeapotDiagnosticsNode import TeapotStatLatsNode, TeapotStatLatsNodeSetMember
 from .TeapotDiagnosticsNode import TeapotMomentsNode, TeapotMomentsNodeSetMember
 from .TeapotDiagnosticsNode import TeapotTuneAnalysisNode
-from .TeapotDiagnosticsNode import TeapotTuneAnalysis4DNode
 
 
 __all__ = []
@@ -30,5 +29,4 @@ __all__.append("addTeapotDiagnosticsNodeAsChild")
 __all__.append("addTeapotStatLatsNodeSet")
 __all__.append("addTeapotMomentsNodeSet")
 __all__.append("TeapotTuneAnalysisNode")
-__all__.append("TeapotTuneAnalysis4DNode")
 __all__.append("profiles")

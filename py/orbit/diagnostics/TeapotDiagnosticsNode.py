@@ -18,7 +18,6 @@ from .diagnostics import BPMSignal
 
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTuneAnalysis
-from orbit.core.bunch import BunchTuneAnalysis4D
 
 
 class TeapotStatLatsNode(DriftTEAPOT):
@@ -211,11 +210,33 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
         bunch = paramsDict["bunch"]
         self.bunchtune.analyzeBunch(bunch)
 
-    def setPosition(self, pos):
-        self.position = pos
+    def setPosition(self, position: float) -> None:
+        self.position = position
 
     def setLatticeLength(self, lattlength):
         self.lattlength = lattlength
+
+    def setNormMatrix(self, norm_matrix: list[list[float]]) -> None:
+        ndim = len(norm_matrix)
+        norm_matrix_list = list(norm_matrix)
+        for i in range(ndim):
+            for j in range(ndim):
+                value = float(norm_matrix_list[i][j])
+                self.bunchtune.setNormMatrixElement(i, j, value)
+
+    def getNormMatrix(self) -> list[list[float]]:
+        norm_matrix = [
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ]
+        for i in range(6):
+            for j in range(6):
+                norm_matrix[i][j] = self.bunchtune.getNormMatrixElement(i, j)
+        return norm_matrix
 
     def assignTwiss(
         self, 
@@ -238,75 +259,6 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
     def getData(self, bunch: Bunch, index: int) -> dict[str, float]:
         """Return phase advances, tunes, and actions for a single particle."""
         keys = ["phase_x", "phase_y", "tune_x", "tune_y", "action_x", "action_y"]
-        data = {}
-        for j, key in enumerate(keys):
-            data[key] = bunch.partAttrValue("ParticlePhaseAttributes", index, j)
-        return data
-
-
-class TeapotTuneAnalysis4DNode(DriftTEAPOT):
-    """Tune analysis node with 4D normalization.
-    
-    The tunes are estimated from the particle phase space coordinates on
-    neighboring turns. Each set of 4D phase space coordinates is normalized
-    with the provided 4 x 4 matrix.
-
-    In the normalized frame (if the matrix is properly chosen), the 
-    turn-by-turn coordinates advance in phase around a circle. The fractional
-    tune is defined by the change in angle on a single turn, divided by
-    2 pi.
-
-    Note that any normalization matrix is allowed. It is up to the user 
-    to ensure proper normalization, i.e., based on the one-turn transfer
-    matrix.
-    """
-    def __init__(self, name: str = "tuneanalysis4d no name") -> None:
-        DriftTEAPOT.__init__(self, name)
-        self.bunchtune = BunchTuneAnalysis4D()
-        self.setType("tune calculator 4d teapot")
-        self.lattlength = 0.0
-        self.setLength(0.0)
-        self.position = 0.0
-        self.active = True
-
-    def track(self, params_dict: dict) -> None:
-        if not self.active:
-            return
-        
-        bunch = params_dict["bunch"]
-        self.bunchtune.analyzeBunch(bunch)
-
-    def setActive(self, active: bool) -> None:
-        self.active = active
-        
-    def setPosition(self, position: float) -> None:
-        self.position = position
-
-    def setLatticeLength(self, length: float) -> None:
-        self.lattlength = length
-
-    def setNormMatrix(self, norm_matrix: list[list[float]]) -> None:
-        norm_matrix_list = list(norm_matrix)
-        for i in range(4):
-            for j in range(4):
-                value = float(norm_matrix_list[i][j])
-                self.bunchtune.setNormMatrixElement(i, j, value)
-
-    def getNormMatrix(self) -> list[list[float]]:
-        norm_matrix = [
-            [0.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0],
-        ]
-        for i in range(4):
-            for j in range(4):
-                norm_matrix[i][j] = self.bunchtune.getNormMatrixElement(i, j)
-        return norm_matrix
-    
-    def getData(self, bunch: Bunch, index: int) -> dict[str, float]:
-        """Return phase advances, tunes, and actions for a single particle."""
-        keys = ["phase_1", "phase_2", "tune_1", "tune_2", "action_1", "action_2"]
         data = {}
         for j, key in enumerate(keys):
             data[key] = bunch.partAttrValue("ParticlePhaseAttributes", index, j)
