@@ -203,12 +203,19 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
         self.lattlength = 0.0
         self.setLength(0.0)
         self.position = 0.0
+        self.active = True
 
     def track(self, paramsDict: dict) -> None:
         """Implementation of the AccNodeBunchTracker class track(probe) method."""
+        if not self.active:
+            return
+
         length = self.getLength(self.getActivePartIndex())
         bunch = paramsDict["bunch"]
         self.bunchtune.analyzeBunch(bunch)
+
+    def setActive(self, active: bool) -> None:
+        self.active = active
 
     def setPosition(self, position: float) -> None:
         self.position = position
