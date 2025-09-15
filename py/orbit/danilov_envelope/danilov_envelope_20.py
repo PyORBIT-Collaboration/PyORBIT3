@@ -5,7 +5,7 @@ import math
 import time
 from typing import Callable
 from typing import Iterable
-from typing import Self
+#from typing import Self
 
 import numpy as np
 import scipy.optimize
@@ -97,7 +97,7 @@ class DanilovEnvelope20:
     def set_params(self, params: np.ndarray) -> None:
         self.params = np.copy(params)
 
-    def copy(self) -> Self:
+    def copy(self):
         return copy.deepcopy(self)
 
     def cov(self) -> np.ndarray:
