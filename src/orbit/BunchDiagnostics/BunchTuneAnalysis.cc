@@ -75,12 +75,12 @@ void BunchTuneAnalysis::analyzeBunch(Bunch* bunch){
 	if(!bunch->hasParticleAttributes("ParticlePhaseAttributes")){
 		cerr<<"adding particle phase information attribute\n";
 		std::map<std::string, double> tunemap;
-		tunemap.insert(std::make_pair("xLastPhase", 0));
-		tunemap.insert(std::make_pair("yLastPhase", 0));
-		tunemap.insert(std::make_pair("xLastTune", 0));
-		tunemap.insert(std::make_pair("yLastTune", 0));
-		tunemap.insert(std::make_pair("xAction", 0));
-		tunemap.insert(std::make_pair("yAction", 0));
+		tunemap.insert(std::make_pair("phase_1", 0));
+		tunemap.insert(std::make_pair("phase_2", 0));
+		tunemap.insert(std::make_pair("tune_1", 0));
+		tunemap.insert(std::make_pair("tune_2", 0));
+		tunemap.insert(std::make_pair("action_1", 0));
+		tunemap.insert(std::make_pair("action_2", 0));
 		bunch->addParticleAttributes("ParticlePhaseAttributes", tunemap);
 	}
 
@@ -131,8 +131,8 @@ void BunchTuneAnalysis::analyzeBunch(Bunch* bunch){
 			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 3) = yTune;
 
 			// Compute actions
-			double xAction = xval * xval + xpval * xpval;
-			double yAction = yval * yval + ypval * ypval;
+			double xAction = (xval * xval + xpval * xpval) / 2.0;
+			double yAction = (yval * yval + ypval * ypval) / 2.0;
 
 			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 4) = xAction;
 			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 5) = yAction;
