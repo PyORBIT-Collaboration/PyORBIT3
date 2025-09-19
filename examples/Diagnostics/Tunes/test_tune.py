@@ -4,6 +4,7 @@ This example tracks a Gaussian distribution through a FODO lattice. The tunes
 are estimated from the phase space coordinates before/after tracking using the
 `BunchTuneAnalysis` class.
 """
+
 import math
 import os
 import pathlib
@@ -64,10 +65,10 @@ lattice_etap_x = lattice_params["dispersion prime x"]
 
 tune_node = TeapotTuneAnalysisNode()
 tune_node.assignTwiss(
-    betax=lattice_beta_x, 
-    alphax=lattice_alpha_x, 
-    etax=lattice_eta_x, 
-    etapx=lattice_etap_x, 
+    betax=lattice_beta_x,
+    alphax=lattice_alpha_x,
+    etax=lattice_eta_x,
+    etapx=lattice_etap_x,
     betay=lattice_beta_y,
     alphay=lattice_alpha_y,
 )
@@ -77,8 +78,8 @@ lattice.getNodes()[0].addChildNode(tune_node, 0)
 # Bunch
 # ------------------------------------------------------------------------------------
 
-# Generate a matched transverse phase space distribution. The longitudinal 
-# distribution will be uniform in position (z) and a delta function in energy 
+# Generate a matched transverse phase space distribution. The longitudinal
+# distribution will be uniform in position (z) and a delta function in energy
 # deviation (dE).
 emittance_x = 25.0e-06
 emittance_y = 25.0e-06
@@ -113,7 +114,7 @@ filename = os.path.join(output_dir, filename)
 bunch.dumpBunch(filename)
 
 
-# Analysis    
+# Analysis
 # ------------------------------------------------------------------------------------
 
 # Collect phase data from bunch
@@ -124,21 +125,21 @@ print(phase_data)
 # Read phase data from file
 particles = np.loadtxt(filename, comments="%")
 particles = pd.DataFrame(
-    particles, 
+    particles,
     columns=[  # https://github.com/PyORBIT-Collaboration/PyORBIT3/issues/78
-        "x", 
-        "xp", 
-        "y", 
-        "yp", 
+        "x",
+        "xp",
+        "y",
+        "yp",
         "z",
-        "dE",   
+        "dE",
         "phase_x",
         "phase_y",
         "tune_x",
         "tune_y",
         "action_x",
         "action_y",
-    ] 
+    ],
 )
 print(particles.iloc[:, 6:])
 

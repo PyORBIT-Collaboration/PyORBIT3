@@ -1,4 +1,5 @@
 """Test one-turn tune estimation in coupled lattice."""
+
 import math
 import os
 import pathlib
@@ -59,7 +60,7 @@ def calc_eigtune(eigval: float) -> float:
 def unit_symplectic_matrix(ndim: int) -> np.ndarray:
     U = np.zeros((ndim, ndim))
     for i in range(0, ndim, 2):
-        U[i: i + 2, i: i + 2] = [[0.0, 1.0], [-1.0, 0.0]]
+        U[i : i + 2, i : i + 2] = [[0.0, 1.0], [-1.0, 0.0]]
     return U
 
 
@@ -68,15 +69,15 @@ def normalize_eigvec(v: np.ndarray) -> np.ndarray:
 
     def _norm(v):
         return np.linalg.multi_dot([np.conj(v), U, v])
-    
+
     if _norm(v) > 0.0:
         v = np.conj(v)
-    
+
     v *= np.sqrt(2.0 / np.abs(_norm(v)))
     assert np.isclose(np.imag(_norm(v)), -2.0)
     assert np.isclose(np.real(_norm(v)), +0.0)
     return v
- 
+
 
 def calc_norm_matrix_from_eigvecs(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
     V = np.zeros((4, 4))
@@ -118,7 +119,7 @@ print(V_inv)
 
 # Add tune diagnostic node
 # ------------------------------------------------------------------------------------
-    
+
 tune_node = TeapotTuneAnalysisNode()
 tune_node.setNormMatrix(V_inv)
 lattice.getNodes()[0].addChildNode(tune_node, 0)
@@ -162,7 +163,7 @@ for turn in range(n_turns):
     print("turn={} xrms={:0.3f} yrms={:0.3f}".format(turn + 1, xrms, yrms))
 
 
-# Analysis    
+# Analysis
 # ------------------------------------------------------------------------------------
 
 # Collect phase data from bunch

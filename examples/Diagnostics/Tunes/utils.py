@@ -18,7 +18,7 @@ def make_lattice(
     start: str = "drift",
 ) -> AccLattice:
     """Create FODO lattice.
-    
+
     Args:
         length: Length of lattice [m].
         fill_frac: Fraction of lattice occupied by quadrupoles.
@@ -38,14 +38,14 @@ def make_lattice(
             QuadTEAPOT("qd"),
             QuadTEAPOT("qf2"),
         ]
-        
+
         drift_nodes[0].setLength(length_drift)
         drift_nodes[1].setLength(length_drift)
-        
+
         quad_nodes[0].setLength(length_quad * 0.5)
         quad_nodes[1].setLength(length_quad)
         quad_nodes[2].setLength(length_quad * 0.5)
-        
+
         quad_nodes[0].setParam("kq", +kq)
         quad_nodes[1].setParam("kq", -kq)
         quad_nodes[2].setParam("kq", +kq)
@@ -69,14 +69,14 @@ def make_lattice(
             QuadTEAPOT("qd"),
             QuadTEAPOT("qf2"),
         ]
-        
+
         drift_nodes[0].setLength(length_drift)
         drift_nodes[1].setLength(length_drift)
-        
+
         quad_nodes[0].setLength(length_quad * 0.5)
         quad_nodes[1].setLength(length_quad)
         quad_nodes[2].setLength(length_quad * 0.5)
-        
+
         quad_nodes[0].setParam("kq", +kq)
         quad_nodes[1].setParam("kq", -kq)
         quad_nodes[2].setParam("kq", +kq)
@@ -91,7 +91,7 @@ def make_lattice(
 
     else:
         raise ValueError
-    
+
     for node in lattice.getNodes():
         node.setUsageFringeFieldIN(False)
         node.setUsageFringeFieldOUT(False)

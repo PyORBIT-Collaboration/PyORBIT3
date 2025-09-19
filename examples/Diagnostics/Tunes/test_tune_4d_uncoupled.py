@@ -5,6 +5,7 @@ estimated using the `BunchTuneAnalysis4D` class.  Since there is no coupling
 in the lattice, the (eigen)tunes {nu1, nu2} should be the same as horizontal
 and vertical tunes {nux, nuy}.
 """
+
 import math
 import os
 import pathlib
@@ -50,6 +51,7 @@ bunch.getSyncParticle().kinEnergy(1.000)
 # Analyze transfer matrix
 # ------------------------------------------------------------------------------------
 
+
 def build_norm_matrix_from_twiss_2d(alpha: float, beta: float) -> np.ndarray:
     norm_matrix_inv = np.array([[beta, 0.0], [-alpha, 1.0]]) * np.sqrt(1.0 / beta)
     norm_matrix = np.linalg.inv(norm_matrix_inv)
@@ -75,7 +77,7 @@ print(norm_matrix)
 
 # Add tune diagnostic node
 # ------------------------------------------------------------------------------------
-    
+
 tune_node = TeapotTuneAnalysisNode()
 tune_node.setNormMatrix(norm_matrix)
 lattice.getNodes()[0].addChildNode(tune_node, 0)
@@ -116,7 +118,7 @@ filename = os.path.join(output_dir, filename)
 bunch.dumpBunch(filename)
 
 
-# Analysis    
+# Analysis
 # ------------------------------------------------------------------------------------
 
 # Collect phase data from bunch
@@ -127,21 +129,21 @@ print(phase_data)
 # Read phase data from file
 particles = np.loadtxt(filename, comments="%")
 particles = pd.DataFrame(
-    particles, 
+    particles,
     columns=[  # https://github.com/PyORBIT-Collaboration/PyORBIT3/issues/78
-        "x", 
-        "xp", 
-        "y", 
-        "yp", 
+        "x",
+        "xp",
+        "y",
+        "yp",
         "z",
-        "dE",   
+        "dE",
         "phase_1",
         "phase_2",
         "tune_1",
         "tune_2",
         "action_1",
         "action_2",
-    ] 
+    ],
 )
 print(particles.iloc[:, 6:])
 
