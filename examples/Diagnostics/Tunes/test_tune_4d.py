@@ -1,10 +1,4 @@
-"""Test one-turn tune estimation in uncoupled lattice using 4D normalization.
-
-See comments on `test_tune.py`. This example is the same, but the tunes are
-estimated using the `BunchTuneAnalysis4D` class.  Since there is no coupling
-in the lattice, the (eigen)tunes {nu1, nu2} should be the same as horizontal
-and vertical tunes {nux, nuy}.
-"""
+"""Test one-turn tune estimation in coupled lattice."""
 import math
 import os
 import pathlib
@@ -40,6 +34,14 @@ os.makedirs(output_dir, exist_ok=True)
 # ------------------------------------------------------------------------------------
 
 lattice = make_lattice()
+
+sol_node = SolenoidTEAPOT()
+sol_node.setLength(0.5)
+sol_node.setParam("B", 0.25)
+sol_node.setUsageFringeFieldIN(False)
+sol_node.setUsageFringeFieldOUT(False)
+lattice.addNode(sol_node)
+lattice.initialize()
 
 bunch = Bunch()
 bunch.mass(mass_proton)
@@ -176,13 +178,16 @@ for i in range(bunch.getSize()):
 phase_data = pd.DataFrame(phase_data)
 print(phase_data)
 
-# Check against tune from transfer matrix
-tune_1_pred = np.mean(phase_data["tune_x"])
-tune_2_pred = np.mean(phase_data["tune_y"])
+# Check average tune vs. transfer matrix
+tune_1_calc = np.mean(phase_data["tune_x"])
+tune_2_calc = np.mean(phase_data["tune_y"])
+tune_1_err = tune_1_calc - tune_1_true
+tune_2_err = tune_2_calc - tune_2_true
 
-tune_1_err = tune_1_pred - tune_1_true
-tune_2_err = tune_2_pred - tune_2_true
-
+print("tune_1_true", tune_1_true)
+print("tune_1_calc", tune_1_calc)
+print("tune_2_true", tune_2_true)
+print("tune_2_calc", tune_2_calc)
 print("tune_1_err", tune_1_err)
 print("tune_2_err", tune_2_err)
 
