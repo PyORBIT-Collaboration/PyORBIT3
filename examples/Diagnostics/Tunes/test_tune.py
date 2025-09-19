@@ -154,3 +154,18 @@ particles = pd.DataFrame(
     ] 
 )
 print(particles.iloc[:, 6:])
+
+# Check against tune from transfer matrix
+tune_x_true = lattice_params["fractional tune x"]
+tune_y_true = lattice_params["fractional tune y"]
+tune_x_pred = np.mean(phase_data["tune_x"])
+tune_y_pred = np.mean(phase_data["tune_y"])
+
+tune_x_err = tune_x_pred - tune_x_true
+tune_y_err = tune_y_pred - tune_y_true
+
+print("tune_x_err", tune_x_err)
+print("tune_y_err", tune_y_err)
+
+assert np.abs(tune_x_err) < 1.00e-08
+assert np.abs(tune_y_err) < 1.00e-08
