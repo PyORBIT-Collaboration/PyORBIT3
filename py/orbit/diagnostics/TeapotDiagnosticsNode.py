@@ -182,67 +182,42 @@ class TeapotMomentsNodeSetMember(DriftTEAPOT):
 class TeapotTuneAnalysisNode(DriftTEAPOT):
     """One-turn tune analysis node.
 
-    This node uses the Average Phase Advance (APA) method to estimate the
-    tunes and actions of each particle. See Eq. (6) of [1]. We use only
-    a single turn rather than the average of multiple turns.
+    This node computes the tunes and actions of each particle in the bunch.
 
-    The phase advance is computed by normalizing the particle coordinates.
-    In the normalized frame, the turn-by-turn coordinates should jump along
-    a circle of area J, where J is an invariant. (In an uncoupled lattice,
-    J is the Courant-Snyder (CS) invariant.). The phase is the angle below
-    the x axis. The (fractional) phase advance is the change in phase on 
-    subsequent turns, modulo 2 pi. The tune is the phase advance divided
-    by 2 pi.
+    We use the Average Phase Advance (APA) method to estimate the tunes [1].
+    We use only a single turn rather than the average of multiple turns.
 
-    The normalization is performed using a 6 x 6 matrix V^{-1}. In 
-    uncoupled systems, the user can call `assignTwiss` to set the matrix
-    using Courant-Snyder parameters in each plane [2], as well as the
-    horizontal dispersion and dispersion-prime. Note that the last column
-    of V^{-1} multiplies by the fractional momentum offset (delta_p / p),
-    not the energy offset (delta_E).
+    The tune and action in each mode (1, 2 -> x, y) are estimated by first
+    normalizing the coordinates:
 
     .. math::
+        \mathbf{u} = \mathbf{V}^{-1} \mathbf{x},
 
-        \begin{bmatrix}
-        u_1 \\ u_1' \\ u_2 \\ u_2' \\ u_3 \\ u_3'
-        \end{bmatrix}
-        =
-        \begin{bmatrix}
-        \frac{1}{\sqrt{\beta_x}} & 0 & 0 & 0 & 0 & 0\\
-        \frac{\alpha_x}{\sqrt{\beta_x}} & \sqrt{\beta_x} & 0 & 0 & 0 & 0 \\
-        0 & 0 & \frac{1}{\sqrt{\beta_y}} & 0 & 0 & 0 \\
-        0 & 0 & \frac{\alpha_y}{\sqrt{\beta_y}} & \sqrt{\beta_y} & 0 & 0 \\
-        0 & 0 & 0 & 0 & 1 & 0 \\
-        0 & 0 & 0 & 0 & 0 & 1 \\
-        \end{bmatrix}
-        \begin{bmatrix}
-        1 & 0 & 0 & 0 & 0 & -\eta_x \\
-        0 & 1 & 0 & 0 & 0 & -\eta_x' \\
-        0 & 0 & 1 & 0 & 0 & 0 \\
-        0 & 0 & 0 & 1 & 0 & 0 \\
-        0 & 0 & 0 & 0 & 1 & 0 \\
-        0 & 0 & 0 & 0 & 0 & 1 \\
-        \end{bmatrix}
-        \begin{bmatrix}
-        x \\ x' \\ y \\ y' \\ z \\ \delta p
-        \end{bmatrix}
+    where :math:`\mathbf{x} = [x, x', y,  y', z, \delta_p]^T` and 
+    :math:`\mathbf{u} = [u_1, u_1', u_2, u_2', u_3, u_3']^T`. If the normalization
+    matrix :math:`\mathbf{V}^{-1}` is chosen correctly, the turn-by-turn coordinates 
+    in the :math:`u_k - u_k'` phase space will trace a circle of area :math:`2 \pi J_k`,
+    where :math:`J_k(u_k, u_k')` is defined as the *action*:
     
-    Otherwise, the user can set the matrix directly.
+    .. math::
+        J_k(u_k, u_k') = (u_k^2 + u_k'^2) / 2.
+
+    The phase :math:`\theta_k` is defined by
+
+    .. math::
+        \tan{\theta_k} = u_1' / u_1.
+
+    The tune :math:`\nu_k` is estimated from the phases on turns $t$ and $t + 1$:
+
+    .. math::
+        \nu_k = - (\theta_k^{(t + 1)} - \theta_k^{(t)}).
     
-    The phase phi_k is defined by 
-
-    .. math::
-        \tan(\phi_k) = u_k' / u_k
-
-    The action J_k is defined as:
-
-    .. math::
-        J_k = u_k^2 + u_k'^2
 
     References
     ----------
     [1] https://cds.cern.ch/record/292773/files/p147.pdf
-    [2] S. Y. Lee, Accelerator Physics
+    [2] https://arxiv.org/pdf/1207.5526
+    [3] S. Y. Lee, *Accelerator Physics*
     """
     def __init__(self, name: str = "tuneanalysis no name") -> None:
         """Constructor."""
@@ -254,7 +229,7 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
         self.position = 0.0
         self.active = True
 
-        self.keys = ["phase_1", "phase_1", "tune_1", "tune_2", "action_1", "action_2"]
+        self.keys = ["phase_1", "phase_2", "tune_1", "tune_2", "action_1", "action_2"]
 
     def track(self, paramsDict: dict) -> None:
         """Implementation of the AccNodeBunchTracker class track(probe) method."""
@@ -311,7 +286,7 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
         betay: float, 
         alphay: float,
     ) -> None:
-        """Set the twiss parameters for the coordinate normalization.
+        """Set the 2D twiss parameters for the coordinate normalization.
         
         betax{y}: Beta parameter in x{y} plane.
         alphax{y}: Alpha parameter in x{y} plane.
@@ -321,17 +296,17 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
         self.bunchtune.assignTwiss(betax, alphax, etax, etapx, betay, alphay)
 
     def getData(self, bunch: Bunch, index: int = None) -> dict[str, float] | dict[str, list[float]]:
-        """Return phase advances, tunes, and actions.
+        """Return tune and action data.
         
         Args:
             bunch: A Bunch object.
             index: Particle index. If None, return data for all particles.
         
         Returns:
-            data: Dictionary with keys ["phase_1", "phase_1", "tune_1", "tune_2", 
-                "action_1", "action_2"]. (If the lattice is uncoupled, 1->x and 
-                2->y.) If `index` is None, each value of `data` is a list of floats; 
-                otherwise it is a float.
+            data: Dictionary with keys {"phase_1", "phase_2", "tune_1", "tune_2", 
+                "action_1", "action_2" "action_3"}. (If the lattice is uncoupled, 
+                1->x and 2->y.) If `index` is None, each value of `data` is a list 
+                of floats; otherwise each value is a float.
         """
         data = {}
         if index is None:
@@ -363,7 +338,7 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
             tune_2: Fractional tune (mode 2).
         """
         data = self.getData(bunch, index)
-        return (data["tune_1"], data["tune_2"])
+        return tuple([data[key] for key in ["tune_1", "tune_2"]])
     
     
     def getActions(self, bunch: Bunch, index: int) -> dict[str, float] | dict[str, list[float]]:
@@ -375,10 +350,10 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
         
         Returns:
             J_1: Action (mode 1).
-            J_2: Action tune (mode 2).
+            J_2: Action (mode 2).
         """
         data = self.getData(bunch, index)
-        return (data["action_1"], data["action_2"])
+        return tuple([data[key] for key in ["action_1", "action_2"]])
 
 
 class TeapotBPMSignalNode(DriftTEAPOT):

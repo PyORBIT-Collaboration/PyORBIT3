@@ -88,54 +88,57 @@ void BunchTuneAnalysis::analyzeBunch(Bunch* bunch){
 		for (int i=0; i < bunch->getSize(); i++)
 		{
 			// Extract phase space coordinates
-			double x = part_coord_arr[i][0];
+			double x  = part_coord_arr[i][0];
 			double xp = part_coord_arr[i][1];
-			double y = part_coord_arr[i][2];
+			double y  = part_coord_arr[i][2];
 			double yp = part_coord_arr[i][3];
-			double z = part_coord_arr[i][4];
+			double z  = part_coord_arr[i][4];
 			double Etot = syncPart->getEnergy() + syncPart->getMass();
 			double dpp = 1.0 / (beta * beta) * part_coord_arr[i][5] / Etot;
 
 			// Normalize phase space coordinates
-            double xval  = matrix[0][0] * x + matrix[0][1] * xp + matrix[0][2] * y + matrix[0][3] * yp + matrix[0][4] * z + matrix[0][5] * dpp;
-            double xpval = matrix[1][0] * x + matrix[1][1] * xp + matrix[1][2] * y + matrix[1][3] * yp + matrix[1][4] * z + matrix[1][5] * dpp;
-            double yval  = matrix[2][0] * x + matrix[2][1] * xp + matrix[2][2] * y + matrix[2][3] * yp + matrix[2][4] * z + matrix[2][5] * dpp;
-            double ypval = matrix[3][0] * x + matrix[3][1] * xp + matrix[3][2] * y + matrix[3][3] * yp + matrix[3][4] * z + matrix[3][5] * dpp;
-
-			// Compute phase advance in normalized x-x'
-			double angle = atan2(xpval, xval);
+            double u1  = matrix[0][0] * x + matrix[0][1] * xp + matrix[0][2] * y + matrix[0][3] * yp + matrix[0][4] * z + matrix[0][5] * dpp;
+            double u1p = matrix[1][0] * x + matrix[1][1] * xp + matrix[1][2] * y + matrix[1][3] * yp + matrix[1][4] * z + matrix[1][5] * dpp;
+            double u2  = matrix[2][0] * x + matrix[2][1] * xp + matrix[2][2] * y + matrix[2][3] * yp + matrix[2][4] * z + matrix[2][5] * dpp;
+            double u2p = matrix[3][0] * x + matrix[3][1] * xp + matrix[3][2] * y + matrix[3][3] * yp + matrix[3][4] * z + matrix[3][5] * dpp;
+            double u3  = matrix[4][0] * x + matrix[4][1] * xp + matrix[4][2] * y + matrix[4][3] * yp + matrix[4][4] * z + matrix[4][5] * dpp;
+            double u3p = matrix[5][0] * x + matrix[5][1] * xp + matrix[5][2] * y + matrix[5][3] * yp + matrix[5][4] * z + matrix[5][5] * dpp;
+			
+			// Compute phase advance (mode 1)
+			double angle = atan2(u1p, u1);
 			if (angle < 0.0) {
 				angle += (2.0 * OrbitConst::PI);
 			}
-			double xPhase = angle;
-			double xPhaseOld = bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 0);
-			double xTune = (xPhaseOld - xPhase) / (2.0 * OrbitConst::PI);
-			if (xTune < 0.0) { 
-				xTune += 1.0;
+			double phase1 = angle;
+			double phase1Old = bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 0);
+			double tune1 = (phase1Old - phase1) / (2.0 * OrbitConst::PI);
+			if (tune1 < 0.0) { 
+				tune1 += 1.0;
 			}
-			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 0) = xPhase;
-			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 2) = xTune;
 
-			// Compute phase advance in normalized y-y'
-			angle = atan2(ypval, yval);
+			// Compute phase advance (mode 2)
+			angle = atan2(u2p, u2);
 			if (angle < 0.0) {
 				angle += (2.0 * OrbitConst::PI);
 			}
-			double yPhase = angle;
-			double yPhaseOld = bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 1);
-			double yTune = (yPhaseOld - yPhase) / (2.0 * OrbitConst::PI);
-			if (yTune < 0.0) {
-				yTune += 1.0;
+			double phase2 = angle;
+			double phase2Old = bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 1);
+			double tune2 = (phase2Old - phase2) / (2.0 * OrbitConst::PI);
+			if (tune2 < 0.0) {
+				tune2 += 1.0;
 			}
-			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 1) = yPhase;
-			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 3) = yTune;
 
 			// Compute actions
-			double xAction = (xval * xval + xpval * xpval) / 2.0;
-			double yAction = (yval * yval + ypval * ypval) / 2.0;
+			double action1 = (u1 * u1 + u1p * u1p) / 2.0;
+			double action2 = (u2 * u2 + u2p * u2p) / 2.0;
 
-			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 4) = xAction;
-			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 5) = yAction;
+			// Update ParticlePhaseAttributes
+			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 0) = phase1;
+			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 1) = phase2;
+			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 2) = tune1;
+			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 3) = tune2;
+			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 4) = action1;
+			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 5) = action2;
 		}
 	}
 
