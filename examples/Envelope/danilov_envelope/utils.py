@@ -44,7 +44,7 @@ def make_fodo_lattice(
     length: float,
     mass: float,
     kin_energy: float,
-    fill_factor: float = 0.5,
+    fill_frac: float = 0.5,
     start: str = "drift",
     fringe: bool = False,
     max_part_length: float = 0.1,
@@ -52,27 +52,24 @@ def make_fodo_lattice(
 ) -> AccLattice:
     """Create FODO lattice with specified phase advances.
 
-    Parameters
-    ----------
-    phase_adv_x{y}: float
-        The x{y} lattice phase advance [rad].
-    length : float
-        The length of the lattice [m].
-    mass, kin_energy : float
-        Mass [GeV/c^2] and kinetic energy [GeV] of synchronous particle.
-    fill_fac : float
-        The fraction of the lattice occupied by quadrupoles.
-    fringe : bool
-        Whether to include nonlinear fringe fields in the lattice.
-    start : str
-        If 'drift', the lattice will be O-F-O-O-D-O. If 'quad' the lattice will
-        be (F/2)-O-O-D-O-O-(F/2).
-    reverse : bool
-        If True, reverse the lattice elements.
+    Args:
+        phase_adv_x: Phase advance in x plane [rad].
+        phase_adv_y: Phase advance in y plane [rad].
+        length: Length of the lattice [m].
+        mass: Particle mass [GeV/c^2]
+        kin_energy: Synchronous particle kinetic energy [GeV].
+        fill_frac : Fraction of the lattice occupied by quadrupoles.
+        start : str
+            "drift":
+                O-F-F-O-O-D-D-O. 
+            "quad":
+                F-O-O-D-D-O-O-F
+        fringe: Toggles fringe fields before/after quads.
+        max_part_length: Maximum node part length [m].
+        verbose: Print optimization status.
 
-    Returns
-    -------
-    TEAPOT_Lattice
+    Returns:
+        TEAPOT_Lattice
     """
 
     def _make_lattice(k1: float, k2: float) -> AccLattice:
@@ -81,65 +78,86 @@ def make_fodo_lattice(
         k1 and k2 are the focusing strengths of the
         focusing (1st) and defocusing (2nd) quads, respectively.
         """
-        # Instantiate elements
-        lattice = TEAPOT_Lattice()
-        drift1 = DriftTEAPOT("drift1")
-        drift2 = DriftTEAPOT("drift2")
-        drift_half1 = DriftTEAPOT("drift_half1")
-        drift_half2 = DriftTEAPOT("drift_half2")
-        qf = QuadTEAPOT("qf")
-        qd = QuadTEAPOT("qd")
-        qf_half1 = QuadTEAPOT("qf_half1")
-        qf_half2 = QuadTEAPOT("qf_half2")
-        qd_half1 = QuadTEAPOT("qd_half1")
-        qd_half2 = QuadTEAPOT("qd_half2")
+        length_quad = length * fill_frac / 2.0
+        length_drift = length * (1.0 - fill_frac) / 2.0
 
-        # Set lengths
-        half_nodes = (drift_half1, drift_half2, qf_half1, qf_half2, qd_half1, qd_half2)
-        full_nodes = (drift1, drift2, qf, qd)
-        for node in half_nodes:
-            node.setLength(length * fill_factor / 4.0)
-        for node in full_nodes:
-            node.setLength(length * fill_factor / 2.0)
+        if start == "quad":
+            drift_nodes = [
+                DriftTEAPOT("drift1"),
+                DriftTEAPOT("drift2"),
+            ]
+            quad_nodes = [
+                QuadTEAPOT("qf1"),
+                QuadTEAPOT("qd"),
+                QuadTEAPOT("qf2"),
+            ]
 
-        # Set quad focusing strengths
-        for node in (qf, qf_half1, qf_half2):
-            node.addParam("kq", +k1)
-        for node in (qd, qd_half1, qd_half2):
-            node.addParam("kq", -k2)
+            drift_nodes[0].setLength(length_drift)
+            drift_nodes[1].setLength(length_drift)
 
-        # Create lattice
-        if start == "drift":
-            lattice.addNode(drift_half1)
-            lattice.addNode(qf)
-            lattice.addNode(drift2)
-            lattice.addNode(qd)
-            lattice.addNode(drift_half2)
-        elif start == "quad":
-            lattice.addNode(qf_half1)
-            lattice.addNode(drift1)
-            lattice.addNode(qd)
-            lattice.addNode(drift2)
-            lattice.addNode(qf_half2)
+            quad_nodes[0].setLength(length_quad * 0.5)
+            quad_nodes[1].setLength(length_quad)
+            quad_nodes[2].setLength(length_quad * 0.5)
 
-        # Toggle fringe fields
-        for node in lattice.getNodes():
-            node.setUsageFringeFieldIN(fringe)
-            node.setUsageFringeFieldOUT(fringe)
+            quad_nodes[0].setParam("kq", +k1)
+            quad_nodes[1].setParam("kq", -k2)
+            quad_nodes[2].setParam("kq", +k1)
 
-        lattice.initialize()
-        return lattice
+            lattice = TEAPOT_Lattice()
+            lattice.addNode(quad_nodes[0])
+            lattice.addNode(drift_nodes[0])
+            lattice.addNode(quad_nodes[1])
+            lattice.addNode(drift_nodes[1])
+            lattice.addNode(quad_nodes[2])
+            lattice.initialize()
 
-    def function(k: np.ndarray) -> float:
-        lattice = _make_lattice(k[0], k[1])
+        elif start == "drift":
+
+            drift_nodes = [
+                DriftTEAPOT("drift1"),
+                DriftTEAPOT("drift2"),
+                DriftTEAPOT("drift3"),
+            ]
+            quad_nodes = [
+                QuadTEAPOT("qf"),
+                QuadTEAPOT("qd"),
+            ]
+
+            drift_nodes[0].setLength(length_drift * 0.5)
+            drift_nodes[1].setLength(length_drift)
+            drift_nodes[2].setLength(length_drift * 0.5)
+
+            quad_nodes[0].setLength(length_quad)
+            quad_nodes[1].setLength(length_quad)
+
+            quad_nodes[0].setParam("kq", +k1)
+            quad_nodes[1].setParam("kq", -k2)
+
+            lattice = TEAPOT_Lattice()
+            lattice.addNode(drift_nodes[0])
+            lattice.addNode(quad_nodes[0])
+            lattice.addNode(drift_nodes[1])
+            lattice.addNode(quad_nodes[1])
+            lattice.addNode(drift_nodes[2])
+            lattice.initialize()
+
+            # Toggle fringe fields
+            for node in lattice.getNodes():
+                node.setUsageFringeFieldIN(fringe)
+                node.setUsageFringeFieldOUT(fringe)
+
+            lattice.initialize()
+            return lattice
+
+    def loss_function(parameters: np.ndarray) -> float:
+        lattice = _make_lattice(*parameters)
         phase_adv_calc = get_phase_adv(lattice, mass=mass, kin_energy=kin_energy)
         phase_adv_targ = np.array([phase_adv_x, phase_adv_y])
         return np.abs(phase_adv_calc - phase_adv_targ)
 
-    k0 = np.array([0.5, 0.5])  # ~ 80 deg phase advance
-    result = scipy.optimize.least_squares(function, k0, verbose=verbose)
-    k1, k2 = result.x
-    lattice = _make_lattice(k1, k2)
+    parameters = np.array([0.5, 0.5])  # ~ 80 deg phase advance
+    result = scipy.optimize.least_squares(loss_function, parameters, verbose=verbose)
+    lattice = _make_lattice(*result.x)
 
     for node in lattice.getNodes():
         node = split_node(node, max_part_length)
