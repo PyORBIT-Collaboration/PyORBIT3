@@ -13,21 +13,33 @@ from orbit.teapot import QuadTEAPOT
 
 def make_lattice(
     length: float = 5.0,
-    fill_fraction: float = 0.5,
+    fill_frac: float = 0.5,
     kq: float = 0.65,
     start: str = "drift",
+    sol: float = 0.0,
 ) -> AccLattice:
+    """Create FODO lattice.
+    
+    Args:
+        length: Length of lattice [m].
+        fill_frac: Fraction of lattice occupied by quadrupoles.
+         
+    """
     if start == "drift":
-        return make_lattice_drift_start(length=length, fill_fraction=fill_fraction, kq=kq)
+        return make_lattice_drift_start(length=length, fill_frac=fill_frac, kq=kq)
     elif start == "quad":
-        return make_lattice_quad_start(length=length, fill_fraction=fill_fraction, kq=kq)
+        return make_lattice_quad_start(length=length, fill_frac=fill_frac, kq=kq)
     else:
         raise ValueError
     
     
 def make_lattice_quad_start(
-    length: float = 5.0, fill_fraction: float = 0.5, kq: float = 0.65
+    length: float = 5.0, fill_frac: float = 0.5, kq: float = 0.65
 ) -> AccLattice:
+    
+    length_quad = length * fill_frac / 2.0
+    length_drift = length * (1.0 - fill_frac) / 2.0
+
     drift_nodes = [
         DriftTEAPOT("drift1"),
         DriftTEAPOT("drift2"),
@@ -37,11 +49,14 @@ def make_lattice_quad_start(
         QuadTEAPOT("qd"),
         QuadTEAPOT("qf2"),
     ]
-    for node in [drift_nodes[0], quad_nodes[1], drift_nodes[1]]:
-        node.setLength(length * fill_fraction * 0.50)
-    for node in [quad_nodes[0], quad_nodes[2]]:
-        node.setLength(length * fill_fraction * 0.25)
-
+    
+    drift_nodes[0].setLength(length_drift)
+    drift_nodes[1].setLength(length_drift)
+    
+    quad_nodes[0].setLength(length_quad * 0.5)
+    quad_nodes[1].setLength(length_quad)
+    quad_nodes[2].setLength(length_quad * 0.5)
+    
     quad_nodes[0].setParam("kq", +kq)
     quad_nodes[1].setParam("kq", -kq)
     quad_nodes[2].setParam("kq", +kq)
@@ -65,8 +80,11 @@ def make_lattice_quad_start(
 
 
 def make_lattice_drift_start(
-    length: float = 5.0, fill_fraction: float = 0.5, kq: float = 0.65
+    length: float = 5.0, fill_frac: float = 0.5, kq: float = 0.65
 ) -> AccLattice:
+
+    length_quad = length * fill_frac / 2.0
+    length_drift = length * (1.0 - fill_frac) / 2.0
 
     drift_nodes = [
         DriftTEAPOT("drift1"),
@@ -77,11 +95,15 @@ def make_lattice_drift_start(
         QuadTEAPOT("qf"),
         QuadTEAPOT("qd"),
     ]
-    for node in [quad_nodes[0], drift_nodes[1], quad_nodes[1]]:
-        node.setLength(length * fill_fraction * 0.50)
-    for node in [drift_nodes[0], drift_nodes[2]]:
-        node.setLength(length * fill_fraction * 0.25)
 
+    
+    drift_nodes[0].setLength(length_drift * 0.5)
+    drift_nodes[1].setLength(length_drift)
+    drift_nodes[2].setLength(length_drift * 0.5)
+
+    quad_nodes[0].setLength(length_quad)
+    quad_nodes[1].setLength(length_quad)
+    
     quad_nodes[0].setParam("kq", +kq)
     quad_nodes[1].setParam("kq", -kq)
 
