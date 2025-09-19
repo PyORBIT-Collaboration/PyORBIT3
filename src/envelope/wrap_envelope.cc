@@ -1,37 +1,39 @@
+#include <iostream>
+
 #include "orbit_mpi.hh"
+#include "pyORBIT_Object.hh"
 
-#include "wrap_danilov_20_envelope_solver.hh"
-#include "wrap_danilov_22_envelope_solver.hh"
+#include "wrap_bunch.hh"
+#include "wrap_envelope.hh"
+#include "wrap_env_solver_danilov_20.hh"
+#include "wrap_env_solver_danilov_22.hh"
 
-static PyMethodDef envelopeMethods[] = { {NULL,NULL} };
+namespace wrap_envelope {
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static struct PyModuleDef cModPyDem =
-{
-	PyModuleDef_HEAD_INIT,
-	"envelope", "Beam envelope solver classes",
-	-1,
-	envelopeMethods
+static PyMethodDef envelopeModuleMethods[] = {{NULL, NULL}};
+
+static struct PyModuleDef cModPyDem = {
+  PyModuleDef_HEAD_INIT, 
+  "envelope", "Beam envelope solvers", 
+  -1, 
+  envelopeModuleMethods
 };
 
-PyMODINIT_FUNC initenvelope(){
-	PyObject* module = PyModule_Create(&cModPyDem);
-	wrap_envelope::initDanilov20EnvelopeSolver(module);
-	wrap_envelope::initDanilov22EnvelopeSolver(module);
-	return module;
-}
-
-PyObject* getenvelopeType(const char* name){
-	PyObject* mod = PyImport_ImportModule("orbit.core.envelope");
-	PyObject* pyType = PyObject_GetAttrString(mod,name);
-	Py_DECREF(mod);
-	Py_DECREF(pyType);
-	return pyType;
+// The name of the function was changed to avoid collision with PyImport magic naming.
+PyMODINIT_FUNC initenvelope() {
+  // create new module
+  PyObject *module = PyModule_Create(&cModPyDem);
+  wrap_envelope::initEnvSolverDanilov20(module);
+  wrap_envelope::initEnvSolverDanilov22(module);
+  return module;
 }
 
 #ifdef __cplusplus
 }
 #endif
+
+} // namespace wrap_envelope

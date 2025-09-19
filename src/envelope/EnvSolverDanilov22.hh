@@ -1,5 +1,5 @@
-#ifndef DANILOV_22_ENVELOPE_SOLVER_H
-#define DANILOV_22_ENVELOPE_SOLVER_H
+#ifndef ENV_SOLVER_DANILOV_22_H
+#define ENV_SOLVER_DANILOV_22_H
 
 #include "Bunch.hh"
 #include "CppPyWrapper.hh"
@@ -21,15 +21,15 @@ using namespace std;
  dependent two dimensional and three dimensional space charge distributions with
  linear force", PPRAB 6, 74–85 (2003).
 */
-class Danilov22EnvelopeSolver : public OrbitUtils::CppPyWrapper {
+class EnvSolverDanilov22 : public OrbitUtils::CppPyWrapper {
 public:
-  Danilov22EnvelopeSolver(double perveanceQ);
+  EnvSolverDanilov22(double perveanceQ);
   void trackBunch(Bunch *bunch, double length);
   void setPerveance(double perveance);
   double getPerveance();
 
 private:
-  double Q;   // beam perveance
+  double Q;  // beam perveance
 };
 
 #endif

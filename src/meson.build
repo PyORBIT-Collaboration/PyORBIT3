@@ -247,12 +247,11 @@ sources = files([
 	'teapot/wrap_matrix_generator.cc',
 	'teapot/teapotbase.cc',
 	'teapot/MatrixGenerator.cc',
-	'envelope/Danilov20EnvelopeSolver.cc',
-	'envelope/Danilov22EnvelopeSolver.cc',
-	'envelope/wrap_danilov_20_envelope_solver.cc',
-	'envelope/wrap_danilov_20_envelope_solver.hh',
-	'envelope/wrap_danilov_22_envelope_solver.cc',
-	'envelope/wrap_danilov_22_envelope_solver.hh',
+	'envelope/EnvSolverDanilov20.cc',
+	'envelope/EnvSolverDanilov22.cc',
+	'envelope/wrap_envelope.cc',
+	'envelope/wrap_env_solver_danilov_20.cc',
+	'envelope/wrap_env_solver_danilov_22.cc',
 ])
 inc = include_directories([
   python.get_variable('INCLUDEPY', ''),

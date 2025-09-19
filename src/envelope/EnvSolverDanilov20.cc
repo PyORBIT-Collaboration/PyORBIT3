@@ -1,36 +1,36 @@
-#include "Danilov20EnvelopeSolver.hh"
+#include "EnvSolverDanilov20.hh"
 
-Danilov20EnvelopeSolver::Danilov20EnvelopeSolver(double perveance, double emittanceX, double emittanceY) : CppPyWrapper(NULL) {
+EnvSolverDanilov20::EnvSolverDanilov20(double perveance, double emittanceX, double emittanceY) : CppPyWrapper(NULL) {
   Q = perveance;
   epsX = emittanceX;
   epsY = emittanceY;
 }
 
-void Danilov20EnvelopeSolver::setPerveance(double perveance) {
+void EnvSolverDanilov20::setPerveance(double perveance) {
   Q = perveance;
 }
 
-void Danilov20EnvelopeSolver::setEmittanceX(double emittanceX) {
+void EnvSolverDanilov20::setEmittanceX(double emittanceX) {
   epsX = emittanceX;
 }
 
-void Danilov20EnvelopeSolver::setEmittanceY(double emittanceY) {
+void EnvSolverDanilov20::setEmittanceY(double emittanceY) {
   epsY = emittanceY;
 }
 
-double Danilov20EnvelopeSolver::getPerveance() {
+double EnvSolverDanilov20::getPerveance() {
   return Q;
 }
 
-double Danilov20EnvelopeSolver::getEmittanceX() {
+double EnvSolverDanilov20::getEmittanceX() {
   return epsX;
 }
 
-double Danilov20EnvelopeSolver::getEmittanceY() {
+double EnvSolverDanilov20::getEmittanceY() {
   return epsY;
 }
 
-void Danilov20EnvelopeSolver::trackBunch(Bunch *bunch, double length) {
+void EnvSolverDanilov20::trackBunch(Bunch *bunch, double length) {
     // Track envelope
     double cx = bunch->x(0);
     double cy = bunch->y(0);

@@ -1,5 +1,5 @@
-#ifndef WRAP_DANILOV_20_ENVELOPE_SOLVER_H
-#define WRAP_DANILOV_20_ENVELOPE_SOLVER_H
+#ifndef WRAP_ENV_SOLVER_DANILOV_20_H
+#define WRAP_ENV_SOLVER_DANILOV_20_H
 
 #include "Python.h"
 
@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 namespace wrap_envelope {
-void initDanilov20EnvelopeSolver(PyObject *module);
+void initEnvSolverDanilov20(PyObject *module);
 }
 
 #ifdef __cplusplus

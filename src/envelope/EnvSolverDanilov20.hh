@@ -1,5 +1,5 @@
-#ifndef DANILOV_20_ENVELOPE_SOLVER_H
-#define DANILOV_20_ENVELOPE_SOLVER_H
+#ifndef ENV_SOLVER_DANILOV_20_H
+#define ENV_SOLVER_DANILOV_20_H
 
 #include "Bunch.hh"
 #include "CppPyWrapper.hh"
@@ -14,9 +14,9 @@ using namespace std;
  envelope parameters {a, b}, which are used to apply space charge kicks to the
  other particles in the bunch.
  */
-class Danilov20EnvelopeSolver : public OrbitUtils::CppPyWrapper {
+class EnvSolverDanilov20 : public OrbitUtils::CppPyWrapper {
 public:
-  Danilov20EnvelopeSolver(double perveance, double emittanceX, double emittanceY);
+  EnvSolverDanilov20(double perveance, double emittanceX, double emittanceY);
   void trackBunch(Bunch *bunch, double length);
   void setPerveance(double perveance);
   void setEmittanceX(double emittanceX);
