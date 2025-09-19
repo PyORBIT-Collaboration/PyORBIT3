@@ -1,13 +1,12 @@
-#ifndef DANILOV_ENVELOPE_SOLVER_20_H
-#define DANILOV_ENVELOPE_SOLVER_20_H
+#ifndef DANILOV_20_ENVELOPE_SOLVER_H
+#define DANILOV_20_ENVELOPE_SOLVER_H
 
 #include "Bunch.hh"
 #include "CppPyWrapper.hh"
 
 using namespace std;
 
-/** Envelope solver for the {2, 0} Danilov distribution (KV distribution).
-
+/** Envelope solver for the {2, 0} Danilov distribution (upright KV distribution.) 
  The ellipse in the x-y plane can be parameterized as:
      x = cx * cos(psi),
      y = cy * sin(psi),
@@ -15,21 +14,21 @@ using namespace std;
  envelope parameters {a, b}, which are used to apply space charge kicks to the
  other particles in the bunch.
  */
-class DanilovEnvelopeSolver20 : public OrbitUtils::CppPyWrapper {
+class Danilov20EnvelopeSolver : public OrbitUtils::CppPyWrapper {
 public:
-  DanilovEnvelopeSolver20(double perveance, double eps_x, double eps_y);
+  Danilov20EnvelopeSolver(double perveance, double emittanceX, double emittanceY);
   void trackBunch(Bunch *bunch, double length);
   void setPerveance(double perveance);
-  void setEmittanceX(double eps_x);
-  void setEmittanceY(double eps_y);
+  void setEmittanceX(double emittanceX);
+  void setEmittanceY(double emittanceY);
   double getPerveance();
   double getEmittanceX();
   double getEmittanceY();
 
 private:
-  double _perveance;     // beam perveance
-  double _eps_x; // (4 * sqrt(<xx><x'x'> - <xx'><xx'>))
-  double _eps_y; // (4 * sqrt(<yy><y'y'> - <yy'><yy'>))
+  double Q;     // beam perveance
+  double epsX; // (4 * sqrt(<xx><x'x'> - <xx'><xx'>))
+  double epsY; // (4 * sqrt(<yy><y'y'> - <yy'><yy'>))
 };
 
 #endif

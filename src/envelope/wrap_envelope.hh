@@ -1,5 +1,5 @@
-#ifndef WRAP_ENVELOPE_MODULE_HH_
-#define WRAP_ENVELOPE_MODULE_HH_
+#ifndef WRAP_ENVELOPE_H
+#define WRAP_ENVELOPE_H
 
 #include "Python.h"
 
@@ -7,13 +7,11 @@
 extern "C" {
 #endif
 
-namespace wrap_envelope {
-  // Name changed to avoid collision with PyImport magic naming.
-  PyMODINIT_FUNC initenvelope();
-}
+	PyMODINIT_FUNC initenvelope(void);
+	PyObject* getEnvelopeType(const char* name);
 
 #ifdef __cplusplus
 }
-#endif
+#endif  // __cplusplus
 
-#endif /*WRAP_ENVELOPE_MODULE_HH_*/
+#endif // WRAP_ENVELOPE_H
