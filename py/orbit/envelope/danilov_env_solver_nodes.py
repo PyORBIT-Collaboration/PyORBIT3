@@ -4,8 +4,8 @@ from ..lattice import AccNode
 from ..lattice import AccNodeBunchTracker
 from ..utils import orbitFinalize
 
-from orbit.ext.danilov_envelope import DanilovEnvelopeSolver20
-from orbit.ext.danilov_envelope import DanilovEnvelopeSolver22
+from orbit.core.envelope import Danilov20EnvelopeSolver
+from orbit.core.envelope import Danilov22EnvelopeSolver
 
 
 class DanilovEnvelopeSolverNode(AccNodeBunchTracker):

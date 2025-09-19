@@ -24,7 +24,6 @@ subdir('space_charge')
 subdir('errors')
 subdir('matrix_lattice')
 subdir('teapot')
-subdir('danilov_envelope')
 
 py_sources = files([
     '__init__.py'
