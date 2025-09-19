@@ -12,6 +12,20 @@ from orbit.teapot import QuadTEAPOT
 
 
 def make_lattice(
+    length: float = 5.0,
+    fill_fraction: float = 0.5,
+    kq: float = 0.65,
+    start: str = "drift",
+) -> AccLattice:
+    if start == "drift":
+        return make_lattice_drift_start(length=length, fill_fraction=fill_fraction, kq=kq)
+    elif start == "quad":
+        return make_lattice_quad_start(length=length, fill_fraction=fill_fraction, kq=kq)
+    else:
+        raise ValueError
+    
+    
+def make_lattice_quad_start(
     length: float = 5.0, fill_fraction: float = 0.5, kq: float = 0.65
 ) -> AccLattice:
     drift_nodes = [
@@ -38,6 +52,45 @@ def make_lattice(
     lattice.addNode(quad_nodes[1])
     lattice.addNode(drift_nodes[1])
     lattice.addNode(quad_nodes[2])
+    lattice.initialize()
+
+    for node in lattice.getNodes():
+        try:
+            node.setUsageFringeFieldIN(False)
+            node.setUsageFringeFieldOUT(False)
+        except:
+            pass
+        
+    return lattice
+
+
+def make_lattice_drift_start(
+    length: float = 5.0, fill_fraction: float = 0.5, kq: float = 0.65
+) -> AccLattice:
+
+    drift_nodes = [
+        DriftTEAPOT("drift1"),
+        DriftTEAPOT("drift2"),
+        DriftTEAPOT("drift3"),
+    ]
+    quad_nodes = [
+        QuadTEAPOT("qf"),
+        QuadTEAPOT("qd"),
+    ]
+    for node in [quad_nodes[0], drift_nodes[1], quad_nodes[1]]:
+        node.setLength(length * fill_fraction * 0.50)
+    for node in [drift_nodes[0], drift_nodes[2]]:
+        node.setLength(length * fill_fraction * 0.25)
+
+    quad_nodes[0].setParam("kq", +kq)
+    quad_nodes[1].setParam("kq", -kq)
+
+    lattice = TEAPOT_Lattice()
+    lattice.addNode(drift_nodes[0])
+    lattice.addNode(quad_nodes[0])
+    lattice.addNode(drift_nodes[1])
+    lattice.addNode(quad_nodes[1])
+    lattice.addNode(drift_nodes[2])
     lattice.initialize()
 
     for node in lattice.getNodes():
