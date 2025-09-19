@@ -120,15 +120,7 @@ bunch.dumpBunch(filename)
 # ------------------------------------------------------------------------------------
 
 # Collect phase data from bunch
-phase_data = {}
-for i in range(bunch.getSize()):
-    data = tune_node.getData(bunch, i)
-    for key in data:
-        if key in phase_data:
-            phase_data[key].append(data[key])
-        else:
-            phase_data[key] = []
-
+phase_data = tune_node.getData(bunch)
 phase_data = pd.DataFrame(phase_data)
 print(phase_data)
 
@@ -156,8 +148,8 @@ print(particles.iloc[:, 6:])
 # Check average tune vs. transfer matrix
 tune_1_true = lattice_params["fractional tune x"]
 tune_2_true = lattice_params["fractional tune y"]
-tune_1_calc = np.mean(phase_data["tune_x"])
-tune_2_calc = np.mean(phase_data["tune_y"])
+tune_1_calc = np.mean(phase_data["tune_1"])
+tune_2_calc = np.mean(phase_data["tune_2"])
 tune_1_err = tune_1_calc - tune_1_true
 tune_2_err = tune_2_calc - tune_2_true
 
