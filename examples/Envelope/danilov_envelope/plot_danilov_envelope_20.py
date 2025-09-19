@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 
 from orbit.danilov_envelope import DanilovEnvelope20
 
+plt.style.use("style.mplstyle")
+
 
 envelope = DanilovEnvelope20(
     eps_x=10.00e-06,

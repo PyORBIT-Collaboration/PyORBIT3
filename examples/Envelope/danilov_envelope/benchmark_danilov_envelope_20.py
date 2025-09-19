@@ -28,6 +28,8 @@ from orbit.utils.consts import mass_proton
 from utils import make_fodo_lattice
 from utils import BunchMonitor
 
+plt.style.use("style.mplstyle")
+
 
 # Parse arguments
 # --------------------------------------------------------------------------------------
@@ -123,31 +125,36 @@ histories["bunch"] = copy.deepcopy(history)
 # Plot comparison
 # --------------------------------------------------------------------------------------
 
-figwidth = 4.0 * args.periods
-figwidth = min(figwidth, 10.0)
+figwidth = 3.0 * args.periods
+figwidth = min(figwidth, 7.0)
 
-fig, ax = plt.subplots(figsize=(figwidth, 2.5), constrained_layout=True)
-for i, key in enumerate(histories):
-    history = histories[key]
+fig, axs = plt.subplots(nrows=2, figsize=(figwidth, 4.0), sharex=True, sharey=True)
+for i, ax in enumerate(axs):
+    param = ["xrms", "yrms"][i]
+    for j, key in enumerate(histories):
+        history = histories[key]
+        if key == "envelope":
+            ax.plot(
+                history["s"],
+                np.multiply(history[param], 1000.0),
+                color="black",
+                lw=1.5,
+            )
+        else:
+            stride = 10
+            ax.plot(
+                history["s"][::stride],
+                np.multiply(history[param][::stride], 1000.0),
+                marker=".",
+                lw=0,
+                color="red",
+            )
 
-    plot_kws = {}
-    if key == "envelope":
-        plot_kws["ls"] = "-"
-        plot_kws["lw"] = 2.5
-        plot_kws["marker"] = None
-    if key == "bunch":
-        plot_kws["ls"] = "-"
-        plot_kws["lw"] = 0.0
-        plot_kws["marker"] = "."
-        plot_kws["ms"] = 3.0
-        plot_kws["color"] = "black"
-
-    ax.plot(history["s"], history["xrms"] * 1000.0, **plot_kws)
-    ax.plot(history["s"], history["yrms"] * 1000.0, **plot_kws)
-
-ax.set_ylim(0.0, ax.get_ylim()[1])
-ax.set_xlabel("Distance [m]")
-ax.set_ylabel("Size [mm]")
+for ax in axs:
+    ax.set_ylim(0.0, ax.get_ylim()[1])
+axs[1].set_xlabel("Distance [m]")
+axs[0].set_ylabel("RMS x [mm]")
+axs[1].set_ylabel("RMS y [mm]")
 
 filename = "fig_benchmark_rms.png"
 filename = os.path.join(output_dir, filename)

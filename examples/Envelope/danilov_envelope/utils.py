@@ -61,7 +61,7 @@ def make_fodo_lattice(
         fill_frac : Fraction of the lattice occupied by quadrupoles.
         start : str
             "drift":
-                O-F-F-O-O-D-D-O. 
+                O-F-F-O-O-D-D-O.
             "quad":
                 F-O-O-D-D-O-O-F
         fringe: Toggles fringe fields before/after quads.

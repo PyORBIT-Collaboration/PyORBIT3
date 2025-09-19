@@ -16,6 +16,8 @@ from orbit.utils.consts import mass_proton
 
 from utils import make_fodo_lattice
 
+plt.style.use("style.mplstyle")
+
 
 # Parse arguments
 # --------------------------------------------------------------------------------------

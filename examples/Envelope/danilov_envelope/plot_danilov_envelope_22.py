@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 
 from orbit.danilov_envelope import DanilovEnvelope22
 
+plt.style.use("style.mplstyle")
+
 
 envelope = DanilovEnvelope22(
     intrinsic_emittance=20.00e-06,
