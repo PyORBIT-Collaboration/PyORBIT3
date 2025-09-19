@@ -14,20 +14,15 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from orbit.core import orbit_mpi
 from orbit.core.bunch import Bunch
-from orbit.core.bunch import BunchTuneAnalysis
 from orbit.core.bunch import BunchTwissAnalysis
 from orbit.bunch_generators import TwissContainer
 from orbit.bunch_generators import GaussDist2D
-from orbit.bunch_generators import WaterBagDist2D
 from orbit.diagnostics import TeapotTuneAnalysisNode
 from orbit.lattice import AccLattice
 from orbit.lattice import AccNode
 from orbit.teapot import TEAPOT_Lattice
 from orbit.teapot import TEAPOT_MATRIX_Lattice
-from orbit.teapot import DriftTEAPOT
-from orbit.teapot import QuadTEAPOT
 from orbit.utils.consts import mass_proton
 
 from utils import make_lattice
