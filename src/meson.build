@@ -246,7 +246,10 @@ sources = files([
 	'teapot/wrap_teapotbase.cc',
 	'teapot/wrap_matrix_generator.cc',
 	'teapot/teapotbase.cc',
-	'teapot/MatrixGenerator.cc'
+	'teapot/MatrixGenerator.cc',
+	'envelope/EnvSolverKV.cc',
+	'envelope/wrap_env_solver_kv.cc',
+	'envelope/wrap_envelope.cc',
 ])
 inc = include_directories([
   python.get_variable('INCLUDEPY', ''),
@@ -277,7 +280,7 @@ inc = include_directories([
 	'orbit',
 	'utils/integration',
 	'orbit/Apertures'
-
+	'envelope',
 ])
 
 
@@ -421,6 +424,15 @@ python.extension_module('collimator',
 
 python.extension_module('error_base',
    sources: [base + '/error_base_init.cc'],
+    include_directories: inc,
+    cpp_args: ['-fPIC', '-std=c++11'],
+    dependencies: [core_dep],
+    install: true,
+   subdir: 'orbit/core',
+)
+
+python.extension_module('envelope',
+   sources: [base + '/envelope_init.cc'],
     include_directories: inc,
     cpp_args: ['-fPIC', '-std=c++11'],
     dependencies: [core_dep],
