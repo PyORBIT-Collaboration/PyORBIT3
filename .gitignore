@@ -9,3 +9,4 @@ PyORBIT.egg-info
 *.so
 .*.swp
 .eggs
+.ipynb_checkpoints
