@@ -5,8 +5,8 @@ from ..lattice import AccLattice
 from ..lattice import AccNode
 from ..lattice import AccNodeBunchTracker
 
-from .danilov_envelope_solver_nodes import DanilovEnvelopeSolverNode20
-from .danilov_envelope_solver_nodes import DanilovEnvelopeSolverNode22
+from .danilov_env_solver_nodes import Danilov20EnvSolverNode
+from .danilov_env_solver_nodes import Danilov22EnvSolverNode
 
 
 class Parent:
@@ -30,9 +30,9 @@ def add_danilov_envolope_solver_nodes(
     lattice: AccLattice,
     path_length_max: float,
     path_length_min: float,
-    solver_node_constructor: DanilovEnvelopeSolverNode20 | DanilovEnvelopeSolverNode22,
+    solver_node_constructor: Danilov20EnvSolverNode | Danilov22EnvSolverNode,
     solver_node_constructor_kwargs: dict,
-) -> list[DanilovEnvelopeSolverNode20 | DanilovEnvelopeSolverNode22]:
+) -> list[Danilov20EnvSolverNode | Danilov22EnvSolverNode]:
 
     nodes = lattice.getNodes()
     if not nodes:
@@ -102,7 +102,7 @@ def add_danilov_envelope_solver_nodes_20(
         lattice=lattice,
         path_length_max=path_length_max,
         path_length_min=path_length_min,
-        solver_node_constructor=DanilovEnvelopeSolverNode20,
+        solver_node_constructor=Danilov20EnvSolverNode,
         solver_node_constructor_kwargs=kwargs,
     )
     for solver_node in solver_nodes:

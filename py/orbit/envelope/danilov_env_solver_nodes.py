@@ -1,32 +1,35 @@
+from typing import Any
+
 from ..lattice import AccActionsContainer
 from ..lattice import AccLattice
 from ..lattice import AccNode
 from ..lattice import AccNodeBunchTracker
 from ..utils import orbitFinalize
 
-from orbit.core.envelope import Danilov20EnvelopeSolver
-from orbit.core.envelope import Danilov22EnvelopeSolver
+from orbit.core.envelope import EnvSolverDanilov20
+from orbit.core.envelope import EnvSolverDanilov22
 
 
-class DanilovEnvelopeSolverNode(AccNodeBunchTracker):
+class EnvSolverNode(AccNodeBunchTracker):
     def __init__(
         self,
-        solver: DanilovEnvelopeSolver20 | DanilovEnvelopeSolver22,
-        name: str = None,
+        solver: Any,
+        name: str = "",
         kick_length: float = 0.0,
-        perveance: float = 0.0,
     ) -> None:
         super().__init__(name=name)
-        self.setType("DanilovEnvSolver")
+        self.setType("EnvSolver")
         self.setLength(0.0)
 
-        self.solver = solver
+        self.solver = None
         self.kick_length = kick_length
-        self.perveance = perveance
         self.active = True
 
-    def set_active(self, setting: bool) -> None:
+    def setActive(self, setting: bool) -> None:
         self.active = setting
+
+    def setKickLength(self, kick_length: float) -> None:
+        self.kick_length = kick_length
 
     def isRFGap(self) -> bool:
         # In case this node is used in linac tracking
@@ -42,28 +45,24 @@ class DanilovEnvelopeSolverNode(AccNodeBunchTracker):
         bunch = params_dict["bunch"]
         self.solver.trackBunch(bunch, self.kick_length)
 
-    def set_perveance(self, perveance: float) -> None:
+
+class Danilov22EnvSolverNode(EnvSolverNode):
+    def __init__(self, perveance: float, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.solver = EnvSolverDanilov22(perveance)
+
+    def setPerveance(self, perveance: float) -> None:
         self.solver.setPerveance(perveance)
 
-    def set_kick_length(self, kick_length: float) -> None:
-        self.kick_length = kick_length
 
+class Danilov20EnvSolverNode(EnvSolverNode):
+    def __init__(self, eps_x: float, eps_y: float, perveance: float, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.solver = EnvSolverDanilov20(perveance, eps_x, eps_y)
 
-class DanilovEnvelopeSolverNode20(DanilovEnvelopeSolverNode):
-    def __init__(self, eps_x: float, eps_y: float, **kwargs) -> None:
-        super().__init__(solver=None, **kwargs)
-        self.eps_x = eps_x
-        self.eps_y = eps_y
-        self.solver = DanilovEnvelopeSolver20(self.perveance, self.eps_x, self.eps_y)
+    def setPerveance(self, perveance: float) -> None:
+        self.solver.setPerveance(perveance)
 
-    def set_emittances(self, eps_x: float, eps_y: float) -> None:
-        self.eps_x = eps_x
-        self.eps_y = eps_y
+    def setEmittances(self, eps_x: float, eps_y: float) -> None:
         self.solver.setEmittanceX(eps_x)
         self.solver.setEmittanceY(eps_y)
-
-
-class DanilovEnvelopeSolverNode22(DanilovEnvelopeSolverNode):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(solver=None, **kwargs)
-        self.solver = DanilovEnvelopeSolver22(self.perveance)
