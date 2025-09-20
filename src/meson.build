@@ -279,7 +279,7 @@ inc = include_directories([
 	'orbit/BunchDiagnostics',
 	'orbit',
 	'utils/integration',
-	'orbit/Apertures'
+	'orbit/Apertures',
 	'envelope',
 ])
 
