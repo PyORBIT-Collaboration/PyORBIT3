@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 namespace wrap_envelope {
-void initKVEnvelopeSolver(PyObject *module);
+void initKVEnvelopeTracker(PyObject *module);
 }
 
 #ifdef __cplusplus
