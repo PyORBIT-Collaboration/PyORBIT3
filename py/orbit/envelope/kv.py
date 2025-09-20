@@ -180,6 +180,8 @@ class KVEnvelope:
         A = np.sqrt(np.diag([eps_x, eps_x, eps_y, eps_y]))
         
         particles = np.random.normal(size=(size, 4))
+        particles /= np.linalg.norm(particles, axis=1)[:, None]
+        particles /= np.std(particles, axis=0)
         particles = np.matmul(particles, A.T)
         particles = np.matmul(particles, V.T)
 
