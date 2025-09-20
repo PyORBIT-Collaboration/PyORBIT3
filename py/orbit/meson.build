@@ -25,7 +25,6 @@ subdir('errors')
 subdir('matrix_lattice')
 subdir('teapot')
 
-
 py_sources = files([
     '__init__.py'
 ])
