@@ -248,7 +248,9 @@ sources = files([
 	'teapot/teapotbase.cc',
 	'teapot/MatrixGenerator.cc',
 	'envelope/EnvSolverKV.cc',
+	'envelope/EnvSolverDanilov.cc',
 	'envelope/wrap_env_solver_kv.cc',
+	'envelope/wrap_env_solver_danilov.cc',
 	'envelope/wrap_envelope.cc',
 ])
 inc = include_directories([

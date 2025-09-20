@@ -6,6 +6,8 @@
 #include "wrap_bunch.hh"
 #include "wrap_envelope.hh"
 #include "wrap_env_solver_kv.hh"
+#include "wrap_env_solver_danilov.hh"
+
 
 namespace wrap_envelope {
 
@@ -25,6 +27,7 @@ static struct PyModuleDef cModPyDem = {
 PyMODINIT_FUNC initenvelope() {
   PyObject *module = PyModule_Create(&cModPyDem);
   wrap_envelope::initEnvSolverKV(module);
+  wrap_envelope::initEnvSolverDanilov(module);
   return module;
 }
 
