@@ -16,19 +16,19 @@ This class does not yet handle boudary conditions or dispersion.
  */
 class EnvSolverKV : public OrbitUtils::CppPyWrapper {
 public:
-  EnvSolverKV(double perveance, double emittanceX, double emittanceY);
+  EnvSolverKV(double perveance, double emittance_x, double emittance_y);
   void trackBunch(Bunch *bunch, double length);
   void setPerveance(double perveance);
-  void setEmittanceX(double emittanceX);
-  void setEmittanceY(double emittanceY);
+  void setEmittanceX(double emittance);
+  void setEmittanceY(double emittance);
   double getPerveance();
   double getEmittanceX();
   double getEmittanceY();
 
 private:
   double Q;     // beam perveance
-  double epsX; // (4 * sqrt(<xx><x'x'> - <xx'><xx'>))
-  double epsY; // (4 * sqrt(<yy><y'y'> - <yy'><yy'>))
+  double eps_x; // (4 * sqrt(<xx><x'x'> - <xx'><xx'>))
+  double eps_y; // (4 * sqrt(<yy><y'y'> - <yy'><yy'>))
 };
 
 #endif
