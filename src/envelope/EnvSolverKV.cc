@@ -74,6 +74,7 @@ void EnvSolverKV::trackBunch(Bunch *bunch, double length) {
         } 
         else {
             // https://arxiv.org/abs/physics/0108040
+            // UNTESTED!
             B = x2 + y2 - cx2 - cy2;
             C = x2 * cy2 + y2 * cx2 - cx2 * cy2;
             t1 = pow(0.25 * B * B + C, 0.5) + 0.5 * B;
