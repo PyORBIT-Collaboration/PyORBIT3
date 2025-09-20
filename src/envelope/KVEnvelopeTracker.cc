@@ -1,36 +1,36 @@
-#include "EnvSolverKV.hh"
+#include "KVEnvelopeTracker.hh"
 
-EnvSolverKV::EnvSolverKV(double perveance, double emittance_x, double emittance_y) : CppPyWrapper(NULL) {
+KVEnvelopeTracker::KVEnvelopeTracker(double perveance, double emittance_x, double emittance_y) : CppPyWrapper(NULL) {
   Q = perveance;
   eps_x = emittance_x;
   eps_y = emittance_y;
 }
 
-void EnvSolverKV::setPerveance(double perveance) {
+void KVEnvelopeTracker::setPerveance(double perveance) {
   Q = perveance;
 }
 
-void EnvSolverKV::setEmittanceX(double emittance) {
+void KVEnvelopeTracker::setEmittanceX(double emittance) {
   eps_x = emittance;
 }
 
-void EnvSolverKV::setEmittanceY(double emittance) {
+void KVEnvelopeTracker::setEmittanceY(double emittance) {
   eps_y = emittance;
 }
 
-double EnvSolverKV::getPerveance() {
+double KVEnvelopeTracker::getPerveance() {
   return Q;
 }
 
-double EnvSolverKV::getEmittanceX() {
+double KVEnvelopeTracker::getEmittanceX() {
   return eps_x;
 }
 
-double EnvSolverKV::getEmittanceY() {
+double KVEnvelopeTracker::getEmittanceY() {
   return eps_y;
 }
 
-void EnvSolverKV::trackBunch(Bunch *bunch, double length) {
+void KVEnvelopeTracker::trackBunch(Bunch *bunch, double length) {
     // Track envelope
     double cx = bunch->x(0);
     double cy = bunch->y(0);

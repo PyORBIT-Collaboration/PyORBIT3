@@ -1,5 +1,5 @@
-#ifndef ENV_SOLVER_KV_H
-#define ENV_SOLVER_KV_H
+#ifndef KV_ENVELOPE_TRACKER_H
+#define KV_ENVELOPE_TRACKER_H
 
 #include "Bunch.hh"
 #include "CppPyWrapper.hh"
@@ -14,9 +14,9 @@ kicks to the other particles in the bunch.
 
 This class does not yet handle boudary conditions or dispersion.
  */
-class EnvSolverKV : public OrbitUtils::CppPyWrapper {
+class KVEnvelopeTracker : public OrbitUtils::CppPyWrapper {
 public:
-  EnvSolverKV(double perveance, double emittance_x, double emittance_y);
+  KVEnvelopeTracker(double perveance, double emittance_x, double emittance_y);
   void trackBunch(Bunch *bunch, double length);
   void setPerveance(double perveance);
   void setEmittanceX(double emittance);

@@ -1,18 +1,18 @@
-#include "EnvSolverDanilov.hh"
+#include "DanilovEnvelopeTracker.hh"
 
-EnvSolverDanilov::EnvSolverDanilov(double perveance) : CppPyWrapper(NULL) {
+DanilovEnvelopeTracker::DanilovEnvelopeTracker(double perveance) : CppPyWrapper(NULL) {
   Q = perveance;
 }
 
-void EnvSolverDanilov::setPerveance(double perveance) {
+void DanilovEnvelopeTracker::setPerveance(double perveance) {
   Q = perveance; 
 }
 
-double EnvSolverDanilov::getPerveance() {
+double DanilovEnvelopeTracker::getPerveance() {
   return Q;
 }
 
-void EnvSolverDanilov::trackBunch(Bunch *bunch, double length) {
+void DanilovEnvelopeTracker::trackBunch(Bunch *bunch, double length) {
   // Compute ellipse size and orientation.
   double a = bunch->x(0);
   double b = bunch->x(1);

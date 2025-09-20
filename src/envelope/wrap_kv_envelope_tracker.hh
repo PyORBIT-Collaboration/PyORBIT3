@@ -1,5 +1,5 @@
-#ifndef WRAP_ENV_SOLVER_DANILOV_H
-#define WRAP_ENV_SOLVER_DANILOV_H
+#ifndef WRAP_KV_ENVELOPE_TRACKER_H
+#define WRAP_KV_ENVELOPE_TRACKER_H
 
 #include "Python.h"
 
@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 namespace wrap_envelope {
-void initEnvSolverDanilov(PyObject *module);
+void initEnvSolverKV(PyObject *module);
 }
 
 #ifdef __cplusplus
