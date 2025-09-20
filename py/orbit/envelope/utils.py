@@ -26,6 +26,12 @@ def build_phase_advance_matrix(*phase_advances: list[float]) -> np.ndarray:
     return M
 
 
+def build_norm_matrix_from_twiss_2d(alpha: float, beta: float) -> np.ndarray:
+    norm_matrix_inv = np.array([[beta, 0.0], [-alpha, 1.0]]) * np.sqrt(1.0 / beta)
+    norm_matrix = np.linalg.inv(norm_matrix_inv)
+    return norm_matrix
+
+
 def get_transfer_matrix(lattice: AccLattice, bunch: Bunch) -> np.ndarray:
     matrix_lattice = TEAPOT_MATRIX_Lattice(lattice, bunch)
     M = np.zeros((4, 4))
@@ -77,7 +83,7 @@ def get_perveance(mass: float, kin_energy: float, line_density: float) -> float:
     return (2.0 * classical_proton_radius * line_density) / (beta**2 * gamma**3)
 
 
-def calc_cov_twiss_2d(cov_matrix: np.ndarray) -> tuple[float, float, float]:
+def calc_cov_twiss(cov_matrix: np.ndarray) -> tuple[float, float, float]:
     emittance = np.sqrt(np.linalg.det(cov_matrix))
     alpha = -cov_matrix[0, 1] / emittance
     beta = cov_matrix[0, 0] / emittance
