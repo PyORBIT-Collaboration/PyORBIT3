@@ -228,7 +228,7 @@ class BunchMonitor:
         ]:
             self.history[key] = []
 
-    def package_history(self) -> None:
+    def get_history(self) -> None:
         history = copy.deepcopy(self.history)
         for key in history:
             history[key] = np.array(history[key])

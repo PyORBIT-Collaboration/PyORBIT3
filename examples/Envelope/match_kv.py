@@ -82,8 +82,8 @@ tracker.match(envelope, periods=args.periods, verbose=2)
 # Plot results bunch
 # --------------------------------------------------------------------------------------
 
-history_unmatched = tracker.track(envelope_unmatched, periods=args.periods, history=True)
-history = tracker.track(envelope, periods=args.periods, history=True)
+_, history = tracker.track(envelope, periods=args.periods, history=True)
+_, history_unmatched = tracker.track(envelope_unmatched, periods=args.periods, history=True)
 
 figwidth = 4.0 * args.periods
 figwidth = min(figwidth, 10.0)

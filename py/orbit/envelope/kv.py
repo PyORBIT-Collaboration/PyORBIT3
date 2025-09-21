@@ -239,7 +239,7 @@ class KVEnvelopeMonitor:
         ]:
             self.history[key] = []
 
-    def package(self) -> None:
+    def get_history(self) -> None:
         history = copy.deepcopy(self.history)
         for key in history:
             history[key] = np.array(history[key])
@@ -328,15 +328,43 @@ class KVEnvelopeTracker:
             action_container.addAction(monitor, AccActionsContainer.ENTRANCE)
             action_container.addAction(monitor, AccActionsContainer.EXIT)
 
-        bunch = envelope.to_bunch()
+        bunch = envelope.to_bunch()        
         for period in range(periods):
             self.lattice.trackBunch(bunch, actionContainer=action_container)
 
         envelope.from_bunch(bunch)
 
         if history:
-            return monitor.package()
+            history = monitor.get_history()
+            return (envelope, history)
 
+        return envelope
+
+    def track_particles(self, envelope: KVEnvelope, particles: np.ndarray = None) -> np.ndarray:
+        """Track test particles through the lattice."""
+        self.update_nodes(envelope)
+
+        bunch = envelope.to_bunch()
+        for i in range(particles.shape[0]):
+            bunch.addParticle(*particles[i])
+        
+        self.lattice.trackBunch(bunch, actionContainer=action_container)
+
+        envelope.from_bunch(bunch)
+
+        particles_out = []
+        for i in range(1, bunch.getSize()):
+            x = bunch.x(i)
+            y = bunch.y(i)
+            z = bunch.z(i)
+            xp = bunch.xp(i)
+            yp = bunch.yp(i)
+            dE = bunch.dE(i)
+            particles_out.append([x, xp, y, yp, z, dE])
+        particles_out = np.array(particles_out)
+
+        return (envelope, particles_out)
+        
     def transfer_matrix(self, envelope: KVEnvelope) -> np.ndarray:
         bunch = envelope.to_bunch(size=0, env=True)
 
