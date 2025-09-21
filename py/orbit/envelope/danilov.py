@@ -442,7 +442,6 @@ class DanilovEnvelope:
 
         A = np.sqrt(np.diag([self.eps_1, self.eps_1, self.eps_2, self.eps_2]))
         V = self.unnorm_matrix(method="4d")
-        print(V)
 
         X = np.matmul(X, A.T)
         X = np.matmul(X, V.T)
@@ -477,7 +476,6 @@ class DanilovEnvelope:
             particles = np.zeros((size, 6))
             particles[:, :4] = self.sample(size)
             particles[:, 4] = self.length * np.random.uniform(-0.5, 0.5, size=size)
-            print(np.std(particles, axis=0))
             for i in range(size):
                 bunch.addParticle(*particles[i, :])
 
@@ -605,7 +603,7 @@ class DanilovEnvelopeTracker:
         envelope: DanilovEnvelope,
         periods: int = 1,
         history: bool = False,
-    ) -> None | dict[str, np.ndarray]:
+    ) -> DanilovEnvelope:
 
         self.update_nodes(envelope)
 
@@ -627,7 +625,7 @@ class DanilovEnvelopeTracker:
         else:
             return envelope
 
-    def track_particles(self, envelope: KVEnvelope, particles: np.ndarray = None) -> tuple[KVEnvelope, np.ndarray]:
+    def track_particles(self, envelope: DanilovEnvelope, particles: np.ndarray = None) -> tuple[DanilovEnvelope, np.ndarray]:
         self.update_nodes(envelope)
 
         bunch = envelope.to_bunch()

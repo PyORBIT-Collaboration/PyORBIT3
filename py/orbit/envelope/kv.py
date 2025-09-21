@@ -319,7 +319,7 @@ class KVEnvelopeTracker:
         envelope: KVEnvelope,
         periods: int = 1,
         history: bool = False,
-    ) -> None | dict[str, np.ndarray]:
+    ) -> KVEnvelope:
         self.update_nodes(envelope)
 
         monitor = KVEnvelopeMonitor()

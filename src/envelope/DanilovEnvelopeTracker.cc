@@ -37,20 +37,20 @@ void DanilovEnvelopeTracker::trackBunch(Bunch *bunch, double length) {
 
   double cxn = sqrt(abs(cov_xx * cos2 + cov_yy * sin2 - 2.0 * cov_xy * sin_cos));
   double cyn = sqrt(abs(cov_xx * sin2 + cov_yy * cos2 + 2.0 * cov_xy * sin_cos));
-  double factor = length * (2.0 * Q / (cxn + cyn));
+  double sc_term = (2.0 * Q / (cxn + cyn));
 
   // Track envelope
   if (cxn > 0.0) {
-    bunch->xp(0) += factor * (a * cos2 - e * sin_cos) / cxn;
-    bunch->xp(1) += factor * (b * cos2 - f * sin_cos) / cxn;
-    bunch->yp(0) += factor * (e * sin2 - a * sin_cos) / cxn;
-    bunch->yp(1) += factor * (f * sin2 - b * sin_cos) / cxn;
+    bunch->xp(0) += length * sc_term * (a * cos2 - e * sin_cos) / cxn;
+    bunch->xp(1) += length * sc_term * (b * cos2 - f * sin_cos) / cxn;
+    bunch->yp(0) += length * sc_term * (e * sin2 - a * sin_cos) / cxn;
+    bunch->yp(1) += length * sc_term * (f * sin2 - b * sin_cos) / cxn;
   }
   if (cyn > 0.0) {
-    bunch->xp(0) += factor * (a * sin2 + e * sin_cos) / cyn;
-    bunch->xp(1) += factor * (b * sin2 + f * sin_cos) / cyn;
-    bunch->yp(0) += factor * (e * cos2 + a * sin_cos) / cyn;
-    bunch->yp(1) += factor * (f * cos2 + b * sin_cos) / cyn;
+    bunch->xp(0) += length * sc_term * (a * sin2 + e * sin_cos) / cyn;
+    bunch->xp(1) += length * sc_term * (b * sin2 + f * sin_cos) / cyn;
+    bunch->yp(0) += length * sc_term * (e * cos2 + a * sin_cos) / cyn;
+    bunch->yp(1) += length * sc_term * (f * cos2 + b * sin_cos) / cyn;
   }
 
   // Track test particles
@@ -95,10 +95,10 @@ void DanilovEnvelopeTracker::trackBunch(Bunch *bunch, double length) {
 
     if (in_ellipse) {
       if (cxn > 0.0) {
-        delta_xpn = length * factor * xn / cxn;
+        delta_xpn = length * sc_term * xn / cxn;
       }
       if (cyn > 0.0) {
-        delta_ypn = length * factor * yn / cyn;
+        delta_ypn = length * sc_term * yn / cyn;
       }
     } 
     else {
@@ -108,11 +108,11 @@ void DanilovEnvelopeTracker::trackBunch(Bunch *bunch, double length) {
       t1 = pow(0.25 * B * B + C, 0.5) + 0.5 * B;
       Dx = pow(cxn2 + t1, 0.5);
       Dy = pow(cyn2 + t1, 0.5);
-      delta_xpn = 2.0 * Q * xn / (Dx * (Dx + Dy));
-      delta_ypn = 2.0 * Q * yn / (Dy * (Dx + Dy));
+      delta_xpn = length * 2.0 * Q * xn / (Dx * (Dx + Dy));
+      delta_ypn = length * 2.0 * Q * yn / (Dy * (Dx + Dy));
     }
-    delta_xp = length * (+delta_xpn * _cos + delta_ypn * _sin);
-    delta_yp = length * (-delta_xpn * _sin + delta_ypn * _cos);
+    delta_xp = (+delta_xpn * _cos + delta_ypn * _sin);
+    delta_yp = (-delta_xpn * _sin + delta_ypn * _cos);
     bunch->xp(i) += delta_xp;
     bunch->yp(i) += delta_yp;
   }
