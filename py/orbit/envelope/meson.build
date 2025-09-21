@@ -4,6 +4,7 @@ py_sources = files([
     'lattice_modifications.py',
     'kv.py',
     'danilov.py',
+    'transfer_matrix.py',
     'utils.py',
 ])
 
