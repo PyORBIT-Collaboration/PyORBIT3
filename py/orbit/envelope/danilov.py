@@ -627,6 +627,30 @@ class DanilovEnvelopeTracker:
         else:
             return envelope
 
+    def track_particles(self, envelope: KVEnvelope, particles: np.ndarray = None) -> tuple[KVEnvelope, np.ndarray]:
+        self.update_nodes(envelope)
+
+        bunch = envelope.to_bunch()
+        for i in range(particles.shape[0]):
+            bunch.addParticle(*particles[i])
+        
+        self.lattice.trackBunch(bunch)
+
+        envelope.from_bunch(bunch)
+
+        particles_out = []
+        for i in range(2, bunch.getSize()):
+            x = bunch.x(i)
+            y = bunch.y(i)
+            z = bunch.z(i)
+            xp = bunch.xp(i)
+            yp = bunch.yp(i)
+            dE = bunch.dE(i)
+            particles_out.append([x, xp, y, yp, z, dE])
+        particles_out = np.array(particles_out)
+
+        return (envelope, particles_out)
+
     def transfer_matrix(self, envelope: DanilovEnvelope) -> np.ndarray:
         bunch = envelope.to_bunch(size=0, env=True)
 
