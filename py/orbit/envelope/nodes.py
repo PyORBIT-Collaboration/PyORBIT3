@@ -52,7 +52,7 @@ class KVEnvelopeTrackerNode(EnvelopeTrackerNode):
     def setEmittances(self, eps_x: float, eps_y: float) -> None:
         self.tracker.setEmittanceX(4.0 * eps_x)
         self.tracker.setEmittanceY(4.0 * eps_y)
-        
+
 
 class DanilovEnvelopeTrackerNode(EnvelopeTrackerNode):
     def __init__(self, perveance: float, **kwargs) -> None:
@@ -61,5 +61,3 @@ class DanilovEnvelopeTrackerNode(EnvelopeTrackerNode):
 
     def setPerveance(self, perveance: float) -> None:
         self.tracker.setPerveance(perveance)
-
-        

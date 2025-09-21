@@ -4,11 +4,11 @@ import numpy as np
 def is_tmat_coupled(M: np.ndarray) -> bool:
     if M.shape[0] < 4:
         return False
-    
+
     mask = np.zeros(M.shape)
     for i in range(0, M.shape[0], 2):
         mask[i : i + 2, i : i + 2] = 1.0
-    
+
     return np.any(np.ma.masked_array(M, mask=mask))
 
 
@@ -58,7 +58,7 @@ def build_unnorm_matrix_from_tmat(M: np.ndarray) -> np.ndarray:
     v2 = normalize_eigvec(v2)
     return build_unnorm_matrix_from_eigvecs(v1, v2)
 
-    
+
 def build_unnorm_matrix_from_params_cs_2d(alpha: float, beta: float) -> np.ndarray:
     return np.array([[beta, 0.0], [-alpha, 1.0]]) / np.sqrt(beta)
 
@@ -105,7 +105,7 @@ def build_unnorm_matrix_from_params_lb_one_mode(
         V[3, 2] = -alpha_ly / np.sqrt(beta_ly)
         V[3, 3] = (1.0 - u) / np.sqrt(beta_ly)
     return V
-    
+
 
 def build_norm_matrix_from_eigvecs(*args, **kwargs) -> np.ndarray:
     return np.linalg.inv(build_unnorm_matrix_from_eigvecs(*args, **kwargs))
@@ -122,7 +122,7 @@ def build_norm_matrix_from_params_cs_2d(*args, **kwargs) -> np.ndarray:
 def build_norm_matrix_from_params_cs(*args, **kwargs) -> np.ndarray:
     return np.linalg.inv(build_unnorm_matrix_from_params_cs(*args, **kwargs))
 
-    
+
 def normalize_eigvec(v: np.ndarray) -> np.ndarray:
     U = build_unit_symplectic_matrix(len(v))
 

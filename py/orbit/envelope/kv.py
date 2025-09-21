@@ -5,7 +5,8 @@ import math
 import time
 from typing import Callable
 from typing import Iterable
-#from typing import Self
+
+# from typing import Self
 
 import numpy as np
 import scipy.optimize
@@ -32,6 +33,7 @@ from .utils import build_norm_matrix_from_twiss_2d
 
 class KVEnvelope:
     """Models KV distribution."""
+
     def __init__(
         self,
         eps_x: float,
@@ -43,7 +45,7 @@ class KVEnvelope:
         params: Iterable[float] = None,
     ) -> None:
         """Constructor.
-        
+
         Args:
             eps_x: RMS emittance in x plane.
             eps_y: RMS emittance in y plane.
@@ -51,7 +53,7 @@ class KVEnvelope:
             kin_energy: Synchronous particle kinetic energy [GeV].
             line_density: Bunch line density [m].
             length: Bunch length [m] (used to convert to Bunch object).
-            params: The envelope parameters [cx, cx', cy, cy']. 
+            params: The envelope parameters [cx, cx', cy, cy'].
                 The cx and cy parameters represent the envelope extent along the x and y
                 axis; cx' and cy' are their derivatives with respect to the distance x.
         """
@@ -81,7 +83,7 @@ class KVEnvelope:
     def set_length(self, length: float) -> None:
         self.length = length
         self.intensity = self.line_density * self.length
-        
+
     def set_params(self, params: np.ndarray) -> None:
         self.params = np.copy(params)
 
@@ -170,7 +172,7 @@ class KVEnvelope:
         V = np.linalg.inv(V_inv)
 
         A = np.sqrt(np.diag([eps_x, eps_x, eps_y, eps_y]))
-        
+
         X = np.random.normal(size=(size, 4))
         X /= np.linalg.norm(X, axis=1)[:, None]
         X /= np.std(X, axis=0)
@@ -191,7 +193,7 @@ class KVEnvelope:
         """Create Bunch object from envelope parameters.
 
         Args:
-            size: Number of macroparticles in the bunch. 
+            size: Number of macroparticles in the bunch.
                 These are the number of  "test"particles not counting the first particle,
                 which stores the envelope parameters.
             env: Whether first two particles store envelope parameters.
@@ -269,7 +271,7 @@ class KVEnvelopeTracker:
     def __init__(self, lattice: AccLattice, path_length_max: float = None) -> None:
         self.lattice = lattice
         self.nodes = self.add_nodes(
-            path_length_min=1.00e-06, 
+            path_length_min=1.00e-06,
             path_length_max=path_length_max,
         )
 
@@ -314,8 +316,8 @@ class KVEnvelopeTracker:
 
     def track(
         self,
-        envelope: KVEnvelope, 
-        periods: int = 1, 
+        envelope: KVEnvelope,
+        periods: int = 1,
         history: bool = False,
     ) -> None | dict[str, np.ndarray]:
         self.update_nodes(envelope)
@@ -388,11 +390,7 @@ class KVEnvelopeTracker:
         envelope.set_twiss(alpha_x, beta_x, alpha_y, beta_y)
 
     def match(
-        self, 
-        envelope: KVEnvelope, 
-        periods: int = 1, 
-        method: str = "least_squares",
-        **kwargs
+        self, envelope: KVEnvelope, periods: int = 1, method: str = "least_squares", **kwargs
     ) -> None:
         if envelope.perveance == 0.0:
             return self.match_zero_sc(envelope)

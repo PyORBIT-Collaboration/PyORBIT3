@@ -90,10 +90,7 @@ def add_envelope_tracker_nodes(
 
 
 def add_kv_envelope_tracker_nodes(
-    lattice: AccLattice, 
-    path_length_max: float = None, 
-    path_length_min: float = 1.00e-06, 
-    **kwargs
+    lattice: AccLattice, path_length_max: float = None, path_length_min: float = 1.00e-06, **kwargs
 ) -> None:
     tracker_nodes = add_envelope_tracker_nodes(
         lattice=lattice,
@@ -110,10 +107,7 @@ def add_kv_envelope_tracker_nodes(
 
 
 def add_danilov_envelope_tracker_nodes(
-    lattice: AccLattice, 
-    path_length_max: float = None, 
-    path_length_min: float = 1.00e-06, 
-    **kwargs
+    lattice: AccLattice, path_length_max: float = None, path_length_min: float = 1.00e-06, **kwargs
 ) -> None:
     tracker_nodes = add_envelope_tracker_nodes(
         lattice=lattice,

@@ -1,10 +1,11 @@
-"""Envelope model for {2, 0} Danilov distribution (KV distribution)."""
+"""Envelope model for Danilov distribution."""
 
 import copy
 import time
 from typing import Callable
 from typing import Iterable
-#from typing import Self
+
+# from typing import Self
 
 import numpy as np
 import scipy.optimize
@@ -58,10 +59,11 @@ def env_params_from_bunch(bunch: Bunch) -> np.ndarray:
 
 class DanilovEnvelope:
     """Represents Danilov distribution.
-    
-    The Danilov distribution is the limit of the KV distribution as the emittance goes to 
+
+    The Danilov distribution is the limit of the KV distribution as the emittance goes to
     zero in one of the planes.
     """
+
     def __init__(
         self,
         eps_1: float,
@@ -81,7 +83,7 @@ class DanilovEnvelope:
             kin_energy: Synchronous particle kinetic energy [GeV].
             line_density: Bunch longitudinal density [1 / m].
             length: Bunch length [m] (used to convert to Bunch object).
-            params: Envelope parameters [a, b, a', b', e, f, e', f'].             
+            params: Envelope parameters [a, b, a', b', e, f, e', f'].
                 The coordinates of a particle on the beam envelope are parameterized as
                     x = a*cos(psi) + b*sin(psi), x' = a'*cos(psi) + b'*sin(psi),
                     y = e*cos(psi) + f*sin(psi), y' = e'*cos(psi) + f'*sin(psi),
@@ -119,7 +121,7 @@ class DanilovEnvelope:
     def set_emittances(self, eps_1: float, eps_2: float) -> None:
         self.eps_1 = eps_1
         self.eps_2 = eps_2
-        
+
         if self.eps_2 == 0:
             self.mode = 1
             self.intrinsic_emittance = self.eps_1
@@ -128,7 +130,7 @@ class DanilovEnvelope:
             self.intrinsic_emittance = self.eps_2
         else:
             raise ValueError("eps_1 or eps_2 must be zero")
-            
+
     def set_line_density(self, line_density: float) -> None:
         self.line_density = line_density
         self.intensity = self.line_density * self.length
@@ -147,7 +149,7 @@ class DanilovEnvelope:
             self.set_emittances(self.intrinsic_emittance, 0.0)
         else:
             self.set_emittances(0.0, self.intrinsic_emittance)
-        
+
     def param_matrix(self) -> np.ndarray:
         """Build envelope matrix.
 
@@ -308,7 +310,9 @@ class DanilovEnvelope:
             unnorm_matrix = build_unnorm_matrix_from_params_cs(**twiss_params)
         elif method == "4d":
             twiss_params = self.twiss_4d()
-            unnorm_matrix = build_unnorm_matrix_from_params_lb_one_mode(mode=self.mode, **twiss_params)
+            unnorm_matrix = build_unnorm_matrix_from_params_lb_one_mode(
+                mode=self.mode, **twiss_params
+            )
         else:
             raise ValueError(f"Invalid normalization {method}")
         return unnorm_matrix
@@ -365,7 +369,7 @@ class DanilovEnvelope:
 
     def set_twiss_2d(self, **twiss_params) -> None:
         """Set 2D twiss parameters.
-        
+
         Args:
             alpha_x (optional): alpha parameter in x plane.
             alpha_y (optional): alpha parameter in y plane.
@@ -452,7 +456,7 @@ class DanilovEnvelope:
         """Create Bunch object from envelope parameters.
 
         Args:
-            size: Number of macroparticles in the bunch. 
+            size: Number of macroparticles in the bunch.
                 These are the number of  "test"particles not counting the first particle,
                 which stores the envelope parameters.
             env: Whether first two particles store envelope parameters.
@@ -597,12 +601,12 @@ class DanilovEnvelopeTracker:
             node.setPerveance(envelope.perveance)
 
     def track(
-        self, 
-        envelope: DanilovEnvelope, 
-        periods: int = 1, 
+        self,
+        envelope: DanilovEnvelope,
+        periods: int = 1,
         history: bool = False,
     ) -> None | dict[str, np.ndarray]:
-        
+
         self.update_nodes(envelope)
 
         monitor = DanilovEnvelopeMonitor()
@@ -686,13 +690,9 @@ class DanilovEnvelopeTracker:
             raise ValueError
 
     def match(
-        self, 
-        envelope: DanilovEnvelope, 
-        periods: int = 1, 
-        method: str = "least_squares", 
-        **kwargs
+        self, envelope: DanilovEnvelope, periods: int = 1, method: str = "least_squares", **kwargs
     ) -> None:
-        
+
         if envelope.intensity == 0.0:
             return self.match_zero_sc(envelope)
 
