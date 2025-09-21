@@ -90,31 +90,23 @@ envelopes["matched"] = envelope.copy()
 # Plot results bunch
 # --------------------------------------------------------------------------------------
 
-histories = {}
-for key, envelope in envelopes.items():
-    envelope, history = tracker.track(envelope, periods=args.periods, history=True)
-    histories[key] = copy.deepcopy(history)
+_, history = tracker.track(envelopes["matched"], periods=args.periods, history=True)
+_, history_unmatched = tracker.track(envelopes["mismatched"], periods=args.periods, history=True)
 
 
 figwidth = 3.0 * args.periods
-figwidth = min(figwidth, 6.0)
+figwidth = min(figwidth, 10.0)
 
-fig, axs = plt.subplots(figsize=(figwidth, 3.0), nrows=2, sharex=True, constrained_layout=True)
-for i, key in enumerate(["matched", "mismatched"]):
-    alpha = [1.0, 0.15][i]
-    axs[0].plot(histories[key]["s"], histories[key]["xrms"] * 1000.0, alpha=alpha, color="blue")
-    axs[0].plot(histories[key]["s"], histories[key]["yrms"] * 1000.0, alpha=alpha, color="red")
-    axs[1].plot(histories[key]["s"], histories[key]["rxy"], alpha=alpha, color="black")
+fig, ax = plt.subplots(figsize=(figwidth, 2.5), constrained_layout=True)
+ax.plot(history["s"], history["xrms"] * 1000.0, color="blue", alpha=1.0)
+ax.plot(history["s"], history["yrms"] * 1000.0, color="red", alpha=1.0)
+ax.plot(history_unmatched["s"], history_unmatched["xrms"] * 1000.0, color="blue", alpha=0.2)
+ax.plot(history_unmatched["s"], history_unmatched["yrms"] * 1000.0, color="red", alpha=0.2)
+ax.set_ylim(0.0, ax.get_ylim()[1])
+ax.set_xlabel("Distance [m]")
+ax.set_ylabel("Size [mm]")
 
-axs[0].set_ylim(0.0, axs[0].get_ylim()[1])
-axs[1].set_ylim(-1.0, 1.0)
-
-for ax in axs:
-    ax.set_xlabel("Distance [m]")
-axs[0].set_ylabel("Size [mm]")
-axs[1].set_ylabel("rxy")
-
-filename = "fig_match.png"
+filename = "fig_match_rms.png"
 filename = os.path.join(output_dir, filename)
 plt.savefig(filename, dpi=300)
 plt.show()
