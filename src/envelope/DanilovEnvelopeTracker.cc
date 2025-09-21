@@ -95,15 +95,14 @@ void DanilovEnvelopeTracker::trackBunch(Bunch *bunch, double length) {
 
     if (in_ellipse) {
       if (cxn > 0.0) {
-        delta_xpn = factor * xn / cxn;
+        delta_xpn = length * factor * xn / cxn;
       }
       if (cyn > 0.0) {
-        delta_ypn = factor * yn / cyn;
+        delta_ypn = length * factor * yn / cyn;
       }
     } 
     else {
       // https://arxiv.org/abs/physics/0108040
-      // UNTESTED!
       B = xn2 + yn2 - cxn2 - cyn2;
       C = xn2 * cyn2 + yn2 * cxn2 - cxn2 * cyn2;
       t1 = pow(0.25 * B * B + C, 0.5) + 0.5 * B;
@@ -112,8 +111,8 @@ void DanilovEnvelopeTracker::trackBunch(Bunch *bunch, double length) {
       delta_xpn = 2.0 * Q * xn / (Dx * (Dx + Dy));
       delta_ypn = 2.0 * Q * yn / (Dy * (Dx + Dy));
     }
-    delta_xp = +delta_xpn * _cos + delta_ypn * _sin;
-    delta_yp = -delta_xpn * _sin + delta_ypn * _cos;
+    delta_xp = length * (+delta_xpn * _cos + delta_ypn * _sin);
+    delta_yp = length * (-delta_xpn * _sin + delta_ypn * _cos);
     bunch->xp(i) += delta_xp;
     bunch->yp(i) += delta_yp;
   }
