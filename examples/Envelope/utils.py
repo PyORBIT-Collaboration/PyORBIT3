@@ -268,3 +268,17 @@ class BunchMonitor:
             message += "xrms={:0.3f} ".format(self.history["xrms"][-1] * 1000.0)
             message += "yrms={:0.3f} ".format(self.history["yrms"][-1] * 1000.0)
             print(message)
+
+
+def rms_ellipse_params(cov_matrix: np.ndarray) -> tuple[float, float, float]:
+    sii = cov_matrix[0, 0]
+    sjj = cov_matrix[1, 1]
+    sij = cov_matrix[0, 1]
+    angle = -0.5 * np.arctan2(2 * sij, sii - sjj)
+    _sin = np.sin(angle)
+    _cos = np.cos(angle)
+    _sin2 = _sin**2
+    _cos2 = _cos**2
+    c1 = np.sqrt(abs(sii * _cos2 + sjj * _sin2 - 2 * sij * _sin * _cos))
+    c2 = np.sqrt(abs(sii * _sin2 + sjj * _cos2 + 2 * sij * _sin * _cos))
+    return (c1, c2, angle)

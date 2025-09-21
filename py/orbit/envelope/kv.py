@@ -340,15 +340,14 @@ class KVEnvelopeTracker:
 
         return envelope
 
-    def track_particles(self, envelope: KVEnvelope, particles: np.ndarray = None) -> np.ndarray:
-        """Track test particles through the lattice."""
+    def track_particles(self, envelope: KVEnvelope, particles: np.ndarray = None) -> tuple[KVEnvelope, np.ndarray]:
         self.update_nodes(envelope)
 
         bunch = envelope.to_bunch()
         for i in range(particles.shape[0]):
             bunch.addParticle(*particles[i])
         
-        self.lattice.trackBunch(bunch, actionContainer=action_container)
+        self.lattice.trackBunch(bunch)
 
         envelope.from_bunch(bunch)
 

@@ -517,7 +517,7 @@ class DanilovEnvelopeMonitor:
         ]:
             self.history[key] = []
 
-    def package(self) -> None:
+    def get_history(self) -> None:
         history = copy.deepcopy(self.history)
         for key in history:
             history[key] = np.array(history[key])
@@ -622,7 +622,10 @@ class DanilovEnvelopeTracker:
         envelope.from_bunch(bunch)
 
         if history:
-            return monitor.package()
+            history = monitor.get_history()
+            return (envelope, history)
+        else:
+            return envelope
 
     def transfer_matrix(self, envelope: DanilovEnvelope) -> np.ndarray:
         bunch = envelope.to_bunch(size=0, env=True)
@@ -690,7 +693,11 @@ class DanilovEnvelopeTracker:
             raise ValueError
 
     def match(
-        self, envelope: DanilovEnvelope, periods: int = 1, method: str = "least_squares", **kwargs
+        self, 
+        envelope: DanilovEnvelope, 
+        periods: int = 1,
+        method: str = "least_squares", 
+        **kwargs
     ) -> None:
 
         if envelope.intensity == 0.0:
