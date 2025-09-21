@@ -18,19 +18,19 @@ using namespace std;
 
  References
  ----------
- [1] V. Danilov, S. Cousineau, S. Henderson, and J. Holmes, "Self-consistent time
-     dependent two dimensional and three dimensional space charge distributions with
-     linear force", PPRAB 6, 74–85 (2003).
+ [1] V. Danilov, S. Cousineau, S. Henderson, and J. Holmes, "Self-consistent
+ time dependent two dimensional and three dimensional space charge distributions
+ with linear force", PPRAB 6, 74–85 (2003).
 */
 class DanilovEnvelopeTracker : public OrbitUtils::CppPyWrapper {
-public:
-  DanilovEnvelopeTracker(double perveanceQ);
-  void trackBunch(Bunch *bunch, double length);
-  void setPerveance(double perveance);
-  double getPerveance();
+  public:
+    DanilovEnvelopeTracker(double perveanceQ);
+    void trackBunch(Bunch *bunch, double length);
+    void setPerveance(double perveance);
+    double getPerveance();
 
-private:
-  double Q;  // beam perveance
+  private:
+    double Q; // beam perveance
 };
 
 #endif

@@ -1,119 +1,104 @@
 #include "DanilovEnvelopeTracker.hh"
 
 DanilovEnvelopeTracker::DanilovEnvelopeTracker(double perveance) : CppPyWrapper(NULL) {
-  Q = perveance;
+    Q = perveance;
 }
 
-void DanilovEnvelopeTracker::setPerveance(double perveance) {
-  Q = perveance; 
+void DanilovEnvelopeTracker::setPerveance(double perveance) { 
+    Q = perveance;
 }
 
-double DanilovEnvelopeTracker::getPerveance() {
-  return Q;
+double DanilovEnvelopeTracker::getPerveance() { 
+    return Q;
 }
 
 void DanilovEnvelopeTracker::trackBunch(Bunch *bunch, double length) {
-  // Compute ellipse size and orientation.
-  double a = bunch->x(0);
-  double b = bunch->x(1);
-  double e = bunch->y(0);
-  double f = bunch->y(1);
-  double ap = bunch->xp(0);
-  double bp = bunch->xp(1);
-  double ep = bunch->yp(0);
-  double fp = bunch->yp(1);
+    // Compute ellipse size and orientation.
+    // -----------------------------------------------------------------------------------
 
-  double cov_xx = a * a + b * b; // 4 * <x^2>
-  double cov_yy = e * e + f * f; // 4 * <y^2>
-  double cov_xy = a * e + b * f; // 4 * <xy>
+    // Get envelope parameters from first two bunch particles.
+    double a = bunch->x(0);
+    double b = bunch->x(1);
+    double e = bunch->y(0);
+    double f = bunch->y(1);
 
-  double phi = -0.5 * atan2(2.0 * cov_xy, cov_xx - cov_yy);
+    // Compute covariance matrix in x-y plane
+    double cov_xx = a * a + b * b; // 4 * <xx>
+    double cov_yy = e * e + f * f; // 4 * <yy>
+    double cov_xy = a * e + b * f; // 4 * <xy>
 
-  double _cos = cos(phi);
-  double _sin = sin(phi);
-  double cos2 = _cos * _cos;
-  double sin2 = _sin * _sin;
-  double sin_cos = _sin * _cos;
+    // Compute tilt angle phi in x-y plane (below x axis).
+    double phi = -0.5 * atan2(2.0 * cov_xy, cov_xx - cov_yy);
 
-  double cxn = sqrt(abs(cov_xx * cos2 + cov_yy * sin2 - 2.0 * cov_xy * sin_cos));
-  double cyn = sqrt(abs(cov_xx * sin2 + cov_yy * cos2 + 2.0 * cov_xy * sin_cos));
-  double sc_term = (2.0 * Q / (cxn + cyn));
+    // Store sin(phi) and cos(phi).
+    double cs = cos(phi);
+    double sn = sin(phi);
+    double cs2 = cs * cs;
+    double sn2 = sn * sn;
+    double sn_cs = sn * cs;
 
-  // Track envelope
-  if (cxn > 0.0) {
-    bunch->xp(0) += length * sc_term * (a * cos2 - e * sin_cos) / cxn;
-    bunch->xp(1) += length * sc_term * (b * cos2 - f * sin_cos) / cxn;
-    bunch->yp(0) += length * sc_term * (e * sin2 - a * sin_cos) / cxn;
-    bunch->yp(1) += length * sc_term * (f * sin2 - b * sin_cos) / cxn;
-  }
-  if (cyn > 0.0) {
-    bunch->xp(0) += length * sc_term * (a * sin2 + e * sin_cos) / cyn;
-    bunch->xp(1) += length * sc_term * (b * sin2 + f * sin_cos) / cyn;
-    bunch->yp(0) += length * sc_term * (e * cos2 + a * sin_cos) / cyn;
-    bunch->yp(1) += length * sc_term * (f * cos2 + b * sin_cos) / cyn;
-  }
+    // Compute ellipse radii cu and cv in upright frame.
+    double cu = sqrt(abs(cov_xx * cs2 + cov_yy * sn2 - 2.0 * cov_xy * sn_cs));
+    double cv = sqrt(abs(cov_xx * sn2 + cov_yy * cs2 + 2.0 * cov_xy * sn_cs));
+    double cu2 = cu * cu;
+    double cv2 = cv * cv;
 
-  // Track test particles
-  double cxn2 = cxn * cxn;
-  double cyn2 = cyn * cyn;
-  double x;
-  double y;
-  double x2;
-  double y2;
+    // Kick envelope
+    // -----------------------------------------------------------------------------------
 
-  double xn;
-  double yn;
-  double xn2;
-  double yn2;
-
-  double t1;
-  double B;
-  double C;
-  double Dx;
-  double Dy;
-
-  double delta_xp;
-  double delta_yp;
-  double delta_xpn;
-  double delta_ypn;
-  bool in_ellipse;
-
-  for (int i = 2; i < bunch->getSize(); i++) {
-    x = bunch->x(i);
-    y = bunch->y(i);
-
-    x2 = x * x;
-    y2 = y * y;
-
-    xn = x * _cos - y * _sin;
-    yn = x * _sin + y * _cos;
-
-    xn2 = xn * xn;
-    yn2 = yn * yn;
-
-    in_ellipse = ((xn2 / cxn2) + (yn2 / cyn2)) <= 1.0;
-
-    if (in_ellipse) {
-      if (cxn > 0.0) {
-        delta_xpn = length * sc_term * xn / cxn;
-      }
-      if (cyn > 0.0) {
-        delta_ypn = length * sc_term * yn / cyn;
-      }
-    } 
-    else {
-      // https://arxiv.org/abs/physics/0108040
-      B = xn2 + yn2 - cxn2 - cyn2;
-      C = xn2 * cyn2 + yn2 * cxn2 - cxn2 * cyn2;
-      t1 = pow(0.25 * B * B + C, 0.5) + 0.5 * B;
-      Dx = pow(cxn2 + t1, 0.5);
-      Dy = pow(cyn2 + t1, 0.5);
-      delta_xpn = length * 2.0 * Q * xn / (Dx * (Dx + Dy));
-      delta_ypn = length * 2.0 * Q * yn / (Dy * (Dx + Dy));
+    double sc_term = (2.0 * Q / (cu + cv));
+    if (cu > 0.0) {
+        bunch->xp(0) += length * sc_term * (a * cs2 - e * sn_cs) / cu;
+        bunch->xp(1) += length * sc_term * (b * cs2 - f * sn_cs) / cu;
+        bunch->yp(0) += length * sc_term * (e * sn2 - a * sn_cs) / cu;
+        bunch->yp(1) += length * sc_term * (f * sn2 - b * sn_cs) / cu;
     }
-    delta_xp = (+delta_xpn * _cos + delta_ypn * _sin);
-    delta_yp = (-delta_xpn * _sin + delta_ypn * _cos);
-    bunch->xp(i) += delta_xp;
-    bunch->yp(i) += delta_yp;
-  }
+    if (cv > 0.0) {
+        bunch->xp(0) += length * sc_term * (a * sn2 + e * sn_cs) / cv;
+        bunch->xp(1) += length * sc_term * (b * sn2 + f * sn_cs) / cv;
+        bunch->yp(0) += length * sc_term * (e * cs2 + a * sn_cs) / cv;
+        bunch->yp(1) += length * sc_term * (f * cs2 + b * sn_cs) / cv;
+    }
+
+    // Kick particles
+    // -----------------------------------------------------------------------------------
+
+    for (int i = 2; i < bunch->getSize(); i++) {
+        // Collect particle coordinates.
+        double x = bunch->x(i);
+        double y = bunch->y(i);
+        double u = x * cs - y * sn;
+        double v = x * sn + y * cs;
+
+        // Check if particle is inside beam ellipse.
+        double u2 = u * u;
+        double v2 = v * v;
+        bool in_ellipse = ((u2 / cu2) + (v2 / cv2)) <= 1.0;
+
+        // Update momentum.
+        double delta_up = 0.0;
+        double delta_vp = 0.0;
+        
+        if (in_ellipse) {
+            if (cu > 0.0) {
+                delta_up = length * sc_term * u / cu;
+            }
+            if (cv > 0.0) {
+                delta_vp = length * sc_term * v / cv;
+            }
+        } 
+        else {
+            // https://arxiv.org/abs/physics/0108040
+            double B = u2 + v2 - cu2 - cv2;
+            double C = u2 * cv2 + v2 * cu2 - cu2 * cv2;
+            double t1 = pow(0.25 * B * B + C, 0.5) + 0.5 * B;
+            double Dx = pow(cu2 + t1, 0.5);
+            double Dy = pow(cv2 + t1, 0.5);
+            delta_up = length * 2.0 * Q * u / (Dx * (Dx + Dy));
+            delta_vp = length * 2.0 * Q * v / (Dy * (Dx + Dy));
+        }
+        
+        bunch->xp(i) += (+delta_up * cs + delta_vp * sn);
+        bunch->yp(i) += (-delta_up * sn + delta_vp * cs);
+    }
 }

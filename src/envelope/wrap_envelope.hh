@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 namespace wrap_envelope {
-  PyMODINIT_FUNC initenvelope();
+PyMODINIT_FUNC initenvelope();
 }
 
 #ifdef __cplusplus
