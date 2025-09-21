@@ -1,5 +1,4 @@
 """Envelope model for Danilov distribution."""
-
 import copy
 import time
 from typing import Callable
@@ -63,7 +62,6 @@ class DanilovEnvelope:
     The Danilov distribution is the limit of the KV distribution as the emittance goes to
     zero in one of the planes.
     """
-
     def __init__(
         self,
         eps_1: float,

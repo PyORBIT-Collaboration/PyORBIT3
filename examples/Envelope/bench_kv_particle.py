@@ -38,12 +38,12 @@ plt.style.use("style.mplstyle")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--phase-adv", type=float, default=100.0)
-parser.add_argument("--intensity", type=float, default=10.0e14)
+parser.add_argument("--intensity", type=float, default=7.0e14)
 parser.add_argument("--eps_x", type=float, default=10.00e-06)
 parser.add_argument("--eps_y", type=float, default=10.00e-06)
 parser.add_argument("--max-part-length", type=float, default=0.1)
 parser.add_argument("--mismatch", type=float, default=0.0)
-parser.add_argument("--periods", type=int, default=50)
+parser.add_argument("--periods", type=int, default=100)
 args = parser.parse_args()
 
 
@@ -116,7 +116,7 @@ for period in range(args.periods):
     particles_tbt["envelope"].append(particles.copy())
     
 
-# Track bunch
+# Track bunch with test particles
 # --------------------------------------------------------------------------------------
 
 def set_particle_macrosizes(bunch: Bunch, macrosizes: list[float]) -> Bunch:
@@ -143,7 +143,6 @@ sc_nodes = setSC2p5DAccNodes(lattice, sc_path_length_min, sc_calc)
 
 bunch_size = 128_000
 bunch = envelope_init.to_bunch(env=False, size=bunch_size)
-
 for i in range(test_particles.shape[0]):
     bunch.addParticle(*test_particles[i])
 

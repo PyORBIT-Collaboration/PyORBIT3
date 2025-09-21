@@ -85,7 +85,7 @@ envelope_init = envelope.copy()
 
 histories = {}
 
-history = tracker.track(envelope_init.copy(), periods=args.periods, history=True)
+envelope, history = tracker.track(envelope_init.copy(), periods=args.periods, history=True)
 histories["envelope"] = copy.deepcopy(history)
 
 
@@ -116,7 +116,7 @@ bunch = envelope_init.to_bunch(env=False, size=128_000)
 for periods in range(args.periods):
     lattice.trackBunch(bunch, actionContainer=action_container)
 
-history = monitor.package_history()
+history = monitor.get_history()
 histories["bunch"] = copy.deepcopy(history)
 
 

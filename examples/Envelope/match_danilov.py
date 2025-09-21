@@ -75,6 +75,15 @@ tracker.match_zero_sc(envelope, method="2d")
 envelopes["mismatched"] = envelope.copy()
 
 tracker.match(envelope, periods=args.periods, method="replace_avg", verbose=2)
+# tracker.match(
+#     envelope, 
+#     periods=args.periods, 
+#     method="least_squares",
+#     xtol=1e-15, 
+#     ftol=1e-15, 
+#     gtol=1e-15, 
+#     verbose=2
+# )
 envelopes["matched"] = envelope.copy()
 
 
@@ -82,9 +91,8 @@ envelopes["matched"] = envelope.copy()
 # --------------------------------------------------------------------------------------
 
 histories = {}
-
 for key, envelope in envelopes.items():
-    history = tracker.track(envelope, periods=args.periods, history=True)
+    envelope, history = tracker.track(envelope, periods=args.periods, history=True)
     histories[key] = copy.deepcopy(history)
 
 

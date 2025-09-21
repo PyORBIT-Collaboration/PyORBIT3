@@ -1,5 +1,4 @@
 """Envelope model for upright KV distribution."""
-
 import copy
 import math
 import time
@@ -33,7 +32,6 @@ from .utils import build_norm_matrix_from_twiss_2d
 
 class KVEnvelope:
     """Models KV distribution."""
-
     def __init__(
         self,
         eps_x: float,
