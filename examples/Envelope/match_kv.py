@@ -24,7 +24,7 @@ plt.style.use("style.mplstyle")
 # --------------------------------------------------------------------------------------
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--intensity", type=float, default=100.0)
+parser.add_argument("--intensity", type=float, default=100.0e14)
 parser.add_argument("--eps_x", type=float, default=10.00e-06)
 parser.add_argument("--eps_y", type=float, default=10.00e-06)
 parser.add_argument("--max-part-length", type=float, default=0.1)
@@ -49,7 +49,7 @@ envelope = KVEnvelope(
     mass=mass_proton,
     kin_energy=1.000,
     length=100.0,
-    intensity=(args.intensity * 1.00e14),
+    line_density=(args.intensity / 100.0),
     params=None,
 )
 

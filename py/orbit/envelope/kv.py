@@ -31,48 +31,40 @@ from .utils import build_norm_matrix_from_twiss_2d
 
 
 class KVEnvelope:
-    """Models KV distribution.
-
-    Attributes
-    ----------
-    params: ndarray, shape(4,)
-        The envelope parameters [cx, cx', cy, cy']. The cx and cy parameters
-        represent the envelope extent along the x and y axis; cx' and cy' are
-        their derivatives with respect to the distance x.
-    eps_x: float
-        The rms emittance of the x-x' distribution: sqrt(<xx><x'x'> - <xx'><xx'>).
-    eps_y: float
-        The rms emittance of the y-y' distribution: sqrt(<yy><y'y'> - <yy'><yy'>).
-    mass: float
-        Particle [GeV/c^2].
-    kin_energy: float
-        Particle kinetic energy [GeV].
-    intensity: float
-        Bunch intensity (number of particles).
-    length: float
-        Bunch length [m].
-    perveance: float
-        Dimensionless beam perveance.
-    """
+    """Models KV distribution."""
     def __init__(
         self,
         eps_x: float,
         eps_y: float,
         mass: float,
         kin_energy: float,
+        line_density: float,
         length: float,
-        intensity: int,
         params: Iterable[float] = None,
     ) -> None:
+        """Constructor.
+        
+        Args:
+            eps_x: RMS emittance in x plane.
+            eps_y: RMS emittance in y plane.
+            mass: Particle [GeV/c^2].
+            kin_energy: Synchronous particle kinetic energy [GeV].
+            line_density: Bunch line density [m].
+            length: Bunch length [m] (used to convert to Bunch object).
+            params: The envelope parameters [cx, cx', cy, cy']. 
+                The cx and cy parameters represent the envelope extent along the x and y
+                axis; cx' and cy' are their derivatives with respect to the distance x.
+        """
         self.eps_x = eps_x
         self.eps_y = eps_y
         self.mass = mass
         self.kin_energy = kin_energy
 
+        self.line_density = line_density
         self.length = length
-        self.line_density = None
-        self.perveance = None
-        self.set_intensity(intensity)
+        self.intensity = self.line_density * self.length
+        self.perveance = 0.0
+        self.set_line_density(line_density)
 
         self.params = params
         if self.params is None:
@@ -81,15 +73,15 @@ class KVEnvelope:
             self.params = [cx, 0.0, cy, 0.0]
         self.params = np.array(self.params)
 
-    def set_intensity(self, intensity: int) -> None:
-        self.intensity = intensity
-        self.line_density = intensity / self.length
+    def set_line_density(self, line_density: float) -> None:
+        self.line_density = line_density
+        self.intensity = self.line_density * self.length
         self.perveance = get_perveance(self.mass, self.kin_energy, self.line_density)
 
     def set_length(self, length: float) -> None:
         self.length = length
-        self.set_intensity(self.intensity)
-
+        self.intensity = self.line_density * self.length
+        
     def set_params(self, params: np.ndarray) -> None:
         self.params = np.copy(params)
 
@@ -179,16 +171,12 @@ class KVEnvelope:
 
         A = np.sqrt(np.diag([eps_x, eps_x, eps_y, eps_y]))
         
-        particles = np.random.normal(size=(size, 4))
-        particles /= np.linalg.norm(particles, axis=1)[:, None]
-        particles /= np.std(particles, axis=0)
-        particles = np.matmul(particles, A.T)
-        particles = np.matmul(particles, V.T)
-
-        particles_full = np.zeros((size, 6))
-        particles_full[:, :4] = particles
-        particles_full[:, 4] = self.length * np.random.uniform(-0.5, 0.5, size=size)
-        return particles_full
+        X = np.random.normal(size=(size, 4))
+        X /= np.linalg.norm(X, axis=1)[:, None]
+        X /= np.std(X, axis=0)
+        X = np.matmul(X, A.T)
+        X = np.matmul(X, V.T)
+        return X
 
     def from_bunch(self, bunch: Bunch) -> np.ndarray:
         """Set envelope parameters from Bunch."""
@@ -202,18 +190,14 @@ class KVEnvelope:
     def to_bunch(self, size: int = 0, env: bool = True) -> Bunch:
         """Create Bunch object from envelope parameters.
 
-        Parameters
-        ----------
-        size : int
-            Number of macroparticles in the bunch. These are the number of "test"
-            particles not counting the first particle, which stores the envelope
-            parameters.
-        env : bool
-            If False, do not store the envelope parameters as the first particle.
+        Args:
+            size: Number of macroparticles in the bunch. 
+                These are the number of  "test"particles not counting the first particle,
+                which stores the envelope parameters.
+            env: Whether first two particles store envelope parameters.
 
-        Returns
-        -------
-        Bunch
+        Returns:
+            Bunch with sampled particles.
         """
         bunch = Bunch()
         bunch.mass(self.mass)
@@ -224,9 +208,11 @@ class KVEnvelope:
             bunch.addParticle(cx, cxp, cy, cyp, 0.0, 0.0)
 
         if size:
-            samples = self.sample(size)
+            particles = np.zeros((size, 6))
+            particles[:, :4] = self.sample(size)
+            particles[:, 4] = self.length * np.random.uniform(-0.5, 0.5, size=size)
             for i in range(size):
-                bunch.addParticle(*samples[i])
+                bunch.addParticle(*particles[i])
 
             macrosize = self.intensity / size
             if self.intensity == 0.0:

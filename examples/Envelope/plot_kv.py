@@ -11,8 +11,8 @@ envelope = KVEnvelope(
     eps_y=10.00e-06,
     mass=0.938,
     kin_energy=1.0,
+    line_density=0.0,
     length=100.0,
-    intensity=0.0,
 )
 
 x = envelope.sample(100_000)

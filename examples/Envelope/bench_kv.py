@@ -60,8 +60,8 @@ envelope = KVEnvelope(
     eps_y=args.eps_y,
     mass=mass_proton,
     kin_energy=1.000,
+    line_density=(args.intensity / 100.0),
     length=100.0,
-    intensity=args.intensity,
     params=None,
 )
 
