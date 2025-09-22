@@ -13,6 +13,10 @@ from .diagnosticsLatticeModifications import addTeapotMomentsNodeSet
 from .TeapotDiagnosticsNode import TeapotStatLatsNode, TeapotStatLatsNodeSetMember
 from .TeapotDiagnosticsNode import TeapotMomentsNode, TeapotMomentsNodeSetMember
 from .TeapotDiagnosticsNode import TeapotTuneAnalysisNode
+from .histogram import BunchHistogram
+from .histogram import BunchHistogram1D
+from .histogram import BunchHistogram2D
+from .histogram import BunchHistogram3D
 
 
 __all__ = []
@@ -30,3 +34,4 @@ __all__.append("addTeapotStatLatsNodeSet")
 __all__.append("addTeapotMomentsNodeSet")
 __all__.append("TeapotTuneAnalysisNode")
 __all__.append("profiles")
+__all__.append("histogram")

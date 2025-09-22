@@ -6,7 +6,8 @@ py_sources = files([
 	'TeapotDiagnosticsNode.py',
 	'diagnosticsLatticeModifications.py',
 	'__init__.py',
-	'profiles.py'
+	'profiles.py',
+    'histogram.py',
 ])
 
 python.install_sources(
