@@ -4,8 +4,7 @@
 py_sources = files([
     '__init__.py',
     'particleidnumber.py',
-    'collect_bunch.py',
-    'file_handler.py'
+    'serialize.py',
 ])
 
 python.install_sources(
