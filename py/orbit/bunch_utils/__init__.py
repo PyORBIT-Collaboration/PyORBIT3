@@ -6,7 +6,13 @@
 #
 
 from orbit.bunch_utils.particleidnumber import ParticleIdNumber
-from orbit.bunch_utils.serialize import collect_bunch, save_bunch, load_bunch
+
+# This guards against missing numpy.
+# Should be imporved with some meaningful (and MPI friendly?) warning printed out.
+try:
+    from orbit.bunch_utils.serialize import collect_bunch, save_bunch, load_bunch
+except:
+    pass
 
 __all__ = []
 __all__.append("addParticleIdNumbers")
