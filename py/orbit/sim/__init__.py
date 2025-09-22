@@ -1,5 +1,5 @@
-import linac
-import ring
+from . import linac
+from . import ring
 
 __all__ = []
 __all__.append("linac")
