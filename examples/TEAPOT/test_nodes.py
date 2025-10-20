@@ -1,3 +1,5 @@
+import math
+
 from orbit.core.bunch import Bunch
 from orbit.lattice import AccLattice
 from orbit.lattice import AccNode
@@ -114,3 +116,23 @@ def test_bend():
     assert node.getParam("ea1") == ea1
     assert node.getParam("ea2") == ea2
     assert node.getParam("theta") == theta
+
+
+def test_ring_rf():
+    name = "name"
+    harmonics = [1.0, 2.0, 3.0]
+    voltages = [1e-6, 2e-6, 3e-6]
+    phases = [math.pi, 0.5 * math.pi, 0.25 * math.pi]
+    ringlength = 100.0
+
+    node = teapot.RingRFTEAPOT(
+        name=name,
+        harmonics=harmonics,
+        voltages=voltages,
+        phases=phases,
+        ringlength=ringlength,
+    )
+    assert node.getName() == name
+    assert node.getParam("voltages") == voltages
+    assert node.getParam("phases") == phases
+    assert node.getParam("harmonics") == harmonics

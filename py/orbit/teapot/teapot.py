@@ -1249,7 +1249,14 @@ class RingRFTEAPOT(NodeTEAPOT):
     Ring RF TEAPOT element.
     """
 
-    def __init__(self, name: str = "RingRF no name") -> None:
+    def __init__(
+        self,
+        name: str = "RingRF no name",
+        harmonics: list[float] = None,
+        voltages: list[float] = None,
+        phases: list[float] = None,
+        ringlength: float = 0.0,
+    ) -> None:
         """
         Constructor. Creates the Ring RF TEAPOT element.
         Harmonics numbers are 1,2,3, ...
@@ -1257,10 +1264,10 @@ class RingRFTEAPOT(NodeTEAPOT):
         Phases are in radians.
         """
         NodeTEAPOT.__init__(self, name)
-        self.addParam("harmonics", [])
-        self.addParam("voltages", [])
-        self.addParam("phases", [])
-        self.addParam("ring_length", 0.0)
+        self.addParam("harmonics", harmonics if harmonics else [])
+        self.addParam("voltages", voltages if voltages else [])
+        self.addParam("phases", phases if phases else [])
+        self.addParam("ring_length", ringlength)
         self.setType("RingRF teapot")
 
         self.setnParts(1)
