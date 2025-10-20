@@ -716,11 +716,11 @@ class MultipoleTEAPOT(NodeTEAPOT):
     def __init__(
         self,
         name: str = "multipole no name",
+        length: float = 0.0,
+        nparts: int = 2,
         poles: list[int] = None,
         kls: list[float] = None,
         skews: list[int] = None,
-        nparts: int = 2,
-        length: float = 0.0,
     ) -> None:
         """
         Constructor. Creates the Multipole
@@ -861,18 +861,27 @@ class QuadTEAPOT(NodeTEAPOT):
     Quad Combined Function TEAPOT element.
     """
 
-    def __init__(self, name: str = "quad no name") -> None:
+    def __init__(
+        self,
+        name: str = "quad no name",
+        length: float = 0.0,
+        nparts: int = 2,
+        kq: float = 0.0,
+        poles: list[int] = None,
+        kls: list[float] = None,
+        skews: list[int] = None,
+    ) -> None:
         """
         Constructor. Creates the Quad
         Combined Function TEAPOT element.
         """
         NodeTEAPOT.__init__(self, name)
-
-        self.addParam("kq", 0.0)
-        self.addParam("poles", [])
-        self.addParam("kls", [])
-        self.addParam("skews", [])
-        self.setnParts(2)
+        self.addParam("kq", kq)
+        self.addParam("poles", poles if poles else [])
+        self.addParam("kls", kls if kls else [])
+        self.addParam("skews", skews if skews else [])
+        self.setnParts(nparts)
+        self.setLength(length)
         self.waveform = None
 
         def fringeIN(node, paramsDict):

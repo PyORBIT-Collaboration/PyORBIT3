@@ -49,15 +49,41 @@ def test_multipole():
     skews = [0, 1, 0]
     node = teapot.MultipoleTEAPOT(
         name=name,
+        length=length,
+        nparts=nparts,
         poles=poles,
         kls=kls,
         skews=skews,
-        nparts=nparts,
-        length=length,
     )
     assert node.getName() == name
     assert node.getLength() == length
     assert node.getnParts() == nparts
+    assert node.getParam("kls") == kls
+    assert node.getParam("skews") == skews
+    assert node.getParam("poles") == poles
+
+
+def test_quad():
+    name = "name"
+    kq = 0.5
+    nparts = 10
+    length = 1.0
+    poles = [1, 2, 3]
+    kls = [0.0, 1.0, 2.0]
+    skews = [0, 1, 0]
+    node = teapot.QuadTEAPOT(
+        name=name,
+        kq=kq,
+        length=length,
+        nparts=nparts,
+        poles=poles,
+        kls=kls,
+        skews=skews,
+    )
+    assert node.getName() == name
+    assert node.getLength() == length
+    assert node.getnParts() == nparts
+    assert node.getParam("kq") == kq
     assert node.getParam("kls") == kls
     assert node.getParam("skews") == skews
     assert node.getParam("poles") == poles
