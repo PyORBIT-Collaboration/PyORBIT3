@@ -178,3 +178,12 @@ def test_kick():
     assert node.getParam("ky") == ky
     assert node.getParam("dE") == dE
     assert node.waveform == waveform
+
+
+def test_tilt():
+    name = "name"
+    angle = 0.1
+
+    node = teapot.TiltTEAPOT(angle=angle, name=name)
+    assert node.getName() == name
+    assert node.getTiltAngle() == angle
