@@ -1,44 +1,34 @@
 """
 Module. Includes classes for all TEAPOT elements. The approach is based
 on the original ORBIT approach developed by J. Holmes.
+
+Elements:
+- Drift
+- Bend
+- Quad
+- Multipole
+- Solenoid
+- Kicker
+- RingRF
+- Monitor
 """
 
 import sys
 import os
 import math
 
-# import teapot base functions from wrapper around C++ functions
+from ..lattice import AccLattice
+from ..lattice import AccNode
+from ..lattice import AccActionsContainer
+from ..lattice import AccNodeBunchTracker
 from ..teapot_base import TPB
-
-# import the function that creates multidimensional arrays
 from ..utils import orbitFinalize
-
-# import general accelerator elements and lattice
-from ..lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
-
-# import the MAD parser to construct lattices of TEAPOT elements.
-from ..parsers.mad_parser import MAD_Parser, MAD_LattElement
-
-# import the MADX parser to construct lattices of TEAPOT elements.
-from ..parsers.madx_parser import MADX_Parser, MADX_LattElement
-
-# import aperture
+from ..parsers.mad_parser import MAD_Parser
+from ..parsers.mad_parser import MAD_LattElement
+from ..parsers.madx_parser import MADX_Parser
+from ..parsers.madx_parser import MADX_LattElement
 from orbit.core.aperture import Aperture
-
-# monitor
 from orbit.core.bunch import BunchTwissAnalysis
-
-
-"""
-Drift
-Bend
-Quad
-Multipole
-Solenoid
-Kicker
-RingRF
-monitor
-"""
 
 
 class TEAPOT_Lattice(AccLattice):
