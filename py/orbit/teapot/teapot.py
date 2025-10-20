@@ -585,14 +585,19 @@ class ApertureTEAPOT(NodeTEAPOT):
     Aperture TEAPOT element.
     """
 
-    def __init__(self, name: str = "aperture no name") -> None:
+    def __init__(
+        self,
+        name: str = "aperture no name",
+        shape: int = 0,
+        dim: tuple[int, ...] = (),
+    ) -> None:
         """
         Constructor. Creates the aperutre element.
         """
         NodeTEAPOT.__init__(self, name)
         self.setType("aperture")
-        self.addParam("aperture", [])
-        self.addParam("apertype", 0.0)
+        self.addParam("aperture", dim)
+        self.addParam("apertype", shape)
 
     def initialize(self) -> None:
         shape = self.getParam("apertype")
