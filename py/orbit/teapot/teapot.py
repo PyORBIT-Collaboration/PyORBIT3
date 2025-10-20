@@ -563,13 +563,14 @@ class DriftTEAPOT(NodeTEAPOT):
     Drift TEAPOT element.
     """
 
-    def __init__(self, name: str = "drift no name", length: float = 0.0) -> None:
+    def __init__(self, name: str = "drift no name", length: float = 0.0, nparts: int = 1) -> None:
         """
         Constructor. Creates the Drift TEAPOT element.
         """
         NodeTEAPOT.__init__(self, name)
         self.setType("drift teapot")
         self.setLength(length)
+        self.setnParts(nparts)
 
     def track(self, paramsDict: dict) -> None:
         """
@@ -712,16 +713,25 @@ class MultipoleTEAPOT(NodeTEAPOT):
     Multipole Combined Function TEAPOT element.
     """
 
-    def __init__(self, name: str = "multipole no name") -> None:
+    def __init__(
+        self,
+        name: str = "multipole no name",
+        poles: list[int] = None,
+        kls: list[float] = None,
+        skews: list[int] = None,
+        nparts: int = 2,
+        length: float = 0.0,
+    ) -> None:
         """
         Constructor. Creates the Multipole
         Combined Function TEAPOT element.
         """
         NodeTEAPOT.__init__(self, name)
-        self.addParam("poles", [])
-        self.addParam("kls", [])
-        self.addParam("skews", [])
-        self.setnParts(2)
+        self.addParam("poles", poles if poles else [])
+        self.addParam("kls", kls if kls else [])
+        self.addParam("skews", skews if skews else [])
+        self.setnParts(nparts)
+        self.setLength(length)
         self.waveform = None
 
         def fringeIN(node, paramsDict):

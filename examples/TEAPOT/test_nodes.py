@@ -6,8 +6,10 @@ from orbit.teapot import teapot
 
 def test_drift():
     length = 1.0
-    node = teapot.DriftTEAPOT(name="name", length=length)
+    nparts = 5
+    node = teapot.DriftTEAPOT(name="name", length=length, nparts=nparts)
     assert node.getLength() == length
+    assert node.getnParts() == nparts
 
 
 def test_aperture():
@@ -36,3 +38,26 @@ def test_solenoid():
     node = teapot.SolenoidTEAPOT(length=length, B=B)
     assert node.getLength() == length
     assert node.getParam("B") == B
+
+
+def test_multipole():
+    name = "name"
+    nparts = 2
+    length = 1.0
+    poles = [1, 2, 3]
+    kls = [0.0, 1.0, 2.0]
+    skews = [0, 1, 0]
+    node = teapot.MultipoleTEAPOT(
+        name=name,
+        poles=poles,
+        kls=kls,
+        skews=skews,
+        nparts=nparts,
+        length=length,
+    )
+    assert node.getName() == name
+    assert node.getLength() == length
+    assert node.getnParts() == nparts
+    assert node.getParam("kls") == kls
+    assert node.getParam("skews") == skews
+    assert node.getParam("poles") == poles
