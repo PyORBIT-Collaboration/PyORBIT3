@@ -16,3 +16,9 @@ def test_aperture():
     node = teapot.ApertureTEAPOT(name="name", shape=shape, dim=dim)
     assert node.getParam("apertype") == shape
     assert node.getParam("aperture") == dim
+
+
+def test_monitor():
+    name = "name"
+    node = teapot.MonitorTEAPOT(name=name)
+    assert node.getName() == name
