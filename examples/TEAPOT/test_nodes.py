@@ -9,6 +9,7 @@ from orbit.teapot import teapot
 def test_drift():
     length = 1.0
     nparts = 5
+
     node = teapot.DriftTEAPOT(name="name", length=length, nparts=nparts)
     assert node.getLength() == length
     assert node.getnParts() == nparts
@@ -17,6 +18,7 @@ def test_drift():
 def test_aperture():
     shape = 1
     dim = (1, 2)
+
     node = teapot.ApertureTEAPOT(name="name", shape=shape, dim=dim)
     assert node.getParam("apertype") == shape
     assert node.getParam("aperture") == dim
@@ -24,12 +26,14 @@ def test_aperture():
 
 def test_monitor():
     name = "name"
+
     node = teapot.MonitorTEAPOT(name=name)
     assert node.getName() == name
 
 
 def test_bunch_wrap():
     ringlength = 100.0
+
     node = teapot.BunchWrapTEAPOT(ringlength=ringlength)
     assert node.getParam("ring_length") == ringlength
 
@@ -38,10 +42,13 @@ def test_solenoid():
     B = 1.0
     length = 1.0
     nparts = 5
-    node = teapot.SolenoidTEAPOT(length=length, nparts=nparts, B=B)
+    waveform = None
+
+    node = teapot.SolenoidTEAPOT(length=length, nparts=nparts, B=B, waveform=waveform)
     assert node.getLength() == length
     assert node.getnParts() == nparts
     assert node.getParam("B") == B
+    assert node.waveform == waveform
 
 
 def test_multipole():
@@ -51,6 +58,8 @@ def test_multipole():
     poles = [1, 2, 3]
     kls = [0.0, 1.0, 2.0]
     skews = [0, 1, 0]
+    waveform = None
+
     node = teapot.MultipoleTEAPOT(
         name=name,
         length=length,
@@ -58,6 +67,7 @@ def test_multipole():
         poles=poles,
         kls=kls,
         skews=skews,
+        waveform=waveform,
     )
     assert node.getName() == name
     assert node.getLength() == length
@@ -65,6 +75,7 @@ def test_multipole():
     assert node.getParam("kls") == kls
     assert node.getParam("skews") == skews
     assert node.getParam("poles") == poles
+    assert node.waveform == waveform
 
 
 def test_quad():
@@ -75,6 +86,8 @@ def test_quad():
     poles = [1, 2, 3]
     kls = [0.0, 1.0, 2.0]
     skews = [0, 1, 0]
+    waveform = None
+
     node = teapot.QuadTEAPOT(
         name=name,
         length=length,
@@ -83,6 +96,7 @@ def test_quad():
         poles=poles,
         kls=kls,
         skews=skews,
+        waveform=waveform,
     )
     assert node.getName() == name
     assert node.getLength() == length
@@ -91,6 +105,7 @@ def test_quad():
     assert node.getParam("kls") == kls
     assert node.getParam("skews") == skews
     assert node.getParam("poles") == poles
+    assert node.waveform == waveform
 
 
 def test_bend():
@@ -136,3 +151,30 @@ def test_ring_rf():
     assert node.getParam("voltages") == voltages
     assert node.getParam("phases") == phases
     assert node.getParam("harmonics") == harmonics
+
+
+def test_kick():
+    name = "name"
+    length = 1.0
+    nparts = 4
+    kx = 0.2
+    ky = 0.1
+    dE = 0.001
+    waveform = None
+
+    node = teapot.KickTEAPOT(
+        name=name,
+        length=length,
+        nparts=nparts,
+        kx=kx,
+        ky=ky,
+        dE=dE,
+        waveform=waveform,
+    )
+    assert node.getName() == name
+    assert node.getLength() == length
+    assert node.getnParts() == nparts
+    assert node.getParam("kx") == kx
+    assert node.getParam("ky") == ky
+    assert node.getParam("dE") == dE
+    assert node.waveform == waveform

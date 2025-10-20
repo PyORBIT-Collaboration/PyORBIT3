@@ -678,7 +678,14 @@ class SolenoidTEAPOT(NodeTEAPOT):
     Solenoid TEAPOT element.
     """
 
-    def __init__(self, name: str = "solenoid no name", B: float = 0.0, length: float = 0.0, nparts: int = 1) -> None:
+    def __init__(
+        self,
+        name: str = "solenoid no name",
+        B: float = 0.0,
+        length: float = 0.0,
+        nparts: int = 1,
+        waveform: Any = None,
+    ) -> None:
         """
         Constructor. Creates the Solenoid TEAPOT element.
         """
@@ -688,8 +695,7 @@ class SolenoidTEAPOT(NodeTEAPOT):
         self.addParam("B", B)
         self.setnParts(nparts)
         self.setLength(length)
-
-        self.waveform = None
+        self.waveform = waveform
 
     def track(self, paramsDict: dict) -> None:
         """
@@ -728,6 +734,7 @@ class MultipoleTEAPOT(NodeTEAPOT):
         poles: list[int] = None,
         kls: list[float] = None,
         skews: list[int] = None,
+        waveform: Any = None,
     ) -> None:
         """
         Constructor. Creates the Multipole
@@ -740,8 +747,7 @@ class MultipoleTEAPOT(NodeTEAPOT):
         self.addParam("skews", skews if skews else [])
         self.setnParts(nparts)
         self.setLength(length)
-
-        self.waveform = None
+        self.waveform = waveform
 
         def fringeIN(node, paramsDict):
             usageIN = node.getUsage()
@@ -879,22 +885,20 @@ class QuadTEAPOT(NodeTEAPOT):
         poles: list[int] = None,
         kls: list[float] = None,
         skews: list[int] = None,
+        waveform: Any = None,
     ) -> None:
         """
         Constructor. Creates the Quad
         Combined Function TEAPOT element.
         """
         NodeTEAPOT.__init__(self, name)
-
         self.addParam("kq", kq)
         self.addParam("poles", poles if poles else [])
         self.addParam("kls", kls if kls else [])
         self.addParam("skews", skews if skews else [])
-
         self.setnParts(nparts)
         self.setLength(length)
-
-        self.waveform = None
+        self.waveform = waveform
 
         def fringeIN(node, paramsDict):
             usageIN = node.getUsage()
@@ -1326,17 +1330,27 @@ class KickTEAPOT(NodeTEAPOT):
     Kick TEAPOT element.
     """
 
-    def __init__(self, name: str = "kick no name") -> None:
+    def __init__(
+        self,
+        name: str = "kick no name",
+        length: float = 0.0,
+        nparts: int = 2,
+        kx: float = 0.0,
+        ky: float = 0.0,
+        dE: float = 0.0,
+        waveform: Any = None,
+    ) -> None:
         """
         Constructor. Creates the Kick TEAPOT element .
         """
         NodeTEAPOT.__init__(self, name)
-        self.addParam("kx", 0.0)
-        self.addParam("ky", 0.0)
-        self.addParam("dE", 0.0)
+        self.addParam("kx", kx)
+        self.addParam("ky", ky)
+        self.addParam("dE", dE)
         self.setType("kick teapot")
-        self.setnParts(2)
-        self.waveform = None
+        self.setnParts(nparts)
+        self.setLength(length)
+        self.waveform = waveform
 
     def initialize(self) -> None:
         """
