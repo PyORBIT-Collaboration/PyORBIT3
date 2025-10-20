@@ -563,12 +563,13 @@ class DriftTEAPOT(NodeTEAPOT):
     Drift TEAPOT element.
     """
 
-    def __init__(self, name: str = "drift no name") -> None:
+    def __init__(self, name: str = "drift no name", length: float = 0.0) -> None:
         """
         Constructor. Creates the Drift TEAPOT element.
         """
         NodeTEAPOT.__init__(self, name)
         self.setType("drift teapot")
+        self.setLength(length)
 
     def track(self, paramsDict: dict) -> None:
         """
