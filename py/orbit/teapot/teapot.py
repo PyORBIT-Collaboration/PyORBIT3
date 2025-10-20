@@ -650,13 +650,13 @@ class BunchWrapTEAPOT(NodeTEAPOT):
     Drift TEAPOT element.
     """
 
-    def __init__(self, name: str = "drift no name") -> None:
+    def __init__(self, name: str = "drift no name", ringlength: float = 0.0) -> None:
         """
         Constructor. Creates the Bunch wrapper TEAPOT element used in Ring lattices.
         """
         NodeTEAPOT.__init__(self, name)
         self.setType("bunch_wrap_teapot")
-        self.addParam("ring_length", 0.0)
+        self.addParam("ring_length", ringlength)
 
     def track(self, paramsDict: dict) -> None:
         """

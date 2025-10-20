@@ -22,3 +22,9 @@ def test_monitor():
     name = "name"
     node = teapot.MonitorTEAPOT(name=name)
     assert node.getName() == name
+
+
+def test_bunch_wrap():
+    ringlength = 100.0
+    node = teapot.BunchWrapTEAPOT(ringlength=ringlength)
+    assert node.getParam("ring_length") == ringlength
