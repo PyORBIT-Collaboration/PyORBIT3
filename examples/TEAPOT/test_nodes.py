@@ -187,3 +187,19 @@ def test_tilt():
     node = teapot.TiltTEAPOT(angle=angle, name=name)
     assert node.getName() == name
     assert node.getTiltAngle() == angle
+
+
+def test_fringe():
+    def track_function(node: AccNode, params_dict: dict) -> None:
+        return None
+
+    name = "name"
+    parent_node = teapot.QuadTEAPOT()
+    node = teapot.FringeFieldTEAPOT(
+        name=name,
+        parentNode=parent_node,
+        trackFunction=track_function,
+    )
+    assert node.getName() == name
+    assert node.getParamsDict() == parent_node.getParamsDict()
+    assert node.getFringeFieldFunction() == track_function
