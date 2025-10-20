@@ -673,13 +673,14 @@ class SolenoidTEAPOT(NodeTEAPOT):
     Solenoid TEAPOT element.
     """
 
-    def __init__(self, name: str = "solenoid no name") -> None:
+    def __init__(self, name: str = "solenoid no name", B: float = 0.0, length: float = 0.0) -> None:
         """
         Constructor. Creates the Solenoid TEAPOT element.
         """
         NodeTEAPOT.__init__(self, name)
         self.setType("solenoid teapot")
-        self.addParam("B", 0.0)
+        self.addParam("B", B)
+        self.setLength(length)
         self.waveform = None
 
     def track(self, paramsDict: dict) -> None:

@@ -28,3 +28,11 @@ def test_bunch_wrap():
     ringlength = 100.0
     node = teapot.BunchWrapTEAPOT(ringlength=ringlength)
     assert node.getParam("ring_length") == ringlength
+
+
+def test_solenoid():
+    B = 1.0
+    length = 1.0
+    node = teapot.SolenoidTEAPOT(length=length, B=B)
+    assert node.getLength() == length
+    assert node.getParam("B") == B
