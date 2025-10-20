@@ -35,15 +35,17 @@ def test_bunch_wrap():
 def test_solenoid():
     B = 1.0
     length = 1.0
-    node = teapot.SolenoidTEAPOT(length=length, B=B)
+    nparts = 5
+    node = teapot.SolenoidTEAPOT(length=length, nparts=nparts, B=B)
     assert node.getLength() == length
+    assert node.getnParts() == nparts
     assert node.getParam("B") == B
 
 
 def test_multipole():
     name = "name"
-    nparts = 2
     length = 1.0
+    nparts = 2
     poles = [1, 2, 3]
     kls = [0.0, 1.0, 2.0]
     skews = [0, 1, 0]
@@ -65,17 +67,17 @@ def test_multipole():
 
 def test_quad():
     name = "name"
-    kq = 0.5
-    nparts = 10
     length = 1.0
+    nparts = 10
+    kq = 0.5
     poles = [1, 2, 3]
     kls = [0.0, 1.0, 2.0]
     skews = [0, 1, 0]
     node = teapot.QuadTEAPOT(
         name=name,
-        kq=kq,
         length=length,
         nparts=nparts,
+        kq=kq,
         poles=poles,
         kls=kls,
         skews=skews,
@@ -87,3 +89,28 @@ def test_quad():
     assert node.getParam("kls") == kls
     assert node.getParam("skews") == skews
     assert node.getParam("poles") == poles
+
+
+def test_bend():
+    name = "name"
+    length = 1.0
+    nparts = 2
+
+    poles = [1, 2, 3]
+    kls = [0.0, 1.0, 2.0]
+    skews = [0, 1, 0]
+
+    ea1 = 0.0
+    ea2 = 0.0
+    theta = 1e-12
+
+    node = teapot.BendTEAPOT(name=name, length=length, nparts=nparts, poles=poles, kls=kls, skews=skews, ea1=ea1, ea2=ea2, theta=theta)
+    assert node.getName() == name
+    assert node.getLength() == length
+    assert node.getnParts() == nparts
+    assert node.getParam("kls") == kls
+    assert node.getParam("skews") == skews
+    assert node.getParam("poles") == poles
+    assert node.getParam("ea1") == ea1
+    assert node.getParam("ea2") == ea2
+    assert node.getParam("theta") == theta

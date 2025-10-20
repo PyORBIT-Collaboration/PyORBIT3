@@ -568,9 +568,10 @@ class DriftTEAPOT(NodeTEAPOT):
         Constructor. Creates the Drift TEAPOT element.
         """
         NodeTEAPOT.__init__(self, name)
+
         self.setType("drift teapot")
-        self.setLength(length)
         self.setnParts(nparts)
+        self.setLength(length)
 
     def track(self, paramsDict: dict) -> None:
         """
@@ -596,6 +597,7 @@ class ApertureTEAPOT(NodeTEAPOT):
         Constructor. Creates the aperutre element.
         """
         NodeTEAPOT.__init__(self, name)
+
         self.setType("aperture")
         self.addParam("aperture", dim)
         self.addParam("apertype", shape)
@@ -630,6 +632,7 @@ class MonitorTEAPOT(NodeTEAPOT):
         Constructor. Creates the aperutre element.
         """
         NodeTEAPOT.__init__(self, name)
+
         self.setType("monitor teapot")
         self.twiss = BunchTwissAnalysis()
 
@@ -656,6 +659,7 @@ class BunchWrapTEAPOT(NodeTEAPOT):
         Constructor. Creates the Bunch wrapper TEAPOT element used in Ring lattices.
         """
         NodeTEAPOT.__init__(self, name)
+
         self.setType("bunch_wrap_teapot")
         self.addParam("ring_length", ringlength)
 
@@ -674,14 +678,17 @@ class SolenoidTEAPOT(NodeTEAPOT):
     Solenoid TEAPOT element.
     """
 
-    def __init__(self, name: str = "solenoid no name", B: float = 0.0, length: float = 0.0) -> None:
+    def __init__(self, name: str = "solenoid no name", B: float = 0.0, length: float = 0.0, nparts: int = 1) -> None:
         """
         Constructor. Creates the Solenoid TEAPOT element.
         """
         NodeTEAPOT.__init__(self, name)
+
         self.setType("solenoid teapot")
         self.addParam("B", B)
+        self.setnParts(nparts)
         self.setLength(length)
+
         self.waveform = None
 
     def track(self, paramsDict: dict) -> None:
@@ -727,11 +734,13 @@ class MultipoleTEAPOT(NodeTEAPOT):
         Combined Function TEAPOT element.
         """
         NodeTEAPOT.__init__(self, name)
+
         self.addParam("poles", poles if poles else [])
         self.addParam("kls", kls if kls else [])
         self.addParam("skews", skews if skews else [])
         self.setnParts(nparts)
         self.setLength(length)
+
         self.waveform = None
 
         def fringeIN(node, paramsDict):
@@ -876,12 +885,15 @@ class QuadTEAPOT(NodeTEAPOT):
         Combined Function TEAPOT element.
         """
         NodeTEAPOT.__init__(self, name)
+
         self.addParam("kq", kq)
         self.addParam("poles", poles if poles else [])
         self.addParam("kls", kls if kls else [])
         self.addParam("skews", skews if skews else [])
+
         self.setnParts(nparts)
         self.setLength(length)
+
         self.waveform = None
 
         def fringeIN(node, paramsDict):
@@ -1023,21 +1035,33 @@ class BendTEAPOT(NodeTEAPOT):
     Bend Combined Functions TEAPOT element.
     """
 
-    def __init__(self, name: str = "bend no name") -> None:
+    def __init__(
+        self,
+        name: str = "bend no name",
+        length: float = 0.0,
+        nparts: int = 2,
+        poles: list[int] = None,
+        kls: list[float] = None,
+        skews: list[int] = None,
+        ea1: float = 0.0,
+        ea2: float = 0.0,
+        theta: float = 1.00e-36,
+    ) -> None:
         """
         Constructor. Creates the Bend Combined Functions TEAPOT element .
         """
         NodeTEAPOT.__init__(self, name)
-        self.addParam("poles", [])
-        self.addParam("kls", [])
-        self.addParam("skews", [])
 
-        self.addParam("ea1", 0.0)
-        self.addParam("ea2", 0.0)
-        self.addParam("rho", 0.0)
-        self.addParam("theta", 1.0e-36)
+        self.addParam("poles", poles if poles else [])
+        self.addParam("kls", kls if kls else [])
+        self.addParam("skews", skews if skews else [])
 
-        self.setnParts(2)
+        self.addParam("ea1", ea1)
+        self.addParam("ea2", ea2)
+        self.addParam("theta", theta)
+
+        self.setnParts(nparts)
+        self.setLength(length)
 
         def fringeIN(node, paramsDict):
             usageIN = node.getUsage()
