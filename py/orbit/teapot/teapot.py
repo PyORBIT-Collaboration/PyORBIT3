@@ -1404,3 +1404,85 @@ class FringeFieldTEAPOT(BaseTEAPOT):
         field will be used in calculation.
         """
         return self.__usage
+
+
+class ContinuousFocusingTEAPOT(NodeTEAPOT):
+    def __init__(self, name="continuous focusing no name"):
+        NodeTEAPOT.__init__(self, name)
+
+        self.addParam("kq", 0.0)
+        self.addParam("poles", [])
+        self.addParam("kls", [])
+        self.addParam("skews", [])
+        self.setnParts(2)
+        self.waveform = None
+
+        self.getNodeTiltIN().setType("continuous focusing tilt in")
+        self.getNodeTiltOUT().setType("continuous focusing tilt out")
+
+        self.setType("continuous focusing")
+
+    def initialize(self):
+        nParts = self.getnParts()
+        if nParts < 2:
+            msg = "The Quad Combined Function TEAPOT class instance should have more than 2 parts!"
+            msg = msg + os.linesep
+            msg = msg + "Method initialize():"
+            msg = msg + os.linesep
+            msg = msg + "Name of element=" + self.getName()
+            msg = msg + os.linesep
+            msg = msg + "Type of element=" + self.getType()
+            msg = msg + os.linesep
+            msg = msg + "nParts =" + str(nParts)
+            orbitFinalize(msg)
+
+        lengthIN = (self.getLength() / (nParts - 1)) / 2.0
+        lengthOUT = (self.getLength() / (nParts - 1)) / 2.0
+        lengthStep = lengthIN + lengthOUT
+        self.setLength(lengthIN, 0)
+        self.setLength(lengthOUT, nParts - 1)
+        for i in range(nParts - 2):
+            self.setLength(lengthStep, i + 1)
+
+    def track(self, paramsDict):
+        nParts = self.getnParts()
+        index = self.getActivePartIndex()
+        length = self.getLength(index)
+
+        strength = 1.0
+        if self.waveform:
+            strength = self.waveform.getStrength()
+
+        kq = strength * self.getParam("kq")
+        poleArr = self.getParam("poles")
+        klArr = self.getParam("kls")
+        skewArr = self.getParam("skews")
+
+        bunch = paramsDict["bunch"]
+
+        useCharge = 1
+        if "useCharge" in paramsDict:
+            useCharge = paramsDict["useCharge"]
+
+        if index == 0:
+            TPB.continuousLinear(bunch, length, kq, useCharge)
+            return
+        if index > 0 and index < (nParts - 1):
+            for i in range(len(poleArr)):
+                pole = poleArr[i]
+                kl = strength * klArr[i] / (nParts - 1)
+                skew = skewArr[i]
+                TPB.multp(bunch, pole, kl, skew, useCharge)
+            TPB.continuousLinear(bunch, length, kq, useCharge)
+            return
+        if index == (nParts - 1):
+            for i in range(len(poleArr)):
+                pole = poleArr[i]
+                kl = strength * klArr[i] / (nParts - 1)
+                skew = skewArr[i]
+                TPB.multp(bunch, pole, kl, skew, useCharge)
+            TPB.continuousLinear(bunch, length, kq, useCharge)
+        return
+
+    def setWaveform(self, waveform):
+        self.waveform = waveform
