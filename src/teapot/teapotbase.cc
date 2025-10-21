@@ -1566,4 +1566,99 @@ void RingRF(Bunch* bunch, double ring_length, int harmonic_numb,
     }
 }
 
+
+////////////////////////////
+// NAME
+//   continuousLinear
+//
+// DESCRIPTION
+//   Continuous axisymmetric focusing element: linear transport matrix. This
+//   is equivalent to quad1, but is focusing in both planes. This element
+//   assumes there is no energy offset from the synchronous particle.
+//
+// PARAMETERS
+//   bunch  = reference to the macro-particle bunch
+//   length = length of transport
+//   kq = quadrupole field strength [m^(-2)]
+//        kq already has information about the charge of particle.
+//
+// RETURNS
+//   Nothing
+//
+///////////////////////////////////////////////////////////////////////////
+
+void continuousLinear(Bunch* bunch, double length, double kq, int useCharge) {
+    if (kq == 0.0 || bunch->getCharge() == 0.0) {
+        drift(bunch, length);
+        return;
+    }
+
+    double kqc = abs(kq);
+    double sqrt_kq;
+    double kqlength;
+
+    double x_init;
+    double y_init;
+    double xp_init;
+    double yp_init;
+
+    double cx;
+    double sx;
+    double cy;
+    double sy;
+
+    double m11 = 0.0;
+    double m12 = 0.0;
+    double m21 = 0.0;
+    double m22 = 0.0;
+    double m33 = 0.0;
+    double m34 = 0.0;
+    double m43 = 0.0;
+    double m44 = 0.0;
+
+    SyncPart* syncPart = bunch->getSyncPart();
+
+    double v = OrbitConst::c * syncPart->getBeta();
+    if (length > 0.0) {
+        syncPart->setTime(syncPart->getTime() + length / v);
+    }
+
+    double gamma2i = 1.0 / (syncPart->getGamma() * syncPart->getGamma());
+    double dp_p_coeff = 1.0 /(syncPart->getMomentum() * syncPart->getBeta());
+
+    sqrt_kq  = pow(kqc, 0.5);
+    kqlength = sqrt_kq * length;
+    cx = cos(kqlength);
+    sx = sin(kqlength);
+    cy = cos(kqlength);
+    sy = sin(kqlength);
+    m11 = +cx;
+    m12 = +sx / sqrt_kq;
+    m21 = -sx * sqrt_kq;
+    m22 = +cx;
+    m33 = +cy;
+    m34 = +sy / sqrt_kq;
+    m43 = -sy * sqrt_kq;
+    m44 = +cy;
+
+    double dp_p;
+
+    double** arr = bunch->coordArr();
+
+    for(int i = 0; i < bunch->getSize(); i++) {
+        dp_p    = arr[i][5] * dp_p_coeff;
+        x_init  = arr[i][0];
+        xp_init = arr[i][1];
+        y_init  = arr[i][2];
+        yp_init = arr[i][3];
+
+        arr[i][0]  = x_init * m11 + xp_init * m12;
+        arr[i][1]  = x_init * m21 + xp_init * m22;
+        arr[i][2]  = y_init * m33 + yp_init * m34;
+        arr[i][3]  = y_init * m43 + yp_init * m44;
+        arr[i][4] += dp_p * gamma2i * length;
+    }
+}
+
+
 }  //end of namespace teapot_base
