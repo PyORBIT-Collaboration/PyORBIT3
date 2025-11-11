@@ -424,19 +424,19 @@ class RF_Cavity(NamedObject, ParamsDictObject):
         """Returns the phase for the first RF gap."""
         return self.getParam("phase")
 
-    def setFirstGapEtnrancePhase(self, phase):
+    def setFirstGapEntrancePhase(self, phase):
         """Sets the phase at the first gap entrance if Length_of_gap > 0."""
         self.__firstGapEntrancePhase = phase
 
-    def getFirstGapEtnrancePhase(self):
+    def getFirstGapEntrancePhase(self):
         """Returns the phase at the first gap entrance if Length_of_gap > 0."""
         return self.__firstGapEntrancePhase
 
-    def setFirstGapEtnranceDesignPhase(self, phase):
+    def setFirstGapEntranceDesignPhase(self, phase):
         """Sets the design phase at the first gap entrance if Length_of_gap > 0."""
         self.__firstGapEntranceDesignPhase = phase
 
-    def getFirstGapEtnranceDesignPhase(self):
+    def getFirstGapEntranceDesignPhase(self):
         """Returns the design phase at the first gap entrance if Length_of_gap > 0."""
         return self.__firstGapEntranceDesignPhase
 
