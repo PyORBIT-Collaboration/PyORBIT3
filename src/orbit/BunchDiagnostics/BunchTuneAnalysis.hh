@@ -1,7 +1,6 @@
 #ifndef BUNCH_TUNE_ANALYSIS_H
 #define BUNCH_TUNE_ANALYSIS_H
 
-//pyORBIT utils
 #include "CppPyWrapper.hh"
 
 #include "Bunch.hh"
@@ -9,40 +8,34 @@
 
 using namespace std;
 
-/**
-  The BunchTuneAnalysis class calculates the particle tunes
-*/
 
+/** Estimates particle tunes using average phase advance (APA) over one turn. */
 class BunchTuneAnalysis: public OrbitUtils::CppPyWrapper
 {
 	public:
-
 		/** Constructor*/
 		BunchTuneAnalysis();
 
 		/** Destructor */
 		virtual ~BunchTuneAnalysis();
 
-		/** Performs the Twiss analysis of the bunch */
+		/** Estimates tunes. */
 		void analyzeBunch(Bunch* bunch);
 
-		//** Assigns Twiss values at location of calculator */
-		void assignTwiss(double bx, double ax, double dx, double dpx, double by, double ay);
+		/** Sets element of normalization matrix. */
+		void setNormMatrixElement(int i, int j, double value);
 
-		/** Returns the average value for coordinate with index ic */
-		double getTune(int ic);
+		/** Returns element of normalization matrix. */
+		double getNormMatrixElement(int i, int j);
 
+		/** Sets normalization matrix based on uncoupled Twiss parameters. */
+		void assignTwiss(double betax, double alphax, double etax, double etapx, double betay, double alphay);
 
 	private:
-		//** Twiss */
-		double betax;
-		double alphax;
-		double etax;
-		double etapx;
-		double betay;
-		double alphay;
-
+		// Normalization matrix V^{-1}
+		double matrix[6][6];
 };
+
 
 #endif
 //endif for BUNCH_TUNE_ANALYSIS_H
