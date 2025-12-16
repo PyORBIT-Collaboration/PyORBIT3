@@ -1,11 +1,12 @@
-orbit package
-=============
-
-Subpackages
------------
-
+Modules
+=======
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
+   :caption: Modules
+
+.. autosummary::
+   :toctree: _autosummary
+   :recursive:
 
    orbit.aperture
    orbit.bumps
@@ -32,11 +33,3 @@ Subpackages
    orbit.teapot_base
    orbit.time_dep
    orbit.utils
-
-Module contents
----------------
-
-.. automodule:: orbit
-   :members:
-   :show-inheritance:
-   :undoc-members:

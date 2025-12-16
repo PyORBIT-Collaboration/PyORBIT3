@@ -21,8 +21,8 @@ release = 'v3.0.1'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = ['sphinx.ext.coverage', 'sphinx.ext.todo', 'sphinx.ext.viewcode', 'sphinx.ext.autodoc', 'sphinx.ext.autosummary', 'sphinx.ext.napoleon']
-autosummary_generate = True
 napoleon_numpy_docstring = True
+autosummary_imported_members = True
 
 templates_path = ['_templates']
 exclude_patterns = []
@@ -30,9 +30,9 @@ exclude_patterns = []
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'furo'
+html_theme = 'pydata_sphinx_theme'
 html_static_path = ['_static']
 html_show_source_link = True
 html_theme_options = {
-    # 'github_url': 'https://github.com/PyORBIT-Collaboration/PyORBIT3',
+    'github_url': 'https://github.com/PyORBIT-Collaboration/PyORBIT3',
 }

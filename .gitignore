@@ -10,3 +10,4 @@ PyORBIT.egg-info
 .*.swp
 .eggs
 .venv
+_autosummary/
