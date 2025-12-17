@@ -14,6 +14,6 @@ try:
     from .matching import Optics, EnvelopeSolver
     __all__.append("Optics")
     __all__.append("EnvelopeSolver")
-except ImportError:
+except ModuleNotFoundError:
     pass
 
