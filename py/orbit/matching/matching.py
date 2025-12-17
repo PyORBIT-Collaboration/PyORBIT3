@@ -1,12 +1,9 @@
-import os
-import string
 import sys
-from numpy import *
-from scipy.optimize import fsolve
-from scipy.optimize import root
-from scipy.integrate import odeint
+
+import numpy as np
 from scipy.constants import c
-from matplotlib.pyplot import *
+from scipy.integrate import odeint
+from scipy.optimize import root
 
 from ..teapot import TEAPOT_MATRIX_Lattice
 
@@ -90,10 +87,18 @@ class Optics:
         (arrmuY, arrPosAlphaY, arrPosBetaY) = matrix_lattice.getRingTwissDataY()
 
         (DispersionX, DispersionXP) = matrix_lattice.getRingDispersionDataX()
-        (DispersionY, DispersionYP) = matrix_lattice.getRingDispersionDataY()
+        # (DispersionY, DispersionYP) = matrix_lattice.getRingDispersionDataY()
 
         nodes = lattice.getNodes()
         for node in nodes:
+            alphaX = 0.0
+            alphaY = 0.0
+            betaX = 0.0
+            betaY = 0.0
+            dx = 0.0
+            dmux = 0.0
+            muX = 0.0
+            muY = 0.0
             for j in range(len(arrPosBetaX)):
                 if round(lattice.getNodePositionsDict()[node][1], 4) == round(arrPosBetaX[j][0], 4):
                     muX = arrmuX[j][1]
@@ -104,7 +109,7 @@ class Optics:
                     muY = arrmuY[j][1]
                     betaY = arrPosBetaY[j][1]
                     alphaY = arrPosAlphaY[j][1]
-                    dmuy = DispersionYP[j][1]
+                    # dmuy = DispersionYP[j][1] # unused
             if node.getType() == "quad teapot":
                 k1l = node.getParam("kq") * node.getLength()
             else:
@@ -198,7 +203,7 @@ class EnvelopeSolver:
         Np = 1000
         Nb = len(self.beamline)
         Lb = self.beamline[Nb - 1].data["s"]
-        s = linspace(0.0, Lb, num=Np)
+        s = np.linspace(0.0, Lb, num=Np)
         sol = odeint(
             self.func_odeint,
             [x0, xs0, y0, ys0, Dx0, Dxs0],
@@ -233,12 +238,12 @@ class EnvelopeSolver:
     def match_root(self, emitx, emity, sigma_p, Ksc):
         Nb = len(self.beamline)
         # start values
-        x0 = sqrt(self.beamline[Nb - 1].data["betx"] * emitx)
+        x0 = np.sqrt(self.beamline[Nb - 1].data["betx"] * emitx)
         gamx = (1.0 + (self.beamline[Nb - 1].data["alfx"]) ** 2) / self.beamline[Nb - 1].data["betx"]
-        xs0 = -copysign(sqrt(gamx * emitx), self.beamline[Nb - 1].data["alfx"])
-        y0 = sqrt(self.beamline[Nb - 1].data["bety"] * emity)
+        xs0 = -np.copysign(np.sqrt(gamx * emitx), self.beamline[Nb - 1].data["alfx"])
+        y0 = np.sqrt(self.beamline[Nb - 1].data["bety"] * emity)
         gamy = (1.0 + (self.beamline[Nb - 1].data["alfy"]) ** 2) / self.beamline[Nb - 1].data["bety"]
-        ys0 = -copysign(sqrt(gamy * emity), self.beamline[Nb - 1].data["alfy"])
+        ys0 = -np.copysign(np.sqrt(gamy * emity), self.beamline[Nb - 1].data["alfy"])
         Dx0 = self.beamline[Nb - 1].data["Dx"]
         Dxs0 = self.beamline[Nb - 1].data["Dpx"]
         # solver
@@ -257,12 +262,12 @@ class EnvelopeSolver:
     def match_twiss(self, emitx, emity, sigma_p, Ksc):
         Nb = len(self.beamline)
         # start values
-        x0 = sqrt(self.beamline[Nb - 1].data["betx"] * emitx)
+        x0 = np.sqrt(self.beamline[Nb - 1].data["betx"] * emitx)
         gamx = (1.0 + (self.beamline[Nb - 1].data["alfx"]) ** 2) / self.beamline[Nb - 1].data["betx"]
-        xs0 = -copysign(sqrt(gamx * emitx), self.beamline[Nb - 1].data["alfx"])
-        y0 = sqrt(self.beamline[Nb - 1].data["bety"] * emity)
+        xs0 = -np.copysign(np.sqrt(gamx * emitx), self.beamline[Nb - 1].data["alfx"])
+        y0 = np.sqrt(self.beamline[Nb - 1].data["bety"] * emity)
         gamy = (1.0 + (self.beamline[Nb - 1].data["alfy"]) ** 2) / self.beamline[Nb - 1].data["bety"]
-        ys0 = -copysign(sqrt(gamy * emity), self.beamline[Nb - 1].data["alfy"])
+        ys0 = -np.copysign(np.sqrt(gamy * emity), self.beamline[Nb - 1].data["alfy"])
         Dx0 = self.beamline[Nb - 1].data["Dx"]
         Dxs0 = self.beamline[Nb - 1].data["Dpx"]
         # solver
@@ -276,8 +281,8 @@ class EnvelopeSolver:
         return (
             x0**2 / emitx,
             y0**2 / emity,
-            -copysign(sqrt(x0**2 * xs0**2 / emitx**2), xs0),
-            -copysign(sqrt(y0**2 * ys0**2 / emity**2), ys0),
+            -np.copysign(np.sqrt(x0**2 * xs0**2 / emitx**2), xs0),
+            -np.copysign(np.sqrt(y0**2 * ys0**2 / emity**2), ys0),
             Dx0,
             Dxs0,
         )
