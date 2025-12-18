@@ -9,3 +9,5 @@ PyORBIT.egg-info
 *.so
 .*.swp
 .eggs
+.venv
+_autosummary/
