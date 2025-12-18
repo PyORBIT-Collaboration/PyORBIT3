@@ -18,6 +18,12 @@ PyORBIT3
 
    modules
 
+.. toctree::
+   :maxdepth: 2
+   :caption: C++ Interface
+
+   api/pyorbit_root.rst
+
 Indices and tables
 ==================
 * :ref:`genindex`
