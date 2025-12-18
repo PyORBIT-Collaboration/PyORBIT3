@@ -11,6 +11,7 @@ Elements:
 - Kicker
 - RingRF
 - Monitor
+- ContinuousLinearFocusing
 """
 
 from __future__ import annotations
@@ -1504,21 +1505,31 @@ class FringeFieldTEAPOT(BaseTEAPOT):
         return self.__usage
 
 
-class ContinuousFocusingTEAPOT(NodeTEAPOT):
-    def __init__(self, name="continuous focusing no name"):
+class ContinuousLinearFocusingTEAPOT(NodeTEAPOT):
+    def __init__(
+        self,
+        name: str = "CLF no name",
+        length: float = 0.0,
+        nparts: int = 2,
+        kq: float = 0.0,
+        poles: list[int] | None = None,
+        kls: list[float] | None = None,
+        skews: list[int] | None = None,
+        waveform: Any = None,
+    ) -> None:
         NodeTEAPOT.__init__(self, name)
 
-        self.addParam("kq", 0.0)
-        self.addParam("poles", [])
-        self.addParam("kls", [])
-        self.addParam("skews", [])
-        self.setnParts(2)
-        self.waveform = None
+        self.addParam("kq", kq)
+        self.addParam("poles", poles if poles else [])
+        self.addParam("kls", kls if kls else [])
+        self.addParam("skews", skews if skews else [])
+        self.setnParts(nparts)
+        self.setLength(length)
+        self.waveform = waveform
 
-        self.getNodeTiltIN().setType("continuous focusing tilt in")
-        self.getNodeTiltOUT().setType("continuous focusing tilt out")
-
-        self.setType("continuous focusing")
+        self.getNodeTiltIN().setType("CLF tilt in")
+        self.getNodeTiltOUT().setType("CLF tilt out")
+        self.setType("continuous linear focusing")
 
     def initialize(self):
         nParts = self.getnParts()
