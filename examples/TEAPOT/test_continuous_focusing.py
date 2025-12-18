@@ -1,4 +1,3 @@
-import math
 import random
 
 from orbit.core import teapot_base
@@ -10,7 +9,8 @@ from orbit.teapot import teapot
 from orbit.utils.consts import mass_proton
 
 
-def test_continuous_linear_focusing():
+def test_tpb_cf_quad():
+    """Test that CF track function gives same results as focusing quadrupole."""
     coords = []
     for i in range(100):
         x = random.gauss(mu=0.0, sigma=0.010)
@@ -49,7 +49,8 @@ def test_continuous_linear_focusing():
         assert bunch1.dE(i) == bunch2.dE(i)
 
 
-def test_continuous_linear_focusing_node():
+def test_node_cf_quad():
+    """Test that CF node gives same results as focusing quadrupole."""
     coords = []
     for i in range(100):
         x = random.gauss(mu=0.0, sigma=0.010)
