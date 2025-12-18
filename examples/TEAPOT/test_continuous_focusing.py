@@ -9,7 +9,7 @@ from orbit.teapot import teapot
 from orbit.utils.consts import mass_proton
 
 
-def test_tpb_cf_quad():
+def test_clf_quad_teapot_base():
     """Test that CF track function gives same results as focusing quadrupole."""
     coords = []
     for i in range(100):
@@ -49,7 +49,7 @@ def test_tpb_cf_quad():
         assert bunch1.dE(i) == bunch2.dE(i)
 
 
-def test_node_cf_quad():
+def test_clf_quad_node():
     """Test that CF node gives same results as focusing quadrupole."""
     coords = []
     for i in range(100):
@@ -78,15 +78,8 @@ def test_node_cf_quad():
     kq = 0.5
     nparts = 10
 
-    node1 = teapot.ContinuousFocusingTEAPOT()
-    node1.setLength(length)
-    node1.setnParts(nparts)
-    node1.setParam("kq", kq)
-
-    node2 = teapot.QuadTEAPOT()
-    node2.setLength(length)
-    node2.setnParts(nparts)
-    node2.setParam("kq", kq)
+    node1 = teapot.ContinuousLinearFocusingTEAPOT(length=length, nparts=nparts, kq=kq)
+    node2 = teapot.QuadTEAPOT(length=length, nparts=nparts, kq=kq)
 
     node1.trackBunch(bunch1)
     node2.trackBunch(bunch2)
