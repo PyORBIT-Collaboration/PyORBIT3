@@ -1588,6 +1588,9 @@ void RingRF(Bunch* bunch, double ring_length, int harmonic_numb,
 ///////////////////////////////////////////////////////////////////////////
 
 void continuousLinear(Bunch* bunch, double length, double kq, int useCharge) {
+    if (length <= 0.0) {
+        return;
+    }
     if (kq == 0.0 || bunch->getCharge() == 0.0) {
         drift(bunch, length);
         return;
