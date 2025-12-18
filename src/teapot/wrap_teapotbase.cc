@@ -483,6 +483,23 @@ extern "C"
         return Py_None;
     }
 
+    // Continuous axisymmetric focusing element.
+    static PyObject* wrap_continuousLinear(PyObject *self, PyObject *args)
+    {
+        PyObject* pyBunch;
+        double length, kq;
+        int useCharge = 1;
+        if(!PyArg_ParseTuple(args, "Odd|i:continuousLinear",
+                             &pyBunch, &length, &kq, &useCharge))
+        {
+            error("teapotbase - continuousLinear - cannot parse arguments!");
+        }
+        Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) pyBunch)->cpp_obj;
+        teapot_base::continuousLinear(cpp_bunch, length, kq, useCharge);
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+
     static PyMethodDef teapotbaseMethods[] =
     {
             {"rotatexy",         wrap_rotatexy,       METH_VARARGS, "Rotates bunch around z axis "},
@@ -510,6 +527,7 @@ extern "C"
             {"soln",             wrap_soln,           METH_VARARGS, "Integration through a solenoid "},
             {"wedgebendCF",      wrap_wedgebendCF,    METH_VARARGS, "Straight bends particles through wedge for Combined Function non-SBEND "},
             {"RingRF",           wrap_RingRF,         METH_VARARGS, "Tracking particles through a simple ring RF cavity."},
+            {"continuousLinear", wrap_continuousLinear, METH_VARARGS, "Continuous axisymmetric linear focusing element."},
             { NULL, NULL }
     };
 
