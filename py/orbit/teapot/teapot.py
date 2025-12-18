@@ -1,44 +1,41 @@
 """
 Module. Includes classes for all TEAPOT elements. The approach is based
 on the original ORBIT approach developed by J. Holmes.
+
+Elements:
+- Drift
+- Bend
+- Quad
+- Multipole
+- Solenoid
+- Kicker
+- RingRF
+- Monitor
 """
+
+from __future__ import annotations
 
 import sys
 import os
 import math
+from typing import Any
+from typing import Callable
+from typing import Union
 
-# import teapot base functions from wrapper around C++ functions
+from ..lattice import AccLattice
+from ..lattice import AccNode
+from ..lattice import AccActionsContainer
+from ..lattice import AccNodeBunchTracker
 from ..teapot_base import TPB
-
-# import the function that creates multidimensional arrays
 from ..utils import orbitFinalize
+from ..parsers.mad_parser import MAD_Parser
+from ..parsers.mad_parser import MAD_LattElement
+from ..parsers.madx_parser import MADX_Parser
+from ..parsers.madx_parser import MADX_LattElement
 
-# import general accelerator elements and lattice
-from ..lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
-
-# import the MAD parser to construct lattices of TEAPOT elements.
-from ..parsers.mad_parser import MAD_Parser, MAD_LattElement
-
-# import the MADX parser to construct lattices of TEAPOT elements.
-from ..parsers.madx_parser import MADX_Parser, MADX_LattElement
-
-# import aperture
 from orbit.core.aperture import Aperture
-
-# monitor
+from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTwissAnalysis
-
-
-"""
-Drift
-Bend
-Quad
-Multipole
-Solenoid
-Kicker
-RingRF
-monitor
-"""
 
 
 class TEAPOT_Lattice(AccLattice):
@@ -47,11 +44,11 @@ class TEAPOT_Lattice(AccLattice):
     TEAPOT has the ability to read MAD files.
     """
 
-    def __init__(self, name="no name"):
+    def __init__(self, name: str = "no name") -> None:
         AccLattice.__init__(self, name)
         self.useCharge = 1
 
-    def readMAD(self, mad_file_name, lineName):
+    def readMAD(self, mad_file_name: str, lineName: str) -> None:
         """
         It creates the teapot lattice from MAD file.
         """
@@ -77,7 +74,7 @@ class TEAPOT_Lattice(AccLattice):
         self._addChildren()
         self.initialize()
 
-    def readMADX(self, madx_file_name, seqName):
+    def readMADX(self, madx_file_name: str, seqName: str) -> None:
         """
         It creates the teapot lattice from MAD file.
         """
@@ -103,13 +100,13 @@ class TEAPOT_Lattice(AccLattice):
         self._addChildren()
         self.initialize()
 
-    def _addChildren(self):
+    def _addChildren(self) -> None:
         """
         It does nothing here. It is a place holder for TEAPOT_Ring class.
         """
         pass
 
-    def initialize(self):
+    def initialize(self) -> None:
         AccLattice.initialize(self)
         # set up ring length for RF nodes
         ringRF_Node = RingRFTEAPOT()
@@ -117,11 +114,7 @@ class TEAPOT_Lattice(AccLattice):
             if node.getType() == ringRF_Node.getType():
                 node.getParamsDict()["ring_length"] = self.getLength()
 
-    def getSubLattice(
-        self,
-        index_start=-1,
-        index_stop=-1,
-    ):
+    def getSubLattice(self, index_start: int = -1, index_stop: int = -1):  # -> Self (python 3.11+)
         """
         It returns the new TEAPOT_Lattice with children with indexes
         between index_start and index_stop inclusive
@@ -130,7 +123,14 @@ class TEAPOT_Lattice(AccLattice):
         new_teapot_lattice.setUseRealCharge(self.getUseRealCharge())
         return new_teapot_lattice
 
-    def trackBunch(self, bunch, paramsDict={}, actionContainer=None, index_start=-1, index_stop=-1):
+    def trackBunch(
+        self,
+        bunch: Bunch,
+        paramsDict: dict = {},
+        actionContainer: AccActionsContainer = None,
+        index_start: str = -1,
+        index_stop: str = -1,
+    ) -> None:
         """
         It tracks the bunch through the lattice. Indexes index_start and index_stop are inclusive.
         """
@@ -147,11 +147,11 @@ class TEAPOT_Lattice(AccLattice):
         self.trackActions(actionContainer, paramsDict, index_start, index_stop)
         actionContainer.removeAction(track, AccActionsContainer.BODY)
 
-    def setUseRealCharge(self, useCharge=1):
+    def setUseRealCharge(self, useCharge: int = 1) -> None:
         """If useCharge != 1 the trackBunch(...) method will assume the charge = +1"""
         self.useCharge = useCharge
 
-    def getUseRealCharge(self):
+    def getUseRealCharge(self) -> int:
         """If useCharge != 1 the trackBunch(...) method will assume the charge = +1"""
         return self.useCharge
 
@@ -162,10 +162,10 @@ class TEAPOT_Ring(TEAPOT_Lattice):
     collection for rings. TEAPOT has the ability to read MAD files.
     """
 
-    def __init__(self, name="no name"):
+    def __init__(self, name: str = "no name") -> None:
         TEAPOT_Lattice.__init__(self, name)
 
-    def _addChildren(self):
+    def _addChildren(self) -> None:
         """
         Adds Bunch wrapping nodes to all lattice nodes of 1st level.
         These wrapping nodes will move particles from head ( tail ) to tail ( head)
@@ -188,10 +188,10 @@ class _teapotFactory:
     Class. Factory to produce TEAPOT accelerator elements.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
-    def getElements(self, madElem):
+    def getElements(self, madElem: Union[MAD_LattElement, MADX_LattElement]) -> list[NodeTEAPOT]:
         """
         Method produces TEAPOT accelerator elements. It returns the array of TEAPOT nodes.
         Usually there is only one such element, but sometimes (RF with a non zero length)
@@ -350,8 +350,8 @@ class _teapotFactory:
             return [drft_1, elem, drft_2]
         # ==========Others elements such as markers,monitor,rcollimator
         if (
-            madElem.getType().lower() == "marker"
-            or  # madElem.getType().lower() == "monitor" or \
+            madElem.getType().lower() == "marker"  # madElem.getType().lower() == "monitor" or \
+            or
             # madElem.getType().lower() == "hmonitor" or \
             # madElem.getType().lower() == "vmonitor" or \
             madElem.getType().lower() == "rcolimator"
@@ -414,7 +414,7 @@ class _teapotFactory:
 class BaseTEAPOT(AccNodeBunchTracker):
     """The base abstract class of the TEAPOT accelerator elements hierarchy."""
 
-    def __init__(self, name="no name"):
+    def __init__(self, name: str = "no name") -> None:
         """
         Constructor. Creates the base TEAPOT element. This is a superclass for all TEAPOT elements.
         """
@@ -423,14 +423,14 @@ class BaseTEAPOT(AccNodeBunchTracker):
 
 
 class TurnCounterTEAPOT(BaseTEAPOT):
-    def __init__(self, name="TurnCounter"):
+    def __init__(self, name: str = "TurnCounter") -> None:
         """
         Constructor. Creates the TEAPOT for turn count in the Ring lattice.
         """
         BaseTEAPOT.__init__(self, name)
         self.setType("turn counter")
 
-    def track(self, paramsDict):
+    def track(self, paramsDict: dict) -> None:
         """
         The Turn Counter class implementation of the AccNodeBunchTracker class track(probe) method.
         """
@@ -441,7 +441,7 @@ class TurnCounterTEAPOT(BaseTEAPOT):
 
 
 class NodeTEAPOT(BaseTEAPOT):
-    def __init__(self, name="no name"):
+    def __init__(self, name: str = "no name") -> None:
         """
         Constructor. Creates the real TEAPOT element. This is a superclass for all real TEAPOT elements.
         The term real means that element is included in TEAPOT list of elements.
@@ -463,7 +463,7 @@ class NodeTEAPOT(BaseTEAPOT):
         self.addParam("tilt", self.__tiltNodeIN.getTiltAngle())
         self.setType("node teapot")
 
-    def setTiltAngle(self, angle=0.0):
+    def setTiltAngle(self, angle: float = 0.0) -> None:
         """
         Sets the tilt angle for the tilt operation.
         """
@@ -471,86 +471,86 @@ class NodeTEAPOT(BaseTEAPOT):
         self.__tiltNodeIN.setTiltAngle(angle)
         self.__tiltNodeOUT.setTiltAngle((-1.0) * angle)
 
-    def getTiltAngle(self):
+    def getTiltAngle(self) -> float:
         """
         Returns the tilt angle for the tilt operation.
         """
         return self.__tiltNodeIN.getTiltAngle()
 
-    def getNodeFringeFieldIN(self):
+    def getNodeFringeFieldIN(self) -> FringeFieldTEAPOT:
         """
         Returns the FringeFieldTEAPOT instance before this TEAPOT node
         """
         return self.__fringeFieldIN
 
-    def getNodeFringeFieldOUT(self):
+    def getNodeFringeFieldOUT(self) -> FringeFieldTEAPOT:
         """
         Returns the FringeFieldTEAPOT instance after this TEAPOT node
         """
         return self.__fringeFieldOUT
 
-    def getNodeTiltIN(self):
+    def getNodeTiltIN(self) -> TiltTEAPOT:
         """
         Returns the TiltTEAPOT instance before this TEAPOT node
         """
         return self.__tiltNodeIN
 
-    def getNodeTiltOUT(self):
+    def getNodeTiltOUT(self) -> TiltTEAPOT:
         """
         Returns the  TiltTEAPOT instance after this TEAPOT node
         """
         return self.__tiltNodeOUT
 
-    def setFringeFieldFunctionIN(self, trackFunction=None):
+    def setFringeFieldFunctionIN(self, trackFunction: Callable = None) -> None:
         """
         Sets the fringe field function that will track the bunch
         through the fringe at the entrance of the node.
         """
         self.__fringeFieldIN.setFringeFieldFunction(trackFunction)
 
-    def setFringeFieldFunctionOUT(self, trackFunction=None):
+    def setFringeFieldFunctionOUT(self, trackFunction: Callable = None) -> None:
         """
         Sets the fringe field function that will track the bunch
         through the fringe at the exit of the element.
         """
         self.__fringeFieldOUT.setFringeFieldFunction(trackFunction)
 
-    def getFringeFieldFunctionIN(self, trackFunction=None):
+    def getFringeFieldFunctionIN(self) -> Callable:
         """
         Returns the fringe field function that will track the bunch
         through the fringe at the entrance of the node.
         """
         return self.__fringeFieldIN.getFringeFieldFunction()
 
-    def getFringeFieldFunctionOUT(self, trackFunction=None):
+    def getFringeFieldFunctionOUT(self) -> Callable:
         """
         Returns the fringe field function that will track the bunch
         through the fringe at the exit of the element.
         """
         return self.__fringeFieldOUT.getFringeFieldFunction()
 
-    def setUsageFringeFieldIN(self, usage=True):
+    def setUsageFringeFieldIN(self, usage: bool = True) -> None:
         """
         Sets the property describing if the IN fringe
         field will be used in calculation.
         """
         self.__fringeFieldIN.setUsage(usage)
 
-    def getUsageFringeFieldIN(self):
+    def getUsageFringeFieldIN(self) -> bool:
         """
         Returns the property describing if the IN fringe
         field will be used in calculation.
         """
         return self.__fringeFieldIN.getUsage()
 
-    def setUsageFringeFieldOUT(self, usage=True):
+    def setUsageFringeFieldOUT(self, usage: bool = True) -> None:
         """
         Sets the property describing if the OUT fringe
         field will be used in calculation.
         """
         self.__fringeFieldOUT.setUsage(usage)
 
-    def getUsageFringeFieldOUT(self):
+    def getUsageFringeFieldOUT(self) -> bool:
         """
         Returns the property describing if the OUT fringe
         field will be used in calculation.
@@ -563,14 +563,17 @@ class DriftTEAPOT(NodeTEAPOT):
     Drift TEAPOT element.
     """
 
-    def __init__(self, name="drift no name"):
+    def __init__(self, name: str = "drift no name", length: float = 0.0, nparts: int = 1) -> None:
         """
         Constructor. Creates the Drift TEAPOT element.
         """
         NodeTEAPOT.__init__(self, name)
-        self.setType("drift teapot")
 
-    def track(self, paramsDict):
+        self.setType("drift teapot")
+        self.setnParts(nparts)
+        self.setLength(length)
+
+    def track(self, paramsDict: dict) -> None:
         """
         The drift class implementation of the AccNodeBunchTracker class track(probe) method.
         """
@@ -584,16 +587,22 @@ class ApertureTEAPOT(NodeTEAPOT):
     Aperture TEAPOT element.
     """
 
-    def __init__(self, name="aperture no name"):
+    def __init__(
+        self,
+        name: str = "aperture no name",
+        shape: int = 0,
+        dim: tuple[int, ...] = (),
+    ) -> None:
         """
         Constructor. Creates the aperutre element.
         """
         NodeTEAPOT.__init__(self, name)
-        self.setType("aperture")
-        self.addParam("aperture", [])
-        self.addParam("apertype", 0.0)
 
-    def initialize(self):
+        self.setType("aperture")
+        self.addParam("aperture", dim)
+        self.addParam("apertype", shape)
+
+    def initialize(self) -> None:
         shape = self.getParam("apertype")
         dim = self.getParam("aperture")
         if len(dim) > 0:
@@ -604,7 +613,7 @@ class ApertureTEAPOT(NodeTEAPOT):
             if shape == 3:
                 self.aperture = Aperture(shape, dim[0], dim[1], 0.0, 0.0)
 
-    def track(self, paramsDict):
+    def track(self, paramsDict: dict) -> None:
         """
         The aperture class implementation of the ApertueNode.
         """
@@ -618,15 +627,16 @@ class MonitorTEAPOT(NodeTEAPOT):
     Monitor TEAPOT element.
     """
 
-    def __init__(self, name="Monitor no name"):
+    def __init__(self, name: str = "Monitor no name") -> None:
         """
         Constructor. Creates the aperutre element.
         """
         NodeTEAPOT.__init__(self, name)
+
         self.setType("monitor teapot")
         self.twiss = BunchTwissAnalysis()
 
-    def track(self, paramsDict):
+    def track(self, paramsDict: dict) -> None:
         """
         The bunchtuneanalysis-teapot class implementation of the AccNodeBunchTracker class track(probe) method.
         """
@@ -644,15 +654,16 @@ class BunchWrapTEAPOT(NodeTEAPOT):
     Drift TEAPOT element.
     """
 
-    def __init__(self, name="drift no name"):
+    def __init__(self, name: str = "drift no name", ringlength: float = 0.0) -> None:
         """
         Constructor. Creates the Bunch wrapper TEAPOT element used in Ring lattices.
         """
         NodeTEAPOT.__init__(self, name)
-        self.setType("bunch_wrap_teapot")
-        self.addParam("ring_length", 0.0)
 
-    def track(self, paramsDict):
+        self.setType("bunch_wrap_teapot")
+        self.addParam("ring_length", ringlength)
+
+    def track(self, paramsDict: dict) -> None:
         """
         The bunch wrap class implementation of the AccNodeBunchTracker class track(probe) method.
         """
@@ -667,16 +678,26 @@ class SolenoidTEAPOT(NodeTEAPOT):
     Solenoid TEAPOT element.
     """
 
-    def __init__(self, name="solenoid no name"):
+    def __init__(
+        self,
+        name: str = "solenoid no name",
+        B: float = 0.0,
+        length: float = 0.0,
+        nparts: int = 1,
+        waveform: Any = None,
+    ) -> None:
         """
         Constructor. Creates the Solenoid TEAPOT element.
         """
         NodeTEAPOT.__init__(self, name)
-        self.setType("solenoid teapot")
-        self.addParam("B", 0.0)
-        self.waveform = None
 
-    def track(self, paramsDict):
+        self.setType("solenoid teapot")
+        self.addParam("B", B)
+        self.setnParts(nparts)
+        self.setLength(length)
+        self.waveform = waveform
+
+    def track(self, paramsDict: dict) -> None:
         """
         The Solenoid TEAPOT class implementation of the
         AccNodeBunchTracker class track(probe) method.
@@ -693,7 +714,7 @@ class SolenoidTEAPOT(NodeTEAPOT):
             useCharge = paramsDict["useCharge"]
         TPB.soln(bunch, length, B, useCharge)
 
-    def setWaveform(self, waveform):
+    def setWaveform(self, waveform: Any) -> None:
         """
         Sets the time dependent waveform function
         """
@@ -705,17 +726,28 @@ class MultipoleTEAPOT(NodeTEAPOT):
     Multipole Combined Function TEAPOT element.
     """
 
-    def __init__(self, name="multipole no name"):
+    def __init__(
+        self,
+        name: str = "multipole no name",
+        length: float = 0.0,
+        nparts: int = 2,
+        poles: list[int] = None,
+        kls: list[float] = None,
+        skews: list[int] = None,
+        waveform: Any = None,
+    ) -> None:
         """
         Constructor. Creates the Multipole
         Combined Function TEAPOT element.
         """
         NodeTEAPOT.__init__(self, name)
-        self.addParam("poles", [])
-        self.addParam("kls", [])
-        self.addParam("skews", [])
-        self.setnParts(2)
-        self.waveform = None
+
+        self.addParam("poles", poles if poles else [])
+        self.addParam("kls", kls if kls else [])
+        self.addParam("skews", skews if skews else [])
+        self.setnParts(nparts)
+        self.setLength(length)
+        self.waveform = waveform
 
         def fringeIN(node, paramsDict):
             usageIN = node.getUsage()
@@ -768,7 +800,7 @@ class MultipoleTEAPOT(NodeTEAPOT):
 
         self.setType("multipole teapot")
 
-    def initialize(self):
+    def initialize(self) -> None:
         """
         The  Multipole Combined Function TEAPOT class
         implementation of the AccNode class initialize() method.
@@ -793,7 +825,7 @@ class MultipoleTEAPOT(NodeTEAPOT):
         for i in range(nParts - 2):
             self.setLength(lengthStep, i + 1)
 
-    def track(self, paramsDict):
+    def track(self, paramsDict: dict) -> None:
         """
         The Multipole Combined Function TEAPOT  class
         implementation of the AccNodeBunchTracker class
@@ -832,7 +864,7 @@ class MultipoleTEAPOT(NodeTEAPOT):
             TPB.drift(bunch, length)
         return
 
-    def setWaveform(self, waveform):
+    def setWaveform(self, waveform: Any) -> None:
         """
         Sets the time dependent waveform function
         """
@@ -844,19 +876,29 @@ class QuadTEAPOT(NodeTEAPOT):
     Quad Combined Function TEAPOT element.
     """
 
-    def __init__(self, name="quad no name"):
+    def __init__(
+        self,
+        name: str = "quad no name",
+        length: float = 0.0,
+        nparts: int = 2,
+        kq: float = 0.0,
+        poles: list[int] = None,
+        kls: list[float] = None,
+        skews: list[int] = None,
+        waveform: Any = None,
+    ) -> None:
         """
         Constructor. Creates the Quad
         Combined Function TEAPOT element.
         """
         NodeTEAPOT.__init__(self, name)
-
-        self.addParam("kq", 0.0)
-        self.addParam("poles", [])
-        self.addParam("kls", [])
-        self.addParam("skews", [])
-        self.setnParts(2)
-        self.waveform = None
+        self.addParam("kq", kq)
+        self.addParam("poles", poles if poles else [])
+        self.addParam("kls", kls if kls else [])
+        self.addParam("skews", skews if skews else [])
+        self.setnParts(nparts)
+        self.setLength(length)
+        self.waveform = waveform
 
         def fringeIN(node, paramsDict):
             usageIN = node.getUsage()
@@ -917,7 +959,7 @@ class QuadTEAPOT(NodeTEAPOT):
 
         self.setType("quad teapot")
 
-    def initialize(self):
+    def initialize(self) -> None:
         """
         The  Quad Combined Function TEAPOT class implementation
         of the AccNode class initialize() method.
@@ -942,7 +984,7 @@ class QuadTEAPOT(NodeTEAPOT):
         for i in range(nParts - 2):
             self.setLength(lengthStep, i + 1)
 
-    def track(self, paramsDict):
+    def track(self, paramsDict: dict) -> None:
         """
         The Quad Combined Function TEAPOT  class implementation
         of the AccNodeBunchTracker class track(probe) method.
@@ -985,7 +1027,7 @@ class QuadTEAPOT(NodeTEAPOT):
             TPB.quad1(bunch, length, kq, useCharge)
         return
 
-    def setWaveform(self, waveform):
+    def setWaveform(self, waveform: Any) -> None:
         """
         Sets the time dependent waveform function
         """
@@ -997,21 +1039,33 @@ class BendTEAPOT(NodeTEAPOT):
     Bend Combined Functions TEAPOT element.
     """
 
-    def __init__(self, name="bend no name"):
+    def __init__(
+        self,
+        name: str = "bend no name",
+        length: float = 0.0,
+        nparts: int = 2,
+        poles: list[int] = None,
+        kls: list[float] = None,
+        skews: list[int] = None,
+        ea1: float = 0.0,
+        ea2: float = 0.0,
+        theta: float = 1.00e-36,
+    ) -> None:
         """
         Constructor. Creates the Bend Combined Functions TEAPOT element .
         """
         NodeTEAPOT.__init__(self, name)
-        self.addParam("poles", [])
-        self.addParam("kls", [])
-        self.addParam("skews", [])
 
-        self.addParam("ea1", 0.0)
-        self.addParam("ea2", 0.0)
-        self.addParam("rho", 0.0)
-        self.addParam("theta", 1.0e-36)
+        self.addParam("poles", poles if poles else [])
+        self.addParam("kls", kls if kls else [])
+        self.addParam("skews", skews if skews else [])
 
-        self.setnParts(2)
+        self.addParam("ea1", ea1)
+        self.addParam("ea2", ea2)
+        self.addParam("theta", theta)
+
+        self.setnParts(nparts)
+        self.setLength(length)
 
         def fringeIN(node, paramsDict):
             usageIN = node.getUsage()
@@ -1041,7 +1095,18 @@ class BendTEAPOT(NodeTEAPOT):
                             TPB.multpfringeIN(bunch, pole, kl, skew, useCharge)
                     frinout = 1
                     TPB.wedgerotate(bunch, e, frinout)
-                TPB.wedgebendCF(bunch, e, inout, rho, len(poleArr), poleArr, klArr, skewArr, nParts - 1, useCharge)
+                TPB.wedgebendCF(
+                    bunch,
+                    e,
+                    inout,
+                    rho,
+                    len(poleArr),
+                    poleArr,
+                    klArr,
+                    skewArr,
+                    nParts - 1,
+                    useCharge,
+                )
             else:
                 if usageIN:
                     TPB.bendfringeIN(bunch, rho)
@@ -1067,7 +1132,18 @@ class BendTEAPOT(NodeTEAPOT):
             nParts = paramsDict["parentNode"].getnParts()
             if e != 0.0:
                 inout = 1
-                TPB.wedgebendCF(bunch, e, inout, rho, len(poleArr), poleArr, klArr, skewArr, nParts - 1, useCharge)
+                TPB.wedgebendCF(
+                    bunch,
+                    e,
+                    inout,
+                    rho,
+                    len(poleArr),
+                    poleArr,
+                    klArr,
+                    skewArr,
+                    nParts - 1,
+                    useCharge,
+                )
                 if usageOUT:
                     frinout = 0
                     TPB.wedgerotate(bunch, -e, frinout)
@@ -1096,7 +1172,7 @@ class BendTEAPOT(NodeTEAPOT):
 
         self.setType("bend teapot")
 
-    def initialize(self):
+    def initialize(self) -> None:
         """
         The  Bend Combined Functions TEAPOT class implementation of
         the AccNode class initialize() method.
@@ -1123,7 +1199,7 @@ class BendTEAPOT(NodeTEAPOT):
         for i in range(nParts - 2):
             self.setLength(lengthStep, i + 1)
 
-    def track(self, paramsDict):
+    def track(self, paramsDict: dict) -> None:
         """
         The Bend Combined Functions TEAPOT  class implementation of
         the AccNodeBunchTracker class track(probe) method.
@@ -1177,7 +1253,14 @@ class RingRFTEAPOT(NodeTEAPOT):
     Ring RF TEAPOT element.
     """
 
-    def __init__(self, name="RingRF no name"):
+    def __init__(
+        self,
+        name: str = "RingRF no name",
+        harmonics: list[float] = None,
+        voltages: list[float] = None,
+        phases: list[float] = None,
+        ringlength: float = 0.0,
+    ) -> None:
         """
         Constructor. Creates the Ring RF TEAPOT element.
         Harmonics numbers are 1,2,3, ...
@@ -1185,15 +1268,15 @@ class RingRFTEAPOT(NodeTEAPOT):
         Phases are in radians.
         """
         NodeTEAPOT.__init__(self, name)
-        self.addParam("harmonics", [])
-        self.addParam("voltages", [])
-        self.addParam("phases", [])
-        self.addParam("ring_length", 0.0)
+        self.addParam("harmonics", harmonics if harmonics else [])
+        self.addParam("voltages", voltages if voltages else [])
+        self.addParam("phases", phases if phases else [])
+        self.addParam("ring_length", ringlength)
         self.setType("RingRF teapot")
 
         self.setnParts(1)
 
-    def addRF(self, harmonic, voltage, phase):
+    def addRF(self, harmonic: float, voltage: float, phase: float) -> None:
         """
         Method. It adds the RF component with sertain
         harmonic, voltage, and phase.
@@ -1202,7 +1285,7 @@ class RingRFTEAPOT(NodeTEAPOT):
         self.getParam("voltages").append(voltage)
         self.getParam("phases").append(phase)
 
-    def initialize(self):
+    def initialize(self) -> None:
         """
         The Ring RF TEAPOT class implementation
         of the AccNode class initialize() method.
@@ -1222,7 +1305,7 @@ class RingRFTEAPOT(NodeTEAPOT):
             msg = msg + "length =" + str(self.getLength())
             orbitFinalize(msg)
 
-    def track(self, paramsDict):
+    def track(self, paramsDict: dict) -> None:
         """
         The Ring RF TEAPOT class implementation
         of the AccNodeBunchTracker class track(probe) method.
@@ -1247,19 +1330,29 @@ class KickTEAPOT(NodeTEAPOT):
     Kick TEAPOT element.
     """
 
-    def __init__(self, name="kick no name"):
+    def __init__(
+        self,
+        name: str = "kick no name",
+        length: float = 0.0,
+        nparts: int = 2,
+        kx: float = 0.0,
+        ky: float = 0.0,
+        dE: float = 0.0,
+        waveform: Any = None,
+    ) -> None:
         """
         Constructor. Creates the Kick TEAPOT element .
         """
         NodeTEAPOT.__init__(self, name)
-        self.addParam("kx", 0.0)
-        self.addParam("ky", 0.0)
-        self.addParam("dE", 0.0)
+        self.addParam("kx", kx)
+        self.addParam("ky", ky)
+        self.addParam("dE", dE)
         self.setType("kick teapot")
-        self.setnParts(2)
-        self.waveform = None
+        self.setnParts(nparts)
+        self.setLength(length)
+        self.waveform = waveform
 
-    def initialize(self):
+    def initialize(self) -> None:
         """
         The  Kicker TEAPOT class implementation of
         the AccNode class initialize() method.
@@ -1284,7 +1377,7 @@ class KickTEAPOT(NodeTEAPOT):
         for i in range(nParts - 2):
             self.setLength(lengthStep, i + 1)
 
-    def track(self, paramsDict):
+    def track(self, paramsDict: dict) -> None:
         """
         The Kick TEAPOT class implementation of
         the AccNodeBunchTracker class track(probe) method.
@@ -1326,7 +1419,7 @@ class TiltTEAPOT(BaseTEAPOT):
     The class to do tilt at the entrance of an TEAPOT element.
     """
 
-    def __init__(self, name="tilt no name", angle=0.0):
+    def __init__(self, name: str = "tilt no name", angle: float = 0.0) -> None:
         """
         Constructor. Creates the Tilt TEAPOT element.
         """
@@ -1334,19 +1427,19 @@ class TiltTEAPOT(BaseTEAPOT):
         self.__angle = angle
         self.setType("tilt teapot")
 
-    def setTiltAngle(self, angle=0.0):
+    def setTiltAngle(self, angle: float = 0.0) -> None:
         """
         Sets the tilt angle for the tilt operation.
         """
         self.__angle = angle
 
-    def getTiltAngle(self):
+    def getTiltAngle(self) -> float:
         """
         Returns the tilt angle for the tilt operation.
         """
         return self.__angle
 
-    def track(self, paramsDict):
+    def track(self, paramsDict: dict) -> None:
         """
         It is tracking the dictionary with parameters through
         the titlt node.
@@ -1361,7 +1454,12 @@ class FringeFieldTEAPOT(BaseTEAPOT):
     The class is a base class for the fringe field classes for others TEAPOT elements.
     """
 
-    def __init__(self, parentNode, trackFunction=None, name="fringe field no name"):
+    def __init__(
+        self,
+        parentNode: AccNode,
+        trackFunction: Callable = None,
+        name: str = "fringe field no name",
+    ) -> None:
         """
         Constructor. Creates the Fringe Field TEAPOT element.
         """
@@ -1371,7 +1469,7 @@ class FringeFieldTEAPOT(BaseTEAPOT):
         self.__usage = True
         self.setType("fringeField teapot")
 
-    def track(self, paramsDict):
+    def track(self, paramsDict: dict) -> None:
         """
         It is tracking the dictionary with parameters through
         the fringe field node.
@@ -1379,26 +1477,26 @@ class FringeFieldTEAPOT(BaseTEAPOT):
         if self.__trackFunc != None:
             self.__trackFunc(self, paramsDict)
 
-    def setFringeFieldFunction(self, trackFunction=None):
+    def setFringeFieldFunction(self, trackFunction: Callable) -> None:
         """
         Sets the fringe field function that will track the bunch through the fringe.
         """
         self.__trackFunc = trackFunction
 
-    def getFringeFieldFunction(self):
+    def getFringeFieldFunction(self) -> Callable:
         """
         Returns the fringe field function.
         """
         return self.__trackFunc
 
-    def setUsage(self, usage=True):
+    def setUsage(self, usage: bool = True) -> None:
         """
         Sets the boolean flag describing if the fringe
         field will be used in calculation.
         """
         self.__usage = usage
 
-    def getUsage(self):
+    def getUsage(self) -> bool:
         """
         Returns the boolean flag describing if the fringe
         field will be used in calculation.
