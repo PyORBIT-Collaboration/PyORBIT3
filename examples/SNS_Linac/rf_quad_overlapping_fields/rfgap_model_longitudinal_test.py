@@ -127,7 +127,7 @@ three_point_gap.getRF_Cavity().setPhase(0.)
 bunch = Bunch()
 bunch_init.copyEmptyBunchTo(bunch)
 three_point_gap.trackDesignBunch(bunch)
-cav_1st_gap_entr_phase0 = three_point_gap.getRF_Cavity().getFirstGapEtnrancePhase()
+cav_1st_gap_entr_phase0 = three_point_gap.getRF_Cavity().getFirstGapEntrancePhase()
 
 print ("=============================================================")
 print ("Case 1: Cavity phase scan assuming the phase at z=0 position.")
@@ -144,7 +144,7 @@ for ind in range(Nph+1):
     bunch_init.copyEmptyBunchTo(bunch)
     three_point_gap.trackDesignBunch(bunch)
     
-    cav_1st_gap_entr_phase = phaseNearTargetPhase(three_point_gap.getRF_Cavity().getFirstGapEtnrancePhase(),0.)
+    cav_1st_gap_entr_phase = phaseNearTargetPhase(three_point_gap.getRF_Cavity().getFirstGapEntrancePhase(),0.)
     delta_phase = phaseNearTargetPhase(cav_1st_gap_entr_phase - cav_phase - cav_1st_gap_entr_phase0,0.)
     gap_phase = phaseNearTargetPhase(three_point_gap.getGapPhase(),cav_phase)
     delta_eKin_out = bunch.getSyncParticle().kinEnergy() - Ekin_init
@@ -182,7 +182,7 @@ three_point_gap.getRF_Cavity().setPhase(0.)
 bunch = Bunch()
 bunch_init.copyEmptyBunchTo(bunch)
 three_point_gap.trackDesignBunch(bunch)
-cav_1st_gap_entr_phase0 = three_point_gap.getRF_Cavity().getFirstGapEtnrancePhase()
+cav_1st_gap_entr_phase0 = three_point_gap.getRF_Cavity().getFirstGapEntrancePhase()
 
 print ("=============================================================")
 print ("Case 2: Cavity phase scan assuming the phase at the entrance.")
@@ -199,7 +199,7 @@ for ind in range(Nph+1):
     bunch_init.copyEmptyBunchTo(bunch)
     three_point_gap.trackDesignBunch(bunch)
     
-    cav_1st_gap_entr_phase = phaseNearTargetPhase(three_point_gap.getRF_Cavity().getFirstGapEtnrancePhase(),0.)
+    cav_1st_gap_entr_phase = phaseNearTargetPhase(three_point_gap.getRF_Cavity().getFirstGapEntrancePhase(),0.)
     delta_phase = phaseNearTargetPhase(cav_1st_gap_entr_phase - cav_phase - cav_1st_gap_entr_phase0,0.)
     gap_phase = phaseNearTargetPhase(three_point_gap.getGapPhase(),cav_phase)
     delta_eKin_out = bunch.getSyncParticle().kinEnergy() - Ekin_init
