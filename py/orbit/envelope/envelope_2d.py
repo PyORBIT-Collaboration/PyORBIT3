@@ -13,6 +13,11 @@ class Envelope2D:
             self.cov_matrix = np.eye(4)
 
     def track(self, matrix: np.ndarray) -> None:
+        """Evolve covariance matrix: S -> M S M^T."""
         S = self.cov_matrix
         M = matrix[:4, :4]
         self.cov_matrix = np.linalg.multi_dot([M, S, M.T])
+
+    def spaceChargeMatrix(self) -> np.ndarray:
+        """Return transfer matrix for linear space charge kick."""
+        raise NotImplementedError()
