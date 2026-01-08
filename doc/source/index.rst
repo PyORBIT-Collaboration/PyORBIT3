@@ -20,7 +20,7 @@ PyORBIT3
 
 .. toctree::
    :maxdepth: 2
-   :caption: C++ Interface
+   :caption: C++ API
 
    api/pyorbit_root.rst
 

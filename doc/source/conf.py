@@ -5,6 +5,7 @@
 
 # -- Path setup --------------------------------------------------------------
 import sys
+import pathlib
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "py/"))
@@ -42,14 +43,16 @@ breathe_default_project = "PyORBIT3"
 
 doxyfile = '\n'.join([
     "INPUT = ../../src",
-    "EXCLUDE_PATTERNS = *wrap*",
+    "EXCLUDE_PATTERNS = *wrap* *_init.cc",
+    "PREDEFINED += DOXYGEN_SHOULD_SKIP_THIS",
+    "PREDEFINED += PyObject_HEAD=\"PyObject ob_base;\""
     ])
 
 exhale_args = {
         "containmentFolder": "./api",
         "rootFileName": "pyorbit_root.rst",
         "doxygenStripFromPath": "..",
-        "rootFileTitle": "PyORBIT3 API",
+        "rootFileTitle": "PyORBIT3 C++ API",
         "createTreeView": True,
         "exhaleExecutesDoxygen": True,
         "exhaleDoxygenStdin": doxyfile,
@@ -63,4 +66,7 @@ html_static_path = ['_static']
 html_show_source_link = True
 html_theme_options = {
     'github_url': 'https://github.com/PyORBIT-Collaboration/PyORBIT3',
+    'logo': {
+        'text': "PyORBIT3",
+    }
 }
