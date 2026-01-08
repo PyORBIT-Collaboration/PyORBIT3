@@ -29,9 +29,8 @@ namespace OrbitUtils{
 		return sin(x)*exp(-fac1*pow(2*p*sin(x/2), 2))/pow(sin(x/2),4);
 	}
 
-
 	int zbrak(float (*fx)(float, float, float, float), float x1, float x2,
-			  int n, float xb1[], float xb2[], int &nb, float param1,
+			  int n, float *xb1, float *xb2, int &nb, float param1,
 			  float param2, float param3)
 	{
 		int nbb, i;
@@ -54,7 +53,9 @@ namespace OrbitUtils{
 	}
 
 	#undef JMAX
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 	#define JMAX 40
+#endif
 
 	float rtbis(float (*func)(float, float, float, float), float x1, float x2,
 				float xacc, float param1, float param2, float param3)
@@ -134,8 +135,10 @@ namespace OrbitUtils{
 
 #undef EPS
 #undef JMAX
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 #define EPS 1.0e-6
 #define JMAX 20
+#endif
 
 	float qsimp(float (*func)(float, float, float), float a, float b,
 				float p, float fac1)
@@ -164,7 +167,9 @@ namespace OrbitUtils{
 
 
 	/* note #undef's at end of file */
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 #define FUNC(x, p, fac1) ((*rfunc)(x, p, fac1))
+#endif
 
 	float trapzd(float (*rfunc)(float, float, float), float a,
 				 float b, int n, float p, float fac1)
