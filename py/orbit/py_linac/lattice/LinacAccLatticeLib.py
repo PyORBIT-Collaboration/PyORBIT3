@@ -375,6 +375,14 @@ class RF_Cavity(NamedObject, ParamsDictObject):
         self.addParam("designArrivalTime", 0.0)
         self.addParam("isDesignSetUp", False)
         self.addParam("pos", 0.0)
+        #---- This parameter is only for RF gap types with 
+        #---- the continuous RF fields on the axis of the cavity.
+        #---- If usePhaseAtEntrance = False we will use the phase at the center
+        #---- of RF gap as for a standard cavity representations as a set 
+        #---- of zero-length RF gaps.
+        #---- If usePhaseAtEntrance = False we use the phase at the entrance
+        #---- of the cavity.
+        self.usePhaseAtEntrance = False
 
     def setDesignSetUp(self, designOnOf):
         """Sets the design set up information (True,False)."""
@@ -416,19 +424,19 @@ class RF_Cavity(NamedObject, ParamsDictObject):
         """Returns the phase for the first RF gap."""
         return self.getParam("phase")
 
-    def setFirstGapEtnrancePhase(self, phase):
+    def setFirstGapEntrancePhase(self, phase):
         """Sets the phase at the first gap entrance if Length_of_gap > 0."""
         self.__firstGapEntrancePhase = phase
 
-    def getFirstGapEtnrancePhase(self):
+    def getFirstGapEntrancePhase(self):
         """Returns the phase at the first gap entrance if Length_of_gap > 0."""
         return self.__firstGapEntrancePhase
 
-    def setFirstGapEtnranceDesignPhase(self, phase):
+    def setFirstGapEntranceDesignPhase(self, phase):
         """Sets the design phase at the first gap entrance if Length_of_gap > 0."""
         self.__firstGapEntranceDesignPhase = phase
 
-    def getFirstGapEtnranceDesignPhase(self):
+    def getFirstGapEntranceDesignPhase(self):
         """Returns the design phase at the first gap entrance if Length_of_gap > 0."""
         return self.__firstGapEntranceDesignPhase
 
@@ -482,6 +490,26 @@ class RF_Cavity(NamedObject, ParamsDictObject):
     def getAvgGapPhaseDeg(self):
         """Returns average phase in degrees for all RF gaps in the cavity"""
         return self.getAvgGapPhase() * 180.0 / math.pi
+        
+    def setUsePhaseAtEntrance(self,usePhaseAtEntrance):
+        """
+        This parameter is only for RF gap types with the continuous RF fields 
+        on the axis of the cavity.
+        If usePhaseAtEntrance = False we will use the phase at the center
+        of 1 st RF gap as for a standard cavity representations as a set 
+        of zero-length RF gaps.
+        If usePhaseAtEntrance = False we use the phase at the entrance
+        of the cavity.
+        By default it is False. Switching to True will change cavity phase and
+        all longitudinal dynamics calculations. You should calculate and set
+        of the cavity phase before the bunch tracking. And, of course, you 
+        should start with the trackDesignBunch(...) lattice method. 
+        """
+        self.usePhaseAtEntrance = usePhaseAtEntrance
+        
+    def getUsePhaseAtEntrance(self):
+        """ Returns the usePhaseAtEntrance parameter of the cavity """
+        return self.usePhaseAtEntrance
 
     def removeAllGapNodes(self):
         """Remove all rf gaps from this cavity."""

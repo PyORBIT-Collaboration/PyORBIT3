@@ -268,6 +268,8 @@ class BaseRF_Gap(AbstractRF_Gap):
         if self.__isFirstGap:
             rfCavity.setDesignArrivalTime(arrival_time)
             rfCavity.setDesignSetUp(True)
+            rfCavity.setFirstGapEntrancePhase(rfCavity.getPhase())
+            rfCavity.setFirstGapEntranceDesignPhase(rfCavity.getPhase())
             rfCavity._setDesignPhase(rfCavity.getPhase())
             rfCavity._setDesignAmp(rfCavity.getAmp())
         else:
@@ -469,8 +471,8 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
         self.z_max = 0.0
         self.z_tolerance = 0.000001  # in meters
         self.phase_tolerance = 0.001  # in degrees
-        # ---- gap_phase_vs_z_arr keeps [pos,phase] pairs after the tracking
-        self.gap_phase_vs_z_arr = []
+        # ---- gap_pos_phase_func keeps phase=function(pos) after the tracking
+        self.gap_pos_phase_func = Function()
         # ---- The position of the particle during the run.
         # ---- It is used for the path length accounting.
         self.part_pos = 0.0
@@ -508,11 +510,15 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
         """
         return self.axis_field_func
 
-    def setAxisFieldFunction(self, axis_field_func):
+    def setAxisFieldFunction(self, axis_field_func, z_step=0.01):
         """
         It sets the axis field function.
         """
         self.axis_field_func = axis_field_func
+        z_min = self.axis_field_func.getMinX()
+        z_max = self.axis_field_func.getMaxX()
+        self.z_step = z_step
+        self.setZ_Min_Max(z_min, z_max)
 
     def getZ_Step(self):
         """
@@ -610,14 +616,16 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
         arrival_time = syncPart.time()
         designArrivalTime = rfCavity.getDesignArrivalTime()
         phase_shift = rfCavity.getPhase() - rfCavity.getDesignPhase()
-        phase = rfCavity.getFirstGapEtnrancePhase() + phase_shift
+        phase = rfCavity.getFirstGapEntrancePhase() + phase_shift
+        usePhaseAtEntrance = rfCavity.getUsePhaseAtEntrance()
+        if(usePhaseAtEntrance):
+            phase = rfCavity.getPhase()
         # ----------------------------------------
         phase = math.fmod(frequency * (arrival_time - designArrivalTime) * 2.0 * math.pi + phase, 2.0 * math.pi)
         if index == 0:
             self.part_pos = self.z_min
-            self.gap_phase_vs_z_arr = [
-                [self.part_pos, phase],
-            ]
+            self.gap_pos_phase_func.clean()
+            self.gap_pos_phase_func.add(self.part_pos, phase)
         zm = self.part_pos
         z0 = zm + part_length / 2
         zp = z0 + part_length / 2
@@ -630,7 +638,7 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
         # call rf gap model to track the bunch
         time_middle_gap = syncPart.time() - arrival_time
         delta_phase = math.fmod(2 * math.pi * time_middle_gap * frequency, 2.0 * math.pi)
-        self.gap_phase_vs_z_arr.append([self.part_pos, phase + delta_phase])
+        self.gap_pos_phase_func.add(self.part_pos, phase + delta_phase)
         # ---- this part is the debugging ---START---
         # eKin_out = syncPart.kinEnergy()
         # s  = "debug pos[mm]= %7.2f "%(self.part_pos*1000.)
@@ -645,7 +653,7 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
         self.part_pos += part_length / 2
         time_middle_gap = syncPart.time() - arrival_time
         delta_phase = math.fmod(2 * math.pi * time_middle_gap * frequency, 2.0 * math.pi)
-        self.gap_phase_vs_z_arr.append([self.part_pos, phase + delta_phase])
+        self.gap_pos_phase_func.add(self.part_pos, phase + delta_phase)
         # ---- this part is the debugging ---START---
         # eKin_out = syncPart.kinEnergy()
         # s  = "debug pos[mm]= %7.2f "%(self.part_pos*1000.)
@@ -656,29 +664,35 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
         # ---- this part is the debugging ---STOP---
         # ---- Calculate the phase at the center
         if index == (nParts - 1):
-            pos_old = self.gap_phase_vs_z_arr[0][0]
-            phase_gap = self.gap_phase_vs_z_arr[0][1]
-            ind_min = -1
-            for ind in range(1, len(self.gap_phase_vs_z_arr)):
-                [pos, phase_gap] = self.gap_phase_vs_z_arr[ind]
-                if math.fabs(pos) >= math.fabs(pos_old):
-                    ind_min = ind - 1
-                    phase_gap = self.gap_phase_vs_z_arr[ind_min][1]
-                    phase_gap = phaseNearTargetPhase(phase_gap, 0.0)
-                    self.gap_phase_vs_z_arr[ind_min][1] = phase_gap
-                    break
-                pos_old = pos
-            self.setGapPhase(phase_gap)
-            # ---- wrap all gap part's phases around the central one
-            if ind_min > 0:
-                for ind in range(ind_min - 1, -1, -1):
-                    [pos, phase_gap] = self.gap_phase_vs_z_arr[ind]
-                    [pos, phase_gap1] = self.gap_phase_vs_z_arr[ind + 1]
-                    self.gap_phase_vs_z_arr[ind][1] = phaseNearTargetPhase(phase_gap, phase_gap1)
-                for ind in range(ind_min + 1, len(self.gap_phase_vs_z_arr)):
-                    [pos, phase_gap] = self.gap_phase_vs_z_arr[ind]
-                    [pos, phase_gap1] = self.gap_phase_vs_z_arr[ind - 1]
-                    self.gap_phase_vs_z_arr[ind][1] = phaseNearTargetPhase(phase_gap, phase_gap1)
+            self._phase_gap_func_analysis()
+            
+    def _phase_gap_func_analysis(self):
+        """
+        Performs analysis of the RF gap function phase vs. postion
+        and calculates the accelerating phase at the center of the gap.
+        """
+        n_pos_points = self.gap_pos_phase_func.getSize()
+        phase_gap = 0.
+        if(n_pos_points != 0):
+            phase_gap_old = self.gap_pos_phase_func.y(0)
+            for pos_ind in range(n_pos_points):
+                phase_gap = self.gap_pos_phase_func.y(pos_ind)
+                phase_gap = phaseNearTargetPhase(phase_gap,phase_gap_old)
+                self.gap_pos_phase_func.updatePoint(pos_ind,phase_gap)
+                phase_gap_old = phase_gap
+            phase_gap = self.gap_pos_phase_func.getY(0.)
+            phase_gap_center = phaseNearTargetPhase(phase_gap,0.)
+            phase_gap_shift = phase_gap - phase_gap_center
+            for pos_ind in range(n_pos_points):
+                phase_gap = self.gap_pos_phase_func.y(pos_ind)
+                self.gap_pos_phase_func.updatePoint(pos_ind,phase_gap - phase_gap_shift)
+        self.setGapPhase(phase_gap_center)
+        
+    def getPhaseVsPositionFuncion(self):
+        """
+        Retuns the RF gap function phase vs. postion.
+        """
+        return self.gap_pos_phase_func
 
     def trackDesign(self, paramsDict):
         """
@@ -700,13 +714,17 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
         rf_ampl = rfCavity.getDesignAmp()
         arrival_time = syncPart.time()
         frequency = rfCavity.getFrequency()
-        phase = rfCavity.getFirstGapEtnrancePhase()
+        phase = rfCavity.getFirstGapEntrancePhase()
+        usePhaseAtEntrance = rfCavity.getUsePhaseAtEntrance()
+        if(usePhaseAtEntrance):
+            phase = rfCavity.getPhase()
         # ---- calculate the entance phase
         if self.isFirstRFGap() and index == 0:
             rfCavity.setDesignArrivalTime(arrival_time)
-            phase = self.__calculate_first_part_phase(bunch)
-            rfCavity.setFirstGapEtnrancePhase(phase)
-            rfCavity.setFirstGapEtnranceDesignPhase(phase)
+            if(not usePhaseAtEntrance):
+                phase = self.__calculate_first_part_phase(bunch)
+            rfCavity.setFirstGapEntrancePhase(phase)
+            rfCavity.setFirstGapEntranceDesignPhase(phase)
             rfCavity.setDesignSetUp(True)
             rfCavity._setDesignPhase(rfCavity.getPhase())
             rfCavity._setDesignAmp(rfCavity.getAmp())
@@ -717,9 +735,8 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
             phase = math.fmod(frequency * (arrival_time - first_gap_arr_time) * 2.0 * math.pi + phase, 2.0 * math.pi)
         if index == 0:
             self.part_pos = self.z_min
-            self.gap_phase_vs_z_arr = [
-                [self.part_pos, phase],
-            ]
+            self.gap_pos_phase_func.clean()
+            self.gap_pos_phase_func.add(self.part_pos, phase)
         # print "debug design name=",self.getName()," index=",index," pos=",self.part_pos," arr_time=",arrival_time," phase=",phase*180./math.pi," freq=",frequency
         zm = self.part_pos
         z0 = zm + part_length / 2
@@ -733,7 +750,7 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
         # call rf gap model to track the bunch
         time_middle_gap = syncPart.time() - arrival_time
         delta_phase = math.fmod(2 * math.pi * time_middle_gap * frequency, 2.0 * math.pi)
-        self.gap_phase_vs_z_arr.append([self.part_pos, phase + delta_phase])
+        self.gap_pos_phase_func.add(self.part_pos, phase + delta_phase)
         # ---- this part is the debugging ---START---
         # eKin_out = syncPart.kinEnergy()
         # s  = "debug pos[mm]= %7.2f "%(self.part_pos*1000.)
@@ -748,7 +765,7 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
         self.part_pos += part_length / 2
         time_middle_gap = syncPart.time() - arrival_time
         delta_phase = math.fmod(2 * math.pi * time_middle_gap * frequency, 2.0 * math.pi)
-        self.gap_phase_vs_z_arr.append([self.part_pos, phase + delta_phase])
+        self.gap_pos_phase_func.add(self.part_pos, phase + delta_phase)
         # ---- this part is the debugging ---START---
         # eKin_out = syncPart.kinEnergy()
         # s  = "debug pos[mm]= %7.2f "%(self.part_pos*1000.)
@@ -759,29 +776,7 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
         # ---- this part is the debugging ---STOP---
         # ---- Calculate the phase at the center
         if index == (nParts - 1):
-            pos_old = self.gap_phase_vs_z_arr[0][0]
-            phase_gap = self.gap_phase_vs_z_arr[0][1]
-            ind_min = -1
-            for ind in range(1, len(self.gap_phase_vs_z_arr)):
-                [pos, phase_gap] = self.gap_phase_vs_z_arr[ind]
-                if math.fabs(pos) >= math.fabs(pos_old):
-                    ind_min = ind - 1
-                    phase_gap = self.gap_phase_vs_z_arr[ind_min][1]
-                    phase_gap = phaseNearTargetPhase(phase_gap, 0.0)
-                    self.gap_phase_vs_z_arr[ind_min][1] = phase_gap
-                    break
-                pos_old = pos
-            self.setGapPhase(phase_gap)
-            # ---- wrap all gap part's phases around the central one
-            if ind_min > 0:
-                for ind in range(ind_min - 1, -1, -1):
-                    [pos, phase_gap] = self.gap_phase_vs_z_arr[ind]
-                    [pos, phase_gap1] = self.gap_phase_vs_z_arr[ind + 1]
-                    self.gap_phase_vs_z_arr[ind][1] = phaseNearTargetPhase(phase_gap, phase_gap1)
-                for ind in range(ind_min + 1, len(self.gap_phase_vs_z_arr)):
-                    [pos, phase_gap] = self.gap_phase_vs_z_arr[ind]
-                    [pos, phase_gap1] = self.gap_phase_vs_z_arr[ind - 1]
-                    self.gap_phase_vs_z_arr[ind][1] = phaseNearTargetPhase(phase_gap, phase_gap1)
+            self._phase_gap_func_analysis()
 
     def calculate_first_part_phase(self, bunch_in):
         """
@@ -862,5 +857,5 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
             phase_start -= 0.8 * (phase_cavity_new - phase_cavity)
         # ---- undo the last change in the while loop
         phase_start += 0.8 * (phase_cavity_new - phase_cavity)
-        # print "debug phase_start=",phase_start*180./math.pi
+        #print ("debug phase_start=",phase_start*180./math.pi)
         return phase_start
