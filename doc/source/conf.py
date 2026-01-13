@@ -27,8 +27,11 @@ extensions = ['sphinx.ext.coverage',
               'sphinx.ext.autodoc',
               'sphinx.ext.autosummary',
               'sphinx.ext.napoleon',
+              'sphinx_copybutton',
+              'myst_parser',
               'breathe',
               'exhale']
+
 napoleon_numpy_docstring = True
 autosummary_imported_members = True
 

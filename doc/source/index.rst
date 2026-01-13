@@ -10,7 +10,7 @@ PyORBIT3
    :maxdepth: 2
    :caption: Getting Started
 
-   install
+   install.md
 
 .. toctree::
    :maxdepth: 2
