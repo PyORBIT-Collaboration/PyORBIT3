@@ -75,6 +75,8 @@ namespace teapot_base
                      int nsteps, int useCharge);
 
     void RingRF(Bunch* bunch, double ring_length, int harmonic_numb, double voltage, double phase_s, int useCharge);
+
+    void continuousLinear(Bunch* bunch, double length, double kq, int useCharge);
 }
 
 #endif  //TEAPOT_BASE_H
