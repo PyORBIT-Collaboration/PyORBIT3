@@ -1,4 +1,3 @@
-# Simple workflow for deploying static content to GitHub Pages
 name: Deploy Documentation to Pages
 
 on:
@@ -20,7 +19,6 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
   deploy:
     environment:
       name: github-pages
@@ -41,6 +39,7 @@ jobs:
       - name: Install PyORBIT3
         shell: bash -l {0}
         run: |
+          # @woodtp -- MPI isn't required to build docs and enabling it causes Sphinx to segfault.
           conda activate po3
           pip install --config-settings=setup-args="-DUSE_MPI='none'" .
 
@@ -51,13 +50,9 @@ jobs:
           cd doc
           make html
 
-      # - name: Setup Pages
-      #   uses: actions/configure-pages@v5
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
           path: './doc/build/html'
 
       - name: Deploy to GitHub Pages
