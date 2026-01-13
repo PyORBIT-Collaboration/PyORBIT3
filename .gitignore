@@ -9,3 +9,5 @@ PyORBIT.egg-info
 *.so
 .*.swp
 .eggs
+.DS_Store
+.idea
