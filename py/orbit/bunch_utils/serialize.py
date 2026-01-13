@@ -80,6 +80,7 @@ def collect_bunch(
     bunch: Bunch, output_dir: str | pathlib.Path = "/tmp", return_memmap: bool = True
 ) -> BunchDict | None:
     """Collects attributes from a PyOrbit Bunch across all MPI ranks and returns it as a dictionary.
+
     Parameters
     ----------
     bunch : Bunch
@@ -91,27 +92,12 @@ def collect_bunch(
     return_memmap : bool, optional
         Return the bunch coordinates as a memory-mapped NumPy array, otherwise the
         entire array is copied into RAM and returned as normal NDArray. Default is True.
+
     Returns
     -------
     BunchDict | None
         A dictionary containing the collected bunch attributes. Returns None if not on the root MPI rank or if the global bunch size is 0.
-        BunchDict structure:
-            {
-                "coords": NDArray[np.float64] of shape (N, 6) where N is the total number of macroparticles,
-                    and the 6 columns correspond to [x, xp, y, yp, z, dE] in units of [m, rad, m, rad, m, GeV], respectively.
-                "sync_part": {
-                    "coords": NDArray[np.float64] of shape (3,),
-                    "kin_energy": np.float64,
-                    "momentum": np.float64,
-                    "beta": np.float64,
-                    "gamma": np.float64,
-                    "time": np.float64
-                },
-                "attributes": {
-                    <bunch attribute name>: <attribute value (np.float64 or np.int32)>,
-                    ...
-                }
-            }
+
     Raises
     ------
     FileNotFoundError

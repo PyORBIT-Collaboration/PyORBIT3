@@ -58,7 +58,8 @@ exhale_args = {
     "containmentFolder": "./api",
     "rootFileName": "pyorbit_root.rst",
     "doxygenStripFromPath": "..",
-    "rootFileTitle": "PyORBIT3 C++ API",
+    "rootFileTitle": "C++ API",
+    "fullApiSubSectionTitle": "",
     "createTreeView": True,
     "exhaleExecutesDoxygen": True,
     "exhaleDoxygenStdin": doxyfile,
@@ -76,3 +77,6 @@ html_theme_options = {
         "text": "PyORBIT3",
     },
 }
+# html_sidebars = {
+#     "**": ["sidebar-nav-bs"]
+# }

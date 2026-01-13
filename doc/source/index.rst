@@ -3,26 +3,23 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-PyORBIT3
-========
+.. include:: ./home.md
+   :parser: myst_parser.sphinx_
 
 .. toctree::
    :maxdepth: 2
    :caption: Getting Started
 
-   install.md
+   install
+   contributing
 
 .. toctree::
    :maxdepth: 2
-   :caption: Modules
+   :caption: API Reference
 
    modules
-
-.. toctree::
-   :maxdepth: 2
-   :caption: C++ API
-
    api/pyorbit_root.rst
+
 
 Indices and tables
 ==================
