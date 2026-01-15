@@ -13,3 +13,5 @@ PyORBIT.egg-info
 _autosummary/
 _api/
 _cpp_api/
+doc/source/reference/*.rst
+doc/source/reference/*.rst.include

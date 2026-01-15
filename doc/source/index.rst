@@ -17,8 +17,8 @@
    :maxdepth: 2
    :caption: API Reference
 
-   modules
-   _cpp_api/pyorbit_root
+   reference/py
+   reference/cpp
 
 
 Indices and tables

@@ -24,8 +24,8 @@ extensions = [
     "sphinx.ext.coverage",
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
+    # "sphinx.ext.autodoc",
+    # "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
     "sphinx_automodapi.automodapi",
@@ -39,8 +39,8 @@ extensions = [
 napoleon_numpy_docstring = True
 autosummary_imported_members = True
 
-numpydoc_show_class_members=False
-automodapi_toctreedirnm = "_api"
+numpydoc_show_class_members = False
+automodapi_toctreedirnm = "reference"
 
 templates_path = ["_templates"]
 exclude_patterns = []
@@ -61,10 +61,10 @@ doxyfile = "\n".join(
 )
 
 exhale_args = {
-    "containmentFolder": "./_cpp_api",
-    "rootFileName": "pyorbit_root.rst",
+    "containmentFolder": "./reference",
+    "rootFileName": "cpp.rst",
     "doxygenStripFromPath": "..",
-    "rootFileTitle": "C++ API",
+    "rootFileTitle": "C++ API Reference",
     "fullApiSubSectionTitle": "",
     "createTreeView": True,
     "exhaleExecutesDoxygen": True,
@@ -83,6 +83,3 @@ html_theme_options = {
         "text": "PyORBIT3",
     },
 }
-# html_sidebars = {
-#     "**": ["sidebar-nav-bs"]
-# }

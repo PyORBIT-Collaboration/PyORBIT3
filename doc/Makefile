@@ -20,5 +20,5 @@ help:
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 clean:
-	rm -rf "$(SOURCEDIR)"/_doxygen "$(SOURCEDIR)"/_api "$(SOURCEDIR)"/_cpp_api "$(SOURCEDIR)"/_autosummary
+	rm -rf "$(SOURCEDIR)"/_doxygen "$(SOURCEDIR)"/reference/*.rst{,.include} "$(SOURCEDIR)"/_autosummary
 	@$(SPHINXBUILD) -M clean "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)

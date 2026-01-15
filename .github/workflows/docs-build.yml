@@ -33,10 +33,10 @@ jobs:
         run: |
           conda activate po3
           cd doc
-          make html
+          make dirhtml
 
       - name: Upload artifact
         if: ${{ inputs.upload-artifact }}
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './doc/build/html'
+          path: './doc/build/dirhtml'
