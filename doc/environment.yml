@@ -8,6 +8,8 @@ dependencies:
   - python=3.13
   - sphinx
   - sphinx-copybutton
+  - sphinx-autodoc-typehints
+  - sphinx-automodapi
   - myst-parser
   - breathe
   - standard-imghdr
@@ -18,3 +20,4 @@ dependencies:
   - meson
   - pkg-config
   - ninja
+  - graphviz

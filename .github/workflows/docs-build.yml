@@ -19,7 +19,7 @@ jobs:
           activate-environment: po3
           channels: conda-forge,defaults
           auto-update-conda: true
-          environment-file: docs-environment.yml
+          environment-file: ./doc/environment.yml
 
       - name: Install PyORBIT3
         shell: bash -l {0}
