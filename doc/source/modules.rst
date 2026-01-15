@@ -1,42 +1,34 @@
 Modules
 =======
+
+orbit.aperture
+##############
+
 .. toctree::
    :maxdepth: 2
-   :caption: Modules
 
-.. autosummary::
-   :toctree: _autosummary/
-   :recursive:
-
-   orbit.aperture
-   orbit.bumps
-   orbit.bunch_generators
-   orbit.bunch_utils
-   orbit.collimation
-   orbit.core
-   orbit.diagnostics
-   orbit.errors
-   orbit.fieldtracker
-   orbit.foils
-   orbit.impedances
-   orbit.injection
-   orbit.kickernodes
-   orbit.lattice
-   orbit.matching
-   orbit.matrix_lattice
-   orbit.orbit_correction
-   orbit.parsers
-   orbit.py_linac.errors
-   orbit.py_linac.lattice
-   orbit.py_linac.lattice_modifications
-   orbit.py_linac.linac_parsers
-   orbit.py_linac.materials
-   orbit.py_linac.orbit_correction
-   orbit.py_linac.overlapping_fields
-   orbit.py_linac.rf_field_readers
-   orbit.rf_cavities
-   orbit.space_charge
-   orbit.teapot
-   orbit.teapot_base
-   orbit.time_dep
-   orbit.utils
+   modules/orbit.aperture
+   modules/orbit.bumps
+   modules/orbit.bunch_generators
+   modules/orbit.bunch_utils
+   modules/orbit.collimation
+   modules/orbit.core
+   modules/orbit.diagnostics
+   modules/orbit.errors
+   modules/orbit.fieldtracker
+   modules/orbit.foils
+   modules/orbit.impedances
+   modules/orbit.injection
+   modules/orbit.kickernodes
+   modules/orbit.lattice
+   modules/orbit.matching
+   modules/orbit.matrix_lattice
+   modules/orbit.orbit_correction
+   modules/orbit.parsers
+   modules/orbit.py_linac
+   modules/orbit.rf_cavities
+   modules/orbit.space_charge
+   modules/orbit.teapot
+   modules/orbit.teapot_base
+   modules/orbit.time_dep
+   modules/orbit.utils

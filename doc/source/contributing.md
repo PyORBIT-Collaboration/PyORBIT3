@@ -14,6 +14,34 @@ make html
 
 You can view the documentation in your browser by opening `docs/build/html/index.html`.
 
+## Creating Static Pages
+
+Simple pages may be written in Markdown  or [reStructuredText](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html) and stored in the `doc/source/` directory.
+Markdown support is enabled via the MyST parser extension, refer to the [MyST syntax guide](https://myst-parser.readthedocs.io/en/latest/syntax/typography.html)
+for more information related to composition of Markdown documents.
+Add the file to a `toc` block in the `doc/source/index.rst` in order for it be included in the main documentation.
+
+
+1. Create your document containing useful information under `doc/source/useful_info.md`.
+
+```md
+<!-- doc/source/useful_info.md -->
+
+# Useful Information
+```
+
+2. Add the file to a `toc` block in the `doc/source/index.rst`.
+
+```rst
+.. toctree::
+
+   useful_info
+```
+
+:::{tip}
+If you want to create a hierarchical structure of pages, add the subdirectory to the `doc/source/` directory and add the file to a `toc` block in the parent file.
+:::
+
 ## Documenting Python Code
 
 ### Where to add documentation
@@ -115,4 +143,4 @@ The docs are deployed to the [main GitHub Pages repository for the PyORBIT Colla
 via an Action ([peaceiris/actions-gh-pages](https://github.com/peaceiris/actions-gh-pages)) defined in [PyORBIT-Collaboration/PyORBIT3/.github/workflow/docs.yml](https://github.com/PyORBIT-Collaboration/PyORBIT3/blob/main/.github/workflows/docs.yml).
 The action requires a [Deploy Key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/managing-deploy-keys) to be added to the PyORBIT-Collaboration/PyORBIT-Collaboration.github.io repository
 as well as a [Secret](https://docs.github.com/en/actions/security-guides/automatic-token-authentication) to be created in the PyORBIT-Collaboration/PyORBIT3 repository.
-Refer to the [instructions for deploying to an external repository](https://github.com/peaceiris/actions-gh-pages?tab=readme-ov-file#%EF%B8%8F-deploy-to-external-repository-external_repository) for more details.
+Refer to the [instructions for deploying to an external repository](https://github.com/peaceiris/actions-gh-pages?tab=readme-ov-file#%EF%B8%8F-deploy-to-external-repository-external_repository) and [Create SSH Deploy Key](https://github.com/peaceiris/actions-gh-pages?tab=readme-ov-file#tips-and-faq) for more details.

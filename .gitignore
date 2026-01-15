@@ -11,3 +11,5 @@ PyORBIT.egg-info
 .eggs
 .venv
 _autosummary/
+_api/
+_cpp_api/

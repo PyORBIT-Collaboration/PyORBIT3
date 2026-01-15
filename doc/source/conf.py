@@ -27,6 +27,9 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
+    "sphinx_autodoc_typehints",
+    "sphinx_automodapi.automodapi",
+    "sphinx_automodapi.smart_resolver",
     "sphinx_copybutton",
     "myst_parser",
     "breathe",
@@ -35,6 +38,9 @@ extensions = [
 
 napoleon_numpy_docstring = True
 autosummary_imported_members = True
+
+numpydoc_show_class_members=False
+automodapi_toctreedirnm = "_api"
 
 templates_path = ["_templates"]
 exclude_patterns = []
@@ -55,7 +61,7 @@ doxyfile = "\n".join(
 )
 
 exhale_args = {
-    "containmentFolder": "./api",
+    "containmentFolder": "./_cpp_api",
     "rootFileName": "pyorbit_root.rst",
     "doxygenStripFromPath": "..",
     "rootFileTitle": "C++ API",

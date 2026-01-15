@@ -18,7 +18,7 @@
    :caption: API Reference
 
    modules
-   api/pyorbit_root.rst
+   _cpp_api/pyorbit_root
 
 
 Indices and tables
