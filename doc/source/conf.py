@@ -36,6 +36,8 @@ extensions = [
     "exhale",
 ]
 
+autodoc_typehints = "description"
+
 napoleon_numpy_docstring = True
 autosummary_imported_members = True
 
