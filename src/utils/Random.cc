@@ -21,6 +21,7 @@
 using namespace OrbitUtils;
 
 // By default the random generator is initialized using a random seed (current time)
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 std::mt19937 mt(time(0));
 
 void Random::seed(int seed){
@@ -31,3 +32,4 @@ void Random::seed(int seed){
 double Random::ran1(){
 	return ((double) mt() / (mt.max()));
 }
+#endif

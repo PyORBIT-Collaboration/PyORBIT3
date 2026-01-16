@@ -7,6 +7,7 @@ from .teapot import TEAPOT_Lattice
 from .teapot import TEAPOT_Ring
 from .teapot import BaseTEAPOT
 from .teapot import BendTEAPOT
+from .teapot import BunchWrapTEAPOT
 from .teapot import DriftTEAPOT
 from .teapot import FringeFieldTEAPOT
 from .teapot import KickTEAPOT
