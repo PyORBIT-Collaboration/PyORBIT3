@@ -1,7 +1,5 @@
 # Python API Reference
 
-## orbit.aperture
-
 ```{eval-rst}
 .. toctree::
    :maxdepth: 2
