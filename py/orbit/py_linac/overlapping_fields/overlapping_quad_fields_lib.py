@@ -88,7 +88,7 @@ class SimpleQuadFieldFunc(AbstractQuadFieldSourceFunction):
 
 class EngeFunction(AbstractQuadFieldSourceFunction):
     """
-          The Enge function with parameters from Berz's paper[1]_.
+          The Enge function with parameters from Berz's paper [1]_.
 
     References
     ----------
