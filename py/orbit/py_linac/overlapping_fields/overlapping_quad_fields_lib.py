@@ -88,10 +88,12 @@ class SimpleQuadFieldFunc(AbstractQuadFieldSourceFunction):
 
 class EngeFunction(AbstractQuadFieldSourceFunction):
     """
-          The Enge function with parameters from Berz's paper
-          M.Berz, B. Erdelyn, K.Makino
-    Fringe Field Effects in Small Rings of Large Acceptance
-    Phys. Rev STAB, V3, 124001(2000)
+          The Enge function with parameters from Berz's paper[1]_.
+
+    References
+    ----------
+    .. [1] M. Berz, B. Erdélyi, and K. Makino, “Fringe field effects in small rings of large acceptance,” Phys. Rev. ST Accel. Beams, vol. 3, no. 12, p. 124001, Dec. 2000, doi: 10.1103/PhysRevSTAB.3.124001.
+
     """
 
     def __init__(self, length_param, acceptance_diameter_param, cutoff_level=0.01):

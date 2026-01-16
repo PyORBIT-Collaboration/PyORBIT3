@@ -10,6 +10,23 @@ from orbit.core.bunch import Bunch
 
 
 class SyncPartDict(TypedDict):
+    """A dictionary containing the attributes of the synchronous particle.
+
+    Attributes
+    ----------
+    coords : NDArray[np.float64]
+        The coordinates (x, px, y, py, z, dE) of the synchronous particle.
+    kin_energy : float
+        The kinetic energy of the synchronous particle.
+    momentum : float
+        The momentum of the synchronous particle.
+    beta : float
+        The beta of the synchronous particle.
+    gamma : float
+        The gamma of the synchronous particle.
+    time : float
+        The time of the synchronous particle.
+    """
     coords: NDArray[np.float64]
     kin_energy: np.float64
     momentum: np.float64
@@ -19,13 +36,32 @@ class SyncPartDict(TypedDict):
 
 
 class BunchDict(TypedDict):
+    """A dictionary containing the attributes of a PyOrbit::Bunch object.
+
+    Attributes
+    ----------
+    coords : NDArray[np.float64]
+        The coordinates (x, px, y, py, z, dE) of the particles in the bunch.
+    sync_part : SyncPartDict
+        The attributes of the synchronous particle.
+    attributes : dict[str, np.float64 | np.int32]
+        Other attributes of the bunch.
+    """
     coords: NDArray[np.float64]
     sync_part: SyncPartDict
     attributes: dict[str, np.float64 | np.int32]
 
 
 class FileHandler(Protocol):
-    """Protocol for file handlers to read/write bunch data."""
+    """Protocol for file handlers to read/write bunch data.
+
+    Methods
+    _______
+    read() -> BunchDict:
+        Reads the bunch data from the specified directory and returns it as a dictionary.
+    write(bunch: BunchDict) -> None:
+        Writes the bunch data to the specified directory.
+    """
 
     def __init__(self, *args: Any, **kwargs: Any) -> None: ...
 
@@ -36,15 +72,28 @@ class FileHandler(Protocol):
 
 class NumPyHandler:
     """Handler implementing the FileHandler protocol for NumPy binary files.
-    This handler will create two files in the directory passed to the constructor:
-        - coords.npy: A memory-mapped NumPy array containing the bunch coordinates.
-        - attributes.npz: A NumPy archive containing data related to the synchronous particle and other bunch attributes.
+
+    Attributes
+    ----------
+    _coords_fname : str
+        The name of the file containing the bunch coordinates (default: "coords.npy").
+    _attributes_fname : str
+        The name of the file containing data related to the synchronous particle and other bunch attributes (default: "attributes.npz").
     """
 
     _coords_fname = "coords.npy"
     _attributes_fname = "attributes.npz"
 
-    def __init__(self, dir_name: str | pathlib.Path):
+    def __init__(self, dir_name: str | os.PathLike):
+        """Constructor for the NumPyHandler class.
+
+        Parameters
+        ----------
+        dir_name
+            The directory in which to store the bunch data.
+
+        """
+
         if isinstance(dir_name, str):
             dir_name = pathlib.Path(dir_name)
         self._dir_name = dir_name
@@ -77,7 +126,7 @@ class NumPyHandler:
 
 
 def collect_bunch(
-    bunch: Bunch, output_dir: str | pathlib.Path = "/tmp", return_memmap: bool = True
+    bunch: Bunch, output_dir: str | os.PathLike = "/tmp", return_memmap: bool = True
 ) -> BunchDict | None:
     """Collects attributes from a PyOrbit Bunch across all MPI ranks and returns it as a dictionary.
 
@@ -85,13 +134,15 @@ def collect_bunch(
     ----------
     bunch : Bunch
         The PyOrbit::Bunch object from which to collect attributes.
-    output_dir : str | pathlib.Path, optional
-        The director to use for temporary storage of the bunch coordinates on each MPI rank.
-        If None, the bunch will be stored in "/tmp".
-        Note: take care that the temporary files are created in a directory where all MPI ranks have write access.
+    output_dir : str | os.PathLike, optional
+        The director to use for temporary storage of the bunch coordinates on each MPI rank (default: "/tmp").
     return_memmap : bool, optional
         Return the bunch coordinates as a memory-mapped NumPy array, otherwise the
-        entire array is copied into RAM and returned as normal NDArray. Default is True.
+        entire array is copied into RAM and returned as normal NDArray (default: True).
+
+    Note
+    ----
+    Take care that the temporary files are created in a directory which all MPI ranks have write access.
 
     Returns
     -------
@@ -194,21 +245,24 @@ def collect_bunch(
 
 def save_bunch(
     bunch: Bunch | BunchDict,
-    output_dir: str | pathlib.Path = "bunch_data/",
+    output_dir: str | os.PathLike = "bunch_data/",
     Handler: type[FileHandler] = NumPyHandler,
 ) -> None:
     """Saves the collected bunch attributes to a specified directory.
+
     Parameters
     ----------
     bunch_dict : Bunch | BunchDict
         The PyOrbit::Bunch object or the dictionary containing the collected bunch attributes.
     output_dir : str, optional
-        The directory where the bunch data files will be saved. Default is "bunch_data/".
+        The directory where the bunch data files will be saved (default: "bunch_data/").
     Handler : FileHandler, optional
-        The file handler class to use for writing the bunch data. Default is NumPyHandler.
+        The file handler class to use for writing the bunch data (default: NumPyHandler).
+
     Returns
     -------
     None
+
     Raises
     ------
     ValueError
@@ -238,20 +292,23 @@ def save_bunch(
 
 
 def load_bunch(
-    input_dir: str | pathlib.Path, Handler: type[FileHandler] = NumPyHandler
+    input_dir: str | os.PathLike, Handler: type[FileHandler] = NumPyHandler
 ) -> tuple[Bunch, BunchDict]:
     """Loads the bunch attributes from a specified directory containing NumPy binary files.
+
     Parameters
     ----------
-    input_dir : str | pathlib.Path
+    input_dir : str | os.PathLike
         The directory from which to load the bunch data files.
     Handler : FileHandler, optional
-        The file handler class to use for reading the bunch data. Default is NumPyHandler.
+        The file handler class to use for reading the bunch data (default: NumPyHandler).
         See `orbit.bunch_utils.file_handler` for available handlers.
+
     Returns
     -------
     BunchDict
         A dictionary containing the loaded bunch attributes.
+
     Raises
     ------
     FileNotFoundError

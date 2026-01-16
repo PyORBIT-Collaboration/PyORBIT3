@@ -1,11 +1,25 @@
-def multiDimDoubleArray(*dims):
+def multiDimDoubleArray(*dims: int) -> list[float]:
     """
-    Method. Creates multi-dimensional arrays with doubles, such as a[i][k][j].
-    Some examples of the use of this function:
-            a = multiDimArray(5,10,2)
-            a = multiDimArray(*[5,10,2])
-            a[1][2][1] = 0.
-            By default all elements are initialized to 0.
+    Creates multi-dimensional arrays with doubles, such as a[i][k][j].
+
+    Parameters
+    ----------
+    dims : int
+
+    Returns
+    -------
+    list[float]
+
+    Note
+    ----
+    All elements are initialized to 0.
+
+    Examples
+    --------
+    >>> a = multiDimArray(5,10,2)
+    >>> a = multiDimArray(*[5,10,2])  # equivalent
+    >>> a[1][2][1]
+    0.0
     """
     res = []
     if len(dims) == 1:
@@ -18,14 +32,24 @@ def multiDimDoubleArray(*dims):
     return res
 
 
-def multiDimIntArray(*dims):
+def multiDimIntArray(*dims: int) -> list[int]:
     """
-    Method. Creates multi-dimensional arrays with integers, such as a[i][k][j].
-    Some examples of the use of this function:
-            a = multiDimArray(5,10,2)
-            a = multiDimArray(*[5,10,2])
-            a[1][2][1] = 0
-            By default all elements are initialized to 0.
+    Creates multi-dimensional arrays with integers, such as a[i][k][j].
+
+    Parameters
+    ----------
+    dims : int
+
+    Returns
+    -------
+    list[int]
+
+    Examples
+    --------
+    >>> a = multiDimArray(5,10,2)
+    >>> a = multiDimArray(*[5,10,2])  # equivalent
+    >>> a[1][2][1]
+    0
     """
     res = []
     if len(dims) == 1:
