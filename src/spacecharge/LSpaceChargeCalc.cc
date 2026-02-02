@@ -27,7 +27,7 @@
 using namespace OrbitUtils;
 
 
-LSpaceChargeCalc::LSpaceChargeCalc(double b_a_in, double length_in, int nMacrosMin_in, int useSpaceCharge_in, int nBins_in): CppPyWrapper(NULL)
+LSpaceChargeCalc::LSpaceChargeCalc(double b_a_in, double length_in, int nMacrosMin_in, int useSpaceCharge_in, int nBins_in, int nFreq_in): CppPyWrapper(NULL)
 {
   b_a            = b_a_in;
   length         = length_in;
@@ -35,6 +35,7 @@ LSpaceChargeCalc::LSpaceChargeCalc(double b_a_in, double length_in, int nMacrosM
   useSpaceCharge = useSpaceCharge_in;
   nBins          = nBins_in;
   zGrid          = new Grid1D(nBins, length);
+  nFreq = nFreq_in;
 
   _fftmagnitude  = new double[nBins / 2];
   _fftphase      = new double[nBins / 2];

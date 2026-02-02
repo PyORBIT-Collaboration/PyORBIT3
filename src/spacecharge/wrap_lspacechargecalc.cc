@@ -46,12 +46,13 @@ extern "C"
 		int nMacrosMin;
 		int useSpaceCharge;
 		int nBins;
+        int nFreq;
 
-		if(!PyArg_ParseTuple(args,"ddiii:arguments",&b_a,&length,&nMacrosMin,&useSpaceCharge,&nBins)){
-			ORBIT_MPI_Finalize("PyLSpaceChargeCalc - LSpaceChargeCalc(b_a, length, nMacrosMin, useSpaceCharge, nBins) - constructor needs parameters.");
+		if(!PyArg_ParseTuple(args,"ddiiii:arguments", &b_a, &length, &nMacrosMin, &useSpaceCharge, &nBins, &nFreq)){
+			ORBIT_MPI_Finalize("PyLSpaceChargeCalc - LSpaceChargeCalc(b_a, length, nMacrosMin, useSpaceCharge, nBins, nFreq) - constructor needs parameters.");
 		}
 
-		self->cpp_obj = new LSpaceChargeCalc(b_a, length, nMacrosMin, useSpaceCharge, nBins);
+		self->cpp_obj = new LSpaceChargeCalc(b_a, length, nMacrosMin, useSpaceCharge, nBins, nFreq);
 
 		((LSpaceChargeCalc*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 

@@ -29,7 +29,7 @@ class LSpaceChargeCalc: public OrbitUtils::CppPyWrapper
 public:
 
 	/** Constructor */
-	LSpaceChargeCalc(double b_a_in, double length_in, int nMacrosMin_in, int useSpaceCharge_in, int zSize_in);
+	LSpaceChargeCalc(double b_a_in, double length_in, int nMacrosMin_in, int useSpaceCharge_in, int zSize_in, int nFreq_in);
 
 	/** Destructor */
 	virtual ~LSpaceChargeCalc();
@@ -52,6 +52,7 @@ public:
 	int nBins;
 	int nMacrosMin;
 	int useSpaceCharge;
+    int nFreq;
 
 //protected:
 	Grid1D* zGrid;
