@@ -35,7 +35,14 @@ LSpaceChargeCalc::LSpaceChargeCalc(double b_a_in, double length_in, int nMacrosM
   useSpaceCharge = useSpaceCharge_in;
   nBins          = nBins_in;
   zGrid          = new Grid1D(nBins, length);
+    
   nFreq = nFreq_in;
+  if (nFreq > (nBins / 2)) {
+    nFreq = nBins / 2;
+  }
+  if (nFreq < 0) {
+    nFreq = nBins / 2;
+  }
 
   _fftmagnitude  = new double[nBins / 2];
   _fftphase      = new double[nBins / 2];
@@ -92,11 +99,14 @@ void LSpaceChargeCalc::assignImpedanceValue(int n, double real, double imag)
 
 void LSpaceChargeCalc::trackBunch(Bunch* bunch)
 {
+
+  std::cout << "nbins=" << nBins << " nfreq=" << nFreq << std::endl; 
+
+    
   int nPartsGlobal = bunch->getSizeGlobal();
   if(nPartsGlobal < nMacrosMin) return;
 
-// Bin the particles
-
+  // Bin the particles
   double zmin, zmax;
   double realPart, imagPart;
 
@@ -109,8 +119,7 @@ void LSpaceChargeCalc::trackBunch(Bunch* bunch)
   zGrid->binBunchSmoothedByParticle(bunch);
   zGrid->synchronizeMPI(bunch->getMPI_Comm_Local());
 
-// FFT the beam density
-
+  // FFT the beam density
   for(int i = 0; i < nBins; i++)
   {
     _in[i][0] = zGrid->getValueOnGrid(i);
@@ -119,8 +128,7 @@ void LSpaceChargeCalc::trackBunch(Bunch* bunch)
 
   fftw_execute(_plan);
 
-// Find the magnitude and phase
-
+  // Find the magnitude and phase
   _fftmagnitude[0] = _out[0][0]/(double)nBins;
   _fftphase[0] = 0.;
 
@@ -132,16 +140,13 @@ void LSpaceChargeCalc::trackBunch(Bunch* bunch)
     _fftphase[n] = atan2(imagPart,realPart);
   }
 
-// Space charge contribution to impedance
-
+  // Space charge contribution to impedance
   SyncPart* sp = bunch->getSyncPart();
 
-// Set zero if useSpaceCharge = 0
-
+  // Set zero if useSpaceCharge = 0
   double zSpaceCharge_n = 0.;
 
-// Otherwise, set positive since space charge is capacitive (Chao convention)
-
+  // Otherwise, set positive since space charge is capacitive (Chao convention)
   if(useSpaceCharge != 0)
   {
     double mu_0 = 4.0 * OrbitConst::PI * 1.e-07; // permeability of free space
@@ -159,17 +164,13 @@ void LSpaceChargeCalc::trackBunch(Bunch* bunch)
     _chi[n] = atan2(imagPart, realPart);
   }
 
-// Convert charge to current for a single macroparticle per unit bin length
+  // Convert charge to current for a single macroparticle per unit bin length
+  double charge2current = bunch->getCharge() * bunch->getMacroSize() * OrbitConst::elementary_charge_MKS * sp->getBeta() * OrbitConst::c / (length / nBins);
 
-  double charge2current = bunch->getCharge() * bunch->getMacroSize() *
-                          OrbitConst::elementary_charge_MKS * sp->getBeta() *
-                          OrbitConst::c / (length / nBins);
-
-// Calculate and add the kick to macroparticles
-
+  // Calculate and add the kick to macroparticles
   double kick, angle, position;
 
-// Convert particle longitudinal coordinate to phi
+  // Convert particle longitudinal coordinate to phi
 
   double philocal;
   double z;
@@ -179,14 +180,12 @@ void LSpaceChargeCalc::trackBunch(Bunch* bunch)
     z = bunch->z(j);
     philocal = (z / length) * 2 * OrbitConst::PI;
 
-// Handle cases where the longitudinal coordinate is
-// outside of the user-specified length
-
+  // Handle cases where the longitudinal coordinate is
+  // outside of the user-specified length
   if(philocal < -OrbitConst::PI) philocal += 2 * OrbitConst::PI;
   if(philocal >  OrbitConst::PI) philocal -= 2 * OrbitConst::PI;
 
-  double dE = _kick(philocal) * (-1e-9) *
-              bunch->getCharge() * charge2current;
+  double dE = _kick(philocal) * (-1e-9) * bunch->getCharge() * charge2current;
   coords[j][5] += dE;
   }
 }
@@ -211,15 +210,15 @@ void LSpaceChargeCalc::trackBunch(Bunch* bunch)
 
 double LSpaceChargeCalc::_kick(double angle)
 {
-// n=0 term has no impact (constant in phi)
-// f(phi) = _FFTMagnitude(1) + sum (n = 2 -> N / 2) of
-//          [2 * _FFTMagnitude(i) * cos(phi * (n - 1) +
-//          _FFTPhase(n) + _chi(n))]
+  // n=0 term has no impact (constant in phi)
+  // f(phi) = _FFTMagnitude(1) + sum (n = 2 -> N / 2) of
+  //          [2 * _FFTMagnitude(i) * cos(phi * (n - 1) +
+  //          _FFTPhase(n) + _chi(n))]
 
   double kick = 0.;
   double cosArg;
 
-  for(int n = 1; n < nBins / 2; n++)
+  for(int n = 1; n < nFreq; n++)
   {
     cosArg = n * (angle + OrbitConst::PI) + _fftphase[n] + _chi[n];
     kick += 2 * _fftmagnitude[n] * _z[n] * cos(cosArg);
