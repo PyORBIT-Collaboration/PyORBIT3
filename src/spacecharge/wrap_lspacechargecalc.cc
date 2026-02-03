@@ -46,13 +46,12 @@ extern "C"
 		int nMacrosMin;
 		int useSpaceCharge;
 		int nBins;
-        int nFreq;
 
-		if(!PyArg_ParseTuple(args,"ddiiii:arguments", &b_a, &length, &nMacrosMin, &useSpaceCharge, &nBins, &nFreq)){
-			ORBIT_MPI_Finalize("PyLSpaceChargeCalc - LSpaceChargeCalc(b_a, length, nMacrosMin, useSpaceCharge, nBins, nFreq) - constructor needs parameters.");
+		if(!PyArg_ParseTuple(args,"ddiiii:arguments", &b_a, &length, &nMacrosMin, &useSpaceCharge, &nBins)){
+			ORBIT_MPI_Finalize("PyLSpaceChargeCalc - LSpaceChargeCalc(b_a, length, nMacrosMin, useSpaceCharge, nBins) - constructor needs parameters.");
 		}
 
-		self->cpp_obj = new LSpaceChargeCalc(b_a, length, nMacrosMin, useSpaceCharge, nBins, nFreq);
+		self->cpp_obj = new LSpaceChargeCalc(b_a, length, nMacrosMin, useSpaceCharge, nBins);
 
 		((LSpaceChargeCalc*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 
@@ -93,7 +92,37 @@ extern "C"
 
 	}
 
+	static PyObject* LSpaceChargeCalc_setNumModes(PyObject *self, PyObject *args){
 
+		pyORBIT_Object* pyLSpaceChargeCalc = (pyORBIT_Object*) self;
+		LSpaceChargeCalc* cpp_LSpaceChargeCalc = (LSpaceChargeCalc*) pyLSpaceChargeCalc->cpp_obj;
+
+		int n = -1;
+        
+		if(!PyArg_ParseTuple(args,"i:arguments", &n)){
+			ORBIT_MPI_Finalize("PyLSpaceChargeCalc - setNumModes(n) - constructor needs parameters.");
+		}
+		cpp_LSpaceChargeCalc->setNumModes(n);
+
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+
+	static PyObject* LSpaceChargeCalc_setUseGrad(PyObject *self, PyObject *args){
+
+		pyORBIT_Object* pyLSpaceChargeCalc = (pyORBIT_Object*) self;
+		LSpaceChargeCalc* cpp_LSpaceChargeCalc = (LSpaceChargeCalc*) pyLSpaceChargeCalc->cpp_obj;
+
+		int setting = 0;
+        
+		if(!PyArg_ParseTuple(args,"i:arguments", &setting)){
+			ORBIT_MPI_Finalize("PyLSpaceChargeCalc - setUseGrad(setting) - constructor needs parameters.");
+		}
+		cpp_LSpaceChargeCalc->setUseGrad(setting);
+
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
 
 	//assignImpedanceValue(int, real, real).  Wraps the LongSpaceChargeCalc routine assigning an impedance mode
 	static PyObject* LSpaceChargeCalc_assignImpedanceValue(PyObject *self, PyObject *args){

@@ -29,17 +29,21 @@ class LSpaceChargeCalc: public OrbitUtils::CppPyWrapper
 public:
 
 	/** Constructor */
-	LSpaceChargeCalc(double b_a_in, double length_in, int nMacrosMin_in, int useSpaceCharge_in, int zSize_in, int nFreq_in);
+	LSpaceChargeCalc(double b_a_in, double length_in, int nMacrosMin_in, int useSpaceCharge_in, int zSize_in);
 
 	/** Destructor */
 	virtual ~LSpaceChargeCalc();
 
-	/** Calculates space charge and applies the transverse and
-	longitudinal SC kicks to the macro-particles in the bunch. */
+	/** Sets number of FFT modes used to calculate energy kick from impedance. **/
+	void setNumModes(int n);
+
+	/** Sets option to use gradient rather than impedance. **/
+	void setUseGrad(int n);
+
+	/** Calculates space charge and applies the transverse and longitudinal SC kicks to the macro-particles in the bunch. */
 	void trackBunch(Bunch* bunch);
 
-	/** Assigns the real and imaginary parts of the
-        machine impedance for index n**/
+	/** Assigns the real and imaginary parts of the machine impedance for index n**/
 	void assignImpedanceValue(int n, double real, double imag);
 
 	/** Routine for calculating the kick to the particle **/
@@ -52,7 +56,8 @@ public:
 	int nBins;
 	int nMacrosMin;
 	int useSpaceCharge;
-    int nFreq;
+    int nModes;
+    int useGrad;
 
 //protected:
 	Grid1D* zGrid;

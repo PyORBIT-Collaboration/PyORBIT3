@@ -27,7 +27,7 @@
 using namespace OrbitUtils;
 
 
-LSpaceChargeCalc::LSpaceChargeCalc(double b_a_in, double length_in, int nMacrosMin_in, int useSpaceCharge_in, int nBins_in, int nFreq_in): CppPyWrapper(NULL)
+LSpaceChargeCalc::LSpaceChargeCalc(double b_a_in, double length_in, int nMacrosMin_in, int useSpaceCharge_in, int nBins_in): CppPyWrapper(NULL)
 {
   b_a            = b_a_in;
   length         = length_in;
@@ -36,13 +36,8 @@ LSpaceChargeCalc::LSpaceChargeCalc(double b_a_in, double length_in, int nMacrosM
   nBins          = nBins_in;
   zGrid          = new Grid1D(nBins, length);
     
-  nFreq = nFreq_in;
-  if (nFreq > (nBins / 2)) {
-    nFreq = nBins / 2;
-  }
-  if (nFreq < 0) {
-    nFreq = nBins / 2;
-  }
+  nModes = nBins / 2;
+  useGrad = 0;
 
   _fftmagnitude  = new double[nBins / 2];
   _fftphase      = new double[nBins / 2];
@@ -88,6 +83,24 @@ LSpaceChargeCalc::~LSpaceChargeCalc()
   fftw_free(_in);
   fftw_free(_out);
   fftw_destroy_plan(_plan);
+}
+
+
+void LSpaceChargeCalc::setNumModes(int n) {
+  nModes = n;
+  int nModesMax = nBins / 2;
+    
+  if (nModes > nModesMax) {
+    nModes = nModesMax;
+  }
+  if (nModes < 0) {
+    nModes = nModesMax;
+  }
+}
+
+
+void LSpaceChargeCalc::setUseGrad(int setting) {
+    useGrad = setting;
 }
 
 
@@ -214,7 +227,7 @@ double LSpaceChargeCalc::_kick(double angle)
   double kick = 0.;
   double cosArg;
 
-  for(int n = 1; n < nFreq; n++)
+  for(int n = 1; n < nModes; n++)
   {
     cosArg = n * (angle + OrbitConst::PI) + _fftphase[n] + _chi[n];
     kick += 2 * _fftmagnitude[n] * _z[n] * cos(cosArg);
