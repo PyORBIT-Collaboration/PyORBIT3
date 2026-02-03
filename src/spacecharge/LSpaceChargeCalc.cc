@@ -99,10 +99,6 @@ void LSpaceChargeCalc::assignImpedanceValue(int n, double real, double imag)
 
 void LSpaceChargeCalc::trackBunch(Bunch* bunch)
 {
-
-  std::cout << "nbins=" << nBins << " nfreq=" << nFreq << std::endl; 
-
-    
   int nPartsGlobal = bunch->getSizeGlobal();
   if(nPartsGlobal < nMacrosMin) return;
 
