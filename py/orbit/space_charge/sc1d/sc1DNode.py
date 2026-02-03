@@ -6,33 +6,25 @@ import sys
 import os
 import math
 
-# import the function that finalizes the execution
-from orbit.utils import orbitFinalize
-
-# import physical constants
-from orbit.utils import consts
-
-# import general accelerator elements and lattice
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
-
-# import teapot drift class
-from orbit.teapot import DriftTEAPOT
-
-# import longitudinal space charge package
+from orbit.core.bunch import Bunch
 from orbit.core.spacecharge import LSpaceChargeCalc
-
-# -----------------------------------------------------------------------------
-# Node for impedance as function of node number
-# -----------------------------------------------------------------------------
+from orbit.lattice import AccLattice
+from orbit.lattice import AccNode
+from orbit.lattice import AccActionsContainer
+from orbit.lattice import AccNodeBunchTracker
+from orbit.utils import consts
+from orbit.utils import orbitFinalize
+from orbit.teapot import DriftTEAPOT
 
 
 class SC1D_AccNode(DriftTEAPOT):
-    def __init__(self, b_a, phaseLength, nMacrosMin, useSpaceCharge, nBins, name="long sc node"):
+    """Longitudinal space charge node."""
+    def __init__(self, b_a: float, phase_length: float, nmacros_min: float, use_sc: float, nbins: float, nfreq: int = -1, name="long sc node"):
         """
         Constructor. Creates the SC1D-teapot element.
         """
         DriftTEAPOT.__init__(self, name)
-        self.lspacecharge = LSpaceChargeCalc(b_a, phaseLength, nMacrosMin, useSpaceCharge, nBins)
+        self.lspacecharge = LSpaceChargeCalc(b_a, phase_length, nmacros_min, use_sc, nbins, nfreq)
         self.setType("long sc node")
         self.setLength(0.0)
 
@@ -51,18 +43,14 @@ class SC1D_AccNode(DriftTEAPOT):
         """
         length = self.getLength(self.getActivePartIndex())
         bunch = paramsDict["bunch"]
-        self.lspacecharge.trackBunch(bunch)  # track method goes here
+        self.lspacecharge.trackBunch(bunch)
 
     def assignImpedance(self, py_cmplx_arr):
         self.lspacecharge.assignImpedance(py_cmplx_arr)
 
 
-# -----------------------------------------------------------------------------
-# Node for impedance as function of frequency
-# -----------------------------------------------------------------------------
-
-
 class FreqDep_SC1D_AccNode(DriftTEAPOT):
+    """Longitudinal space charge node (frequency-dependent)."""
     def __init__(self, b_a, phaseLength, nMacrosMin, useSpaceCharge, nBins, bunch, impeDict, name="freq. dep. long sc node"):
         """
         Constructor. Creates the FreqDep_SC1D-teapot element.
@@ -121,12 +109,8 @@ class FreqDep_SC1D_AccNode(DriftTEAPOT):
         self.lspacecharge.trackBunch(bunch)
 
 
-# -----------------------------------------------------------------------------
-# Node for impedance as function of beta and frequency
-# -----------------------------------------------------------------------------
-
-
 class BetFreqDep_SC1D_AccNode(DriftTEAPOT):
+    """Longitudinal space charge node (frequency- and velocity-dependent)."""
     def __init__(self, b_a, phaseLength, nMacrosMin, useSpaceCharge, nBins, bunch, impeDict, name="freq. dep. long sc node"):
         """
         Constructor. Creates the BetFreqDep_SC1D-teapot element.
