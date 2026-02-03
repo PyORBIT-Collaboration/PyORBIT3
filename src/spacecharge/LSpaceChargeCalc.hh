@@ -38,7 +38,7 @@ public:
 	void setNumModes(int n);
 
 	/** Sets option to use gradient rather than impedance. **/
-	void setUseGrad(int n);
+	void setUseGrad(int setting);
 
 	/** Calculates space charge and applies the transverse and longitudinal SC kicks to the macro-particles in the bunch. */
 	void trackBunch(Bunch* bunch);

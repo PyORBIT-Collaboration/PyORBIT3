@@ -46,8 +46,10 @@ extern "C"
 		int nMacrosMin;
 		int useSpaceCharge;
 		int nBins;
+        int nModes;
+        int useGrad;
 
-		if(!PyArg_ParseTuple(args,"ddiiii:arguments", &b_a, &length, &nMacrosMin, &useSpaceCharge, &nBins)){
+		if(!PyArg_ParseTuple(args,"ddiii:arguments", &b_a, &length, &nMacrosMin, &useSpaceCharge, &nBins)){
 			ORBIT_MPI_Finalize("PyLSpaceChargeCalc - LSpaceChargeCalc(b_a, length, nMacrosMin, useSpaceCharge, nBins) - constructor needs parameters.");
 		}
 
@@ -92,37 +94,31 @@ extern "C"
 
 	}
 
-	static PyObject* LSpaceChargeCalc_setNumModes(PyObject *self, PyObject *args){
-
+    static PyObject *LSpaceChargeCalc_setNumModes(PyObject *self, PyObject *args) {
 		pyORBIT_Object* pyLSpaceChargeCalc = (pyORBIT_Object*) self;
 		LSpaceChargeCalc* cpp_LSpaceChargeCalc = (LSpaceChargeCalc*) pyLSpaceChargeCalc->cpp_obj;
 
-		int n = -1;
-        
-		if(!PyArg_ParseTuple(args,"i:arguments", &n)){
+        int nmodes;
+        if (!PyArg_ParseTuple(args, "i:arguments", &nmodes)) {
 			ORBIT_MPI_Finalize("PyLSpaceChargeCalc - setNumModes(n) - constructor needs parameters.");
-		}
-		cpp_LSpaceChargeCalc->setNumModes(n);
-
-		Py_INCREF(Py_None);
-		return Py_None;
-	}
-
-	static PyObject* LSpaceChargeCalc_setUseGrad(PyObject *self, PyObject *args){
-
+        }
+		cpp_LSpaceChargeCalc->setNumModes(nmodes);
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+    
+    static PyObject *LSpaceChargeCalc_setUseGrad(PyObject *self, PyObject *args) {
 		pyORBIT_Object* pyLSpaceChargeCalc = (pyORBIT_Object*) self;
 		LSpaceChargeCalc* cpp_LSpaceChargeCalc = (LSpaceChargeCalc*) pyLSpaceChargeCalc->cpp_obj;
 
-		int setting = 0;
-        
-		if(!PyArg_ParseTuple(args,"i:arguments", &setting)){
+        int usegrad;
+        if (!PyArg_ParseTuple(args, "i:arguments", &usegrad)) {
 			ORBIT_MPI_Finalize("PyLSpaceChargeCalc - setUseGrad(setting) - constructor needs parameters.");
-		}
-		cpp_LSpaceChargeCalc->setUseGrad(setting);
-
-		Py_INCREF(Py_None);
-		return Py_None;
-	}
+        }
+		cpp_LSpaceChargeCalc->setUseGrad(usegrad);
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
 
 	//assignImpedanceValue(int, real, real).  Wraps the LongSpaceChargeCalc routine assigning an impedance mode
 	static PyObject* LSpaceChargeCalc_assignImpedanceValue(PyObject *self, PyObject *args){
@@ -180,9 +176,11 @@ extern "C"
   // defenition of the methods of the python LSpaceChargeCalc wrapper class
   // they will be vailable from python level
   static PyMethodDef LSpaceChargeCalcClassMethods[] = {
-		{ "trackBunch",  LSpaceChargeCalc_trackBunch, METH_VARARGS,"trackBunch the bunch - trackBunch(pyBunch)"},
-		{ "assignImpedanceValue",  LSpaceChargeCalc_assignImpedanceValue, METH_VARARGS,"assigne the impedance for the ith mode - assignImpedanceValue(i,real,imag)"},
-		{ "assignImpedance",  assignImpedance, METH_VARARGS,"assigne the impedance for the ith mode - assignImpedance(Z))"},
+		{ "trackBunch", LSpaceChargeCalc_trackBunch, METH_VARARGS,"trackBunch the bunch - trackBunch(pyBunch)"},
+		{ "assignImpedanceValue", LSpaceChargeCalc_assignImpedanceValue, METH_VARARGS,"assign impedance of ith mode - assignImpedanceValue(i, real, imag)"},
+		{ "assignImpedance", assignImpedance, METH_VARARGS, "assign impedance of ith mode - assignImpedance(Z))"},
+		{ "setNumModes", LSpaceChargeCalc_setNumModes, METH_VARARGS, "set number of FFT modes used to calculate energy kick"},
+		{ "setUseGrad", LSpaceChargeCalc_setUseGrad, METH_VARARGS, "set whether to use gradient-based solver"},
 		{NULL}
   };
 
