@@ -27,8 +27,6 @@ class SC1D_AccNode(DriftTEAPOT):
         nmacros_min: float,
         use_sc: float,
         nbins: float,
-        nmodes: int = None,
-        use_grad: bool = False,
         name="long sc node",
     ) -> None:
         """
@@ -36,8 +34,6 @@ class SC1D_AccNode(DriftTEAPOT):
         """
         DriftTEAPOT.__init__(self, name)
         self.lspacecharge = LSpaceChargeCalc(b_a, phase_length, nmacros_min, use_sc, nbins)
-        self.setNumModes(nmodes)
-        # self.setUseGrad(use_grad)
         self.setType("long sc node")
         self.setLength(0.0)
 
