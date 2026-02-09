@@ -37,9 +37,13 @@ class SC1D_AccNode(DriftTEAPOT):
         self.setType("long sc node")
         self.setLength(0.0)
 
-    def setUseGrad(self, use_grad: bool) -> None:
+    def setUseGrad(self, setting: bool) -> None:
         """Sets whether to use gradient-based solver instead of impedance solver."""
-        self.lspacecharge.setUseGrad(int(use_grad))
+        self.lspacecharge.setUseGrad(int(setting))
+
+    def setSmoothGrad(self, setting: bool) -> None:
+        """Sets whether to use smoothed gradient."""
+        self.lspacecharge.setSmoothGrad(int(setting))
 
     def setNumModes(self, n: int) -> None:
         """Sets number of FFT modes used to calculate energy kick."""

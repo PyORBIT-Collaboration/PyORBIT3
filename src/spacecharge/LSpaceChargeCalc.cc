@@ -35,6 +35,7 @@ LSpaceChargeCalc::LSpaceChargeCalc(double b_a_in, double length_in, int nMacrosM
 
     nModes = nBins / 2;
     useGrad = 0;
+    smooth = 0;
 
     _fftmagnitude = new double[nBins / 2];
     _fftphase = new double[nBins / 2];
@@ -92,6 +93,10 @@ void LSpaceChargeCalc::setUseGrad(int setting) {
     useGrad = setting;
 }
 
+void LSpaceChargeCalc::setSmoothGrad(int setting) {
+    smooth = setting;
+}
+
 void LSpaceChargeCalc::assignImpedanceValue(int n, double real, double imag) {
     _zImped_n[n + 1] = std::complex<double>(real, imag);
 }
@@ -114,7 +119,7 @@ void LSpaceChargeCalc::trackBunch(Bunch *bunch) {
     zGrid->binBunchSmoothedByParticle(bunch);
     zGrid->synchronizeMPI(bunch->getMPI_Comm_Local());
 
-    if (useGrad == 0) {
+    if (useGrad == 0) {  // Impedance-based solver
 
         // FFT the beam density
         for (int i = 0; i < nBins; i++) {
@@ -164,7 +169,6 @@ void LSpaceChargeCalc::trackBunch(Bunch *bunch) {
         double kick, angle, position;
 
         // Convert particle longitudinal coordinate to phi
-
         double philocal;
         double z;
         double **coords = bunch->coordArr();
@@ -183,7 +187,7 @@ void LSpaceChargeCalc::trackBunch(Bunch *bunch) {
             coords[j][5] += dE;
         }
     } 
-    else {
+    else {  // Gradient-based solver
         double pi = OrbitConst::PI;
         double c = OrbitConst::c;
         double mu0 = OrbitConst::permeability;
@@ -194,11 +198,9 @@ void LSpaceChargeCalc::trackBunch(Bunch *bunch) {
         SyncPart *sp = bunch->getSyncPart();
         double beta = sp->getBeta();
         double gamma = sp->getGamma();
+
         double ez_factor = g * q / (4.0 * pi * eps0 * gamma * gamma);
-
         double kick_factor = length * bunch->getClassicalRadius() * bunch->getMass();
-
-        int smooth = 1;
 
         double z, ez, density_gradient;
         for (int i = 0, n = bunch->getSize(); i < n; i++) {

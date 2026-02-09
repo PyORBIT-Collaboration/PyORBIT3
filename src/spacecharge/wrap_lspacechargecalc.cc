@@ -120,6 +120,19 @@ extern "C"
         return Py_None;
     }
 
+    static PyObject *LSpaceChargeCalc_setSmoothGrad(PyObject *self, PyObject *args) {
+		pyORBIT_Object* pyLSpaceChargeCalc = (pyORBIT_Object*) self;
+		LSpaceChargeCalc* cpp_LSpaceChargeCalc = (LSpaceChargeCalc*) pyLSpaceChargeCalc->cpp_obj;
+
+        int smoothgrad;
+        if (!PyArg_ParseTuple(args, "i:arguments", &smoothgrad)) {
+			ORBIT_MPI_Finalize("PyLSpaceChargeCalc - setSmoothGrad(setting) - constructor needs parameters.");
+        }
+		cpp_LSpaceChargeCalc->setSmoothGrad(smoothgrad);
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+
 	//assignImpedanceValue(int, real, real).  Wraps the LongSpaceChargeCalc routine assigning an impedance mode
 	static PyObject* LSpaceChargeCalc_assignImpedanceValue(PyObject *self, PyObject *args){
 
@@ -181,6 +194,7 @@ extern "C"
 		{ "assignImpedance", assignImpedance, METH_VARARGS, "assign impedance of ith mode - assignImpedance(Z))"},
 		{ "setNumModes", LSpaceChargeCalc_setNumModes, METH_VARARGS, "set number of FFT modes used to calculate energy kick"},
 		{ "setUseGrad", LSpaceChargeCalc_setUseGrad, METH_VARARGS, "set whether to use gradient-based solver"},
+		{ "setSmoothGrad", LSpaceChargeCalc_setSmoothGrad, METH_VARARGS, "set whether to use smooth gradients"},
 		{NULL}
   };
 

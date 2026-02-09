@@ -40,6 +40,9 @@ public:
 	/** Sets option to use gradient rather than impedance. **/
 	void setUseGrad(int setting);
 
+	/** Sets option to use smooth gradient of longitudinal density. **/
+	void setSmoothGrad(int setting);
+
 	/** Calculates space charge and applies the transverse and longitudinal SC kicks to the macro-particles in the bunch. */
 	void trackBunch(Bunch* bunch);
 
@@ -58,6 +61,7 @@ public:
 	int useSpaceCharge;
     int nModes;
     int useGrad;
+    int smooth;
 
 //protected:
 	Grid1D* zGrid;
