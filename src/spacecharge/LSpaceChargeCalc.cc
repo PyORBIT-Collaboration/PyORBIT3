@@ -184,9 +184,38 @@ void LSpaceChargeCalc::trackBunch(Bunch *bunch) {
         }
     } 
     else {
-        std::cout << "Gradient-based solver is not implemented.";
+        double pi = OrbitConst::PI;
+        double c = OrbitConst::c;
+        double mu0 = OrbitConst::permeability;
+        double eps0 = 1.0 / (mu0 * c * c);
+        double g = (1.0 + 2.0 * log(b_a));
+        double q = bunch->getCharge();
+
+        SyncPart *sp = bunch->getSyncPart();
+        double beta = sp->getBeta();
+        double gamma = sp->getGamma();
+        double ez_factor = g * q / (4.0 * pi * eps0 * gamma * gamma);
+
+        double kick_factor = length * bunch->getClassicalRadius() * bunch->getMass();
+
+        int smooth = 1;
+
+        double z, ez, density_gradient;
+        for (int i = 0, n = bunch->getSize(); i < n; i++) {
+            z = bunch->z(i) * gamma;
+            if (smooth > 0) {
+                zGrid->calcGradientSmoothed(z, density_gradient);
+            }
+            else {
+                zGrid->calcGradient(z, density_gradient);
+            }
+            ez = density_gradient * ez_factor;
+            bunch->dE(i) -= ez * kick_factor;
+        }
     }
 }
+
+
 
 ///////////////////////////////////////////////////////////////////////////
 //
