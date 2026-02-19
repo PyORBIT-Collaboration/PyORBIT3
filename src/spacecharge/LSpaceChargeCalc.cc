@@ -193,7 +193,8 @@ void LSpaceChargeCalc::trackBunch(Bunch *bunch) {
         zGrid->multiply(bunch->getCharge() * bunch->getMacroSize() / bin_size);
         
         // Calculate constant factor for energy kick.
-        double factor = length * bunch->getClassicalRadius() * bunch->getMass() / (sp->getGamma() * sp->getGamma());
+        double g = 1.0 + 2.0 * log(b_a);
+        double factor = length * g * bunch->getClassicalRadius() * bunch->getMass() / (sp->getGamma() * sp->getGamma());
 
         double **coords = bunch->coordArr();
         double z;
