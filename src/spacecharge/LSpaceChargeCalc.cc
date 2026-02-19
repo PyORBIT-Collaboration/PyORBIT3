@@ -184,9 +184,6 @@ void LSpaceChargeCalc::trackBunch(Bunch *bunch) {
                 philocal -= 2 * OrbitConst::PI;
 
             double dE = _kick(philocal) * (-1e-9) * bunch->getCharge() * charge2current;
-            if (j == 0) {
-                std::cout << "debug j= " << j << " dE = " << dE << "\n"; 
-            }
             coords[j][5] += dE;
         }
     }
@@ -221,9 +218,6 @@ void LSpaceChargeCalc::trackBunch(Bunch *bunch) {
             }
 
             double energy_kick = -factor * density_gradient;
-            if (j == 0) {
-                std::cout << "debug j= " << j << " dE = " << energy_kick << "\n"; 
-            }
             coords[j][5] += energy_kick;
         }
     }
