@@ -106,6 +106,8 @@ void LSpaceChargeCalc::trackBunch(Bunch *bunch) {
     if (nPartsGlobal < nMacrosMin)
         return;
 
+    SyncPart *sp = bunch->getSyncPart();
+
     // Bin the particles.
     double zmin, zmax;
     double realPart, imagPart;
@@ -120,7 +122,6 @@ void LSpaceChargeCalc::trackBunch(Bunch *bunch) {
     zGrid->synchronizeMPI(bunch->getMPI_Comm_Local());
 
     if (useGrad == 0) {
-
         // FFT the beam density.
         for (int i = 0; i < nBins; i++) {
             _in[i][0] = zGrid->getValueOnGrid(i);
@@ -141,7 +142,6 @@ void LSpaceChargeCalc::trackBunch(Bunch *bunch) {
         }
 
         // Space charge contribution to impedance.
-        SyncPart *sp = bunch->getSyncPart();
 
         // Set zero if useSpaceCharge = 0.
         double zSpaceCharge_n = 0.;
@@ -191,22 +191,27 @@ void LSpaceChargeCalc::trackBunch(Bunch *bunch) {
         }
     }
     else {
-        double z;
+        // Convert grid values to number density [1/m]. Note that bunch->getCharge() returns elementary charge units.
+        double bin_size = (zmax - zmin) / nBins;
+        zGrid->multiply(bunch->getCharge() * bunch->getMacroSize() / bin_size);
+        
+        // Calculate constant factor for energy kick.
+        double factor = length * bunch->getClassicalRadius() * bunch->getMass() / (sp->getGamma() * sp->getGamma());
+
         double **coords = bunch->coordArr();
-
-        SyncPart *sp = bunch->getSyncPart();
-        double gamma = sp->getGamma();
-        double factor = length * bunch->getClassicalRadius() * bunch->getMass() / (gamma * gamma);
-
+        double z;
         double density_gradient;
-        double dE;
-        for (int j = 0; j < bunch->getSize(); j++) {
-            z = bunch->z(j);
-            // z = bunch->z(j) * gamma;  // rest frame
+        double energy_kick;
 
-            // Handle cases where the longitudinal coordinate is
-            // outside of the user-specified length
-            // ...
+        for (int j = 0; j < bunch->getSize(); j++) {
+            z = bunch->z(j);  // gamma?
+
+            if (z < -0.5 * length) {
+                z += length;
+            }
+            if (z > +0.5 * length) {
+                z -= length;
+            }
 
             if (smooth > 0) {
                 zGrid->calcGradientSmoothed(z, density_gradient);
@@ -214,12 +219,12 @@ void LSpaceChargeCalc::trackBunch(Bunch *bunch) {
             else {
                 zGrid->calcGradient(z, density_gradient);
             }
-            double dE = -factor * density_gradient;
-            dE = dE * 1e9; // ?
+
+            double energy_kick = -factor * density_gradient;
             if (j == 0) {
-                std::cout << "debug j= " << j << " dE = " << dE << "\n"; 
+                std::cout << "debug j= " << j << " dE = " << energy_kick << "\n"; 
             }
-            coords[j][5] += dE;
+            coords[j][5] += energy_kick;
         }
     }
 
