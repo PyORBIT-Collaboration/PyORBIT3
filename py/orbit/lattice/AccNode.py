@@ -168,7 +168,7 @@ class AccNode(NamedObject, TypedObject, ParamsDictObject):
             nChildren = nChildren + len(arr[0]) + len(arr[1])
         return nChildren
 
-    def addChildNode(self, node, place, part_index=0, place_in_part=AccActionsContainer.BEFORE):
+    def addChildNode(self, node, place, part_index=0, place_in_part=AccActionsContainer.AFTER):
         """
         Method. Adds a child node to the list defined by place and
         (maybe) part index and place in the part (before or after).
@@ -192,7 +192,10 @@ class AccNode(NamedObject, TypedObject, ParamsDictObject):
                 msg = msg + os.linesep
                 orbitFinalize(msg)
             nodes = self.__childNodesArr[place][part_index][place_in_part]
-        nodes.append(node)
+        if(place_in_part == AccActionsContainer.AFTER):
+            nodes.append(node)
+        else:
+            nodes.insert(0, node)
 
     def getChildNodes(self, place, part_index=0, place_in_part=AccActionsContainer.BEFORE):
         """
