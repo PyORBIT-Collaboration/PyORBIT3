@@ -6,37 +6,50 @@ import sys
 import os
 import math
 
-# import the function that finalizes the execution
-from orbit.utils import orbitFinalize
-
-# import physical constants
-from orbit.utils import consts
-
-# import general accelerator elements and lattice
-from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
-
-# import teapot drift class
-from orbit.teapot import DriftTEAPOT
-
-# import longitudinal space charge package
+from orbit.core.bunch import Bunch
 from orbit.core.spacecharge import LSpaceChargeCalc
-
-# -----------------------------------------------------------------------------
-# Node for impedance as function of node number
-# -----------------------------------------------------------------------------
+from orbit.lattice import AccLattice
+from orbit.lattice import AccNode
+from orbit.lattice import AccActionsContainer
+from orbit.lattice import AccNodeBunchTracker
+from orbit.utils import consts
+from orbit.utils import orbitFinalize
+from orbit.teapot import DriftTEAPOT
 
 
 class SC1D_AccNode(DriftTEAPOT):
-    def __init__(self, b_a, phaseLength, nMacrosMin, useSpaceCharge, nBins, name="long sc node"):
+    """Longitudinal space charge node."""
+
+    def __init__(
+        self,
+        b_a: float,
+        phase_length: float,
+        nmacros_min: float,
+        use_sc: float,
+        nbins: float,
+        name="long sc node",
+    ) -> None:
         """
         Constructor. Creates the SC1D-teapot element.
         """
         DriftTEAPOT.__init__(self, name)
-        self.lspacecharge = LSpaceChargeCalc(b_a, phaseLength, nMacrosMin, useSpaceCharge, nBins)
+        self.lspacecharge = LSpaceChargeCalc(b_a, phase_length, nmacros_min, use_sc, nbins)
         self.setType("long sc node")
         self.setLength(0.0)
 
-    def trackBunch(self, bunch):
+    def setUseGrad(self, setting: bool) -> None:
+        """Sets whether to use gradient-based solver instead of impedance solver."""
+        self.lspacecharge.setUseGrad(int(setting))
+
+    def setSmoothGrad(self, setting: bool) -> None:
+        """Sets whether to use smoothed gradient."""
+        self.lspacecharge.setSmoothGrad(int(setting))
+
+    def setNumModes(self, n: int) -> None:
+        """Sets number of FFT modes used to calculate energy kick."""
+        self.lspacecharge.setNumModes(n)
+
+    def trackBunch(self, bunch: Bunch) -> None:
         """
         The SC1D-teapot class implementation of the
         AccNodeBunchTracker class trackBunch(probe) method.
@@ -44,100 +57,118 @@ class SC1D_AccNode(DriftTEAPOT):
         length = self.getLength(self.getActivePartIndex())
         self.lspacecharge.trackBunch(bunch)  # track method goes here
 
-    def track(self, paramsDict):
+    def track(self, params_dict: dict) -> None:
         """
         The SC1D-teapot class implementation of the
         AccNodeBunchTracker class track(probe) method.
         """
         length = self.getLength(self.getActivePartIndex())
-        bunch = paramsDict["bunch"]
-        self.lspacecharge.trackBunch(bunch)  # track method goes here
+        bunch = params_dict["bunch"]
+        self.lspacecharge.trackBunch(bunch)
 
-    def assignImpedance(self, py_cmplx_arr):
+    def assignImpedance(self, py_cmplx_arr: list[float]) -> None:
         self.lspacecharge.assignImpedance(py_cmplx_arr)
 
 
-# -----------------------------------------------------------------------------
-# Node for impedance as function of frequency
-# -----------------------------------------------------------------------------
-
-
 class FreqDep_SC1D_AccNode(DriftTEAPOT):
-    def __init__(self, b_a, phaseLength, nMacrosMin, useSpaceCharge, nBins, bunch, impeDict, name="freq. dep. long sc node"):
+    """Longitudinal space charge node (frequency-dependent)."""
+
+    def __init__(
+        self,
+        b_a: float,
+        phase_length: float,
+        nmacros_min: int,
+        use_sc: int,
+        nbins: int,
+        bunch: Bunch,
+        imp_dict: dict,
+        name: str = "freq. dep. long sc node",
+    ) -> None:
         """
         Constructor. Creates the FreqDep_SC1D-teapot element.
         """
         DriftTEAPOT.__init__(self, name)
-        self.lspacecharge = LSpaceChargeCalc(b_a, phaseLength, nMacrosMin, useSpaceCharge, nBins)
+        self.lspacecharge = LSpaceChargeCalc(
+            b_a, phase_length, nmacros_min, use_sc, nbins
+        )
         self.setType("freq. dep. long sc node")
         self.setLength(0.0)
-        self.phaseLength = phaseLength
-        self.nBins = nBins
-        self.localDict = impeDict
+        self.phase_length = phase_length
+        self.nbins = nbins
+        self.localDict = imp_dict
         self.freq_tuple = self.localDict["freqs"]
         self.freq_range = len(self.freq_tuple) - 1
         self.z_tuple = self.localDict["z_imp"]
         self.c = consts.speed_of_light
         BetaRel = bunch.getSyncParticle().beta()
-        Freq0 = (BetaRel * self.c) / self.phaseLength
+        Freq0 = (BetaRel * self.c) / self.phase_length
         Z = []
-        for n in range(self.nBins // 2 - 1):
+        for n in range(self.nbins // 2 - 1):
             freq_mode = Freq0 * (n + 1)
             z_mode = interp(freq_mode, self.freq_range, self.freq_tuple, self.z_tuple)
             Z.append(z_mode)
         self.lspacecharge.assignImpedance(Z)
 
-    def trackBunch(self, bunch):
+    def trackBunch(self, bunch: Bunch) -> None:
         """
         The FreqDep_SC1D-teapot class implementation of
         the AccNodeBunchTracker class track(probe) method.
         """
         length = self.getLength(self.getActivePartIndex())
         BetaRel = bunch.getSyncParticle().beta()
-        Freq0 = (BetaRel * self.c) / self.phaseLength
+        Freq0 = (BetaRel * self.c) / self.phase_length
         Z = []
-        for n in range(self.nBins // 2 - 1):
+        for n in range(self.nbins // 2 - 1):
             freq_mode = Freq0 * (n + 1)
             z_mode = interp(freq_mode, self.freq_range, self.freq_tuple, self.z_tuple)
             Z.append(z_mode)
         self.lspacecharge.assignImpedance(Z)
         self.lspacecharge.trackBunch(bunch)
 
-    def track(self, paramsDict):
+    def track(self, params_dict: dict) -> None:
         """
         The FreqDep_SC1D-teapot class implementation of
         the AccNodeBunchTracker class track(probe) method.
         """
         length = self.getLength(self.getActivePartIndex())
-        bunch = paramsDict["bunch"]
+        bunch = params_dict["bunch"]
         BetaRel = bunch.getSyncParticle().beta()
-        Freq0 = (BetaRel * self.c) / self.phaseLength
+        Freq0 = (BetaRel * self.c) / self.phase_length
         Z = []
-        for n in range(self.nBins // 2 - 1):
+        for n in range(self.nbins // 2 - 1):
             freq_mode = Freq0 * (n + 1)
             z_mode = interp(freq_mode, self.freq_range, self.freq_tuple, self.z_tuple)
             Z.append(z_mode)
         self.lspacecharge.assignImpedance(Z)
         self.lspacecharge.trackBunch(bunch)
-
-
-# -----------------------------------------------------------------------------
-# Node for impedance as function of beta and frequency
-# -----------------------------------------------------------------------------
 
 
 class BetFreqDep_SC1D_AccNode(DriftTEAPOT):
-    def __init__(self, b_a, phaseLength, nMacrosMin, useSpaceCharge, nBins, bunch, impeDict, name="freq. dep. long sc node"):
+    """Longitudinal space charge node (frequency- and velocity-dependent)."""
+
+    def __init__(
+        self,
+        b_a: float,
+        phase_length: float,
+        nmacros_min: float,
+        use_sc: int,
+        nbins: int,
+        bunch: Bunch,
+        imp_dict: dict,
+        name: str = "freq. dep. long sc node",
+    ) -> None:
         """
         Constructor. Creates the BetFreqDep_SC1D-teapot element.
         """
         DriftTEAPOT.__init__(self, name)
-        self.lspacecharge = LSpaceChargeCalc(b_a, phaseLength, nMacrosMin, useSpaceCharge, nBins)
+        self.lspacecharge = LSpaceChargeCalc(
+            b_a, phase_length, nmacros_min, use_sc, nbins
+        )
         self.setType("beta-freq. dep. long sc node")
         self.setLength(0.0)
-        self.phaseLength = phaseLength
-        self.nBins = nBins
-        self.localDict = impeDict
+        self.phase_length = phase_length
+        self.nbins = nbins
+        self.localDict = imp_dict
         self.bet_tuple = self.localDict["betas"]
         self.bet_range = len(self.bet_tuple) - 1
         self.freq_tuple = self.localDict["freqs"]
@@ -145,49 +176,73 @@ class BetFreqDep_SC1D_AccNode(DriftTEAPOT):
         self.z_bf = self.localDict["z_imp"]
         self.c = consts.speed_of_light
         BetaRel = bunch.getSyncParticle().beta()
-        Freq0 = (BetaRel * self.c) / self.phaseLength
+        Freq0 = (BetaRel * self.c) / self.phase_length
         Z = []
-        for n in range(self.nBins / 2 - 1):
+        for n in range(self.nbins / 2 - 1):
             freq_mode = Freq0 * (n + 1)
-            z_mode = bilinterp(BetaRel, freq_mode, self.bet_range, self.freq_range, self.bet_tuple, self.freq_tuple, self.z_bf)
+            z_mode = bilinterp(
+                BetaRel,
+                freq_mode,
+                self.bet_range,
+                self.freq_range,
+                self.bet_tuple,
+                self.freq_tuple,
+                self.z_bf,
+            )
             Z.append(z_mode)
         self.lspacecharge.assignImpedance(Z)
 
-    def trackBunch(self, bunch):
+    def trackBunch(self, bunch: Bunch) -> None:
         """
         The BetFreqDep_SC1D-teapot class implementation of
         the AccNodeBunchTracker class track(probe) method.
         """
         length = self.getLength(self.getActivePartIndex())
         BetaRel = bunch.getSyncParticle().beta()
-        Freq0 = (BetaRel * self.c) / self.phaseLength
+        Freq0 = (BetaRel * self.c) / self.phase_length
         Z = []
-        for n in range(self.nBins / 2 - 1):
+        for n in range(self.nbins / 2 - 1):
             freq_mode = Freq0 * (n + 1)
-            z_mode = bilinterp(BetaRel, freq_mode, self.bet_range, self.freq_range, self.bet_tuple, self.freq_tuple, self.z_bf)
+            z_mode = bilinterp(
+                BetaRel,
+                freq_mode,
+                self.bet_range,
+                self.freq_range,
+                self.bet_tuple,
+                self.freq_tuple,
+                self.z_bf,
+            )
             Z.append(z_mode)
         self.lspacecharge.assignImpedance(Z)
         self.lspacecharge.trackBunch(bunch)
 
-    def track(self, paramsDict):
+    def track(self, params_dict: dict) -> None:
         """
         The BetFreqDep_SC1D-teapot class implementation of
         the AccNodeBunchTracker class track(probe) method.
         """
         length = self.getLength(self.getActivePartIndex())
-        bunch = paramsDict["bunch"]
+        bunch = params_dict["bunch"]
         BetaRel = bunch.getSyncParticle().beta()
-        Freq0 = (BetaRel * self.c) / self.phaseLength
+        Freq0 = (BetaRel * self.c) / self.phase_length
         Z = []
-        for n in range(self.nBins / 2 - 1):
+        for n in range(self.nbins / 2 - 1):
             freq_mode = Freq0 * (n + 1)
-            z_mode = bilinterp(BetaRel, freq_mode, self.bet_range, self.freq_range, self.bet_tuple, self.freq_tuple, self.z_bf)
+            z_mode = bilinterp(
+                BetaRel,
+                freq_mode,
+                self.bet_range,
+                self.freq_range,
+                self.bet_tuple,
+                self.freq_tuple,
+                self.z_bf,
+            )
             Z.append(z_mode)
         self.lspacecharge.assignImpedance(Z)
         self.lspacecharge.trackBunch(bunch)
 
 
-def interp(x, n_tuple, x_tuple, y_tuple):
+def interp(x: float, n_tuple: int, x_tuple: list[float], y_tuple: list[float]) -> float:
     """
     Linear interpolation: Given n-tuple + 1 points,
     x_tuple and y_tuple, routine finds y = y_tuple
@@ -210,7 +265,15 @@ def interp(x, n_tuple, x_tuple, y_tuple):
     return y
 
 
-def bilinterp(x, y, nx_tuple, ny_tuple, x_tuple, y_tuple, fxy):
+def bilinterp(
+    x: float,
+    y: float,
+    nx_tuple: int,
+    ny_tuple: int,
+    x_tuple: list[float],
+    y_tuple: list[float],
+    fxy: list[list[float]],
+) -> float:
     """
     Bilinear interpolation: Given nx-tuple + 1 x-points,
     ny-tuple + 1 y-points, x_tuple and y_tuple,
