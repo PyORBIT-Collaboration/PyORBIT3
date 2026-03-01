@@ -9,3 +9,9 @@ PyORBIT.egg-info
 *.so
 .*.swp
 .eggs
+.venv
+_autosummary/
+_api/
+_cpp_api/
+doc/source/reference/*.rst
+doc/source/reference/*.rst.include

@@ -10,6 +10,8 @@
 from orbit.rf_cavities.RFNode import Frequency_RFNode
 from orbit.rf_cavities.RFNode import Harmonic_RFNode
 from orbit.rf_cavities.RFNode import Barrier_RFNode
+from orbit.rf_cavities.RFNode import BRhoDep_Harmonic_RFNode
+from orbit.rf_cavities.RFNode import SyncPhaseDep_Harmonic_RFNode
 from orbit.rf_cavities.RFLatticeModifications import addRFNode
 
 __all__ = []

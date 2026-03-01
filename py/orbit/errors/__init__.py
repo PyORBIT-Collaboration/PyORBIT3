@@ -38,7 +38,7 @@ from orbit.errors.ErrorLatticeModifications import addErrorNodeAsChild_I
 from orbit.errors.ErrorLatticeModifications import addErrorNodeAsChild_F
 
 __all__ = []
-__all__.append("")
+# __all__.append("")
 __all__.append("addErrorNode")
 __all__.append("addErrorNodeAsChild")
 __all__.append("addErrorNodeAsChild_I")

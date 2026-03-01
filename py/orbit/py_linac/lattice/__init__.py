@@ -68,9 +68,9 @@ __all__.append("LinacEnergyApertureNode")
 __all__.append("RF_Cavity")
 __all__.append("Sequence")
 
-__all__.append("LinacStructureTree")
-__all__.append("LinacStructureSeq")
-__all__.append("LinacStuctureNode")
+# __all__.append("LinacStructureTree")  # doesn't exist
+# __all__.append("LinacStructureSeq")
+# __all__.append("LinacStuctureNode")
 
 __all__.append("BaseRF_Gap")
 __all__.append("AxisFieldRF_Gap")

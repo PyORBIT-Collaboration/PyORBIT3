@@ -1,0 +1,42 @@
+on:
+  workflow_call:
+    inputs:
+      upload-artifact:
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: po3
+          channels: conda-forge,defaults
+          auto-update-conda: true
+          environment-file: ./doc/environment.yml
+
+      - name: Install PyORBIT3
+        shell: bash -l {0}
+        run: |
+          # @woodtp -- MPI isn't required to build docs and enabling it causes Sphinx to segfault.
+          conda activate po3
+          pip install --config-settings=setup-args="-DUSE_MPI='none'" .
+
+      - name: Build Documentation
+        shell: bash -l {0}
+        run: |
+          conda activate po3
+          cd doc
+          make dirhtml
+
+      - name: Upload artifact
+        if: ${{ inputs.upload-artifact }}
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './doc/build/dirhtml'

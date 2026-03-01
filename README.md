@@ -29,16 +29,16 @@ The following commands may require root access.
 
 <details>
   <summary> Click for Ubuntu-based distributions</summary>
-  
+
   ```bash
   apt-get update
   apt-get install -y  build-essential python3 libfftw3-dev python3-venv libpython3-dev pkg-config git
-  ```    
+  ```
 </details>
 
 <details>
   <summary> Click for Redhat-based distributions</summary>
-  
+
   ```bash
   dnf group install -y "Development Tools"
   dnf install -y python3-devel fftw3-devel
@@ -47,16 +47,18 @@ The following commands may require root access.
 
 <details>
   <summary> Click for Mac</summary>
-  
+
   Install Homebrew, make sure that  homebrew programs are in the **$PATH** (optional step in Homebrew installation)
+
   ```bash
   brew install pkg-config fftw
   ```
 </details>
-  
+
   #### Create Python virtual environment
   Make sure that you have the correct python version installed. We require python>3.9. <br>
   Create virtual environment.
+
   ```
   python3 -m venv .po3
   . .po3/bin/activate
@@ -70,6 +72,7 @@ The following commands may require root access.
 
 First of all make sure you have conda installed and development packages.<br>
 Development packages for Ubuntu:
+
 ```
 apt update -y
 apt install -y curl gpg git build-essential
@@ -87,17 +90,17 @@ pip install -U meson-python setuptools setuptools-scm
 
 ## 3. Build
 
-If you plan to modify PyORBIT's code, install it in editable mode. 
+If you plan to modify PyORBIT's code, install it in editable mode.
 You will NOT need to rebuild after modifications to the code. [Meson](MesonBuild.md) will rebuild as necessary on import.
 ```
 pip install --no-build-isolation --editable .
 ```
 
 Alternatively if you don't plan to modify PyORBIT's code
+
 ```
 pip install .
 ```
-
 
 ## 4. Run full SNS linac example
 
@@ -116,9 +119,9 @@ pip install --config-settings=setup-args="-DUSE_MPI=none" .
 Above will build PyORBIT without MPI even if MPI is present. You can change that option to `mpich`, `ompi`, `none` or `auto` (default).<br>
 | MPI flavor            | Installation command |
 |---------------|--------------|
-| No MPI                                  | `pip install --config-settings=setup-args="-DUSE_MPI=none" .`       | 
-| The first found MPI installation if any | `pip install --config-settings=setup-args="-DUSE_MPI=auto" .`       | 
-| OpenMPI | `pip install --config-settings=setup-args="-DUSE_MPI=ompi" .`       | 
+| No MPI                                  | `pip install --config-settings=setup-args="-DUSE_MPI=none" .`       |
+| The first found MPI installation if any | `pip install --config-settings=setup-args="-DUSE_MPI=auto" .`       |
+| OpenMPI | `pip install --config-settings=setup-args="-DUSE_MPI=ompi" .`       |
 | MPICH | `pip install --config-settings=setup-args="-DUSE_MPI=mpich" .`       |
 
 Meson uses PKG_CONFIG to discover packages. It could be useful to help it to find your MPI installation:
