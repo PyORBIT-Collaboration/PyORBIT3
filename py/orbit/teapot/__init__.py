@@ -16,6 +16,7 @@ from .teapot import RingRFTEAPOT
 from .teapot import SolenoidTEAPOT
 from .teapot import TiltTEAPOT
 from .teapot import NodeTEAPOT
+from .teapot import ContinuousLinearFocusingTEAPOT
 
 from .teapot import TPB
 
@@ -36,5 +37,6 @@ __all__.append("RingRFTEAPOT")
 __all__.append("FringeFieldTEAPOT")
 __all__.append("TiltTEAPOT")
 __all__.append("NodeTEAPOT")
+__all__.append("ContinuousLinearFocusingTEAPOT")
 __all__.append("TPB")
 __all__.append("TEAPOT_MATRIX_Lattice")
