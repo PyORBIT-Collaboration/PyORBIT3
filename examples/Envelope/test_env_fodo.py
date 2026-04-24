@@ -26,7 +26,7 @@ from orbit.teapot import TEAPOT_MATRIX_Lattice
 from orbit.utils.consts import mass_proton
 
 from plot import plot_rms_ellipse
-from utils import gen_kv
+from utils import gen_dist
 
 plt.style.use("style.mplstyle")
 
@@ -35,18 +35,22 @@ plt.style.use("style.mplstyle")
 # ------------------------------------------------------------------------------
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--nslice", type=int, default=10)
-parser.add_argument("--kq", type=float, default=0.1)
-parser.add_argument("--mismatch-x", type=float, default=0.0)
-parser.add_argument("--mismatch-y", type=float, default=0.0)
-parser.add_argument("--offset-x", type=float, default=0.0)
-parser.add_argument("--offset-y", type=float, default=0.0)
-parser.add_argument("--turns", type=int, default=25)
-parser.add_argument("--nparts", type=int, default=100_000)
-parser.add_argument("--sc", type=int, default=0)
-parser.add_argument("--intensity", type=float, default=1e10)
 parser.add_argument("--zrms", type=float, default=5.0)
 parser.add_argument("--kin-energy", type=float, default=0.025)
+parser.add_argument("--intensity", type=float, default=5e10)
+
+parser.add_argument("--dist-name", type=str, default="kv", choices=["kv", "waterbag", "gauss"])
+parser.add_argument("--dist-mismatch-x", type=float, default=0.0)
+parser.add_argument("--dist-mismatch-y", type=float, default=0.0)
+parser.add_argument("--dist-offset-x", type=float, default=0.0)
+parser.add_argument("--dist-offset-y", type=float, default=0.0)
+
+parser.add_argument("--nslice", type=int, default=10)
+parser.add_argument("--kq", type=float, default=0.25)
+
+parser.add_argument("--nparts", type=int, default=100_000)
+parser.add_argument("--turns", type=int, default=25)
+parser.add_argument("--sc", type=int, default=0)
 args = parser.parse_args()
 
 
@@ -110,14 +114,14 @@ cov_matrix[4, 4] = args.zrms**2
 cov_matrix[5, 5] = 0.0
 
 # Mismatch x
-cov_matrix[0, 0] *= (1.0 + args.mismatch_x) ** 2
-cov_matrix[2, 2] *= (1.0 + args.mismatch_y) ** 2
+cov_matrix[0, 0] *= (1.0 + args.dist_mismatch_x) ** 2
+cov_matrix[2, 2] *= (1.0 + args.dist_mismatch_y) ** 2
 cov_matrix_init = np.copy(cov_matrix)
 
 # Offset x
 centroid_init = np.zeros(6)
-centroid_init[0] += args.offset_x
-centroid_init[2] += args.offset_y
+centroid_init[0] += args.dist_offset_x
+centroid_init[2] += args.dist_offset_y
 
 # Create envelope
 envelope = Envelope(
@@ -168,7 +172,7 @@ print("TRACK BUNCH")
 rng = np.random.default_rng()
 
 bunch_coords = np.zeros((args.nparts, 6))
-bunch_coords[:, :4] = gen_kv(args.nparts, cov_matrix_init[0:4, 0:4])
+bunch_coords[:, :4] = gen_dist(args.nparts, cov_matrix_init[0:4, 0:4], args.dist_name)
 bunch_coords[:, 4] = 2.0 * rng.uniform(-args.zrms, args.zrms, size=args.nparts)
 bunch_coords += centroid_init[None, :6]
 
