@@ -1,4 +1,5 @@
 """Test envelope tracker in FODO lattice."""
+
 import argparse
 import copy
 import math
@@ -80,7 +81,7 @@ cov_matrix[0, 1] = cov_matrix[1, 0] = -eps_x * alpha_x
 cov_matrix[2, 3] = cov_matrix[3, 2] = -eps_y * alpha_y
 cov_matrix[1, 1] = eps_x * (1.0 + alpha_x**2) / beta_x
 cov_matrix[3, 3] = eps_y * (1.0 + alpha_y**2) / beta_y
-cov_matrix[4, 4] = 10.0 ** 2
+cov_matrix[4, 4] = 10.0**2
 cov_matrix[5, 5] = 0.0
 
 # Mismatch x
@@ -154,6 +155,7 @@ for turn in range(args.turns):
     history["yrms"].append(yrms)
 
 histories["bunch"] = copy.deepcopy(history)
+
 
 # Analysis
 # ------------------------------------------------------------------------------
