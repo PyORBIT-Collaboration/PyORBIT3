@@ -26,7 +26,10 @@ from orbit.teapot import TEAPOT_MATRIX_Lattice
 from orbit.utils.consts import mass_proton
 
 from plot import plot_rms_ellipse
+from plot import plot_corner
 from utils import gen_dist
+from utils import build_rotation_matrix_xy
+from utils import project_cov_matrix
 
 plt.style.use("style.mplstyle")
 
@@ -44,6 +47,7 @@ parser.add_argument("--dist-mismatch-x", type=float, default=0.0)
 parser.add_argument("--dist-mismatch-y", type=float, default=0.0)
 parser.add_argument("--dist-offset-x", type=float, default=0.0)
 parser.add_argument("--dist-offset-y", type=float, default=0.0)
+parser.add_argument("--dist-tilt", action="store_true")
 
 parser.add_argument("--nslice", type=int, default=10)
 parser.add_argument("--kq", type=float, default=0.25)
@@ -113,12 +117,18 @@ cov_matrix[3, 3] = eps_y * (1.0 + alpha_y**2) / beta_y
 cov_matrix[4, 4] = args.zrms**2
 cov_matrix[5, 5] = 0.0
 
-# Mismatch x
+# Tilt
+if args.dist_tilt:
+    rot_matrix = np.identity(6)
+    rot_matrix[:4, :4] = build_rotation_matrix_xy(angle=(0.25 * math.pi))
+    cov_matrix = np.linalg.multi_dot([rot_matrix, cov_matrix, rot_matrix.T])
+
+# Mismatch
 cov_matrix[0, 0] *= (1.0 + args.dist_mismatch_x) ** 2
 cov_matrix[2, 2] *= (1.0 + args.dist_mismatch_y) ** 2
 cov_matrix_init = np.copy(cov_matrix)
 
-# Offset x
+# Offset
 centroid_init = np.zeros(6)
 centroid_init[0] += args.dist_offset_x
 centroid_init[2] += args.dist_offset_y
@@ -223,7 +233,6 @@ histories["bunch"] = copy.deepcopy(history)
 # Analysis
 # ------------------------------------------------------------------------------
 
-# Process history arrays.
 for history in histories.values():
     for key in history:
         history[key] = np.array(history[key])
@@ -238,46 +247,52 @@ for key in histories["envelope"]:
 # Plot rms bunch sizes
 for key in ["xrms", "yrms"]:
     fig, ax = plt.subplots(figsize=(5, 3))
-    for model in ["envelope", "bunch"]:
-        ax.plot(histories[model][key], marker=".", label=model)
+    for i, model in enumerate(["envelope", "bunch"]):
+        color = ["black", "red"][i]
+        lw = [None, 0][i]
+        ax.plot(histories[model][key], marker=".", lw=lw, color=color, label=model)
     ax.set_ylim(0.0, ax.get_ylim()[1] * 2.0)
     ax.set_xlabel("Turn")
     ax.set_ylabel("RMS [mm]")
     ax.legend(loc="upper right")
     plt.savefig(os.path.join(output_dir, f"fig_{key}"))
-    plt.close("all")
+    plt.close()
 
 # Plot centroids
 for key in ["xavg", "yavg"]:
     fig, ax = plt.subplots(figsize=(5, 3))
-    for model in ["envelope", "bunch"]:
-        ax.plot(histories[model][key], marker=".", label=model)
+    for i, model in enumerate(["envelope", "bunch"]):
+        color = ["black", "red"][i]
+        lw = [None, 0][i]
+        ax.plot(histories[model][key], marker=".", lw=lw, color=color, label=model)
     ax.set_ylim(-5.0, 5.0)
     ax.set_xlabel("Turn")
     ax.set_ylabel("AVG [mm]")
     ax.legend(loc="upper right")
     plt.savefig(os.path.join(output_dir, f"fig_{key}"))
-    plt.close("all")
+    plt.close()
 
 
-# Plot bunch
-fig, ax = plt.subplots(figsize=(4, 4))
-
-X = collect_bunch(bunch)["coords"]
-X[:, :4] *= 1000.0
+# Collect bunch/envelope data on final turn.
+particles = collect_bunch(bunch)["coords"]
+particles[:, :4] *= 1000.0
 
 env_cov_matrix = envelope.cov()
 env_cov_matrix[:4, :4] *= 1000.0**2
 
+print(env_cov_matrix)
+
 env_centroid = envelope.centroid()
 env_centroid[:4] *= 1000.0
 
-xmax = 4.0 * np.std(X, axis=0)
+xmax = 4.0 * np.std(particles, axis=0)
 limits = list(zip(-xmax, xmax))
 labels = ["x [mm]", "xp [mrad]", "y [mm]", "yp [mrad]", "z [m]", "dE [GeV]"]
 
-ax.hist2d(X[:, 0], X[:, 1], bins=100, range=[limits[0], limits[1]])
 
+# Plot x-x'
+fig, ax = plt.subplots(figsize=(4, 4))
+ax.hist2d(particles[:, 0], particles[:, 1], bins=100, range=[limits[0], limits[1]])
 plot_rms_ellipse(
     env_cov_matrix[0:2, 0:2],
     center=(env_centroid[0], env_centroid[1]),
@@ -285,8 +300,26 @@ plot_rms_ellipse(
     color="red",
     ax=ax,
 )
-
 ax.set_xlabel(labels[0])
 ax.set_ylabel(labels[1])
 plt.savefig(os.path.join(output_dir, "fig_dist_x_xp"))
-plt.close("all")
+plt.close()
+
+# Plot corner
+fig, axs = plot_corner(
+    particles,
+    limits=limits,
+    bins=100,
+    labels=labels,
+)
+for i in range(6):
+    for j in range(i):
+        env_cov_matrix_proj = project_cov_matrix(env_cov_matrix, axis=(j, i))
+        plot_rms_ellipse(
+            env_cov_matrix_proj,
+            level=2.0,
+            color="red",
+            ax=axs[i, j],
+        )
+plt.savefig(os.path.join(output_dir, "fig_dist_corner"))
+plt.close()

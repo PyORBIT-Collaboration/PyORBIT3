@@ -36,3 +36,23 @@ def gen_dist(n: int, cov_matrix: np.ndarray, name: str) -> np.ndarray:
     
     L = np.linalg.cholesky(cov_matrix)
     return np.matmul(X, L.T)
+
+
+def build_rotation_matrix_xy(angle: float) -> np.ndarray:
+    cs = np.cos(angle)
+    sn = np.sin(angle)
+
+    matrix = np.identity(4)
+    matrix[0, 0] = matrix[1, 1] = +cs
+    matrix[0, 2] = matrix[1, 3] = +sn
+    matrix[2, 0] = matrix[3, 1] = -sn
+    matrix[2, 2] = matrix[3, 3] = +cs
+    return matrix
+
+
+def project_cov_matrix(cov_matrix: np.ndarray, axis: tuple[int, ...]) -> np.ndarray:
+    cov_matrix_proj = np.zeros((len(axis), len(axis)))
+    for i in range(len(axis)):
+        for j in range(len(axis)):
+            cov_matrix_proj[i, j] = cov_matrix[axis[i], axis[j]]
+    return cov_matrix_proj

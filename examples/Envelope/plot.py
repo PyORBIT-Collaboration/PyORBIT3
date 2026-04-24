@@ -114,14 +114,6 @@ def plot_corner(
         for j in range(1, ndim):
             axs[i, j].set_yticklabels([])
 
-    ymax = 0.0
-    ymin = np.inf
-    for i in range(ndim):
-        ymax = max(ymax, axs[i, i].get_ylim()[1])
-        ymin = min(ymin, axs[i, i].get_ylim()[0])
-    for i in range(ndim):
-        axs[i, i].set_ylim(ymin, ymax)
-
     for ax in axs.flat:
         for loc in ["top", "right"]:
             ax.spines[loc].set_visible(False)
