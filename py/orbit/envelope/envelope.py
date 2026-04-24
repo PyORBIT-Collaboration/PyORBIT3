@@ -26,6 +26,25 @@ def get_perveance(mass: float, kin_energy: float, line_density: float) -> float:
 
 
 class Envelope:
+    """Represents beam envelope and centroid.
+
+    Attributes:
+        matrix: 7 x 7 covariance matrix for augmented phase space vector.
+
+            Define the phase space vector X = [x, x', y, y', z, dE]^T and
+            augmented vector Y = [x, x', y, y', z, dE, 1]. 
+
+            Let X evolve according to X -> MX + U, where M is a 6 x 6 transfer matrix
+            and U is 6 x 1 "driving" vector. The augmented vector Y evolves according
+            to Y -> NY, where N = [[M, U], [0, 1]] is a 7 x 7 matrix.
+
+            We track the 7 x 7 covariance matrix of Y: 
+            
+            R = <YY^T> = [[<XX^T>, <X>], [<X^T>, 1]],
+
+            which contains both the phase space covariance matrix and centroid vector.            
+            R evolves according to R -> N R N^T.
+    """
     def __init__(
         self,
         sync_part: SyncParticle,
@@ -82,6 +101,7 @@ class Envelope:
 
 
 class EnvelopeTracker:
+    """Tracks envelope through linear lattice with optional linear space charge kicks."""
     def __init__(self, lattice: AccLattice, space_charge: str | None = None) -> None:
         self.lattice = lattice
         self.matrix_factory = MatrixFactory()
