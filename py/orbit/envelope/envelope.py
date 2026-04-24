@@ -2,7 +2,18 @@ import math
 
 import numpy as np
 
+from ..lattice import AccNode
+from ..lattice import AccLattice
+
 from .matrix import MatrixFactory
+
+
+ENTRANCE = AccNode.ENTRANCE
+BODY = AccNode.BODY
+EXIT = AccNode.EXIT
+
+BEFORE = AccNode.BEFORE
+AFTER = AccNode.AFTER
 
 
 class Envelope:
@@ -54,3 +65,7 @@ class Envelope:
         """Return transfer matrix from linear space charge kick."""
         raise NotImplementedError()
     
+
+def get_matrix(node: AccNode) -> np.ndarray:
+    """Return transfer matrix for given node."""
+

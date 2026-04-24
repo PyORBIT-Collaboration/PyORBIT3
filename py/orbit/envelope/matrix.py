@@ -2,6 +2,15 @@ import math
 
 import numpy as np
 
+from ..core.bunch import Bunch
+from ..core.bunch import SyncParticle
+from ..lattice import AccNode
+from ..teapot import DriftTEAPOT
+from ..teapot import QuadTEAPOT
+from ..teapot import BendTEAPOT
+from ..teapot import TiltTEAPOT
+from ..teapot import KickTEAPOT
+
 
 class MatrixFactory:
     """Factory for 7x7 transfer matrices."""
@@ -87,4 +96,46 @@ class MatrixFactory:
         matrix[5, 6] = dE
         return matrix
     
-    
+    def __call__(self, node: AccNode, bunch: Bunch, part_index: int) -> np.ndarray:
+        if type(node) is DriftTEAPOT:
+            length = node.getLength(part_index)
+            gamma = bunch.getSyncParticle().gamma()
+            return self.drift(length=length, gamma=gamma)
+        
+        elif type(node) is QuadTEAPOT:
+            nparts = node.getnParts()
+            length = node.getLength(part_index)
+
+            scale = 1.0
+            if node.waveform:
+                scale = node.waveform.getStrength()
+
+            kq = scale * node.getParam("kq")
+            return self.quad(length=length, kq=kq)
+        
+        elif type(node) is BendTEAPOT:
+            nparts = node.getnParts()
+            length = node.getLength(part_index)
+            theta = node.getParam("theta") / (nparts - 1)
+            gamma = bunch.getSyncParticle().gamma()
+            return self.bend(length=length, theta=theta, gamma=gamma)
+        
+        elif type(node) is KickTEAPOT:
+            nparts = node.getnParts()
+
+            scale = 1.0
+            if node.waveform:
+                scale = node.waveform.getStrength()
+
+            kx = scale * node.getParam("kx") / (nparts - 1)
+            ky = scale * node.getParam("ky") / (nparts - 1)
+            dE = node.getParam("dE") / (nparts - 1)
+            return self.kick(kx, ky, dE)
+        
+        elif type(node) is TiltTEAPOT:
+            angle = node.getTiltAngle()
+            return self.tilt(angle)
+        
+        else:
+            raise NotImplementedError("Unsupported node type: {}".format(type(node)))
+        
