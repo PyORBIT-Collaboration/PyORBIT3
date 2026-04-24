@@ -1,1 +1,1 @@
-from .envelope_2d import Envelope2D
+from .envelope import Envelope

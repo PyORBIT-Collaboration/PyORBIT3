@@ -1,6 +1,6 @@
 py_sources = files([
     '__init__.py',
-    'envelope_2d.py',
+    'envelope.py',
 ])
 
 python.install_sources(
