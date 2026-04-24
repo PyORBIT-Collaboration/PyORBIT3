@@ -100,28 +100,28 @@ class EnvelopeTracker:
                         self.matrix_factory(child_node, envelope.sync_part)
                     )
 
-                # Main node
-                matrix = self.matrix_factory(node, envelope.sync_part, part_index)
-
+                # Space charge
                 if self.space_charge:
                     length = node.getLength(part_index)
                     cov_matrix = envelope.cov()
 
                     if self.space_charge == "2d":
-                        matrix_sc = self.matrix_factory.space_charge_2d(
+                        matrix = self.matrix_factory.space_charge_2d(
                             length=length, cov_matrix=cov_matrix, perveance=envelope.perveance
                         )
                     elif self.space_charge == "3d":
-                        matrix_sc = self.matrix_factory.space_charge_3d(
+                        matrix = self.matrix_factory.space_charge_3d(
                             length=length, cov_matrix=cov_matrix, intensity=envelope.intensity
                         )
                     else:
                         raise ValueError(f"Invalid space charge model: {self.space_charge}")
 
-                    # matrix = np.matmul(matrix, matrix_sc)
-                    envelope.apply_transfer_matrix(matrix_sc)
+                    envelope.apply_transfer_matrix(matrix)
 
-                envelope.apply_transfer_matrix(matrix)
+                # Main node part
+                envelope.apply_transfer_matrix(
+                    self.matrix_factory(node, envelope.sync_part, part_index)
+                )
 
                 # Child nodes after part
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
