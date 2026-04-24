@@ -17,15 +17,23 @@ BEFORE = AccNode.BEFORE
 AFTER = AccNode.AFTER
 
 
+def get_perveance(mass: float, kin_energy: float, line_density: float) -> float:
+    classical_proton_radius = 1.53469e-18  # [m]
+    gamma = 1.0 + (kin_energy / mass)  # Lorentz factor
+    beta = np.sqrt(1.0 - (1.0 / gamma) ** 2)  # velocity/speed_of_light
+    return (2.0 * classical_proton_radius * line_density) / (beta**2 * gamma**3)
+
+
 class Envelope:
     def __init__(
         self,
         sync_part: SyncParticle,
         cov_matrix: np.ndarray = None,
         centroid: np.ndarray = None,
+        intensity: float = 0.0,
     ) -> None:
         self.sync_part = sync_part
-
+        
         if centroid is None:
             centroid = np.zeros(6)
 
@@ -38,6 +46,20 @@ class Envelope:
         self.matrix[6, 0:6] = centroid
         self.matrix[6, 6] = 1.0
 
+        self.intensity = 0.0
+        self.perveance = 0.0
+        self.set_intensity(intensity)
+
+    def set_intensity(self, intensity: float) -> None:
+        self.intensity = intensity
+        cov_matrix = self.cov()
+        length = 2.0 * math.sqrt(cov_matrix[4, 4])  # assume uniform density
+        self.perveance = get_perveance(
+            mass=self.sync_part.mass(),
+            kin_energy=self.sync_part.kinEnergy(),
+            line_density=(self.intensity / length)
+        )
+
     def centroid(self) -> np.ndarray:
         return self.matrix[0:6, 6]
 
@@ -48,46 +70,60 @@ class Envelope:
         return np.sqrt(np.diag(self.cov()))
 
     def apply_transfer_matrix(self, transfer_matrix: np.ndarray) -> None:
-        self.matrix = np.linalg.multi_dot(
-            [transfer_matrix, self.matrix, transfer_matrix.T]
-        )
-
-    def space_charge_matrix(self, length: float) -> np.ndarray:
-        """Return transfer matrix from linear space charge kick."""
-        raise NotImplementedError()
-
+        self.matrix = np.linalg.multi_dot([transfer_matrix, self.matrix, transfer_matrix.T])
+    
 
 class EnvelopeTracker:
-    def __init__(self, lattice: AccLattice) -> None:
+    def __init__(self, lattice: AccLattice, space_charge: str | None = None) -> None:
         self.lattice = lattice
         self.matrix_factory = MatrixFactory()
+        self.space_charge = space_charge
 
     def track(self, envelope: Envelope) -> None:
         for node in self.lattice.getNodes():
+            # Child nodes before node
             for child_node in node.getChildNodes(ENTRANCE):
                 envelope.apply_transfer_matrix(
                     self.matrix_factory(child_node, envelope.sync_part)
                 )
 
             for part_index in range(node.getnParts()):
-                for child_node in node.getChildNodes(
-                    BODY, part_index, place_in_part=BEFORE
-                ):
+                # Child nodes before part
+                for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
                     envelope.apply_transfer_matrix(
                         self.matrix_factory(child_node, envelope.sync_part)
                     )
 
-                envelope.apply_transfer_matrix(
-                    self.matrix_factory(node, envelope.sync_part, part_index)
-                )
+                # Main node
+                matrix = self.matrix_factory(node, envelope.sync_part, part_index)
 
-                for child_node in node.getChildNodes(
-                    BODY, part_index, place_in_part=AFTER
-                ):
+                if self.space_charge:
+                    length = node.getLength(part_index)
+                    cov_matrix = envelope.cov()
+
+                    if self.space_charge == "2d":
+                        matrix_sc = self.matrix_factory.space_charge_2d(
+                            length=length, cov_matrix=cov_matrix, perveance=envelope.perveance
+                        )
+                    elif self.space_charge == "3d":
+                        matrix_sc = self.matrix_factory.space_charge_3d(
+                            length=length, cov_matrix=cov_matrix, intensity=envelope.intensity
+                        )
+                    else:
+                        raise ValueError(f"Invalid space charge model: {self.space_charge}")
+
+                    # matrix = np.matmul(matrix, matrix_sc)
+                    envelope.apply_transfer_matrix(matrix_sc)
+
+                envelope.apply_transfer_matrix(matrix)
+
+                # Child nodes after part
+                for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
                     envelope.apply_transfer_matrix(
                         self.matrix_factory(child_node, envelope.sync_part)
                     )
 
+            # Child nodes after node
             for child_node in node.getChildNodes(EXIT):
                 envelope.apply_transfer_matrix(
                     self.matrix_factory(child_node, envelope.sync_part)

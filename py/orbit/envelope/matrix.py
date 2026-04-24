@@ -109,6 +109,24 @@ class MatrixFactory:
         matrix[3, 6] = ky
         matrix[5, 6] = dE
         return matrix
+    
+    @staticmethod
+    def space_charge_2d(length: float, cov_matrix: np.ndarray, perveance: float) -> np.ndarray:
+        # Start by assuming upright beam
+        cx = 2.0 * math.sqrt(cov_matrix[0, 0])
+        cy = 2.0 * math.sqrt(cov_matrix[2, 2])
+
+        kappa_x = 2.0 * perveance / (cx * (cx + cy))
+        kappa_y = 2.0 * perveance / (cy * (cx + cy))
+
+        matrix = np.identity(7)
+        matrix[1, 0] = kappa_x * length
+        matrix[3, 2] = kappa_y * length
+        return matrix
+    
+    @staticmethod
+    def space_charge_3d(length: float, cov_matrix: np.ndarray, intensity: float) -> np.ndarray:
+        raise NotImplementedError()
 
     def __call__(
         self, node: AccNode, sync_part: SyncParticle, part_index: int = 0
