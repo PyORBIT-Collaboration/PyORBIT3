@@ -11,15 +11,22 @@ import matplotlib.pyplot as plt
 
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTwissAnalysis
+from orbit.core.spacecharge import SpaceChargeCalc2p5D
+from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
 from orbit.envelope import EnvelopeTracker
 from orbit.lattice import AccLattice
 from orbit.lattice import AccNode
+from orbit.core.spacecharge import SpaceChargeCalc2p5D
+from orbit.space_charge.sc2p5d import setSC2p5DAccNodes
 from orbit.teapot import DriftTEAPOT
 from orbit.teapot import QuadTEAPOT
 from orbit.teapot import TEAPOT_Lattice
 from orbit.teapot import TEAPOT_MATRIX_Lattice
 from orbit.utils.consts import mass_proton
+
+from plot import plot_rms_ellipse
+from utils import gen_kv
 
 plt.style.use("style.mplstyle")
 
@@ -29,12 +36,17 @@ plt.style.use("style.mplstyle")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--nslice", type=int, default=10)
+parser.add_argument("--kq", type=float, default=0.1)
 parser.add_argument("--mismatch-x", type=float, default=0.0)
 parser.add_argument("--mismatch-y", type=float, default=0.0)
 parser.add_argument("--offset-x", type=float, default=0.0)
 parser.add_argument("--offset-y", type=float, default=0.0)
 parser.add_argument("--turns", type=int, default=25)
-parser.add_argument("--nparts", type=int, default=10_000)
+parser.add_argument("--nparts", type=int, default=100_000)
+parser.add_argument("--sc", type=int, default=0)
+parser.add_argument("--intensity", type=float, default=1e10)
+parser.add_argument("--zrms", type=float, default=5.0)
+parser.add_argument("--kin-energy", type=float, default=0.025)
 args = parser.parse_args()
 
 
@@ -50,11 +62,11 @@ os.makedirs(output_dir, exist_ok=True)
 # ------------------------------------------------------------------------------
 
 nodes = [
-    QuadTEAPOT(length=0.5, kq=+0.25),
+    QuadTEAPOT(length=0.5, kq=+args.kq),
     DriftTEAPOT(length=1.0),
-    QuadTEAPOT(length=1.0, kq=-0.25),
+    QuadTEAPOT(length=1.0, kq=-args.kq),
     DriftTEAPOT(length=1.0),
-    QuadTEAPOT(length=0.5, kq=+0.25),
+    QuadTEAPOT(length=0.5, kq=+args.kq),
 ]
 
 lattice = TEAPOT_Lattice()
@@ -74,7 +86,7 @@ lattice.initialize()
 bunch = Bunch()
 bunch.mass(mass_proton)
 sync_part = bunch.getSyncParticle()
-sync_part.kinEnergy(1.0)
+sync_part.kinEnergy(args.kin_energy)
 
 # Find periodic lattice parameters
 matrix_lattice = TEAPOT_MATRIX_Lattice(lattice, bunch)
@@ -83,8 +95,8 @@ alpha_x = matrix_lattice_params["alpha x"]
 alpha_y = matrix_lattice_params["alpha y"]
 beta_x = matrix_lattice_params["beta x [m]"]
 beta_y = matrix_lattice_params["beta y [m]"]
-eps_x = 10.0e-06
-eps_y = 10.0e-06
+eps_x = 0.25e-06
+eps_y = eps_x
 
 # Generate covariance matrix
 cov_matrix = np.zeros((6, 6))
@@ -94,7 +106,7 @@ cov_matrix[0, 1] = cov_matrix[1, 0] = -eps_x * alpha_x
 cov_matrix[2, 3] = cov_matrix[3, 2] = -eps_y * alpha_y
 cov_matrix[1, 1] = eps_x * (1.0 + alpha_x**2) / beta_x
 cov_matrix[3, 3] = eps_y * (1.0 + alpha_y**2) / beta_y
-cov_matrix[4, 4] = 10.0**2
+cov_matrix[4, 4] = args.zrms**2
 cov_matrix[5, 5] = 0.0
 
 # Mismatch x
@@ -112,6 +124,7 @@ envelope = Envelope(
     sync_part=sync_part,
     cov_matrix=cov_matrix_init,
     centroid=centroid_init,
+    intensity=args.intensity,
 )
 
 
@@ -120,7 +133,7 @@ envelope = Envelope(
 
 print("TRACK ENVELOPE")
 
-tracker = EnvelopeTracker(lattice)
+tracker = EnvelopeTracker(lattice, space_charge=("2d" if args.sc else None))
 
 history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
 for turn in range(args.turns):
@@ -151,15 +164,29 @@ histories["envelope"] = copy.deepcopy(history)
 
 print("TRACK BUNCH")
 
+# Generate particles from KV distribution + uniform longitudinal distribution.
 rng = np.random.default_rng()
-bunch_coords = rng.multivariate_normal(
-    mean=centroid_init,
-    cov=cov_matrix_init,
-    size=args.nparts,
-)
+
+bunch_coords = np.zeros((args.nparts, 6))
+bunch_coords[:, :4] = gen_kv(args.nparts, cov_matrix_init[0:4, 0:4])
+bunch_coords[:, 4] = 2.0 * rng.uniform(-args.zrms, args.zrms, size=args.nparts)
+bunch_coords += centroid_init[None, :6]
+
 for i in range(bunch_coords.shape[0]):
     bunch.addParticle(*bunch_coords[i])
 
+
+# Add space charge nodes to lattice.
+if args.sc:
+    sc_calc = SpaceChargeCalc2p5D(128, 128, 1)
+    sc_path_length_min = 1.00e-06
+    sc_nodes = setSC2p5DAccNodes(lattice, sc_path_length_min, sc_calc)
+
+    bunch_size = bunch.getSizeGlobal()
+    bunch.macroSize(args.intensity / bunch_size)
+
+
+# Track bunch through lattice.
 history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
 for turn in range(args.turns):
     if turn > 0:
@@ -213,7 +240,7 @@ for key in ["xrms", "yrms"]:
     ax.set_xlabel("Turn")
     ax.set_ylabel("RMS [mm]")
     ax.legend(loc="upper right")
-    plt.savefig(os.path.join(output_dir, f"fig_{key}.png"), dpi=300)
+    plt.savefig(os.path.join(output_dir, f"fig_{key}"))
     plt.close("all")
 
 # Plot centroids
@@ -225,5 +252,37 @@ for key in ["xavg", "yavg"]:
     ax.set_xlabel("Turn")
     ax.set_ylabel("AVG [mm]")
     ax.legend(loc="upper right")
-    plt.savefig(os.path.join(output_dir, f"fig_{key}.png"), dpi=300)
+    plt.savefig(os.path.join(output_dir, f"fig_{key}"))
     plt.close("all")
+
+
+# Plot bunch
+fig, ax = plt.subplots(figsize=(4, 4))
+
+X = collect_bunch(bunch)["coords"]
+X[:, :4] *= 1000.0
+
+env_cov_matrix = envelope.cov()
+env_cov_matrix[:4, :4] *= 1000.0**2
+
+env_centroid = envelope.centroid()
+env_centroid[:4] *= 1000.0
+
+xmax = 4.0 * np.std(X, axis=0)
+limits = list(zip(-xmax, xmax))
+labels = ["x [mm]", "xp [mrad]", "y [mm]", "yp [mrad]", "z [m]", "dE [GeV]"]
+
+ax.hist2d(X[:, 0], X[:, 1], bins=100, range=[limits[0], limits[1]])
+
+plot_rms_ellipse(
+    env_cov_matrix[0:2, 0:2],
+    center=(env_centroid[0], env_centroid[1]),
+    level=2.0,
+    color="red",
+    ax=ax,
+)
+
+ax.set_xlabel(labels[0])
+ax.set_ylabel(labels[1])
+plt.savefig(os.path.join(output_dir, "fig_dist_x_xp"))
+plt.close("all")
