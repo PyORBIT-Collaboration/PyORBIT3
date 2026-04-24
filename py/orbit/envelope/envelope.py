@@ -21,7 +21,7 @@ def get_perveance(mass: float, kin_energy: float, line_density: float) -> float:
     classical_proton_radius = 1.53469e-18  # [m]
     gamma = 1.0 + (kin_energy / mass)  # Lorentz factor
     beta = np.sqrt(1.0 - (1.0 / gamma) ** 2)  # velocity/speed_of_light
-    return (2.0 * classical_proton_radius * line_density) / (beta**2 * gamma**3)
+    return (classical_proton_radius * line_density) / (beta**2 * gamma**3)
 
 
 class Envelope:

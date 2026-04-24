@@ -175,3 +175,4 @@ class MatrixFactory:
 
         else:
             raise NotImplementedError("Unsupported node type: {}".format(type(node)))
+        
