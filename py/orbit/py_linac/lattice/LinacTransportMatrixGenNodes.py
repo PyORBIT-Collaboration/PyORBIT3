@@ -228,7 +228,10 @@ class LinacTrMatricesController:
         # -----------------------------
         for node in nodes:
             trMatrxGenNode = LinacTrMatrixGenNode(self, node.getName() + ":trMatrx")
-            node.addChildNode(trMatrxGenNode, place)
+            if(place == MarkerLinacNode.ENTRANCE):
+                node.addChildNode(trMatrxGenNode, place, place_in_part = AccActionsContainer.BEFORE)
+            else:
+                node.addChildNode(trMatrxGenNode, place, place_in_part = AccActionsContainer.AFTER)
         # ----- set up the position of the TrMatrix nodes
         actions = AccActionsContainer()
 
