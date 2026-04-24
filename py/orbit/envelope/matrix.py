@@ -10,10 +10,24 @@ from ..teapot import QuadTEAPOT
 from ..teapot import BendTEAPOT
 from ..teapot import TiltTEAPOT
 from ..teapot import KickTEAPOT
+from ..teapot import ApertureTEAPOT
+from ..teapot import BunchWrapTEAPOT
+from ..teapot import FringeFieldTEAPOT
+from ..teapot import MonitorTEAPOT
+from ..teapot import TurnCounterTEAPOT
 
 
 class MatrixFactory:
     """Factory for 7x7 transfer matrices."""
+
+    def __init__(self) -> None:
+        self.ignore_node_types = [
+            ApertureTEAPOT, 
+            BunchWrapTEAPOT, 
+            FringeFieldTEAPOT,
+            MonitorTEAPOT, 
+            TurnCounterTEAPOT, 
+        ]
 
     @staticmethod
     def drift(length: float, gamma: float) -> np.ndarray:
@@ -136,6 +150,9 @@ class MatrixFactory:
             angle = node.getTiltAngle()
             return self.tilt(angle)
         
+        elif type(node) in self.ignore_node_types:
+            return np.identity(7)
+                
         else:
             raise NotImplementedError("Unsupported node type: {}".format(type(node)))
         
