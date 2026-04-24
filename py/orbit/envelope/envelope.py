@@ -1,29 +1,41 @@
-import math
-
 import numpy as np
 
 
 class Envelope:
-    def __init__(self, cov_matrix: np.ndarray = None, mean: np.ndarray = None) -> None:
-        if mean is None:
-            mean = np.zeros(6)
+    """Represents beam envelope and centroid in 6D phase space.
+    
+    Attributes:
+        matrix: 7x7 matrix containing 6x6 covariance matrix and 6x1 centroid vector.
+    """
+    def __init__(self, cov_matrix: np.ndarray = None, centroid: np.ndarray = None) -> None:
+        """Constructor.
+        
+        Args:
+            cov_matrix: 6x6 covariance matrix.
+            centroid: 6x1 centroid vector.
+        """
+        if centroid is None:
+            centroid = np.zeros(6)
 
         if cov_matrix is None:
             cov_matrix = np.eye(6)
 
         self.matrix = np.zeros((7, 7))
         self.matrix[0:6, 0:6] = cov_matrix
-        self.matrix[0:6, 6] = mean
-        self.matrix[6, 0:6] = mean
+        self.matrix[0:6, 6] = centroid
+        self.matrix[6, 0:6] = centroid
         self.matrix[6, 6] = 1.0
 
-    def mean(self) -> np.ndarray:
+    def centroid(self) -> np.ndarray:
+        """Return centroid vector."""
         return self.matrix[0:6, 6]
     
     def cov(self) -> np.ndarray:
+        """Return covariance matrix."""
         return self.matrix[0:6, 0:6]
     
     def rms(self) -> np.ndarray:
+        """Return rms beam sizes."""
         return np.sqrt(np.diag(self.cov()))
 
     def apply_transfer_matrix(self, transfer_matrix: np.ndarray) -> None:
@@ -39,6 +51,3 @@ class Envelope:
         raise NotImplementedError()
     
 
-
-    
-    
