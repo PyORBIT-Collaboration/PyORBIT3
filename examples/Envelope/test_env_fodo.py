@@ -235,7 +235,7 @@ for key in histories["envelope"]:
 for key in ["xrms", "yrms"]:
     fig, ax = plt.subplots(figsize=(5, 3))
     for model in ["envelope", "bunch"]:
-        ax.plot(histories[model][key], label=model)
+        ax.plot(histories[model][key], marker=".", label=model)
     ax.set_ylim(0.0, ax.get_ylim()[1] * 2.0)
     ax.set_xlabel("Turn")
     ax.set_ylabel("RMS [mm]")
@@ -247,7 +247,7 @@ for key in ["xrms", "yrms"]:
 for key in ["xavg", "yavg"]:
     fig, ax = plt.subplots(figsize=(5, 3))
     for model in ["envelope", "bunch"]:
-        ax.plot(histories[model][key], label=model)
+        ax.plot(histories[model][key], marker=".", label=model)
     ax.set_ylim(-5.0, 5.0)
     ax.set_xlabel("Turn")
     ax.set_ylabel("AVG [mm]")
