@@ -104,8 +104,10 @@ class MatrixFactory:
         matrix[3, 6] = ky
         matrix[5, 6] = dE
         return matrix
-    
-    def space_charge_2d(self, length: float, cov_matrix: np.ndarray, perveance: float) -> np.ndarray:
+
+    def space_charge_2d(
+        self, length: float, cov_matrix: np.ndarray, perveance: float
+    ) -> np.ndarray:
         cov_xx = cov_matrix[0, 0]
         cov_yy = cov_matrix[2, 2]
         cov_xy = cov_matrix[0, 2]
@@ -113,13 +115,13 @@ class MatrixFactory:
         angle = -0.5 * math.atan2(2.0 * cov_xy, cov_xx - cov_yy)
         _sin = math.sin(angle)
         _cos = math.cos(angle)
-    
+
         rx = 2.0 * np.sqrt(abs(cov_xx * _cos**2 + cov_yy * _sin**2 - 2.0 * cov_xy * _sin * _cos))
         ry = 2.0 * np.sqrt(abs(cov_xx * _sin**2 + cov_yy * _cos**2 + 2.0 * cov_xy * _sin * _cos))
-        
+
         kappa_x = 2.0 * perveance / (rx * (rx + ry))
         kappa_y = 2.0 * perveance / (ry * (rx + ry))
-        
+
         matrix = np.identity(7)
         matrix[1, 0] = kappa_x * length
         matrix[3, 2] = kappa_y * length
@@ -127,13 +129,13 @@ class MatrixFactory:
         R = self.tilt(angle)
         M = np.linalg.multi_dot([R, matrix, np.linalg.inv(R)])
         return M
-    
-    def space_charge_3d(self, length: float, cov_matrix: np.ndarray, intensity: float) -> np.ndarray:
+
+    def space_charge_3d(
+        self, length: float, cov_matrix: np.ndarray, intensity: float
+    ) -> np.ndarray:
         raise NotImplementedError()
 
-    def __call__(
-        self, node: AccNode, sync_part: SyncParticle, part_index: int = 0
-    ) -> np.ndarray:
+    def __call__(self, node: AccNode, sync_part: SyncParticle, part_index: int = 0) -> np.ndarray:
         if type(node) is DriftTEAPOT:
             length = node.getLength(part_index)
             gamma = sync_part.gamma()
@@ -178,4 +180,3 @@ class MatrixFactory:
 
         else:
             raise NotImplementedError("Unsupported node type: {}".format(type(node)))
-        

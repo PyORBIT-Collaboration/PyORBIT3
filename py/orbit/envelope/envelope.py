@@ -34,7 +34,7 @@ class Envelope:
         intensity: float = 0.0,
     ) -> None:
         self.sync_part = sync_part
-        
+
         if centroid is None:
             centroid = np.zeros(6)
 
@@ -58,7 +58,7 @@ class Envelope:
         self.perveance = get_perveance(
             mass=self.sync_part.mass(),
             kin_energy=self.sync_part.kinEnergy(),
-            line_density=(self.intensity / length)
+            line_density=(self.intensity / length),
         )
 
     def centroid(self) -> np.ndarray:
@@ -77,7 +77,7 @@ class Envelope:
         particles = gen_dist(n=n, cov_matrix=self.cov(), name=dist)
         particles = particles + self.centroid()
         return particles
-    
+
 
 class EnvelopeTracker:
     def __init__(self, lattice: AccLattice, space_charge: str | None = None) -> None:
@@ -89,9 +89,7 @@ class EnvelopeTracker:
         for node in self.lattice.getNodes():
             # Child nodes before node
             for child_node in node.getChildNodes(ENTRANCE):
-                envelope.apply_transfer_matrix(
-                    self.matrix_factory(child_node, envelope.sync_part)
-                )
+                envelope.apply_transfer_matrix(self.matrix_factory(child_node, envelope.sync_part))
 
             for part_index in range(node.getnParts()):
                 # Child nodes before part
@@ -131,6 +129,4 @@ class EnvelopeTracker:
 
             # Child nodes after node
             for child_node in node.getChildNodes(EXIT):
-                envelope.apply_transfer_matrix(
-                    self.matrix_factory(child_node, envelope.sync_part)
-                )
+                envelope.apply_transfer_matrix(self.matrix_factory(child_node, envelope.sync_part))
