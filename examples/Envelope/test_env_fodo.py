@@ -42,7 +42,9 @@ parser.add_argument("--zrms", type=float, default=5.0)
 parser.add_argument("--kin-energy", type=float, default=0.025)
 parser.add_argument("--intensity", type=float, default=5e10)
 
-parser.add_argument("--dist-name", type=str, default="kv", choices=["kv", "waterbag", "gauss"])
+parser.add_argument(
+    "--dist-name", type=str, default="kv", choices=["kv", "waterbag", "gauss"]
+)
 parser.add_argument("--dist-mismatch-x", type=float, default=0.0)
 parser.add_argument("--dist-mismatch-y", type=float, default=0.0)
 parser.add_argument("--dist-offset-x", type=float, default=0.0)
@@ -162,7 +164,9 @@ for turn in range(args.turns):
     xavg = 1000.0 * centroid[0]
     yavg = 1000.0 * centroid[2]
 
-    print(f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} xavg={xavg:0.3f} yavg={yavg:0.3f}")
+    print(
+        f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} xavg={xavg:0.3f} yavg={yavg:0.3f}"
+    )
 
     history["xrms"].append(xrms)
     history["yrms"].append(yrms)
@@ -219,8 +223,10 @@ for turn in range(args.turns):
     yrms = 1000.0 * math.sqrt(cov_matrix[2, 2])
     xavg = 1000.0 * twiss_calc.getAverage(0)
     yavg = 1000.0 * twiss_calc.getAverage(2)
-    
-    print(f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} xavg={xavg:0.3f} yavg={yavg:0.3f}")
+
+    print(
+        f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} xavg={xavg:0.3f} yavg={yavg:0.3f}"
+    )
 
     history["xrms"].append(xrms)
     history["yrms"].append(yrms)
