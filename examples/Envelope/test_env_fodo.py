@@ -3,6 +3,8 @@
 import argparse
 import copy
 import math
+import os
+import pathlib
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -27,10 +29,21 @@ plt.style.use("style.mplstyle")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--nslice", type=int, default=10)
-parser.add_argument("--mismatch", type=float, default=0.0)
+parser.add_argument("--mismatch-x", type=float, default=0.0)
+parser.add_argument("--mismatch-y", type=float, default=0.0)
+parser.add_argument("--offset-x", type=float, default=0.0)
+parser.add_argument("--offset-y", type=float, default=0.0)
 parser.add_argument("--turns", type=int, default=25)
 parser.add_argument("--nparts", type=int, default=10_000)
 args = parser.parse_args()
+
+
+# Setup
+# ------------------------------------------------------------------------------
+
+path = pathlib.Path(__file__)
+output_dir = os.path.join("outputs", path.stem)
+os.makedirs(output_dir, exist_ok=True)
 
 
 # Create lattice
@@ -85,13 +98,20 @@ cov_matrix[4, 4] = 10.0**2
 cov_matrix[5, 5] = 0.0
 
 # Mismatch x
-cov_matrix[0, 0] *= (1.0 + args.mismatch) ** 2
+cov_matrix[0, 0] *= (1.0 + args.mismatch_x) ** 2
+cov_matrix[2, 2] *= (1.0 + args.mismatch_y) ** 2
+cov_matrix_init = np.copy(cov_matrix)
+
+# Offset x
+centroid_init = np.zeros(6)
+centroid_init[0] += args.offset_x
+centroid_init[2] += args.offset_y
 
 # Create envelope
 envelope = Envelope(
     sync_part=sync_part,
-    cov_matrix=cov_matrix,
-    centroid=np.zeros(6),
+    cov_matrix=cov_matrix_init,
+    centroid=centroid_init,
 )
 
 
@@ -102,18 +122,25 @@ print("TRACK ENVELOPE")
 
 tracker = EnvelopeTracker(lattice)
 
-history = {"xrms": [], "yrms": []}
+history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
 for turn in range(args.turns):
     if turn > 0:
         tracker.track(envelope)
 
     cov_matrix = envelope.cov()
+    centroid = envelope.centroid()
+
     xrms = 1000.0 * math.sqrt(cov_matrix[0, 0])
     yrms = 1000.0 * math.sqrt(cov_matrix[2, 2])
-    print(f"turn={turn + 1} xrms={xrms:0.5f} yrms={yrms:0.5f}")
+    xavg = 1000.0 * centroid[0]
+    yavg = 1000.0 * centroid[2]
+
+    print(f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} xavg={xavg:0.3f} yavg={yavg:0.3f}")
 
     history["xrms"].append(xrms)
     history["yrms"].append(yrms)
+    history["xavg"].append(xavg)
+    history["yavg"].append(yavg)
 
 histories = {}
 histories["envelope"] = copy.deepcopy(history)
@@ -126,14 +153,14 @@ print("TRACK BUNCH")
 
 rng = np.random.default_rng()
 bunch_coords = rng.multivariate_normal(
-    mean=np.zeros(6),
-    cov=cov_matrix,
+    mean=centroid_init,
+    cov=cov_matrix_init,
     size=args.nparts,
 )
 for i in range(bunch_coords.shape[0]):
     bunch.addParticle(*bunch_coords[i])
 
-history = {"xrms": [], "yrms": []}
+history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
 for turn in range(args.turns):
     if turn > 0:
         lattice.trackBunch(bunch)
@@ -149,10 +176,15 @@ for turn in range(args.turns):
 
     xrms = 1000.0 * math.sqrt(cov_matrix[0, 0])
     yrms = 1000.0 * math.sqrt(cov_matrix[2, 2])
-    print(f"turn={turn + 1} xrms={xrms:0.5f} yrms={yrms:0.5f}")
+    xavg = 1000.0 * twiss_calc.getAverage(0)
+    yavg = 1000.0 * twiss_calc.getAverage(2)
+    
+    print(f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} xavg={xavg:0.3f} yavg={yavg:0.3f}")
 
     history["xrms"].append(xrms)
     history["yrms"].append(yrms)
+    history["xavg"].append(xavg)
+    history["yavg"].append(yavg)
 
 histories["bunch"] = copy.deepcopy(history)
 
@@ -160,15 +192,38 @@ histories["bunch"] = copy.deepcopy(history)
 # Analysis
 # ------------------------------------------------------------------------------
 
+# Process history arrays.
 for history in histories.values():
     for key in history:
         history[key] = np.array(history[key])
 
+# Print errors
 for key in histories["envelope"]:
     deltas = histories["bunch"][key] - histories["envelope"][key]
     print("key:", key)
     print("max_abs_delta:", np.max(np.abs(deltas)))
     print("avg_abs_delta:", np.mean(np.abs(deltas)))
 
+# Plot rms bunch sizes
+for key in ["xrms", "yrms"]:
+    fig, ax = plt.subplots(figsize=(5, 3))
+    for model in ["envelope", "bunch"]:
+        ax.plot(histories[model][key], label=model)
+    ax.set_ylim(0.0, ax.get_ylim()[1] * 2.0)
+    ax.set_xlabel("Turn")
+    ax.set_ylabel("RMS [mm]")
+    ax.legend(loc="upper right")
+    plt.savefig(os.path.join(output_dir, f"fig_{key}.png"), dpi=300)
+    plt.close("all")
 
-# fig, ax = plt.subplots()
+# Plot centroids
+for key in ["xavg", "yavg"]:
+    fig, ax = plt.subplots(figsize=(5, 3))
+    for model in ["envelope", "bunch"]:
+        ax.plot(histories[model][key], label=model)
+    ax.set_ylim(-5.0, 5.0)
+    ax.set_xlabel("Turn")
+    ax.set_ylabel("AVG [mm]")
+    ax.legend(loc="upper right")
+    plt.savefig(os.path.join(output_dir, f"fig_{key}.png"), dpi=300)
+    plt.close("all")
