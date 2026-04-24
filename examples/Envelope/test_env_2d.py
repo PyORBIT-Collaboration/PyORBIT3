@@ -12,13 +12,15 @@ kin_energy = 1.000  # [GeV]
 
 bunch = Bunch()
 bunch.mass(mass)
-bunch.getSyncParticle().kinEnergy(kin_energy)
+
+sync_part = bunch.getSyncParticle()
+sync_part.kinEnergy(kin_energy)
 
 cov_matrix = np.identity(6)
 cov_matrix[0, 0] = 10.0e-3 ** 2
 cov_matrix[2, 2] = 10.0e-3 ** 2
 cov_matrix[4, 4] = 50.0
 
-envelope = Envelope(cov_matrix=cov_matrix)
+envelope = Envelope(sync_part=sync_part, cov_matrix=cov_matrix)
 
 

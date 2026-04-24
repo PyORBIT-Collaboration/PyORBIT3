@@ -2,6 +2,7 @@ import math
 
 import numpy as np
 
+from ..core.bunch import SyncParticle
 from ..lattice import AccNode
 from ..lattice import AccLattice
 
@@ -17,18 +18,9 @@ AFTER = AccNode.AFTER
 
 
 class Envelope:
-    """Represents beam envelope and centroid in 6D phase space.
-    
-    Attributes:
-        matrix: 7x7 matrix containing 6x6 covariance matrix and 6x1 centroid vector.
-    """
-    def __init__(self, cov_matrix: np.ndarray = None, centroid: np.ndarray = None) -> None:
-        """Constructor.
+    def __init__(self, sync_part: SyncParticle, cov_matrix: np.ndarray = None, centroid: np.ndarray = None) -> None:
+        self.sync_part = sync_part
         
-        Args:
-            cov_matrix: 6x6 covariance matrix.
-            centroid: 6x1 centroid vector.
-        """
         if centroid is None:
             centroid = np.zeros(6)
 
@@ -42,23 +34,15 @@ class Envelope:
         self.matrix[6, 6] = 1.0
 
     def centroid(self) -> np.ndarray:
-        """Return centroid vector."""
         return self.matrix[0:6, 6]
     
     def cov(self) -> np.ndarray:
-        """Return covariance matrix."""
         return self.matrix[0:6, 0:6]
     
     def rms(self) -> np.ndarray:
-        """Return rms beam sizes."""
         return np.sqrt(np.diag(self.cov()))
 
     def apply_transfer_matrix(self, transfer_matrix: np.ndarray) -> None:
-        """Linear propagation of beam matrix.
-        
-        Args:
-            transfer_matrix: 7x7 transfer matrix.
-        """
         self.matrix = np.linalg.multi_dot([transfer_matrix, self.matrix, transfer_matrix.T])
 
     def space_charge_matrix(self, length: float) -> np.ndarray:
@@ -66,6 +50,34 @@ class Envelope:
         raise NotImplementedError()
     
 
-def get_matrix(node: AccNode) -> np.ndarray:
-    """Return transfer matrix for given node."""
+class EnvelopeTracker:
+    def __init__(self, lattice: AccLattice) -> None:
+        self.lattice = lattice
+        self.matrix_factory = MatrixFactory()
 
+    def track(self, envelope: Envelope) -> None:
+        for node in self.lattice.getNodes():
+            for child_node in node.getChildNodes(ENTRANCE):
+                envelope.apply_transfer_matrix(
+                    self.matrix_factory(child_node, envelope.sync_part)
+                )
+
+            for part_index in range(node.getnParts()):
+                for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
+                    envelope.apply_transfer_matrix(
+                        self.matrix_factory(child_node, envelope.sync_part)
+                    )
+
+                envelope.apply_transfer_matrix(
+                    self.matrix_factory(node, envelope.sync_part, part_index)
+                )
+
+                for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
+                    envelope.apply_transfer_matrix(
+                        self.matrix_factory(child_node, envelope.sync_part)
+                    )
+
+            for child_node in node.getChildNodes(EXIT):
+                envelope.apply_transfer_matrix(
+                    self.matrix_factory(child_node, envelope.sync_part)
+                )

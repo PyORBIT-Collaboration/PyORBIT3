@@ -110,10 +110,10 @@ class MatrixFactory:
         matrix[5, 6] = dE
         return matrix
     
-    def __call__(self, node: AccNode, bunch: Bunch, part_index: int) -> np.ndarray:
+    def __call__(self, node: AccNode, sync_part: SyncParticle, part_index: int = 0) -> np.ndarray:
         if type(node) is DriftTEAPOT:
             length = node.getLength(part_index)
-            gamma = bunch.getSyncParticle().gamma()
+            gamma = sync_part.gamma()
             return self.drift(length=length, gamma=gamma)
         
         elif type(node) is QuadTEAPOT:
@@ -131,7 +131,7 @@ class MatrixFactory:
             nparts = node.getnParts()
             length = node.getLength(part_index)
             theta = node.getParam("theta") / (nparts - 1)
-            gamma = bunch.getSyncParticle().gamma()
+            gamma = sync_part.gamma()
             return self.bend(length=length, theta=theta, gamma=gamma)
         
         elif type(node) is KickTEAPOT:
