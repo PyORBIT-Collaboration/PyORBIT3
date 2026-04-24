@@ -74,6 +74,8 @@ class Envelope:
         self.matrix = np.linalg.multi_dot([transfer_matrix, self.matrix, transfer_matrix.T])
 
     def sample(self, n: int, dist: str = "kv") -> np.ndarray:
+        # Issue: covariance matrix is becoming non semi-positive definite,
+        # giving error in cholesky decomposition.
         particles = gen_dist(n=n, cov_matrix=self.cov(), name=dist)
         particles = particles + self.centroid()
         return particles
