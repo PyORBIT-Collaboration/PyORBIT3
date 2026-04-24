@@ -18,9 +18,14 @@ AFTER = AccNode.AFTER
 
 
 class Envelope:
-    def __init__(self, sync_part: SyncParticle, cov_matrix: np.ndarray = None, centroid: np.ndarray = None) -> None:
+    def __init__(
+        self,
+        sync_part: SyncParticle,
+        cov_matrix: np.ndarray = None,
+        centroid: np.ndarray = None,
+    ) -> None:
         self.sync_part = sync_part
-        
+
         if centroid is None:
             centroid = np.zeros(6)
 
@@ -35,20 +40,22 @@ class Envelope:
 
     def centroid(self) -> np.ndarray:
         return self.matrix[0:6, 6]
-    
+
     def cov(self) -> np.ndarray:
         return self.matrix[0:6, 0:6]
-    
+
     def rms(self) -> np.ndarray:
         return np.sqrt(np.diag(self.cov()))
 
     def apply_transfer_matrix(self, transfer_matrix: np.ndarray) -> None:
-        self.matrix = np.linalg.multi_dot([transfer_matrix, self.matrix, transfer_matrix.T])
+        self.matrix = np.linalg.multi_dot(
+            [transfer_matrix, self.matrix, transfer_matrix.T]
+        )
 
     def space_charge_matrix(self, length: float) -> np.ndarray:
         """Return transfer matrix from linear space charge kick."""
         raise NotImplementedError()
-    
+
 
 class EnvelopeTracker:
     def __init__(self, lattice: AccLattice) -> None:
@@ -63,7 +70,9 @@ class EnvelopeTracker:
                 )
 
             for part_index in range(node.getnParts()):
-                for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
+                for child_node in node.getChildNodes(
+                    BODY, part_index, place_in_part=BEFORE
+                ):
                     envelope.apply_transfer_matrix(
                         self.matrix_factory(child_node, envelope.sync_part)
                     )
@@ -72,7 +81,9 @@ class EnvelopeTracker:
                     self.matrix_factory(node, envelope.sync_part, part_index)
                 )
 
-                for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
+                for child_node in node.getChildNodes(
+                    BODY, part_index, place_in_part=AFTER
+                ):
                     envelope.apply_transfer_matrix(
                         self.matrix_factory(child_node, envelope.sync_part)
                     )

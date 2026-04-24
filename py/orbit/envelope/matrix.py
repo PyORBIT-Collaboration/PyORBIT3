@@ -22,11 +22,11 @@ class MatrixFactory:
 
     def __init__(self) -> None:
         self.ignore_node_types = [
-            ApertureTEAPOT, 
-            BunchWrapTEAPOT, 
+            ApertureTEAPOT,
+            BunchWrapTEAPOT,
             FringeFieldTEAPOT,
-            MonitorTEAPOT, 
-            TurnCounterTEAPOT, 
+            MonitorTEAPOT,
+            TurnCounterTEAPOT,
         ]
 
     @staticmethod
@@ -36,13 +36,13 @@ class MatrixFactory:
         matrix[2, 3] = length
         matrix[4, 5] = length / gamma**2
         return matrix
-    
+
     @staticmethod
     def quad(length: float, kq: float) -> np.ndarray:
         sqrt_abs_kq = math.sqrt(abs(kq))
 
         matrix = np.identity(7)
-        if (kq > 0):
+        if kq > 0:
             cx = np.cos(sqrt_abs_kq * length)
             sx = np.sin(sqrt_abs_kq * length)
             cy = np.cosh(sqrt_abs_kq * length)
@@ -55,7 +55,7 @@ class MatrixFactory:
             matrix[2, 3] = sy / sqrt_abs_kq
             matrix[3, 2] = sy * sqrt_abs_kq
             matrix[3, 3] = cy
-        elif (kq < 0):
+        elif kq < 0:
             cx = np.cosh(sqrt_abs_kq * length)
             sx = np.sinh(sqrt_abs_kq * length)
             cy = np.cos(sqrt_abs_kq * length)
@@ -69,14 +69,14 @@ class MatrixFactory:
             matrix[3, 2] = -sy * sqrt_abs_kq
             matrix[3, 3] = cy
         return matrix
-    
+
     @staticmethod
     def bend(length: float, theta: float, gamma: float) -> np.ndarray:
         rho = length / theta
 
-        cx  = math.cos(theta)
-        sx  = math.sin(theta)
-        
+        cx = math.cos(theta)
+        sx = math.sin(theta)
+
         matrix = np.identity(7)
         matrix[0, 0] = cx
         matrix[0, 1] = sx * rho
@@ -87,9 +87,9 @@ class MatrixFactory:
         matrix[2, 3] = length
         matrix[4, 0] = -sx
         matrix[4, 1] = -(1.0 - cx) * rho
-        matrix[4, 5] = (length / gamma**2) - rho * (theta - sx)   
+        matrix[4, 5] = (length / gamma**2) - rho * (theta - sx)
         return matrix
-    
+
     @staticmethod
     def tilt(angle: float) -> np.ndarray:
         cs = math.cos(angle)
@@ -101,7 +101,7 @@ class MatrixFactory:
         matrix[2, 0] = matrix[3, 1] = -sn
         matrix[2, 2] = matrix[3, 3] = +cs
         return matrix
-    
+
     @staticmethod
     def kick(kx: float, ky: float, dE: float) -> np.ndarray:
         matrix = np.identity(7)
@@ -109,13 +109,15 @@ class MatrixFactory:
         matrix[3, 6] = ky
         matrix[5, 6] = dE
         return matrix
-    
-    def __call__(self, node: AccNode, sync_part: SyncParticle, part_index: int = 0) -> np.ndarray:
+
+    def __call__(
+        self, node: AccNode, sync_part: SyncParticle, part_index: int = 0
+    ) -> np.ndarray:
         if type(node) is DriftTEAPOT:
             length = node.getLength(part_index)
             gamma = sync_part.gamma()
             return self.drift(length=length, gamma=gamma)
-        
+
         elif type(node) is QuadTEAPOT:
             nparts = node.getnParts()
             length = node.getLength(part_index)
@@ -126,14 +128,14 @@ class MatrixFactory:
 
             kq = scale * node.getParam("kq")
             return self.quad(length=length, kq=kq)
-        
+
         elif type(node) is BendTEAPOT:
             nparts = node.getnParts()
             length = node.getLength(part_index)
             theta = node.getParam("theta") / (nparts - 1)
             gamma = sync_part.gamma()
             return self.bend(length=length, theta=theta, gamma=gamma)
-        
+
         elif type(node) is KickTEAPOT:
             nparts = node.getnParts()
 
@@ -145,14 +147,13 @@ class MatrixFactory:
             ky = scale * node.getParam("ky") / (nparts - 1)
             dE = node.getParam("dE") / (nparts - 1)
             return self.kick(kx, ky, dE)
-        
+
         elif type(node) is TiltTEAPOT:
             angle = node.getTiltAngle()
             return self.tilt(angle)
-        
+
         elif type(node) in self.ignore_node_types:
             return np.identity(7)
-                
+
         else:
             raise NotImplementedError("Unsupported node type: {}".format(type(node)))
-        
