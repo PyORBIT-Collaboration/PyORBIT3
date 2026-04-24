@@ -29,16 +29,14 @@ class MatrixFactory:
             TurnCounterTEAPOT,
         ]
 
-    @staticmethod
-    def drift(length: float, gamma: float) -> np.ndarray:
+    def drift(self, length: float, gamma: float) -> np.ndarray:
         matrix = np.identity(7)
         matrix[0, 1] = length
         matrix[2, 3] = length
         matrix[4, 5] = length / gamma**2
         return matrix
 
-    @staticmethod
-    def quad(length: float, kq: float) -> np.ndarray:
+    def quad(self, length: float, kq: float) -> np.ndarray:
         sqrt_abs_kq = math.sqrt(abs(kq))
 
         matrix = np.identity(7)
@@ -70,8 +68,7 @@ class MatrixFactory:
             matrix[3, 3] = cy
         return matrix
 
-    @staticmethod
-    def bend(length: float, theta: float, gamma: float) -> np.ndarray:
+    def bend(self, length: float, theta: float, gamma: float) -> np.ndarray:
         rho = length / theta
 
         cx = math.cos(theta)
@@ -90,8 +87,7 @@ class MatrixFactory:
         matrix[4, 5] = (length / gamma**2) - rho * (theta - sx)
         return matrix
 
-    @staticmethod
-    def tilt(angle: float) -> np.ndarray:
+    def tilt(self, angle: float) -> np.ndarray:
         cs = math.cos(angle)
         sn = math.sin(angle)
 
@@ -102,30 +98,37 @@ class MatrixFactory:
         matrix[2, 2] = matrix[3, 3] = +cs
         return matrix
 
-    @staticmethod
-    def kick(kx: float, ky: float, dE: float) -> np.ndarray:
+    def kick(self, kx: float, ky: float, dE: float) -> np.ndarray:
         matrix = np.identity(7)
         matrix[1, 6] = kx
         matrix[3, 6] = ky
         matrix[5, 6] = dE
         return matrix
     
-    @staticmethod
-    def space_charge_2d(length: float, cov_matrix: np.ndarray, perveance: float) -> np.ndarray:
-        # Start by assuming upright beam
-        cx = 2.0 * math.sqrt(cov_matrix[0, 0])
-        cy = 2.0 * math.sqrt(cov_matrix[2, 2])
+    def space_charge_2d(self, length: float, cov_matrix: np.ndarray, perveance: float) -> np.ndarray:
+        cov_xx = cov_matrix[0, 0]
+        cov_yy = cov_matrix[2, 2]
+        cov_xy = cov_matrix[0, 2]
 
-        kappa_x = 2.0 * perveance / (cx * (cx + cy))
-        kappa_y = 2.0 * perveance / (cy * (cx + cy))
-
+        angle = -0.5 * math.atan2(2.0 * cov_xy, cov_xx - cov_yy)
+        _sin = math.sin(angle)
+        _cos = math.cos(angle)
+    
+        rx = 2.0 * np.sqrt(abs(cov_xx * _cos**2 + cov_yy * _sin**2 - 2.0 * cov_xy * _sin * _cos))
+        ry = 2.0 * np.sqrt(abs(cov_xx * _sin**2 + cov_yy * _cos**2 + 2.0 * cov_xy * _sin * _cos))
+        
+        kappa_x = 2.0 * perveance / (rx * (rx + ry))
+        kappa_y = 2.0 * perveance / (ry * (rx + ry))
+        
         matrix = np.identity(7)
         matrix[1, 0] = kappa_x * length
         matrix[3, 2] = kappa_y * length
-        return matrix
+
+        R = self.tilt(angle)
+        M = np.linalg.multi_dot([R, matrix, np.linalg.inv(R)])
+        return M
     
-    @staticmethod
-    def space_charge_3d(length: float, cov_matrix: np.ndarray, intensity: float) -> np.ndarray:
+    def space_charge_3d(self, length: float, cov_matrix: np.ndarray, intensity: float) -> np.ndarray:
         raise NotImplementedError()
 
     def __call__(

@@ -1,7 +1,8 @@
 py_sources = files([
     '__init__.py',
     'envelope.py',
-    'matrix.py'
+    'matrix.py',
+    'utils.py'
 ])
 
 python.install_sources(

@@ -7,6 +7,7 @@ from ..lattice import AccNode
 from ..lattice import AccLattice
 
 from .matrix import MatrixFactory
+from .utils import gen_dist
 
 
 ENTRANCE = AccNode.ENTRANCE
@@ -71,6 +72,11 @@ class Envelope:
 
     def apply_transfer_matrix(self, transfer_matrix: np.ndarray) -> None:
         self.matrix = np.linalg.multi_dot([transfer_matrix, self.matrix, transfer_matrix.T])
+
+    def sample(self, n: int, dist: str = "kv") -> np.ndarray:
+        particles = gen_dist(n=n, cov_matrix=self.cov(), name=dist)
+        particles = particles + self.centroid()
+        return particles
     
 
 class EnvelopeTracker:
