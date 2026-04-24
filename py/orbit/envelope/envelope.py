@@ -1,4 +1,8 @@
+import math
+
 import numpy as np
+
+from .matrix import MatrixFactory
 
 
 class Envelope:
@@ -50,4 +54,3 @@ class Envelope:
         """Return transfer matrix from linear space charge kick."""
         raise NotImplementedError()
     
-
