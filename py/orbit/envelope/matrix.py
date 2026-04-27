@@ -19,6 +19,16 @@ from ..teapot import TurnCounterTEAPOT
 from .utils import proj_cov_matrix
 
 
+def build_diag_matrix_from_xyz_eig(eigenvectors: np.ndarray) -> np.ndarray:
+    A = np.eye(7)
+    for i in range(eigenvectors.shape[0]):
+        for j in range(eigenvectors.shape[1]):
+            row = i * 2
+            col = j * 2
+            A[row, col] = A[row + 1, col + 1] = eigenvectors[i, j]
+    return A
+
+
 class MatrixFactory:
     """Factory for 7x7 transfer matrices."""
 
@@ -123,7 +133,8 @@ class MatrixFactory:
         
         eig_res = np.linalg.eig(cov_matrix_proj)
 
-        rx, ry = 2.0 * np.sqrt(eig_res.eigenvalues)        
+        rx, ry = 2.0 * np.sqrt(eig_res.eigenvalues)      
+          
         kappa_x = 2.0 * perveance / (rx * (rx + ry))
         kappa_y = 2.0 * perveance / (ry * (rx + ry))
         
@@ -131,13 +142,7 @@ class MatrixFactory:
         M[1, 0] = kappa_x * length
         M[3, 2] = kappa_y * length
 
-        A = np.eye(7)
-        for i in range(eig_res.eigenvectors.shape[0]):
-            for j in range(eig_res.eigenvectors.shape[1]):
-                row = i * 2
-                col = j * 2
-                A[row, col] = A[row + 1, col + 1] = eig_res.eigenvectors[i, j]
-
+        A = build_diag_matrix_from_xyz_eig(eig_res.eigenvectors)
         T = self.translation(centroid[0], centroid[2])
 
         V = np.matmul(T, A)
@@ -151,7 +156,28 @@ class MatrixFactory:
         centroid: np.ndarray,
         perveance: float,
     ) -> np.ndarray:
-        raise NotImplementedError()
+        
+        cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2, 4))
+        
+        eig_res = np.linalg.eig(cov_matrix_proj)
+
+        rx, ry, rz = 2.0 * np.sqrt(eig_res.eigenvalues)        
+
+        # kappa_x = ...
+        # kappa_y = ...
+        # kappa_z = ...
+        
+        # M = np.identity(7)
+        # M[1, 0] = kappa_x * length
+        # M[3, 2] = kappa_y * length
+        # M[5, 4] = kappa_z * length
+
+        A = build_diag_matrix_from_xyz_eig(eig_res.eigenvectors)
+        T = self.translation(centroid[0], centroid[2], centroid[4])
+
+        V = np.matmul(T, A)
+        V_inv = np.linalg.inv(V)
+        return np.linalg.multi_dot([V, M, V_inv])
 
     def __call__(self, node: AccNode, sync_part: SyncParticle, part_index: int = 0) -> np.ndarray:
         if type(node) is DriftTEAPOT:
