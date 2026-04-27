@@ -134,7 +134,7 @@ class Envelope:
 
         self.intensity = 0.0
         self.perveance_2d = 0.0
-        self.perveance_3d = None
+        self.perveance_3d = 0.0
         self.set_intensity(intensity)
 
     def set_intensity(self, intensity: float) -> None:
