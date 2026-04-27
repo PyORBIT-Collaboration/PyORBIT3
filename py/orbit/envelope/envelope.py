@@ -208,8 +208,8 @@ class Envelope:
         M = build_sc_matrix_3d(
             cov_xx=eig_res.eigenvalues[0], 
             cov_yy=eig_res.eigenvalues[1], 
-            cov_zz=eig_res.eigenvalues[2] / self.gamma()**2,
-            perveance=self.perveance_3d, 
+            cov_zz=eig_res.eigenvalues[2],  # gamma here? but this may not point along z
+            perveance=self.perveance_3d,
             length=length,
         )   
 
