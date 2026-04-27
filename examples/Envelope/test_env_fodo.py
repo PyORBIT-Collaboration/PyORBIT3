@@ -286,8 +286,6 @@ particles[:, :4] *= 1000.0
 env_cov_matrix = envelope.cov()
 env_cov_matrix[:4, :4] *= 1000.0**2
 
-print(env_cov_matrix)
-
 env_centroid = envelope.centroid()
 env_centroid[:4] *= 1000.0
 
