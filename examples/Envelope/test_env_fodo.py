@@ -122,7 +122,7 @@ cov_matrix[5, 5] = 0.0
 # Tilt
 if args.dist_tilt:
     rot_matrix = np.identity(6)
-    rot_matrix[:4, :4] = build_rotation_matrix_xy(angle=(0.25 * math.pi))
+    rot_matrix[:4, :4] = build_rotation_matrix_xy(angle=(0.15 * math.pi))
     cov_matrix = np.linalg.multi_dot([rot_matrix, cov_matrix, rot_matrix.T])
 
 # Mismatch

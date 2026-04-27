@@ -88,14 +88,18 @@ class MatrixFactory:
         return matrix
 
     def tilt(self, angle: float) -> np.ndarray:
-        cs = math.cos(angle)
-        sn = math.sin(angle)
-
         matrix = np.identity(7)
-        matrix[0, 0] = matrix[1, 1] = +cs
-        matrix[0, 2] = matrix[1, 3] = +sn
-        matrix[2, 0] = matrix[3, 1] = -sn
-        matrix[2, 2] = matrix[3, 3] = +cs
+        matrix[0, 0] = matrix[1, 1] = +math.cos(angle)
+        matrix[0, 2] = matrix[1, 3] = +math.sin(angle)
+        matrix[2, 0] = matrix[3, 1] = -math.sin(angle)
+        matrix[2, 2] = matrix[3, 3] = +math.cos(angle)
+        return matrix
+    
+    def offset(self, x: float = 0.0, y: float = 0.0, z: float = 0.0) -> np.ndarray:
+        matrix = np.identity(7)
+        matrix[0, 6] = x
+        matrix[2, 6] = y
+        matrix[4, 6] = z
         return matrix
 
     def kick(self, kx: float, ky: float, dE: float) -> np.ndarray:
@@ -108,45 +112,48 @@ class MatrixFactory:
     def space_charge_2d(
         self, 
         length: float,
-        cov_matrix: np.ndarray,
-        centroid: np.ndarray,
+        beam_matrix: np.ndarray,
         perveance: float
     ) -> np.ndarray:
 
-        cov_xx = cov_matrix[0, 0]
-        cov_yy = cov_matrix[2, 2]
-        cov_xy = cov_matrix[0, 2]
-
-        angle = -0.5 * math.atan2(2.0 * cov_xy, cov_xx - cov_yy)
-        _sin = math.sin(angle)
-        _cos = math.cos(angle)
-
-        rx = 2.0 * np.sqrt(abs(cov_xx * _cos**2 + cov_yy * _sin**2 - 2.0 * cov_xy * _sin * _cos))
-        ry = 2.0 * np.sqrt(abs(cov_xx * _sin**2 + cov_yy * _cos**2 + 2.0 * cov_xy * _sin * _cos))
-
-        kappa_x = 2.0 * perveance / (rx * (rx + ry))
-        kappa_y = 2.0 * perveance / (ry * (rx + ry))
-
-        M = np.identity(7)
-        M[1, 0] = kappa_x * length
-        M[3, 2] = kappa_y * length
+        # Extract x-y covariance matrix elements.
+        cov_xx = beam_matrix[0, 0]
+        cov_yy = beam_matrix[2, 2]
+        cov_xy = beam_matrix[0, 2]
         
-        T = np.identity(7)
-        T[0, -1] = centroid[0]
-        T[2, -1] = centroid[2]
+        # Extract x-y centroid. 
+        mu_x = beam_matrix[0, -1]
+        mu_y = beam_matrix[2, -1]
 
-        R = self.tilt(angle)
+        # Calculate normalization matrix (rotation + translation).
+        angle = -0.5 * np.atan2(2.0 * cov_xy, cov_xx - cov_yy)
+        
+        R = self.tilt(angle)        
+        T = self.offset(mu_x, mu_y)
 
         V = np.matmul(T, R)
         V_inv = np.linalg.inv(V)
 
+        # Calculate transfer matrix in normalized frame.
+        beam_matrix_n = np.linalg.multi_dot([V_inv, beam_matrix, V_inv.T])
+        
+        rx = 2.0 * np.sqrt(beam_matrix_n[0, 0])
+        ry = 2.0 * np.sqrt(beam_matrix_n[2, 2])
+
+        kappa_x = 2.0 * perveance / (rx * (rx + ry))
+        kappa_y = 2.0 * perveance / (ry * (rx + ry))
+        
+        M = np.identity(7)
+        M[1, 0] = kappa_x * length
+        M[3, 2] = kappa_y * length
+
+        # Transform matrix.
         return np.linalg.multi_dot([V, M, V_inv])
         
     def space_charge_3d(
         self, 
         length: float,
-        cov_matrix: np.ndarray, 
-        centroid: np.ndarray,
+        beam_matrix: np.ndarray,
         perveance: float,
     ) -> np.ndarray:
         raise NotImplementedError()

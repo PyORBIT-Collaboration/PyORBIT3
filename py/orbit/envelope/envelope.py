@@ -130,8 +130,7 @@ class EnvelopeTracker:
                     if self.space_charge == "2d":
                         matrix = self.matrix_factory.space_charge_2d(
                             length=length, 
-                            cov_matrix=cov_matrix, 
-                            centroid=centroid,
+                            beam_matrix=envelope.matrix,
                             perveance=envelope.perveance_2d
                         )
                     elif self.space_charge == "3d":
