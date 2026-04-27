@@ -8,6 +8,7 @@ from ..lattice import AccLattice
 
 from .matrix import MatrixFactory
 from .utils import gen_dist
+from .utils import proj_cov_matrix
 
 
 ENTRANCE = AccNode.ENTRANCE
@@ -23,6 +24,20 @@ def get_perveance_2d(mass: float, kin_energy: float, line_density: float) -> flo
     gamma = 1.0 + (kin_energy / mass)  # Lorentz factor
     beta = np.sqrt(1.0 - (1.0 / gamma) ** 2)  # velocity/speed_of_light
     return (2.0 * classical_proton_radius * line_density) / (beta**2 * gamma**3)
+
+
+def get_perveance_3d():
+    raise NotImplementedError()
+
+
+def build_diag_matrix_from_xyz_eig(eigenvectors: np.ndarray) -> np.ndarray:
+    A = np.eye(7)
+    for i in range(eigenvectors.shape[0]):
+        for j in range(eigenvectors.shape[1]):
+            row = i * 2
+            col = j * 2
+            A[row, col] = A[row + 1, col + 1] = eigenvectors[i, j]
+    return A
 
 
 class Envelope:
@@ -99,6 +114,63 @@ class Envelope:
         particles = gen_dist(n=n, cov_matrix=self.cov(), name=dist)
         particles = particles + self.centroid()
         return particles
+    
+    def sc_transfer_matrix_2d(self, length: float) -> np.ndarray:
+        centroid = self.centroid()
+
+        cov_matrix = self.cov()
+        cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2))
+        
+        eig_res = np.linalg.eig(cov_matrix_proj)
+
+        rx, ry = 2.0 * np.sqrt(eig_res.eigenvalues)      
+
+        kappa_x = 2.0 * self.perveance_2d / (rx * (rx + ry))
+        kappa_y = 2.0 * self.perveance_2d / (ry * (rx + ry))
+        
+        M = np.identity(7)
+        M[1, 0] = kappa_x * length
+        M[3, 2] = kappa_y * length
+
+        A = build_diag_matrix_from_xyz_eig(eig_res.eigenvectors)
+        
+        T = np.identity(7)
+        T[0, -1] = centroid[0]
+        T[2, -1] = centroid[2] 
+
+        V = np.matmul(T, A)
+        V_inv = np.linalg.inv(V)
+        return np.linalg.multi_dot([V, M, V_inv])
+    
+    def sc_transfer_matrix_3d(self, length: float) -> np.ndarray:
+        centroid = self.centroid()
+
+        cov_matrix = self.cov()
+        cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2, 4))
+        
+        eig_res = np.linalg.eig(cov_matrix_proj)
+
+        cov_xx, cov_yy, cov_zz = np.sqrt(eig_res.eigenvalues)      
+
+        kappa_x = ... 
+        kappa_y = ... 
+        kappa_z = ...
+        
+        M = np.identity(7)
+        M[1, 0] = kappa_x * length
+        M[3, 2] = kappa_y * length
+        M[5, 4] = kappa_z * length
+
+        A = build_diag_matrix_from_xyz_eig(eig_res.eigenvectors)
+        
+        T = np.identity(7)
+        T[0, -1] = centroid[0]
+        T[2, -1] = centroid[2] 
+        T[4, -1] = centroid[4]
+
+        V = np.matmul(T, A)
+        V_inv = np.linalg.inv(V)
+        return np.linalg.multi_dot([V, M, V_inv])
 
 
 class EnvelopeTracker:
@@ -124,23 +196,10 @@ class EnvelopeTracker:
                 # Space charge
                 if self.space_charge:
                     length = node.getLength(part_index)
-                    cov_matrix = envelope.cov()
-                    centroid = envelope.centroid()
-
                     if self.space_charge == "2d":
-                        matrix = self.matrix_factory.space_charge_2d(
-                            length=length, 
-                            cov_matrix=cov_matrix,
-                            centroid=centroid,
-                            perveance=envelope.perveance_2d
-                        )
+                        matrix = envelope.sc_transfer_matrix_2d(length)
                     elif self.space_charge == "3d":
-                        matrix = self.matrix_factory.space_charge_3d(
-                            length=length, 
-                            cov_matrix=cov_matrix,
-                            centroid=centroid,
-                            perveance=envelope.perveance_3d,
-                        )
+                        matrix = envelope.sc_transfer_matrix_3d(length)
                     else:
                         raise ValueError(f"Invalid space charge model: {self.space_charge}")
 
