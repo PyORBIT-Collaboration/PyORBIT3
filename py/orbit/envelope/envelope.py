@@ -67,27 +67,23 @@ def build_sc_matrix_3d(
     cov_zz: float, 
     perveance: float, 
     length: float,
-    gamma: float, 
 ) -> np.ndarray:    
     """Return 7 x 7 space charge matrix for upright 3D ellipsoid."""
-
-    cov_xx = cov_xx
-    cov_yy = cov_yy
-    cov_zz = cov_zz * gamma * gamma
     
     scale_factor = 5.0 ** 1.5
     RDx = scipy.special.elliprd(cov_yy, cov_zz, cov_xx) / scale_factor
     RDy = scipy.special.elliprd(cov_zz, cov_xx, cov_yy) / scale_factor
     RDz = scipy.special.elliprd(cov_xx, cov_yy, cov_zz) / scale_factor
   
-    kx = gamma * length * perveance * RDx
-    ky = gamma * length * perveance * RDy
-    kz = gamma * length * perveance * RDz
+    kappa_x = perveance * RDx
+    kappa_y = perveance * RDy
+    kappa_z = perveance * RDz
 
     matrix = np.identity(7)
-    matrix[1, 0] = kx
-    matrix[3, 2] = ky
-    matrix[5, 4] = kz
+    matrix[1, 0] = kappa_x * length
+    matrix[3, 2] = kappa_y * length
+    matrix[5, 4] = kappa_z * length
+    
     return matrix
 
 
@@ -178,7 +174,6 @@ class Envelope:
     
     def sc_transfer_matrix_2d(self, length: float) -> np.ndarray:
         centroid = self.centroid()
-
         cov_matrix = self.cov()
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2))
         
@@ -202,8 +197,9 @@ class Envelope:
         return np.linalg.multi_dot([V, M, V_inv])
     
     def sc_transfer_matrix_3d(self, length: float) -> np.ndarray:
-        centroid = self.centroid()
+        # Not working!
 
+        centroid = self.centroid()
         cov_matrix = self.cov()
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2, 4))
         
@@ -212,10 +208,9 @@ class Envelope:
         M = build_sc_matrix_3d(
             cov_xx=eig_res.eigenvalues[0], 
             cov_yy=eig_res.eigenvalues[1], 
-            cov_zz=eig_res.eigenvalues[2],
+            cov_zz=eig_res.eigenvalues[2] / self.gamma()**2,
             perveance=self.perveance_3d, 
             length=length,
-            gamma=self.gamma(),
         )   
 
         A = build_diag_matrix_from_xyz_eig(eig_res.eigenvectors)
@@ -225,7 +220,9 @@ class Envelope:
         T[2, -1] = centroid[2] 
         T[4, -1] = centroid[4]
 
-        V = np.matmul(T, A)
+        L = np.identity(7)  # to do: lorentz
+
+        V = np.linalg.multi_dot([L, T, A])
         V_inv = np.linalg.inv(V)
         return np.linalg.multi_dot([V, M, V_inv])
 
