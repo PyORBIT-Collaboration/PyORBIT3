@@ -323,6 +323,7 @@ for i in range(6):
         env_cov_matrix_proj = project_cov_matrix(env_cov_matrix, axis=(j, i))
         plot_rms_ellipse(
             env_cov_matrix_proj,
+            center=(env_centroid[j], env_centroid[i]),
             level=2.0,
             color="red",
             ax=axs[i, j],

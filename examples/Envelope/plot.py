@@ -36,7 +36,8 @@ def plot_ellipse(
     kws.setdefault("color", "black")
     kws.setdefault("lw", 1.25)
 
-    center = (0.0, 0.0)
+    if center is None:
+        center = (0.0, 0.0)
 
     d1 = r1 * 2.0
     d2 = r2 * 2.0
