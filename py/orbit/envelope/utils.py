@@ -37,3 +37,12 @@ def gen_dist(n: int, cov_matrix: np.ndarray, name: str) -> np.ndarray:
 
     L = np.linalg.cholesky(cov_matrix)
     return np.matmul(X, L.T)
+
+
+
+def proj_cov_matrix(cov_matrix: np.ndarray, axis: tuple[int, ...]) -> np.ndarray:
+    cov_matrix_proj = np.zeros((len(axis), len(axis)))
+    for i in range(len(axis)):
+        for j in range(len(axis)):
+            cov_matrix_proj[i, j] = cov_matrix[axis[i], axis[j]]
+    return cov_matrix_proj

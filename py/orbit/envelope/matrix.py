@@ -16,6 +16,8 @@ from ..teapot import FringeFieldTEAPOT
 from ..teapot import MonitorTEAPOT
 from ..teapot import TurnCounterTEAPOT
 
+from .utils import proj_cov_matrix
+
 
 class MatrixFactory:
     """Factory for 7x7 transfer matrices."""
@@ -95,7 +97,7 @@ class MatrixFactory:
         matrix[2, 2] = matrix[3, 3] = +math.cos(angle)
         return matrix
     
-    def offset(self, x: float = 0.0, y: float = 0.0, z: float = 0.0) -> np.ndarray:
+    def translation(self, x: float = 0.0, y: float = 0.0, z: float = 0.0) -> np.ndarray:
         matrix = np.identity(7)
         matrix[0, 6] = x
         matrix[2, 6] = y
@@ -112,34 +114,16 @@ class MatrixFactory:
     def space_charge_2d(
         self, 
         length: float,
-        beam_matrix: np.ndarray,
+        cov_matrix: np.ndarray,
+        centroid: np.ndarray,
         perveance: float
     ) -> np.ndarray:
-
-        # Extract x-y covariance matrix elements.
-        cov_xx = beam_matrix[0, 0]
-        cov_yy = beam_matrix[2, 2]
-        cov_xy = beam_matrix[0, 2]
         
-        # Extract x-y centroid. 
-        mu_x = beam_matrix[0, -1]
-        mu_y = beam_matrix[2, -1]
-
-        # Calculate normalization matrix (rotation + translation).
-        angle = -0.5 * np.atan2(2.0 * cov_xy, cov_xx - cov_yy)
+        cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2))
         
-        R = self.tilt(angle)        
-        T = self.offset(mu_x, mu_y)
+        eig_res = np.linalg.eig(cov_matrix_proj)
 
-        V = np.matmul(T, R)
-        V_inv = np.linalg.inv(V)
-
-        # Calculate transfer matrix in normalized frame.
-        beam_matrix_n = np.linalg.multi_dot([V_inv, beam_matrix, V_inv.T])
-        
-        rx = 2.0 * np.sqrt(beam_matrix_n[0, 0])
-        ry = 2.0 * np.sqrt(beam_matrix_n[2, 2])
-
+        rx, ry = 2.0 * np.sqrt(eig_res.eigenvalues)        
         kappa_x = 2.0 * perveance / (rx * (rx + ry))
         kappa_y = 2.0 * perveance / (ry * (rx + ry))
         
@@ -147,13 +131,24 @@ class MatrixFactory:
         M[1, 0] = kappa_x * length
         M[3, 2] = kappa_y * length
 
-        # Transform matrix.
+        A = np.eye(7)
+        for i in range(eig_res.eigenvectors.shape[0]):
+            for j in range(eig_res.eigenvectors.shape[1]):
+                row = i * 2
+                col = j * 2
+                A[row, col] = A[row + 1, col + 1] = eig_res.eigenvectors[i, j]
+
+        T = self.translation(centroid[0], centroid[2])
+
+        V = np.matmul(T, A)
+        V_inv = np.linalg.inv(V)
         return np.linalg.multi_dot([V, M, V_inv])
         
     def space_charge_3d(
         self, 
         length: float,
-        beam_matrix: np.ndarray,
+        cov_matrix: np.ndarray,
+        centroid: np.ndarray,
         perveance: float,
     ) -> np.ndarray:
         raise NotImplementedError()
