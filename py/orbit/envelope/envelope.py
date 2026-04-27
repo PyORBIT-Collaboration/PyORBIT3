@@ -1,10 +1,13 @@
 import math
 
 import numpy as np
+import scipy.special
 
 from ..core.bunch import SyncParticle
 from ..lattice import AccNode
 from ..lattice import AccLattice
+from ..utils.consts import speed_of_light
+from ..utils.consts import charge_electron
 
 from .matrix import MatrixFactory
 from .utils import gen_dist
@@ -19,15 +22,15 @@ BEFORE = AccNode.BEFORE
 AFTER = AccNode.AFTER
 
 
-def get_perveance_2d(mass: float, kin_energy: float, line_density: float) -> float:
+def calc_perveance_2d(gamma: float, line_density: float) -> float:
     classical_proton_radius = 1.534697049469832e-18  # [m]
-    gamma = 1.0 + (kin_energy / mass)  # Lorentz factor
-    beta = np.sqrt(1.0 - (1.0 / gamma) ** 2)  # velocity/speed_of_light
+    beta = np.sqrt(1.0 - (1.0 / gamma) ** 2)
     return (2.0 * classical_proton_radius * line_density) / (beta**2 * gamma**3)
 
 
-def get_perveance_3d():
-    raise NotImplementedError()
+def calc_perveance_3d(gamma: float, mass: float, total_charge: float) -> float:
+    bg2 = gamma**2 - 1.0
+    return total_charge * (1.0e-7 * speed_of_light**2) * (1.0 / (gamma * bg2)) * abs(charge_electron) / mass
 
 
 def build_diag_matrix_from_xyz_eig(eigenvectors: np.ndarray) -> np.ndarray:
@@ -38,6 +41,54 @@ def build_diag_matrix_from_xyz_eig(eigenvectors: np.ndarray) -> np.ndarray:
             col = j * 2
             A[row, col] = A[row + 1, col + 1] = eigenvectors[i, j]
     return A
+
+
+def build_sc_matrix_2d(
+    cov_xx: float,
+    cov_yy: float,
+    perveance: float,
+    length: float,
+) -> np.ndarray:
+    """Return 7 x 7 space charge matrix for upright 2D ellipsoid."""
+    r_x = 2.0 * math.sqrt(cov_xx)
+    r_y = 2.0 * math.sqrt(cov_yy)
+    kappa_x = 2.0 * perveance / (r_x * (r_x + r_y))
+    kappa_y = 2.0 * perveance / (r_y * (r_x + r_y))
+    
+    matrix = np.identity(7)
+    matrix[1, 0] = kappa_x * length
+    matrix[3, 2] = kappa_y * length
+    return matrix
+
+
+def build_sc_matrix_3d(
+    cov_xx: float, 
+    cov_yy: float, 
+    cov_zz: float, 
+    perveance: float, 
+    length: float,
+    gamma: float, 
+) -> np.ndarray:    
+    """Return 7 x 7 space charge matrix for upright 3D ellipsoid."""
+
+    cov_xx = cov_xx
+    cov_yy = cov_yy
+    cov_zz = cov_zz * gamma * gamma
+    
+    scale_factor = 5.0 ** 1.5
+    RDx = scipy.special.elliprd(cov_yy, cov_zz, cov_xx) / scale_factor
+    RDy = scipy.special.elliprd(cov_zz, cov_xx, cov_yy) / scale_factor
+    RDz = scipy.special.elliprd(cov_xx, cov_yy, cov_zz) / scale_factor
+  
+    kx = gamma * length * perveance * RDx
+    ky = gamma * length * perveance * RDy
+    kz = gamma * length * perveance * RDz
+
+    matrix = np.identity(7)
+    matrix[1, 0] = kx
+    matrix[3, 2] = ky
+    matrix[5, 4] = kz
+    return matrix
 
 
 class Envelope:
@@ -90,11 +141,21 @@ class Envelope:
         self.intensity = intensity
         cov_matrix = self.cov()
         length = 4.0 * math.sqrt(cov_matrix[4, 4])  # assume uniform density
-        self.perveance_2d = get_perveance_2d(
-            mass=self.sync_part.mass(),
-            kin_energy=self.sync_part.kinEnergy(),
+        self.perveance_2d = calc_perveance_2d(
+            gamma=self.gamma(),
             line_density=(self.intensity / length),
         )
+        self.perveance_3d = calc_perveance_3d(
+            gamma=self.gamma(),
+            mass=self.mass(),
+            total_charge=(self.intensity * charge_electron),
+        )
+
+    def gamma(self) -> float:
+        return self.sync_part.gamma()
+    
+    def mass(self) -> float:
+        return self.sync_part.mass()
 
     def centroid(self) -> np.ndarray:
         return self.matrix[0:6, 6]
@@ -123,14 +184,12 @@ class Envelope:
         
         eig_res = np.linalg.eig(cov_matrix_proj)
 
-        rx, ry = 2.0 * np.sqrt(eig_res.eigenvalues)      
-
-        kappa_x = 2.0 * self.perveance_2d / (rx * (rx + ry))
-        kappa_y = 2.0 * self.perveance_2d / (ry * (rx + ry))
-        
-        M = np.identity(7)
-        M[1, 0] = kappa_x * length
-        M[3, 2] = kappa_y * length
+        M = build_sc_matrix_2d(
+            cov_xx=eig_res.eigenvalues[0], 
+            cov_yy=eig_res.eigenvalues[1], 
+            perveance=self.perveance_2d, 
+            length=length
+        )
 
         A = build_diag_matrix_from_xyz_eig(eig_res.eigenvectors)
         
@@ -150,16 +209,14 @@ class Envelope:
         
         eig_res = np.linalg.eig(cov_matrix_proj)
 
-        cov_xx, cov_yy, cov_zz = np.sqrt(eig_res.eigenvalues)      
-
-        kappa_x = ... 
-        kappa_y = ... 
-        kappa_z = ...
-        
-        M = np.identity(7)
-        M[1, 0] = kappa_x * length
-        M[3, 2] = kappa_y * length
-        M[5, 4] = kappa_z * length
+        M = build_sc_matrix_3d(
+            cov_xx=eig_res.eigenvalues[0], 
+            cov_yy=eig_res.eigenvalues[1], 
+            cov_zz=eig_res.eigenvalues[2],
+            perveance=self.perveance_3d, 
+            length=length,
+            gamma=self.gamma(),
+        )   
 
         A = build_diag_matrix_from_xyz_eig(eig_res.eigenvectors)
         
