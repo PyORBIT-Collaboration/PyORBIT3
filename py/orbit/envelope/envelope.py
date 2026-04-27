@@ -18,11 +18,11 @@ BEFORE = AccNode.BEFORE
 AFTER = AccNode.AFTER
 
 
-def get_perveance(mass: float, kin_energy: float, line_density: float) -> float:
-    classical_proton_radius = 1.53469e-18  # [m]
+def get_perveance_2d(mass: float, kin_energy: float, line_density: float) -> float:
+    classical_proton_radius = 1.534697049469832e-18  # [m]
     gamma = 1.0 + (kin_energy / mass)  # Lorentz factor
     beta = np.sqrt(1.0 - (1.0 / gamma) ** 2)  # velocity/speed_of_light
-    return (classical_proton_radius * line_density) / (beta**2 * gamma**3)
+    return (2.0 * classical_proton_radius * line_density) / (beta**2 * gamma**3)
 
 
 class Envelope:
@@ -67,14 +67,15 @@ class Envelope:
         self.matrix[6, 6] = 1.0
 
         self.intensity = 0.0
-        self.perveance = 0.0
+        self.perveance_2d = 0.0
+        self.perveance_3d = None
         self.set_intensity(intensity)
 
     def set_intensity(self, intensity: float) -> None:
         self.intensity = intensity
         cov_matrix = self.cov()
-        length = 2.0 * math.sqrt(cov_matrix[4, 4])  # assume uniform density
-        self.perveance = get_perveance(
+        length = 4.0 * math.sqrt(cov_matrix[4, 4])  # assume uniform density
+        self.perveance_2d = get_perveance_2d(
             mass=self.sync_part.mass(),
             kin_energy=self.sync_part.kinEnergy(),
             line_density=(self.intensity / length),
@@ -124,14 +125,21 @@ class EnvelopeTracker:
                 if self.space_charge:
                     length = node.getLength(part_index)
                     cov_matrix = envelope.cov()
+                    centroid = envelope.centroid()
 
                     if self.space_charge == "2d":
                         matrix = self.matrix_factory.space_charge_2d(
-                            length=length, cov_matrix=cov_matrix, perveance=envelope.perveance
+                            length=length, 
+                            cov_matrix=cov_matrix, 
+                            centroid=centroid,
+                            perveance=envelope.perveance_2d
                         )
                     elif self.space_charge == "3d":
                         matrix = self.matrix_factory.space_charge_3d(
-                            length=length, cov_matrix=cov_matrix, intensity=envelope.intensity
+                            length=length, 
+                            cov_matrix=cov_matrix, 
+                            centroid=centroid,
+                            perveance=envelope.perveance_3d,
                         )
                     else:
                         raise ValueError(f"Invalid space charge model: {self.space_charge}")

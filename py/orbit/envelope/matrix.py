@@ -106,8 +106,13 @@ class MatrixFactory:
         return matrix
 
     def space_charge_2d(
-        self, length: float, cov_matrix: np.ndarray, perveance: float
+        self, 
+        length: float,
+        cov_matrix: np.ndarray,
+        centroid: np.ndarray,
+        perveance: float
     ) -> np.ndarray:
+
         cov_xx = cov_matrix[0, 0]
         cov_yy = cov_matrix[2, 2]
         cov_xy = cov_matrix[0, 2]
@@ -122,16 +127,27 @@ class MatrixFactory:
         kappa_x = 2.0 * perveance / (rx * (rx + ry))
         kappa_y = 2.0 * perveance / (ry * (rx + ry))
 
-        matrix = np.identity(7)
-        matrix[1, 0] = kappa_x * length
-        matrix[3, 2] = kappa_y * length
+        M = np.identity(7)
+        M[1, 0] = kappa_x * length
+        M[3, 2] = kappa_y * length
+        
+        T = np.identity(7)
+        T[0, -1] = centroid[0]
+        T[2, -1] = centroid[2]
 
         R = self.tilt(angle)
-        M = np.linalg.multi_dot([R, matrix, np.linalg.inv(R)])
-        return M
 
+        V = np.matmul(T, R)
+        V_inv = np.linalg.inv(V)
+
+        return np.linalg.multi_dot([V, M, V_inv])
+        
     def space_charge_3d(
-        self, length: float, cov_matrix: np.ndarray, intensity: float
+        self, 
+        length: float,
+        cov_matrix: np.ndarray, 
+        centroid: np.ndarray,
+        perveance: float,
     ) -> np.ndarray:
         raise NotImplementedError()
 
