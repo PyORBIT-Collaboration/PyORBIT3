@@ -143,7 +143,7 @@ class Envelope:
         )
         self.perveance_3d = calc_perveance_3d(
             gamma=self.gamma(),
-            mass=self.mass(),
+            mass=(self.mass() * 1e9),
             total_charge=(self.intensity * charge_electron),
         )
 
@@ -197,10 +197,23 @@ class Envelope:
         return np.linalg.multi_dot([V, M, V_inv])
     
     def sc_transfer_matrix_3d(self, length: float) -> np.ndarray:
-        # Not working!
+        # TEMP
+        #
+        # Calculate transfer matrix M from covariance matrix S in normalized
+        # coordinates. In the normalized coordinates, the beam is at rest with
+        # zero mean and diagonal x-y-z covariance matrix.
+        #
+        # The matrix V to get back to lab-frame coordinates is then
+        # V = LTA, where A is from the x-y-z covariance eigenvectors, T is a
+        # translation to the x-y-z centroid, and L is the Lorentz boost that
+        # scales z by 1 / gamma.
 
         centroid = self.centroid()
+        centroid[4] *= self.gamma()
+
         cov_matrix = self.cov()
+        cov_matrix[4, 4] *= self.gamma()**2
+
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2, 4))
         
         eig_res = np.linalg.eig(cov_matrix_proj)
@@ -208,7 +221,7 @@ class Envelope:
         M = build_sc_matrix_3d(
             cov_xx=eig_res.eigenvalues[0], 
             cov_yy=eig_res.eigenvalues[1], 
-            cov_zz=eig_res.eigenvalues[2],  # gamma here? but this may not point along z
+            cov_zz=eig_res.eigenvalues[2],
             perveance=self.perveance_3d,
             length=length,
         )   
@@ -216,11 +229,11 @@ class Envelope:
         A = build_diag_matrix_from_xyz_eig(eig_res.eigenvectors)
         
         T = np.identity(7)
-        T[0, -1] = centroid[0]
-        T[2, -1] = centroid[2] 
-        T[4, -1] = centroid[4]
+        for i in (0, 2, 4):
+            T[i, -1] = centroid[i]
 
-        L = np.identity(7)  # to do: lorentz
+        L = np.identity(7)
+        L[4, 4] = 1.0 / self.gamma()
 
         V = np.linalg.multi_dot([L, T, A])
         V_inv = np.linalg.inv(V)
