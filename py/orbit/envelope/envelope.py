@@ -83,6 +83,9 @@ def build_sc_matrix_3d(
     matrix[1, 0] = kappa_x * length
     matrix[3, 2] = kappa_y * length
     matrix[5, 4] = kappa_z * length
+
+    # PyORBIT uses dE, not z', so need to calculate energy
+    # kick from q * E_z * length.
     
     return matrix
 
