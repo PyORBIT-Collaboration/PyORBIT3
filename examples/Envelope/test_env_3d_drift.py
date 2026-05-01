@@ -39,7 +39,7 @@ plt.style.use("style.mplstyle")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--kin-energy", type=float, default=0.025)
-parser.add_argument("--intensity", type=float, default=4e9)
+parser.add_argument("--intensity", type=float, default=1e11)
 
 parser.add_argument("--xrms", type=float, default=0.010)
 parser.add_argument("--yrms", type=float, default=0.010)
@@ -48,8 +48,9 @@ parser.add_argument("--zrms", type=float, default=0.010)
 parser.add_argument("--nslice", type=int, default=10)
 parser.add_argument("--length", type=float, default=0.1)
 parser.add_argument("--turns", type=int, default=20)
+parser.add_argument("--sc-grid", type=int, default=128)
 
-parser.add_argument("--nparts", type=int, default=100_000)
+parser.add_argument("--nparts", type=int, default=500_000)
 parser.add_argument("--sc", type=int, default=0)
 args = parser.parse_args()
 
@@ -83,9 +84,9 @@ sync_part = bunch.getSyncParticle()
 sync_part.kinEnergy(args.kin_energy)
 
 cov_matrix_init = np.zeros((6, 6))
-cov_matrix_init[0, 0] = 0.010 ** 2
-cov_matrix_init[2, 2] = 0.010 ** 2
-cov_matrix_init[4, 4] = (0.010 / sync_part.gamma()) ** 2
+cov_matrix_init[0, 0] = args.xrms ** 2
+cov_matrix_init[2, 2] = args.yrms ** 2
+cov_matrix_init[4, 4] = (args.zrms / sync_part.gamma()) ** 2
 
 centroid_init = np.zeros(6)
 
@@ -96,7 +97,6 @@ envelope = Envelope(
     intensity=args.intensity,
 )
 
-
 # Track envelope
 # ------------------------------------------------------------------------------
 
@@ -104,7 +104,7 @@ print("TRACK ENVELOPE")
 
 tracker = EnvelopeTracker(lattice, space_charge=("3d" if args.sc else None))
 
-history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
+history = {"xrms": [], "yrms": [], "zrms": []}
 for turn in range(args.turns):
     if turn > 0:
         tracker.track(envelope)
@@ -114,17 +114,13 @@ for turn in range(args.turns):
 
     xrms = 1000.0 * math.sqrt(cov_matrix[0, 0])
     yrms = 1000.0 * math.sqrt(cov_matrix[2, 2])
-    xavg = 1000.0 * centroid[0]
-    yavg = 1000.0 * centroid[2]
-
-    print(
-        f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} xavg={xavg:0.3f} yavg={yavg:0.3f}"
-    )
+    zrms = 1000.0 * math.sqrt(cov_matrix[4, 4]) * envelope.gamma()
 
     history["xrms"].append(xrms)
     history["yrms"].append(yrms)
-    history["xavg"].append(xavg)
-    history["yavg"].append(yavg)
+    history["zrms"].append(zrms)
+
+    print(f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} zrms={zrms:0.3f}")
 
 histories = {}
 histories["envelope"] = copy.deepcopy(history)
@@ -148,13 +144,11 @@ size_global = bunch.getSizeGlobal()
 bunch.macroSize(args.intensity / size_global)
 
 if args.sc:
-    sc_calc = SpaceChargeCalc3D(64, 64, 64)
-    sc_min_path_length = 0.01
-    sc_nodes = setSC3DAccNodes(lattice, sc_min_path_length, sc_calc)
+    sc_calc = SpaceChargeCalc3D(args.sc_grid, args.sc_grid, args.sc_grid)
+    sc_path_length_min = 0.01
+    sc_nodes = setSC3DAccNodes(lattice, sc_path_length_min, sc_calc)
 
-
-# Track bunch through lattice.
-history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
+history = {"xrms": [], "yrms": [], "zrms": []}
 for turn in range(args.turns):
     if turn > 0:
         lattice.trackBunch(bunch)
@@ -170,17 +164,13 @@ for turn in range(args.turns):
 
     xrms = 1000.0 * math.sqrt(cov_matrix[0, 0])
     yrms = 1000.0 * math.sqrt(cov_matrix[2, 2])
-    xavg = 1000.0 * twiss_calc.getAverage(0)
-    yavg = 1000.0 * twiss_calc.getAverage(2)
-
-    print(
-        f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} xavg={xavg:0.3f} yavg={yavg:0.3f}"
-    )
+    zrms = 1000.0 * math.sqrt(cov_matrix[4, 4]) * bunch.getSyncParticle().gamma()
 
     history["xrms"].append(xrms)
     history["yrms"].append(yrms)
-    history["xavg"].append(xavg)
-    history["yavg"].append(yavg)
+    history["zrms"].append(zrms)
+
+    print(f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} zrms={zrms:0.3f}")
 
 histories["bunch"] = copy.deepcopy(history)
 
@@ -200,7 +190,7 @@ for key in histories["envelope"]:
     print("avg_abs_delta:", np.mean(np.abs(deltas)))
 
 # Plot rms bunch sizes
-for key in ["xrms", "yrms"]:
+for key in ["xrms", "yrms", "zrms"]:
     fig, ax = plt.subplots(figsize=(5, 3))
     for i, model in enumerate(["envelope", "bunch"]):
         color = ["black", "red"][i]
@@ -212,21 +202,6 @@ for key in ["xrms", "yrms"]:
     ax.legend(loc="upper right")
     plt.savefig(os.path.join(output_dir, f"fig_{key}"))
     plt.close()
-
-# Plot centroids
-for key in ["xavg", "yavg"]:
-    fig, ax = plt.subplots(figsize=(5, 3))
-    for i, model in enumerate(["envelope", "bunch"]):
-        color = ["black", "red"][i]
-        lw = [None, 0][i]
-        ax.plot(histories[model][key], marker=".", lw=lw, color=color, label=model)
-    ax.set_ylim(-5.0, 5.0)
-    ax.set_xlabel("Turn")
-    ax.set_ylabel("AVG [mm]")
-    ax.legend(loc="upper right")
-    plt.savefig(os.path.join(output_dir, f"fig_{key}"))
-    plt.close()
-
 
 # Collect bunch/envelope data on final turn.
 particles = collect_bunch(bunch)["coords"]
@@ -241,7 +216,6 @@ env_centroid[:4] *= 1000.0
 xmax = 4.0 * np.std(particles, axis=0)
 limits = list(zip(-xmax, xmax))
 labels = ["x [mm]", "xp [mrad]", "y [mm]", "yp [mrad]", "z [m]", "dE [GeV]"]
-
 
 # Plot x-x'
 fig, ax = plt.subplots(figsize=(4, 4))

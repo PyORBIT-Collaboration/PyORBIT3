@@ -21,16 +21,7 @@ EXIT = AccNode.EXIT
 BEFORE = AccNode.BEFORE
 AFTER = AccNode.AFTER
 
-
-def calc_perveance_2d(gamma: float, line_density: float) -> float:
-    classical_proton_radius = 1.534697049469832e-18  # [m]
-    beta = np.sqrt(1.0 - (1.0 / gamma) ** 2)
-    return (2.0 * classical_proton_radius * line_density) / (beta**2 * gamma**3)
-
-
-def calc_perveance_3d(gamma: float, mass: float, total_charge: float) -> float:
-    bg2 = gamma**2 - 1.0
-    return total_charge * (1.0e-7 * speed_of_light**2) * (1.0 / (gamma * bg2)) * abs(charge_electron) / mass
+CLASSICAL_PROTON_RADIUS = 1.534697049469832e-18  # [m]
 
 
 def build_diag_matrix_from_xyz_eig(eigenvectors: np.ndarray) -> np.ndarray:
@@ -41,53 +32,6 @@ def build_diag_matrix_from_xyz_eig(eigenvectors: np.ndarray) -> np.ndarray:
             col = j * 2
             A[row, col] = A[row + 1, col + 1] = eigenvectors[i, j]
     return A
-
-
-def build_sc_matrix_2d(
-    cov_xx: float,
-    cov_yy: float,
-    perveance: float,
-    length: float,
-) -> np.ndarray:
-    """Return 7 x 7 space charge matrix for upright 2D ellipsoid."""
-    r_x = 2.0 * math.sqrt(cov_xx)
-    r_y = 2.0 * math.sqrt(cov_yy)
-    kappa_x = 2.0 * perveance / (r_x * (r_x + r_y))
-    kappa_y = 2.0 * perveance / (r_y * (r_x + r_y))
-    
-    matrix = np.identity(7)
-    matrix[1, 0] = kappa_x * length
-    matrix[3, 2] = kappa_y * length
-    return matrix
-
-
-def build_sc_matrix_3d(
-    cov_xx: float, 
-    cov_yy: float, 
-    cov_zz: float, 
-    perveance: float, 
-    length: float,
-) -> np.ndarray:    
-    """Return 7 x 7 space charge matrix for upright 3D ellipsoid."""
-    
-    scale_factor = 5.0 ** 1.5
-    RDx = scipy.special.elliprd(cov_yy, cov_zz, cov_xx) / scale_factor
-    RDy = scipy.special.elliprd(cov_zz, cov_xx, cov_yy) / scale_factor
-    RDz = scipy.special.elliprd(cov_xx, cov_yy, cov_zz) / scale_factor
-  
-    kappa_x = perveance * RDx
-    kappa_y = perveance * RDy
-    kappa_z = perveance * RDz
-
-    matrix = np.identity(7)
-    matrix[1, 0] = kappa_x * length
-    matrix[3, 2] = kappa_y * length
-    matrix[5, 4] = kappa_z * length
-
-    # PyORBIT uses dE, not z', so need to calculate energy
-    # kick from q * E_z * length.
-    
-    return matrix
 
 
 class Envelope:
@@ -137,33 +81,31 @@ class Envelope:
         self.set_intensity(intensity)
 
     def set_intensity(self, intensity: float) -> None:
+        factor = 2.0 * CLASSICAL_PROTON_RADIUS / (self.beta()**2 * self.gamma()**3)
+        bunch_length = 4.0 * self.rms(axis=4)
+
         self.intensity = intensity
-        cov_matrix = self.cov()
-        length = 4.0 * math.sqrt(cov_matrix[4, 4])  # assume uniform density
-        self.perveance_2d = calc_perveance_2d(
-            gamma=self.gamma(),
-            line_density=(self.intensity / length),
-        )
-        self.perveance_3d = calc_perveance_3d(
-            gamma=self.gamma(),
-            mass=(self.mass() * 1e9),
-            total_charge=(self.intensity * charge_electron),
-        )
+        self.perveance_3d = factor * intensity
+        self.perveance_2d = factor * intensity / bunch_length
 
     def gamma(self) -> float:
         return self.sync_part.gamma()
+
+    def beta(self) -> float:
+        return self.sync_part.beta()
     
     def mass(self) -> float:
         return self.sync_part.mass()
 
     def centroid(self) -> np.ndarray:
-        return self.matrix[0:6, 6]
+        return np.copy(self.matrix[0:6, 6])
 
     def cov(self) -> np.ndarray:
-        return self.matrix[0:6, 0:6]
+        return np.copy(self.matrix[0:6, 0:6])
 
-    def rms(self) -> np.ndarray:
-        return np.sqrt(np.diag(self.cov()))
+    def rms(self, axis: int = None) -> float | np.ndarray:
+        rms_arr = np.sqrt(np.diag(self.cov()))
+        return rms_arr[axis]
 
     def apply_transfer_matrix(self, transfer_matrix: np.ndarray) -> None:
         self.matrix = np.linalg.multi_dot([transfer_matrix, self.matrix, transfer_matrix.T])
@@ -180,16 +122,21 @@ class Envelope:
         cov_matrix = self.cov()
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2))
         
-        eig_res = np.linalg.eig(cov_matrix_proj)
+        cov_eig_res = np.linalg.eig(cov_matrix_proj)
+        cov_eig_vals = cov_eig_res.eigenvalues
+        cov_eig_vecs = cov_eig_res.eigenvectors
 
-        M = build_sc_matrix_2d(
-            cov_xx=eig_res.eigenvalues[0], 
-            cov_yy=eig_res.eigenvalues[1], 
-            perveance=self.perveance_2d, 
-            length=length
-        )
+        rx = 2.0 * math.sqrt(cov_eig_vals[0])
+        ry = 2.0 * math.sqrt(cov_eig_vals[1])
 
-        A = build_diag_matrix_from_xyz_eig(eig_res.eigenvectors)
+        kappa_x = 2.0 * self.perveance_2d / (rx * (rx + ry))
+        kappa_y = 2.0 * self.perveance_2d / (ry * (rx + ry))
+
+        M = np.identity(7)
+        M[1, 0] = kappa_x * length
+        M[3, 2] = kappa_y * length
+
+        A = build_diag_matrix_from_xyz_eig(cov_eig_vecs)
         
         T = np.identity(7)
         T[0, -1] = centroid[0]
@@ -200,37 +147,54 @@ class Envelope:
         return np.linalg.multi_dot([V, M, V_inv])
     
     def sc_transfer_matrix_3d(self, length: float) -> np.ndarray:
-        # TEMP
-        #
-        # Calculate transfer matrix M from covariance matrix S in normalized
-        # coordinates. In the normalized coordinates, the beam is at rest with
-        # zero mean and diagonal x-y-z covariance matrix.
-        #
-        # The matrix V to get back to lab-frame coordinates is then
-        # V = LTA, where A is from the x-y-z covariance eigenvectors, T is a
-        # translation to the x-y-z centroid, and L is the Lorentz boost that
-        # scales z by 1 / gamma.
-
+        # Get centroid in rest frame.
         centroid = self.centroid()
         centroid[4] *= self.gamma()
 
+        # Get covariance matrix in rest frame.
         cov_matrix = self.cov()
         cov_matrix[4, 4] *= self.gamma()**2
 
+        # Project covariance matrix onto x-y-z plane.
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2, 4))
-        
+
+        # Calculate eigenvectors of x-y-z covariance matrix.
         eig_res = np.linalg.eig(cov_matrix_proj)
 
-        M = build_sc_matrix_3d(
-            cov_xx=eig_res.eigenvalues[0], 
-            cov_yy=eig_res.eigenvalues[1], 
-            cov_zz=eig_res.eigenvalues[2],
-            perveance=self.perveance_3d,
-            length=length,
-        )   
+        # Extract diagonal x-y-z covariance matrix elements in diagonalized frame.
+        cov_xx = eig_res.eigenvalues[0]
+        cov_yy = eig_res.eigenvalues[1]
+        cov_zz = eig_res.eigenvalues[2]
+
+        # Compute linear matrix elements k_{x, y, z}.
+        # x' -> kappa_x * ds * x'
+        # y' -> kappa_y * ds * y'
+        # z' -> kappa_z * ds * z'
+        factor_x = 0.5 * self.perveance_3d / ((5.0 * cov_xx) ** 1.5)
+        factor_y = 0.5 * self.perveance_3d / ((5.0 * cov_yy) ** 1.5)
+        factor_z = 0.5 * self.perveance_3d / ((5.0 * cov_zz) ** 1.5)
+
+        RDx = scipy.special.elliprd((cov_yy / cov_xx), (cov_zz / cov_xx), 1.0)
+        RDy = scipy.special.elliprd((cov_xx / cov_yy), (cov_zz / cov_yy), 1.0)
+        RDz = scipy.special.elliprd((cov_xx / cov_zz), (cov_yy / cov_zz), 1.0)
+
+        kappa_x = factor_x * RDx  # [1 / m]
+        kappa_y = factor_y * RDy  # [1 / m]
+        kappa_z = factor_z * RDz  # [1 / m]
+
+        # Switch from z' to dE [GeV]
+        # z' = (dp / p) / gamma^2
+        # z' = (dE / E) / (gamma^2 * beta^2)
+        # z' = dE / (gamma^3 * beta^2 * m & c^2)
+        kappa_z *= self.gamma()**3 * self.beta()**2 * self.mass()  # [GeV / m]
+
+        M = np.identity(7)
+        M[1, 0] = kappa_x * length
+        M[3, 2] = kappa_y * length
+        M[5, 4] = kappa_z * length
 
         A = build_diag_matrix_from_xyz_eig(eig_res.eigenvectors)
-        
+
         T = np.identity(7)
         for i in (0, 2, 4):
             T[i, -1] = centroid[i]
@@ -272,6 +236,9 @@ class EnvelopeTracker:
                         matrix = envelope.sc_transfer_matrix_3d(length)
                     else:
                         raise ValueError(f"Invalid space charge model: {self.space_charge}")
+
+                    # print("debug space charge matrix")
+                    # print(matrix)
 
                     envelope.apply_transfer_matrix(matrix)
 

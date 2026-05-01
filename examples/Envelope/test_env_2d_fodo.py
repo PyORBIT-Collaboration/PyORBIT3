@@ -42,14 +42,12 @@ parser.add_argument("--zrms", type=float, default=5.0)
 parser.add_argument("--kin-energy", type=float, default=0.025)
 parser.add_argument("--intensity", type=float, default=5e10)
 
-parser.add_argument(
-    "--dist-name", type=str, default="kv", choices=["kv", "waterbag", "gauss"]
-)
-parser.add_argument("--dist-mismatch-x", type=float, default=0.0)
-parser.add_argument("--dist-mismatch-y", type=float, default=0.0)
-parser.add_argument("--dist-offset-x", type=float, default=0.0)
-parser.add_argument("--dist-offset-y", type=float, default=0.0)
-parser.add_argument("--dist-tilt", action="store_true")
+parser.add_argument("--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"])
+parser.add_argument("--mismatch-x", type=float, default=0.0)
+parser.add_argument("--mismatch-y", type=float, default=0.0)
+parser.add_argument("--offset-x", type=float, default=0.0)
+parser.add_argument("--offset-y", type=float, default=0.0)
+parser.add_argument("--tilt", action="store_true")
 
 parser.add_argument("--nslice", type=int, default=10)
 parser.add_argument("--kq", type=float, default=0.25)
@@ -120,20 +118,20 @@ cov_matrix[4, 4] = args.zrms**2
 cov_matrix[5, 5] = 0.0
 
 # Tilt
-if args.dist_tilt:
+if args.tilt:
     rot_matrix = np.identity(6)
     rot_matrix[:4, :4] = build_rotation_matrix_xy(angle=(0.15 * math.pi))
     cov_matrix = np.linalg.multi_dot([rot_matrix, cov_matrix, rot_matrix.T])
 
 # Mismatch
-cov_matrix[0, 0] *= (1.0 + args.dist_mismatch_x) ** 2
-cov_matrix[2, 2] *= (1.0 + args.dist_mismatch_y) ** 2
+cov_matrix[0, 0] *= (1.0 + args.mismatch_x) ** 2
+cov_matrix[2, 2] *= (1.0 + args.mismatch_y) ** 2
 cov_matrix_init = np.copy(cov_matrix)
 
 # Offset
 centroid_init = np.zeros(6)
-centroid_init[0] += args.dist_offset_x
-centroid_init[2] += args.dist_offset_y
+centroid_init[0] += args.offset_x
+centroid_init[2] += args.offset_y
 
 # Create envelope
 envelope = Envelope(
@@ -182,19 +180,16 @@ histories["envelope"] = copy.deepcopy(history)
 
 print("TRACK BUNCH")
 
-# Generate particles from KV distribution + uniform longitudinal distribution.
 rng = np.random.default_rng()
 
 bunch_coords = np.zeros((args.nparts, 6))
-bunch_coords[:, :4] = gen_dist(args.nparts, cov_matrix_init[0:4, 0:4], args.dist_name)
+bunch_coords[:, :4] = gen_dist(n=args.nparts, cov_matrix=cov_matrix_init[0:4, 0:4], name=args.dist)
 bunch_coords[:, 4] = 2.0 * rng.uniform(-args.zrms, args.zrms, size=args.nparts)
 bunch_coords += centroid_init[None, :6]
 
 for i in range(bunch_coords.shape[0]):
     bunch.addParticle(*bunch_coords[i])
 
-
-# Add space charge nodes to lattice.
 if args.sc:
     sc_calc = SpaceChargeCalc2p5D(128, 128, 1)
     sc_path_length_min = 1.00e-06
@@ -203,8 +198,6 @@ if args.sc:
     bunch_size = bunch.getSizeGlobal()
     bunch.macroSize(args.intensity / bunch_size)
 
-
-# Track bunch through lattice.
 history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
 for turn in range(args.turns):
     if turn > 0:
