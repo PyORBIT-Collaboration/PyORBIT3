@@ -28,7 +28,7 @@ class MatrixFactory:
 
     Units: x [m], x' [rad], y [m], y' [rad], z [m], dE [GeV]
     """
-    def __init__(self, handle_unknown: bool = False) -> None:
+    def __init__(self, handle_unknown: str | None = None) -> None:
         self.ignore_node_types = [
             ApertureTEAPOT,
             BunchWrapTEAPOT,
