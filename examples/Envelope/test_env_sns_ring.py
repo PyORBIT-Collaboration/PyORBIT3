@@ -51,7 +51,7 @@ parser.add_argument("--sol", type=int, default=0)
 parser.add_argument("--sc", type=int, default=0)
 parser.add_argument("--sc-grid", type=int, default=64)
 
-parser.add_argument("--ignore-unknown", type=int, default=0)
+parser.add_argument("--handle-unknown", type=str, default=None)
 args = parser.parse_args()
 
 
@@ -145,7 +145,7 @@ print("TRACK ENVELOPE")
 
 tracker = EnvelopeTracker(
     lattice,
-    ignore_unknown=args.ignore_unknown,
+    handle_unkown=args.handle_unkown,
     space_charge=("2d" if args.sc else None),
 )
 

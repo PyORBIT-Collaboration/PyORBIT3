@@ -39,8 +39,8 @@ plt.style.use("style.mplstyle")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--zrms", type=float, default=5.0)
-parser.add_argument("--kin-energy", type=float, default=0.025)
-parser.add_argument("--intensity", type=float, default=5e10)
+parser.add_argument("--kin-energy", type=float, default=0.0025)
+parser.add_argument("--intensity", type=float, default=5e9)
 
 parser.add_argument(
     "--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"]
