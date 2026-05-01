@@ -179,7 +179,7 @@ class MatrixFactory:
             return np.identity(7)
 
         else:
-            if self.handle_unkown == "drift":
+            if self.handle_unknown == "drift":
                 return self.drift(length=node.getLength(), sync_part=sync_part)
             elif self.handle_unknown == "fit":
                 raise NotImplementedError()
