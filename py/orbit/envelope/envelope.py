@@ -222,10 +222,10 @@ class EnvelopeTracker:
         self,
         lattice: AccLattice,
         space_charge: str | None = None,
-        handle_unkown: str | None = None,
+        handle_unknown: str | None = None,
     ) -> None:
         self.lattice = lattice
-        self.matrix_factory = MatrixFactory(handle_unkown=handle_unkown)
+        self.matrix_factory = MatrixFactory(handle_unknown=handle_unknown)
         self.space_charge = space_charge
 
     def track(self, envelope: Envelope) -> None:

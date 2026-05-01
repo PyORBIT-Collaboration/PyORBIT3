@@ -28,7 +28,7 @@ class MatrixFactory:
 
     Units: x [m], x' [rad], y [m], y' [rad], z [m], dE [GeV]
     """
-    def __init__(self, handle_unkown: bool = False) -> None:
+    def __init__(self, handle_unknown: bool = False) -> None:
         self.ignore_node_types = [
             ApertureTEAPOT,
             BunchWrapTEAPOT,
@@ -36,14 +36,16 @@ class MatrixFactory:
             MonitorTEAPOT,
             TurnCounterTEAPOT,
         ]
-        self.handle_unkown = handle_unkown
+        self.handle_unknown = handle_unknown
 
     def drift(self, length: float, sync_part: SyncParticle) -> np.ndarray:
         matrix = np.identity(7)
         matrix[0, 1] = length
         matrix[2, 3] = length
         matrix[4, 5] = length / sync_part.gamma() ** 2
+
         matrix[4, 5] *= get_dp_p_coeff(sync_part)
+        matrix[5, 4] /= get_dp_p_coeff(sync_part)
         return matrix
 
     def quad(self, length: float, kq: float, sync_part: SyncParticle) -> np.ndarray:
@@ -78,7 +80,9 @@ class MatrixFactory:
             matrix[3, 3] = cy
 
         matrix[4, 5] = length / sync_part.gamma() ** 2
+
         matrix[4, 5] *= get_dp_p_coeff(sync_part)
+        matrix[5, 4] /= get_dp_p_coeff(sync_part)
         return matrix
 
     def bend(self, length: float, theta: float, sync_part: SyncParticle) -> np.ndarray:
@@ -105,7 +109,9 @@ class MatrixFactory:
         matrix[4, 0] = -sx
         matrix[4, 1] = -rho * (1.0 - cx)
         matrix[4, 5] = -length * sync_part.beta() ** 2 + rho * sx
+
         matrix[4, 5] *= get_dp_p_coeff(sync_part)
+        matrix[5, 4] /= get_dp_p_coeff(sync_part)
         return matrix
 
     def tilt(self, angle: float) -> np.ndarray:
