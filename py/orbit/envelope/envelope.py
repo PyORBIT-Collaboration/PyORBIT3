@@ -121,33 +121,45 @@ class Envelope:
         return particles
 
     def sc_transfer_matrix_2d(self, length: float) -> np.ndarray:
+        # Extract beam centroid and covariance matrix.
         centroid = self.centroid()
         cov_matrix = self.cov()
+
+        # Project covariance matrix onto x-y plane.
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2))
 
+        # Compute eigenvalues and eigenvectors of x-y covariance matrix.
         cov_eig_res = np.linalg.eig(cov_matrix_proj)
         cov_eig_vals = cov_eig_res.eigenvalues
         cov_eig_vecs = cov_eig_res.eigenvectors
 
+        # Compute rms beam sizes in upright frame.
         rx = 2.0 * math.sqrt(cov_eig_vals[0])
         ry = 2.0 * math.sqrt(cov_eig_vals[1])
 
+        # Build transfer matrix in upright frame.
         bunch_length = 4.0 * self.rms(axis=4)
         perveance = self.perveance / bunch_length
-
-        kappa_x = 2.0 * perveance / (rx * (rx + ry))
-        kappa_y = 2.0 * perveance / (ry * (rx + ry))
+        factor = 2.0 * perveance / (rx + ry)
+        kappa_x = factor / rx
+        kappa_y = factor / ry
 
         M = np.identity(7)
         M[1, 0] = kappa_x * length
         M[3, 2] = kappa_y * length
 
+        # Build matrix to undo x-y diagonalization.
         A = build_diag_matrix_from_xyz_eig(cov_eig_vecs)
 
+        # Build matrix to translate to centroid.
         T = np.identity(7)
         T[0, -1] = centroid[0]
         T[2, -1] = centroid[2]
 
+        # Compute matrix in lab frame.
+        #   x = V u = T A u.
+        #   u -> M u
+        #   x -> V M V^-1 x
         V = np.matmul(T, A)
         V_inv = np.linalg.inv(V)
         return np.linalg.multi_dot([V, M, V_inv])
@@ -160,12 +172,13 @@ class Envelope:
         cov_matrix[4, 4] *= self.gamma() ** 2
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2, 4))
 
-        eig_res = np.linalg.eig(cov_matrix_proj)
+        # Compute eigenvalues and eigenvectors of x-y covariance matrix.
+        cov_eig_res = np.linalg.eig(cov_matrix_proj)
+        cov_eig_vals = cov_eig_res.eigenvalues
+        cov_eig_vecs = cov_eig_res.eigenvectors
 
-        cov_xx = eig_res.eigenvalues[0]
-        cov_yy = eig_res.eigenvalues[1]
-        cov_zz = eig_res.eigenvalues[2]
-
+        # Build transfer matrix in upright frame.
+        cov_xx, cov_yy, cov_zz = cov_eig_vals
         RDx = scipy.special.elliprd(cov_yy, cov_zz, cov_xx)
         RDy = scipy.special.elliprd(cov_xx, cov_zz, cov_yy)
         RDz = scipy.special.elliprd(cov_xx, cov_yy, cov_zz)
@@ -181,16 +194,23 @@ class Envelope:
         M[3, 2] = kappa_y * length
         M[5, 4] = kappa_z * length
 
-        A = build_diag_matrix_from_xyz_eig(eig_res.eigenvectors)
+        # Build matrix to undo x-y-z diagonalization.
+        A = build_diag_matrix_from_xyz_eig(cov_eig_vecs)
 
+        # Build matrix for translation to centroid.
         T = np.identity(7)
         for i in (0, 2, 4):
             T[i, -1] = centroid[i]
 
+        # Build matrix for Lorentz boost (length contraction).
         L = np.identity(7)
         L[4, 4] = 1.0 / self.gamma()
 
-        V = np.linalg.multi_dot([L, T, A])
+        # Compute matrix in lab frame.
+        #   x = L V u = L T A u.
+        #   u -> M u
+        #   x -> V M V^-1 x
+        V = np.matmul(T, A)
         V_inv = np.linalg.inv(V)
         return np.linalg.multi_dot([V, M, V_inv])
 

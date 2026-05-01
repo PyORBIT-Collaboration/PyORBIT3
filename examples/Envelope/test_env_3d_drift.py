@@ -33,7 +33,7 @@ plt.style.use("style.mplstyle")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--kin-energy", type=float, default=0.025)
-parser.add_argument("--intensity", type=float, default=1e11)
+parser.add_argument("--intensity", type=float, default=5e11)
 
 parser.add_argument("--xrms", type=float, default=0.010)
 parser.add_argument("--yrms", type=float, default=0.010)
