@@ -13,7 +13,6 @@ from .matrix import MatrixFactory
 from .utils import gen_dist
 from .utils import proj_cov_matrix
 
-
 ENTRANCE = AccNode.ENTRANCE
 BODY = AccNode.BODY
 EXIT = AccNode.EXIT
@@ -41,19 +40,20 @@ class Envelope:
         matrix: 7 x 7 covariance matrix for augmented phase space vector.
 
             Define the phase space vector X = [x, x', y, y', z, dE]^T and
-            augmented vector Y = [x, x', y, y', z, dE, 1]. 
+            augmented vector Y = [x, x', y, y', z, dE, 1].
 
             Let X evolve according to X -> MX + U, where M is a 6 x 6 transfer matrix
             and U is 6 x 1 "driving" vector. The augmented vector Y evolves according
             to Y -> NY, where N = [[M, U], [0, 1]] is a 7 x 7 matrix.
 
-            We track the 7 x 7 covariance matrix of Y: 
-            
+            We track the 7 x 7 covariance matrix of Y:
+
             R = <YY^T> = [[<XX^T>, <X>], [<X^T>, 1]],
 
-            which contains both the phase space covariance matrix and centroid vector.            
+            which contains both the phase space covariance matrix and centroid vector.
             R evolves according to R -> N R N^T.
     """
+
     def __init__(
         self,
         sync_part: SyncParticle,
@@ -82,14 +82,19 @@ class Envelope:
 
     def set_intensity(self, intensity: float) -> None:
         self.intensity = intensity
-        self.perveance = 2.0 * intensity * CLASSICAL_PROTON_RADIUS / (self.beta()**2 * self.gamma()**3)
+        self.perveance = (
+            2.0
+            * intensity
+            * CLASSICAL_PROTON_RADIUS
+            / (self.beta() ** 2 * self.gamma() ** 3)
+        )
 
     def gamma(self) -> float:
         return self.sync_part.gamma()
 
     def beta(self) -> float:
         return self.sync_part.beta()
-    
+
     def mass(self) -> float:
         return self.sync_part.mass()
 
@@ -104,7 +109,9 @@ class Envelope:
         return rms_arr[axis]
 
     def apply_transfer_matrix(self, transfer_matrix: np.ndarray) -> None:
-        self.matrix = np.linalg.multi_dot([transfer_matrix, self.matrix, transfer_matrix.T])
+        self.matrix = np.linalg.multi_dot(
+            [transfer_matrix, self.matrix, transfer_matrix.T]
+        )
 
     def sample(self, n: int, dist: str = "kv") -> np.ndarray:
         # Issue: covariance matrix is becoming non semi-positive definite,
@@ -112,12 +119,12 @@ class Envelope:
         particles = gen_dist(n=n, cov_matrix=self.cov(), name=dist)
         particles = particles + self.centroid()
         return particles
-    
+
     def sc_transfer_matrix_2d(self, length: float) -> np.ndarray:
         centroid = self.centroid()
         cov_matrix = self.cov()
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2))
-        
+
         cov_eig_res = np.linalg.eig(cov_matrix_proj)
         cov_eig_vals = cov_eig_res.eigenvalues
         cov_eig_vecs = cov_eig_res.eigenvectors
@@ -136,21 +143,21 @@ class Envelope:
         M[3, 2] = kappa_y * length
 
         A = build_diag_matrix_from_xyz_eig(cov_eig_vecs)
-        
+
         T = np.identity(7)
         T[0, -1] = centroid[0]
-        T[2, -1] = centroid[2] 
+        T[2, -1] = centroid[2]
 
         V = np.matmul(T, A)
         V_inv = np.linalg.inv(V)
         return np.linalg.multi_dot([V, M, V_inv])
-    
+
     def sc_transfer_matrix_3d(self, length: float) -> np.ndarray:
         centroid = self.centroid()
         centroid[4] *= self.gamma()
 
         cov_matrix = self.cov()
-        cov_matrix[4, 4] *= self.gamma()**2
+        cov_matrix[4, 4] *= self.gamma() ** 2
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2, 4))
 
         eig_res = np.linalg.eig(cov_matrix_proj)
@@ -167,7 +174,7 @@ class Envelope:
         kappa_x = factor * RDx  # [1 / m]
         kappa_y = factor * RDy  # [1 / m]
         kappa_z = factor * RDz  # [1 / m]
-        kappa_z *= self.gamma()**3 * self.beta()**2 * self.mass()  # [GeV / m]
+        kappa_z *= self.gamma() ** 3 * self.beta() ** 2 * self.mass()  # [GeV / m]
 
         M = np.identity(7)
         M[1, 0] = kappa_x * length
@@ -190,6 +197,7 @@ class Envelope:
 
 class EnvelopeTracker:
     """Tracks envelope through linear lattice with optional linear space charge kicks."""
+
     def __init__(self, lattice: AccLattice, space_charge: str | None = None) -> None:
         self.lattice = lattice
         self.matrix_factory = MatrixFactory()
@@ -199,11 +207,15 @@ class EnvelopeTracker:
         for node in self.lattice.getNodes():
             # Child nodes before node
             for child_node in node.getChildNodes(ENTRANCE):
-                envelope.apply_transfer_matrix(self.matrix_factory(child_node, envelope.sync_part))
+                envelope.apply_transfer_matrix(
+                    self.matrix_factory(child_node, envelope.sync_part)
+                )
 
             for part_index in range(node.getnParts()):
                 # Child nodes before part
-                for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
+                for child_node in node.getChildNodes(
+                    BODY, part_index, place_in_part=BEFORE
+                ):
                     envelope.apply_transfer_matrix(
                         self.matrix_factory(child_node, envelope.sync_part)
                     )
@@ -216,7 +228,9 @@ class EnvelopeTracker:
                     elif self.space_charge == "3d":
                         matrix = envelope.sc_transfer_matrix_3d(length)
                     else:
-                        raise ValueError(f"Invalid space charge model: {self.space_charge}")
+                        raise ValueError(
+                            f"Invalid space charge model: {self.space_charge}"
+                        )
 
                     # print("debug space charge matrix")
                     # print(matrix)
@@ -229,11 +243,15 @@ class EnvelopeTracker:
                 )
 
                 # Child nodes after part
-                for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
+                for child_node in node.getChildNodes(
+                    BODY, part_index, place_in_part=AFTER
+                ):
                     envelope.apply_transfer_matrix(
                         self.matrix_factory(child_node, envelope.sync_part)
                     )
 
             # Child nodes after node
             for child_node in node.getChildNodes(EXIT):
-                envelope.apply_transfer_matrix(self.matrix_factory(child_node, envelope.sync_part))
+                envelope.apply_transfer_matrix(
+                    self.matrix_factory(child_node, envelope.sync_part)
+                )

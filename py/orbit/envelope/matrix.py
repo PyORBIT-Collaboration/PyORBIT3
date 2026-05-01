@@ -16,7 +16,6 @@ from ..teapot import FringeFieldTEAPOT
 from ..teapot import MonitorTEAPOT
 from ..teapot import TurnCounterTEAPOT
 
-from .utils import proj_cov_matrix
 from ..utils import speed_of_light
 
 
@@ -25,6 +24,7 @@ class MatrixFactory:
 
     Units: x [m], x' [rad], y [m], y' [rad], z [m], dE [GeV]
     """
+
     def __init__(self) -> None:
         self.ignore_node_types = [
             ApertureTEAPOT,
@@ -40,7 +40,7 @@ class MatrixFactory:
         matrix = np.identity(7)
         matrix[0, 1] = length
         matrix[2, 3] = length
-        matrix[4, 5] = length / sync_part.gamma()**2
+        matrix[4, 5] = length / sync_part.gamma() ** 2
         matrix[4, 5] *= dp_p_coef
         return matrix
 
@@ -76,7 +76,7 @@ class MatrixFactory:
             matrix[3, 2] = -sy * sqrt_abs_kq
             matrix[3, 3] = cy
 
-        matrix[4, 5] = length / sync_part.gamma()**2
+        matrix[4, 5] = length / sync_part.gamma() ** 2
         matrix[4, 5] *= dp_p_coef
         return matrix
 
@@ -105,7 +105,7 @@ class MatrixFactory:
 
         matrix[4, 0] = -sx
         matrix[4, 1] = -rho * (1.0 - cx)
-        matrix[4, 5] = -length * sync_part.beta()**2 + rho * sx
+        matrix[4, 5] = -length * sync_part.beta() ** 2 + rho * sx
         matrix[4, 5] *= dp_p_coef
         return matrix
 
@@ -116,7 +116,7 @@ class MatrixFactory:
         matrix[2, 0] = matrix[3, 1] = -math.sin(angle)
         matrix[2, 2] = matrix[3, 3] = +math.cos(angle)
         return matrix
-    
+
     def translation(self, x: float = 0.0, y: float = 0.0, z: float = 0.0) -> np.ndarray:
         matrix = np.identity(7)
         matrix[0, 6] = x
@@ -131,7 +131,9 @@ class MatrixFactory:
         matrix[5, 6] = dE
         return matrix
 
-    def __call__(self, node: AccNode, sync_part: SyncParticle, part_index: int = 0) -> np.ndarray:
+    def __call__(
+        self, node: AccNode, sync_part: SyncParticle, part_index: int = 0
+    ) -> np.ndarray:
         if type(node) is DriftTEAPOT:
             length = node.getLength(part_index)
             return self.drift(length=length, sync_part=sync_part)

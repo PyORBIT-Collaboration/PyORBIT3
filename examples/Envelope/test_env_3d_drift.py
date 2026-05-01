@@ -78,8 +78,8 @@ sync_part = bunch.getSyncParticle()
 sync_part.kinEnergy(args.kin_energy)
 
 cov_matrix_init = np.zeros((6, 6))
-cov_matrix_init[0, 0] = args.xrms ** 2
-cov_matrix_init[2, 2] = args.yrms ** 2
+cov_matrix_init[0, 0] = args.xrms**2
+cov_matrix_init[2, 2] = args.yrms**2
 cov_matrix_init[4, 4] = (args.zrms / sync_part.gamma()) ** 2
 
 centroid_init = np.zeros(6)
@@ -126,12 +126,14 @@ histories["envelope"] = copy.deepcopy(history)
 print("TRACK BUNCH")
 
 bunch_coords = np.zeros((args.nparts, 6))
-bunch_coords[:, (0, 2, 4)] = gen_dist(args.nparts, cov_matrix=np.eye(3), name="waterbag")
+bunch_coords[:, (0, 2, 4)] = gen_dist(
+    args.nparts, cov_matrix=np.eye(3), name="waterbag"
+)
 bunch_coords[:, 0] *= args.xrms
 bunch_coords[:, 2] *= args.yrms
 bunch_coords[:, 4] *= args.zrms / sync_part.gamma()
 
-for (x, xp, y, yp, z, dE) in bunch_coords:
+for x, xp, y, yp, z, dE in bunch_coords:
     bunch.addParticle(x, xp, y, yp, z, dE)
 
 size_global = bunch.getSizeGlobal()

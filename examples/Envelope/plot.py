@@ -5,7 +5,7 @@ import matplotlib.patches as patches
 
 def calc_rms_ellipse_params(cov_matrix: np.ndarray) -> tuple[float, float, float]:
     """Return rms ellipse dimensions and orientation."""
-    (i, j) = (0, 1)
+    i, j = (0, 1)
 
     sii = cov_matrix[i, i]
     sjj = cov_matrix[j, j]

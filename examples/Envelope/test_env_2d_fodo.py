@@ -42,7 +42,9 @@ parser.add_argument("--zrms", type=float, default=5.0)
 parser.add_argument("--kin-energy", type=float, default=0.025)
 parser.add_argument("--intensity", type=float, default=5e10)
 
-parser.add_argument("--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"])
+parser.add_argument(
+    "--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"]
+)
 parser.add_argument("--mismatch-x", type=float, default=0.0)
 parser.add_argument("--mismatch-y", type=float, default=0.0)
 parser.add_argument("--offset-x", type=float, default=0.0)
@@ -183,7 +185,9 @@ print("TRACK BUNCH")
 rng = np.random.default_rng()
 
 bunch_coords = np.zeros((args.nparts, 6))
-bunch_coords[:, :4] = gen_dist(n=args.nparts, cov_matrix=cov_matrix_init[0:4, 0:4], name=args.dist)
+bunch_coords[:, :4] = gen_dist(
+    n=args.nparts, cov_matrix=cov_matrix_init[0:4, 0:4], name=args.dist
+)
 bunch_coords[:, 4] = 2.0 * rng.uniform(-args.zrms, args.zrms, size=args.nparts)
 bunch_coords += centroid_init[None, :6]
 
