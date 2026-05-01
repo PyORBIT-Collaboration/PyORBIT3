@@ -183,4 +183,4 @@ class MatrixFactory:
                 return self.drift(length=node.getLength(), sync_part=sync_part)
             elif self.handle_unknown == "fit":
                 raise NotImplementedError()
-            raise NotImplementedError("Unsupported node type: {}. Set `ignore_unknown=True` to replace with drift.".format(type(node)))
+            raise NotImplementedError("Unsupported node type: {}. See `handle_unknown` attribute.".format(type(node)))

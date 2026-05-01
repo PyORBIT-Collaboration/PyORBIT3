@@ -51,7 +51,7 @@ parser.add_argument("--sol", type=int, default=0)
 parser.add_argument("--sc", type=int, default=0)
 parser.add_argument("--sc-grid", type=int, default=64)
 
-parser.add_argument("--handle-unknown", type=str, default=None)
+parser.add_argument("--handle-unknown", type=str, default=None, choices=["drift", "fit"])
 args = parser.parse_args()
 
 

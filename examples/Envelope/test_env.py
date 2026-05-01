@@ -2,6 +2,7 @@ import numpy as np
 
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTwissAnalysis
+from orbit.bunch_utils import collect_bunch
 from orbit.lattice import AccNode
 from orbit.lattice import AccLattice
 from orbit.teapot import QuadTEAPOT
@@ -9,21 +10,34 @@ from orbit.teapot import BendTEAPOT
 from orbit.teapot import DriftTEAPOT
 from orbit.teapot import TEAPOT_Lattice
 from orbit.utils.consts import mass_proton
-
 from orbit.envelope import Envelope
 from orbit.envelope import EnvelopeTracker
 
 
 def calc_bunch_cov(bunch: Bunch) -> np.ndarray:
-    twiss_calc = BunchTwissAnalysis()
-    twiss_calc.computeBunchMoments(bunch, 2, 0, 0)
+    coords = collect_bunch(bunch)["coords"]
+    return np.cov(coords.T)
 
-    cov_matrix = np.zeros((6, 6))
-    for i in range(6):
-        for j in range(i + 1):
-            cov_matrix[i, j] = twiss_calc.getCorrelation(j, i)
-            cov_matrix[j, i] = cov_matrix[i, j]
-    return cov_matrix
+    # twiss_calc = BunchTwissAnalysis()
+    # twiss_calc.computeBunchMoments(bunch, 2, 0, 0)
+    #
+    # cov_matrix = np.zeros((6, 6))
+    # for i in range(6):
+    #     for j in range(i + 1):
+    #         cov_matrix[i, j] = twiss_calc.getCorrelation(j, i)
+    #         cov_matrix[j, i] = cov_matrix[i, j]
+    # return cov_matrix
+
+
+def make_lattice(nodes: list[AccNode]) -> AccLattice:
+    lattice = TEAPOT_Lattice()
+    for node in nodes:
+        lattice.addNode(node)
+    lattice.initialize()
+    for node in lattice.getNodes():
+        node.setUsageFringeFieldIN(False)
+        node.setUsageFringeFieldOUT(False)
+    return lattice
 
 
 def track_and_compare(
@@ -43,13 +57,7 @@ def track_and_compare(
             for k3 in ["env", "bunch"]:
                 data[k1][k2][k3] = {}
 
-    lattice = TEAPOT_Lattice()
-    for node in nodes:
-        lattice.addNode(node)
-    lattice.initialize()
-    for node in lattice.getNodes():
-        node.setUsageFringeFieldIN(False)
-        node.setUsageFringeFieldOUT(False)
+    lattice = make_lattice(nodes)
 
     bunch = Bunch()
     bunch.mass(mass_proton)
@@ -122,11 +130,59 @@ def test_dipole(kin_energy: float = 0.0025, length: float = 1.0, theta: float = 
     track_and_compare(nodes, kin_energy, cov_matrix)
 
 
+def test_dipole_matrix():
+    from orbit.envelope.matrix import MatrixFactory
+
+    bunch = Bunch()
+    bunch.mass(mass_proton)
+
+    sync_part = bunch.getSyncParticle()
+    sync_part.kinEnergy(0.0025)
+
+    node = BendTEAPOT(length=1.0, theta=np.radians(20.0))
+
+    matrix_factory = MatrixFactory()
+    matrix = matrix_factory.bend(length=node.getLength(), theta=node.getParam("theta"), sync_part=sync_part)
+
+    print(np.round(matrix, 2))
+
+    x = np.zeros(6)
+    x[1] = 0.001
+    x[1] = 0.001
+
+    bunch.addParticle(*x)
+
+    node.trackBunch(bunch)
+
+    x_out = [bunch.x(0), bunch.xp(0), bunch.y(0), bunch.yp(0), bunch.z(0), bunch.dE(0)]
+    x_out = np.array(x_out)
+
+    print(x)
+    print(x_out)
+    print(np.matmul(matrix[:6, :6], x))
+
+    cov_matrix = make_default_cov_matrix()
+    envelope = Envelope(sync_part=bunch.getSyncParticle(), cov_matrix=cov_matrix)
+    envelope.apply_transfer_matrix(matrix)
+    print(np.round(1e6 * envelope.cov(), 2))
+
+    particles_in = np.random.multivariate_normal(np.zeros(6), cov_matrix, size=100_000)
+    particles_out = np.matmul(particles_in, matrix[:6, :6].T)
+    print(np.round(1e6 * np.cov(particles_out.T), 2))
+
+    bunch.deleteAllParticles()
+    for x in particles_in:
+        bunch.addParticle(*x)
+    node.trackBunch(bunch)
+    particles_out = collect_bunch(bunch)["coords"]
+    print(np.round(1e6 * np.cov(particles_out.T), 2))
+
+
 if __name__ == "__main__":
-    functions = [
-        # test_drift,
-        # test_quad,
-        test_dipole,
-    ]
-    for function in functions:
-        function()
+    # test_drift()
+    # test_quad()
+    test_dipole()
+    # test_dipole_matrix()
+
+
+
