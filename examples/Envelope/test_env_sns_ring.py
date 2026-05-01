@@ -145,7 +145,7 @@ print("TRACK ENVELOPE")
 
 tracker = EnvelopeTracker(
     lattice,
-    handle_unkown=args.handle_unkown,
+    handle_unknown=args.handle_unknown,
     space_charge=("2d" if args.sc else None),
 )
 
