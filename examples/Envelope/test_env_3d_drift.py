@@ -15,20 +15,14 @@ from orbit.core.spacecharge import SpaceChargeCalc3D
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
 from orbit.envelope import EnvelopeTracker
-from orbit.lattice import AccLattice
-from orbit.lattice import AccNode
-from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.space_charge.sc3d import setSC3DAccNodes
 from orbit.teapot import DriftTEAPOT
-from orbit.teapot import QuadTEAPOT
 from orbit.teapot import TEAPOT_Lattice
-from orbit.teapot import TEAPOT_MATRIX_Lattice
 from orbit.utils.consts import mass_proton
 
 from plot import plot_rms_ellipse
 from plot import plot_corner
 from utils import gen_dist
-from utils import build_rotation_matrix_xy
 from utils import project_cov_matrix
 
 plt.style.use("style.mplstyle")
@@ -48,9 +42,9 @@ parser.add_argument("--zrms", type=float, default=0.010)
 parser.add_argument("--nslice", type=int, default=10)
 parser.add_argument("--length", type=float, default=0.1)
 parser.add_argument("--turns", type=int, default=20)
-parser.add_argument("--sc-grid", type=int, default=128)
+parser.add_argument("--sc-grid", type=int, default=64)
 
-parser.add_argument("--nparts", type=int, default=500_000)
+parser.add_argument("--nparts", type=int, default=100_000)
 parser.add_argument("--sc", type=int, default=0)
 args = parser.parse_args()
 
@@ -196,26 +190,26 @@ for key in ["xrms", "yrms", "zrms"]:
         color = ["black", "red"][i]
         lw = [None, 0][i]
         ax.plot(histories[model][key], marker=".", lw=lw, color=color, label=model)
-    ax.set_ylim(0.0, ax.get_ylim()[1] * 2.0)
+    ax.set_ylim(0.0, ax.get_ylim()[1])
     ax.set_xlabel("Turn")
     ax.set_ylabel("RMS [mm]")
-    ax.legend(loc="upper right")
+    ax.legend(loc="upper left")
     plt.savefig(os.path.join(output_dir, f"fig_{key}"))
     plt.close()
 
 # Collect bunch/envelope data on final turn.
 particles = collect_bunch(bunch)["coords"]
-particles[:, :4] *= 1000.0
+particles *= 1e3
 
 env_cov_matrix = envelope.cov()
-env_cov_matrix[:4, :4] *= 1000.0**2
+env_cov_matrix *= 1e6
 
 env_centroid = envelope.centroid()
-env_centroid[:4] *= 1000.0
+env_centroid *= 1e3
 
 xmax = 4.0 * np.std(particles, axis=0)
 limits = list(zip(-xmax, xmax))
-labels = ["x [mm]", "xp [mrad]", "y [mm]", "yp [mrad]", "z [m]", "dE [GeV]"]
+labels = ["x [mm]", "xp [mrad]", "y [mm]", "yp [mrad]", "z [mm]", "dE [MeV]"]
 
 # Plot x-x'
 fig, ax = plt.subplots(figsize=(4, 4))

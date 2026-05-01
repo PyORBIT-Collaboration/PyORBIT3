@@ -159,7 +159,6 @@ class Envelope:
         cov_yy = eig_res.eigenvalues[1]
         cov_zz = eig_res.eigenvalues[2]
 
-        # Compute linear matrix elements k_{x, y, z}.
         RDx = scipy.special.elliprd(cov_yy, cov_zz, cov_xx)
         RDy = scipy.special.elliprd(cov_xx, cov_zz, cov_yy)
         RDz = scipy.special.elliprd(cov_xx, cov_yy, cov_zz)
@@ -169,9 +168,6 @@ class Envelope:
         kappa_y = factor * RDy  # [1 / m]
         kappa_z = factor * RDz  # [1 / m]
         kappa_z *= self.gamma()**3 * self.beta()**2 * self.mass()  # [GeV / m]
-
-        # TEMP
-        # kappa_z *= 19.84
 
         M = np.identity(7)
         M[1, 0] = kappa_x * length
