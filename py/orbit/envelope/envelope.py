@@ -218,9 +218,14 @@ class Envelope:
 class EnvelopeTracker:
     """Tracks envelope through linear lattice with optional linear space charge kicks."""
 
-    def __init__(self, lattice: AccLattice, space_charge: str | None = None, ignore_unknown: bool = False) -> None:
+    def __init__(
+        self,
+        lattice: AccLattice,
+        space_charge: str | None = None,
+        handle_unkown: str | None = None,
+    ) -> None:
         self.lattice = lattice
-        self.matrix_factory = MatrixFactory(ignore_unknown=ignore_unknown)
+        self.matrix_factory = MatrixFactory(handle_unkown=handle_unkown)
         self.space_charge = space_charge
 
     def track(self, envelope: Envelope) -> None:

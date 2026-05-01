@@ -28,7 +28,7 @@ class MatrixFactory:
 
     Units: x [m], x' [rad], y [m], y' [rad], z [m], dE [GeV]
     """
-    def __init__(self, ignore_unknown: bool = False) -> None:
+    def __init__(self, handle_unkown: bool = False) -> None:
         self.ignore_node_types = [
             ApertureTEAPOT,
             BunchWrapTEAPOT,
@@ -36,7 +36,7 @@ class MatrixFactory:
             MonitorTEAPOT,
             TurnCounterTEAPOT,
         ]
-        self.ignore_unknown = ignore_unknown
+        self.handle_unkown = handle_unkown
 
     def drift(self, length: float, sync_part: SyncParticle) -> np.ndarray:
         matrix = np.identity(7)
@@ -170,6 +170,8 @@ class MatrixFactory:
             return np.identity(7)
 
         else:
-            if self.ignore_unknown:
+            if self.handle_unkown == "drift":
                 return self.drift(length=node.getLength(), sync_part=sync_part)
+            elif self.handle_unknown == "fit":
+                raise NotImplementedError()
             raise NotImplementedError("Unsupported node type: {}. Set `ignore_unknown=True` to replace with drift.".format(type(node)))
