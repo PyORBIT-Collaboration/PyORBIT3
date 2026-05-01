@@ -1,4 +1,4 @@
-"""Test 2D envelope tracker in FODO lattice."""
+"""Test envelope tracker in SNS ring."""
 
 import argparse
 import copy
@@ -15,13 +15,9 @@ from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
 from orbit.envelope import EnvelopeTracker
-from orbit.lattice import AccLattice
-from orbit.lattice import AccNode
 from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.space_charge.sc2p5d import setSC2p5DAccNodes
-from orbit.teapot import DriftTEAPOT
-from orbit.teapot import QuadTEAPOT
-from orbit.teapot import TEAPOT_Lattice
+from orbit.teapot import TEAPOT_Ring
 from orbit.teapot import TEAPOT_MATRIX_Lattice
 from orbit.utils.consts import mass_proton
 
@@ -38,25 +34,24 @@ plt.style.use("style.mplstyle")
 # ------------------------------------------------------------------------------
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--zrms", type=float, default=5.0)
-parser.add_argument("--kin-energy", type=float, default=0.025)
-parser.add_argument("--intensity", type=float, default=5e10)
+parser.add_argument("--bunch-length", type=float, default=120.0)
+parser.add_argument("--kin-energy", type=float, default=1.300)
+parser.add_argument("--intensity", type=float, default=5e14)
 
-parser.add_argument(
-    "--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"]
-)
+parser.add_argument("--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"])
 parser.add_argument("--mismatch-x", type=float, default=0.0)
 parser.add_argument("--mismatch-y", type=float, default=0.0)
 parser.add_argument("--offset-x", type=float, default=0.0)
 parser.add_argument("--offset-y", type=float, default=0.0)
 parser.add_argument("--tilt", type=float, default=0)
 
-parser.add_argument("--nslice", type=int, default=10)
-parser.add_argument("--kq", type=float, default=0.25)
-
 parser.add_argument("--nparts", type=int, default=100_000)
 parser.add_argument("--turns", type=int, default=25)
+parser.add_argument("--sol", type=int, default=0)
 parser.add_argument("--sc", type=int, default=0)
+parser.add_argument("--sc-grid", type=int, default=64)
+
+parser.add_argument("--ignore-unknown", type=int, default=0)
 args = parser.parse_args()
 
 
@@ -71,22 +66,21 @@ os.makedirs(output_dir, exist_ok=True)
 # Create lattice
 # ------------------------------------------------------------------------------
 
-nodes = [
-    QuadTEAPOT(length=0.5, kq=+args.kq),
-    DriftTEAPOT(length=1.0),
-    QuadTEAPOT(length=1.0, kq=-args.kq),
-    DriftTEAPOT(length=1.0),
-    QuadTEAPOT(length=0.5, kq=+args.kq),
-]
-
-lattice = TEAPOT_Lattice()
-for node in nodes:
-    node.setnParts(args.nslice)
-    node.setUsageFringeFieldIN(False)
-    node.setUsageFringeFieldOUT(False)
-    lattice.addNode(node)
-
+lattice = TEAPOT_Ring()
+lattice.readMADX("inputs/sns_ring.lat", "rnginjsol")
 lattice.initialize()
+
+for node in lattice.getNodes():
+    try:
+        node.setUsageFringeFieldIN(False)
+        node.setUsageFringeFieldOUT(False)
+    except:
+        pass
+
+if args.sol:
+    for name in ["scbdsol_c13a", "scbdsol_c13b"]:
+        node = lattice.getNodeForName(name)
+        node.setParam("B", 0.15)
 
 
 # Create envelope
@@ -105,7 +99,7 @@ alpha_x = matrix_lattice_params["alpha x"]
 alpha_y = matrix_lattice_params["alpha y"]
 beta_x = matrix_lattice_params["beta x [m]"]
 beta_y = matrix_lattice_params["beta y [m]"]
-eps_x = 0.25e-06
+eps_x = 25.0e-06
 eps_y = eps_x
 
 # Generate covariance matrix
@@ -116,7 +110,7 @@ cov_matrix[0, 1] = cov_matrix[1, 0] = -eps_x * alpha_x
 cov_matrix[2, 3] = cov_matrix[3, 2] = -eps_y * alpha_y
 cov_matrix[1, 1] = eps_x * (1.0 + alpha_x**2) / beta_x
 cov_matrix[3, 3] = eps_y * (1.0 + alpha_y**2) / beta_y
-cov_matrix[4, 4] = args.zrms**2
+cov_matrix[4, 4] = (args.bunch_length / 4.0) ** 2
 cov_matrix[5, 5] = 0.0
 
 # Tilt
@@ -149,7 +143,11 @@ envelope = Envelope(
 
 print("TRACK ENVELOPE")
 
-tracker = EnvelopeTracker(lattice, space_charge=("2d" if args.sc else None))
+tracker = EnvelopeTracker(
+    lattice,
+    ignore_unknown=args.ignore_unknown,
+    space_charge=("2d" if args.sc else None),
+)
 
 history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
 for turn in range(args.turns):
@@ -188,7 +186,7 @@ bunch_coords = np.zeros((args.nparts, 6))
 bunch_coords[:, :4] = gen_dist(
     n=args.nparts, cov_matrix=cov_matrix_init[0:4, 0:4], name=args.dist
 )
-bunch_coords[:, 4] = 2.0 * rng.uniform(-args.zrms, args.zrms, size=args.nparts)
+bunch_coords[:, 4] = args.bunch_length * rng.uniform(-0.5, 0.5, size=args.nparts)
 bunch_coords += centroid_init[None, :6]
 
 for i in range(bunch_coords.shape[0]):
