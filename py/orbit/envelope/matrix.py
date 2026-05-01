@@ -155,9 +155,8 @@ class MatrixFactory:
             return self.quad(length=length, kq=kq, sync_part=sync_part)
 
         elif type(node) is BendTEAPOT:
-            nparts = node.getnParts()
             length = node.getLength(part_index)
-            theta = node.getParam("theta") / (nparts - 1)
+            theta = node.getParam("theta") / node.getnParts()
             return self.bend(length=length, theta=theta, sync_part=sync_part)
 
         elif type(node) is KickTEAPOT:
@@ -167,9 +166,9 @@ class MatrixFactory:
             if node.waveform:
                 scale = node.waveform.getStrength()
 
-            kx = scale * node.getParam("kx") / (nparts - 1)
-            ky = scale * node.getParam("ky") / (nparts - 1)
-            dE = node.getParam("dE") / (nparts - 1)
+            kx = scale * node.getParam("kx") / nparts
+            ky = scale * node.getParam("ky") / nparts
+            dE = node.getParam("dE") / nparts
             return self.kick(kx, ky, dE)
 
         elif type(node) is TiltTEAPOT:

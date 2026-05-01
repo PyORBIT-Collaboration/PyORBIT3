@@ -230,22 +230,17 @@ class EnvelopeTracker:
 
     def track(self, envelope: Envelope) -> None:
         for node in self.lattice.getNodes():
-            # Child nodes before node
             for child_node in node.getChildNodes(ENTRANCE):
                 envelope.apply_transfer_matrix(
                     self.matrix_factory(child_node, envelope.sync_part)
                 )
 
             for part_index in range(node.getnParts()):
-                # Child nodes before part
-                for child_node in node.getChildNodes(
-                    BODY, part_index, place_in_part=BEFORE
-                ):
+                for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
                     envelope.apply_transfer_matrix(
                         self.matrix_factory(child_node, envelope.sync_part)
                     )
 
-                # Space charge
                 if self.space_charge:
                     length = node.getLength(part_index)
                     if self.space_charge == "2d":
@@ -256,26 +251,17 @@ class EnvelopeTracker:
                         raise ValueError(
                             f"Invalid space charge model: {self.space_charge}"
                         )
-
-                    # print("debug space charge matrix")
-                    # print(matrix)
-
                     envelope.apply_transfer_matrix(matrix)
 
-                # Main node part
                 envelope.apply_transfer_matrix(
                     self.matrix_factory(node, envelope.sync_part, part_index)
                 )
 
-                # Child nodes after part
-                for child_node in node.getChildNodes(
-                    BODY, part_index, place_in_part=AFTER
-                ):
+                for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
                     envelope.apply_transfer_matrix(
                         self.matrix_factory(child_node, envelope.sync_part)
                     )
 
-            # Child nodes after node
             for child_node in node.getChildNodes(EXIT):
                 envelope.apply_transfer_matrix(
                     self.matrix_factory(child_node, envelope.sync_part)
