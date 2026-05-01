@@ -81,12 +81,8 @@ class Envelope:
         self.set_intensity(intensity)
 
     def set_intensity(self, intensity: float) -> None:
-        factor = 2.0 * CLASSICAL_PROTON_RADIUS / (self.beta()**2 * self.gamma()**3)
-        bunch_length = 4.0 * self.rms(axis=4)
-
         self.intensity = intensity
-        self.perveance_3d = factor * intensity
-        self.perveance_2d = factor * intensity / bunch_length
+        self.perveance = 2.0 * intensity * CLASSICAL_PROTON_RADIUS / (self.beta()**2 * self.gamma()**3)
 
     def gamma(self) -> float:
         return self.sync_part.gamma()
@@ -129,8 +125,11 @@ class Envelope:
         rx = 2.0 * math.sqrt(cov_eig_vals[0])
         ry = 2.0 * math.sqrt(cov_eig_vals[1])
 
-        kappa_x = 2.0 * self.perveance_2d / (rx * (rx + ry))
-        kappa_y = 2.0 * self.perveance_2d / (ry * (rx + ry))
+        bunch_length = 4.0 * self.rms(axis=4)
+        perveance = self.perveance / bunch_length
+
+        kappa_x = 2.0 * perveance / (rx * (rx + ry))
+        kappa_y = 2.0 * perveance / (ry * (rx + ry))
 
         M = np.identity(7)
         M[1, 0] = kappa_x * length
@@ -147,46 +146,32 @@ class Envelope:
         return np.linalg.multi_dot([V, M, V_inv])
     
     def sc_transfer_matrix_3d(self, length: float) -> np.ndarray:
-        # Get centroid in rest frame.
         centroid = self.centroid()
         centroid[4] *= self.gamma()
 
-        # Get covariance matrix in rest frame.
         cov_matrix = self.cov()
         cov_matrix[4, 4] *= self.gamma()**2
-
-        # Project covariance matrix onto x-y-z plane.
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2, 4))
 
-        # Calculate eigenvectors of x-y-z covariance matrix.
         eig_res = np.linalg.eig(cov_matrix_proj)
 
-        # Extract diagonal x-y-z covariance matrix elements in diagonalized frame.
         cov_xx = eig_res.eigenvalues[0]
         cov_yy = eig_res.eigenvalues[1]
         cov_zz = eig_res.eigenvalues[2]
 
         # Compute linear matrix elements k_{x, y, z}.
-        # x' -> kappa_x * ds * x'
-        # y' -> kappa_y * ds * y'
-        # z' -> kappa_z * ds * z'
-        factor_x = 0.5 * self.perveance_3d / ((5.0 * cov_xx) ** 1.5)
-        factor_y = 0.5 * self.perveance_3d / ((5.0 * cov_yy) ** 1.5)
-        factor_z = 0.5 * self.perveance_3d / ((5.0 * cov_zz) ** 1.5)
+        RDx = scipy.special.elliprd(cov_yy, cov_zz, cov_xx)
+        RDy = scipy.special.elliprd(cov_xx, cov_zz, cov_yy)
+        RDz = scipy.special.elliprd(cov_xx, cov_yy, cov_zz)
 
-        RDx = scipy.special.elliprd((cov_yy / cov_xx), (cov_zz / cov_xx), 1.0)
-        RDy = scipy.special.elliprd((cov_xx / cov_yy), (cov_zz / cov_yy), 1.0)
-        RDz = scipy.special.elliprd((cov_xx / cov_zz), (cov_yy / cov_zz), 1.0)
-
-        kappa_x = factor_x * RDx  # [1 / m]
-        kappa_y = factor_y * RDy  # [1 / m]
-        kappa_z = factor_z * RDz  # [1 / m]
-
-        # Switch from z' to dE [GeV]
-        # z' = (dp / p) / gamma^2
-        # z' = (dE / E) / (gamma^2 * beta^2)
-        # z' = dE / (gamma^3 * beta^2 * m & c^2)
+        factor = 0.5 * self.perveance * ((1.0 / 5.0) ** 1.5)
+        kappa_x = factor * RDx  # [1 / m]
+        kappa_y = factor * RDy  # [1 / m]
+        kappa_z = factor * RDz  # [1 / m]
         kappa_z *= self.gamma()**3 * self.beta()**2 * self.mass()  # [GeV / m]
+
+        # TEMP
+        # kappa_z *= 19.84
 
         M = np.identity(7)
         M[1, 0] = kappa_x * length

@@ -47,7 +47,7 @@ parser.add_argument("--mismatch-x", type=float, default=0.0)
 parser.add_argument("--mismatch-y", type=float, default=0.0)
 parser.add_argument("--offset-x", type=float, default=0.0)
 parser.add_argument("--offset-y", type=float, default=0.0)
-parser.add_argument("--tilt", action="store_true")
+parser.add_argument("--tilt", type=float, default=0)
 
 parser.add_argument("--nslice", type=int, default=10)
 parser.add_argument("--kq", type=float, default=0.25)
@@ -120,7 +120,7 @@ cov_matrix[5, 5] = 0.0
 # Tilt
 if args.tilt:
     rot_matrix = np.identity(6)
-    rot_matrix[:4, :4] = build_rotation_matrix_xy(angle=(0.15 * math.pi))
+    rot_matrix[:4, :4] = build_rotation_matrix_xy(angle=(args.tilt * math.pi))
     cov_matrix = np.linalg.multi_dot([rot_matrix, cov_matrix, rot_matrix.T])
 
 # Mismatch

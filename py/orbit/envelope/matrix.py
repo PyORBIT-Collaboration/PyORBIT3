@@ -17,11 +17,14 @@ from ..teapot import MonitorTEAPOT
 from ..teapot import TurnCounterTEAPOT
 
 from .utils import proj_cov_matrix
+from ..utils import speed_of_light
 
 
 class MatrixFactory:
-    """Factory for 7x7 transfer matrices."""
+    """Factory for 7 x 7 transfer matrices.
 
+    Units: x [m], x' [rad], y [m], y' [rad], z [m], dE [GeV]
+    """
     def __init__(self) -> None:
         self.ignore_node_types = [
             ApertureTEAPOT,
@@ -31,14 +34,18 @@ class MatrixFactory:
             TurnCounterTEAPOT,
         ]
 
-    def drift(self, length: float, gamma: float) -> np.ndarray:
+    def drift(self, length: float, sync_part: SyncParticle) -> np.ndarray:
+        dp_p_coef = 1.0 / (sync_part.momentum() * sync_part.beta())
+
         matrix = np.identity(7)
         matrix[0, 1] = length
         matrix[2, 3] = length
-        matrix[4, 5] = length / gamma**2
+        matrix[4, 5] = length / sync_part.gamma()**2
+        matrix[4, 5] *= dp_p_coef
         return matrix
 
-    def quad(self, length: float, kq: float) -> np.ndarray:
+    def quad(self, length: float, kq: float, sync_part: SyncParticle) -> np.ndarray:
+        dp_p_coef = 1.0 / (sync_part.momentum() * sync_part.beta())
         sqrt_abs_kq = math.sqrt(abs(kq))
 
         matrix = np.identity(7)
@@ -68,25 +75,38 @@ class MatrixFactory:
             matrix[2, 3] = +sy / sqrt_abs_kq
             matrix[3, 2] = -sy * sqrt_abs_kq
             matrix[3, 3] = cy
+
+        matrix[4, 5] = length / sync_part.gamma()**2
+        matrix[4, 5] *= dp_p_coef
         return matrix
 
-    def bend(self, length: float, theta: float, gamma: float) -> np.ndarray:
-        rho = length / theta
+    def bend(self, length: float, theta: float, sync_part: SyncParticle) -> np.ndarray:
+        if length <= 0:
+            return np.identity(7)
 
+        v = speed_of_light * sync_part.beta()
+        sync_part.setTime(sync_part.getTime() + length / v)
+
+        dp_p_coef = 1.0 / (sync_part.momentum() * sync_part.beta())
+
+        rho = length / theta
         cx = math.cos(theta)
         sx = math.sin(theta)
 
         matrix = np.identity(7)
         matrix[0, 0] = cx
-        matrix[0, 1] = sx * rho
-        matrix[0, 5] = (1.0 - cx) * rho
+        matrix[0, 1] = rho * sx
+        matrix[0, 5] = rho * (1.0 - cx)
         matrix[1, 0] = -sx / rho
         matrix[1, 1] = cx
         matrix[1, 5] = sx
+
         matrix[2, 3] = length
+
         matrix[4, 0] = -sx
-        matrix[4, 1] = -(1.0 - cx) * rho
-        matrix[4, 5] = (length / gamma**2) - rho * (theta - sx)
+        matrix[4, 1] = -rho * (1.0 - cx)
+        matrix[4, 5] = -length * sync_part.beta()**2 + rho * sx
+        matrix[4, 5] *= dp_p_coef
         return matrix
 
     def tilt(self, angle: float) -> np.ndarray:
@@ -114,11 +134,8 @@ class MatrixFactory:
     def __call__(self, node: AccNode, sync_part: SyncParticle, part_index: int = 0) -> np.ndarray:
         if type(node) is DriftTEAPOT:
             length = node.getLength(part_index)
-            gamma = sync_part.gamma()
-            return self.drift(length=length, gamma=gamma)
-
+            return self.drift(length=length, sync_part=sync_part)
         elif type(node) is QuadTEAPOT:
-            nparts = node.getnParts()
             length = node.getLength(part_index)
 
             scale = 1.0
@@ -126,14 +143,14 @@ class MatrixFactory:
                 scale = node.waveform.getStrength()
 
             kq = scale * node.getParam("kq")
-            return self.quad(length=length, kq=kq)
+            return self.quad(length=length, kq=kq, sync_part=sync_part)
 
         elif type(node) is BendTEAPOT:
             nparts = node.getnParts()
             length = node.getLength(part_index)
             theta = node.getParam("theta") / (nparts - 1)
             gamma = sync_part.gamma()
-            return self.bend(length=length, theta=theta, gamma=gamma)
+            return self.bend(length=length, theta=theta, sync_part=sync_part)
 
         elif type(node) is KickTEAPOT:
             nparts = node.getnParts()
