@@ -44,6 +44,7 @@ class MatrixFactory:
         matrix[2, 3] = length
         matrix[4, 5] = length / sync_part.gamma() ** 2
 
+        # Matrix above is for dp_p; switch to dE.
         matrix[4, 5] *= get_dp_p_coeff(sync_part)
         matrix[5, 4] /= get_dp_p_coeff(sync_part)
         return matrix
@@ -80,7 +81,6 @@ class MatrixFactory:
             matrix[3, 3] = cy
 
         matrix[4, 5] = length / sync_part.gamma() ** 2
-
         matrix[4, 5] *= get_dp_p_coeff(sync_part)
         matrix[5, 4] /= get_dp_p_coeff(sync_part)
         return matrix
@@ -96,6 +96,12 @@ class MatrixFactory:
         cx = math.cos(theta)
         sx = math.sin(theta)
 
+        betasq = sync_part.beta() ** 2
+
+        rho = length / theta
+        cx = math.cos(theta)
+        sx = math.sin(theta)
+
         matrix = np.identity(7)
         matrix[0, 0] = cx
         matrix[0, 1] = rho * sx
@@ -103,12 +109,10 @@ class MatrixFactory:
         matrix[1, 0] = -sx / rho
         matrix[1, 1] = cx
         matrix[1, 5] = sx
-
         matrix[2, 3] = length
-
         matrix[4, 0] = -sx
         matrix[4, 1] = -rho * (1.0 - cx)
-        matrix[4, 5] = -length * sync_part.beta() ** 2 + rho * sx
+        matrix[4, 5] = -betasq * length + rho * sx
 
         matrix[4, 5] *= get_dp_p_coeff(sync_part)
         matrix[5, 4] /= get_dp_p_coeff(sync_part)
