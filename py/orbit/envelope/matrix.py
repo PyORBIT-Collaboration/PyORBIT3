@@ -19,13 +19,16 @@ from ..teapot import TurnCounterTEAPOT
 from ..utils import speed_of_light
 
 
+def get_dp_p_coeff(sync_part: SyncParticle) -> float:
+    return 1.0 / (sync_part.momentum() * sync_part.beta())
+
+
 class MatrixFactory:
     """Factory for 7 x 7 transfer matrices.
 
     Units: x [m], x' [rad], y [m], y' [rad], z [m], dE [GeV]
     """
-
-    def __init__(self) -> None:
+    def __init__(self, ignore_unknown: bool = False) -> None:
         self.ignore_node_types = [
             ApertureTEAPOT,
             BunchWrapTEAPOT,
@@ -33,19 +36,17 @@ class MatrixFactory:
             MonitorTEAPOT,
             TurnCounterTEAPOT,
         ]
+        self.ignore_unknown = ignore_unknown
 
     def drift(self, length: float, sync_part: SyncParticle) -> np.ndarray:
-        dp_p_coef = 1.0 / (sync_part.momentum() * sync_part.beta())
-
         matrix = np.identity(7)
         matrix[0, 1] = length
         matrix[2, 3] = length
         matrix[4, 5] = length / sync_part.gamma() ** 2
-        matrix[4, 5] *= dp_p_coef
+        matrix[4, 5] *= get_dp_p_coeff(sync_part)
         return matrix
 
     def quad(self, length: float, kq: float, sync_part: SyncParticle) -> np.ndarray:
-        dp_p_coef = 1.0 / (sync_part.momentum() * sync_part.beta())
         sqrt_abs_kq = math.sqrt(abs(kq))
 
         matrix = np.identity(7)
@@ -77,7 +78,7 @@ class MatrixFactory:
             matrix[3, 3] = cy
 
         matrix[4, 5] = length / sync_part.gamma() ** 2
-        matrix[4, 5] *= dp_p_coef
+        matrix[4, 5] *= get_dp_p_coeff(sync_part)
         return matrix
 
     def bend(self, length: float, theta: float, sync_part: SyncParticle) -> np.ndarray:
@@ -85,9 +86,7 @@ class MatrixFactory:
             return np.identity(7)
 
         v = speed_of_light * sync_part.beta()
-        sync_part.setTime(sync_part.getTime() + length / v)
-
-        dp_p_coef = 1.0 / (sync_part.momentum() * sync_part.beta())
+        sync_part.time(sync_part.time() + length / v)
 
         rho = length / theta
         cx = math.cos(theta)
@@ -106,7 +105,7 @@ class MatrixFactory:
         matrix[4, 0] = -sx
         matrix[4, 1] = -rho * (1.0 - cx)
         matrix[4, 5] = -length * sync_part.beta() ** 2 + rho * sx
-        matrix[4, 5] *= dp_p_coef
+        matrix[4, 5] *= get_dp_p_coeff(sync_part)
         return matrix
 
     def tilt(self, angle: float) -> np.ndarray:
@@ -131,9 +130,7 @@ class MatrixFactory:
         matrix[5, 6] = dE
         return matrix
 
-    def __call__(
-        self, node: AccNode, sync_part: SyncParticle, part_index: int = 0
-    ) -> np.ndarray:
+    def __call__(self, node: AccNode, sync_part: SyncParticle, part_index: int = 0) -> np.ndarray:
         if type(node) is DriftTEAPOT:
             length = node.getLength(part_index)
             return self.drift(length=length, sync_part=sync_part)
@@ -151,7 +148,6 @@ class MatrixFactory:
             nparts = node.getnParts()
             length = node.getLength(part_index)
             theta = node.getParam("theta") / (nparts - 1)
-            gamma = sync_part.gamma()
             return self.bend(length=length, theta=theta, sync_part=sync_part)
 
         elif type(node) is KickTEAPOT:
@@ -174,4 +170,6 @@ class MatrixFactory:
             return np.identity(7)
 
         else:
-            raise NotImplementedError("Unsupported node type: {}".format(type(node)))
+            if self.ignore_unknown:
+                return self.drift(length=node.getLength(), sync_part=sync_part)
+            raise NotImplementedError("Unsupported node type: {}. Set `ignore_unknown=True` to replace with drift.".format(type(node)))
