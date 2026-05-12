@@ -114,8 +114,7 @@ class MatrixFactory:
         matrix[4, 1] = -rho * (1.0 - cx)
         matrix[4, 5] = -betasq * length + rho * sx
 
-        matrix[4, 5] *= get_dp_p_coeff(sync_part)
-        matrix[5, 4] /= get_dp_p_coeff(sync_part)
+        matrix[:, 5] *= get_dp_p_coeff(sync_part)
         return matrix
 
     def tilt(self, angle: float) -> np.ndarray:
