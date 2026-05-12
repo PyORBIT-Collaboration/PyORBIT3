@@ -1,0 +1,188 @@
+import numpy as np
+
+from orbit.core.bunch import Bunch
+from orbit.core.bunch import BunchTwissAnalysis
+from orbit.bunch_utils import collect_bunch
+from orbit.lattice import AccNode
+from orbit.lattice import AccLattice
+from orbit.teapot import QuadTEAPOT
+from orbit.teapot import BendTEAPOT
+from orbit.teapot import DriftTEAPOT
+from orbit.teapot import TEAPOT_Lattice
+from orbit.utils.consts import mass_proton
+from orbit.envelope import Envelope
+from orbit.envelope import EnvelopeTracker
+
+
+def calc_bunch_cov(bunch: Bunch) -> np.ndarray:
+    coords = collect_bunch(bunch)["coords"]
+    return np.cov(coords.T)
+
+    # twiss_calc = BunchTwissAnalysis()
+    # twiss_calc.computeBunchMoments(bunch, 2, 0, 0)
+    #
+    # cov_matrix = np.zeros((6, 6))
+    # for i in range(6):
+    #     for j in range(i + 1):
+    #         cov_matrix[i, j] = twiss_calc.getCorrelation(j, i)
+    #         cov_matrix[j, i] = cov_matrix[i, j]
+    # return cov_matrix
+
+
+def make_lattice(nodes: list[AccNode]) -> AccLattice:
+    lattice = TEAPOT_Lattice()
+    for node in nodes:
+        lattice.addNode(node)
+    lattice.initialize()
+    for node in lattice.getNodes():
+        node.setUsageFringeFieldIN(False)
+        node.setUsageFringeFieldOUT(False)
+    return lattice
+
+
+def track_and_compare(
+    nodes: list[AccNode],
+    kin_energy: float,
+    cov_matrix: np.ndarray,
+    nparts: int = 100_000,
+) -> dict:
+
+    cov_scale = 1e6
+
+    data = {}
+    for k1 in ["env", "bunch"]:
+        data[k1] = {}
+        for k2 in ["rms", "cov"]:
+            data[k1][k2] = {}
+            for k3 in ["env", "bunch"]:
+                data[k1][k2][k3] = {}
+
+    lattice = make_lattice(nodes)
+
+    bunch = Bunch()
+    bunch.mass(mass_proton)
+
+    sync_part = bunch.getSyncParticle()
+    sync_part.kinEnergy(kin_energy)
+
+    envelope = Envelope(sync_part=sync_part, cov_matrix=cov_matrix)
+
+    envelope_tracker = EnvelopeTracker(lattice=lattice)
+
+    data["env"]["cov"]["in"] = cov_scale * envelope.cov()
+    envelope_tracker.track(envelope)
+    data["env"]["cov"]["out"] = cov_scale * envelope.cov()
+
+    particles = np.random.multivariate_normal(np.zeros(6), cov_matrix, size=nparts)
+    for x in particles:
+        bunch.addParticle(*x)
+
+    data["bunch"]["cov"]["in"] = cov_scale * calc_bunch_cov(bunch)
+    lattice.trackBunch(bunch)
+    data["bunch"]["cov"]["out"] = cov_scale * calc_bunch_cov(bunch)
+
+    for mode in ["env", "bunch"]:
+        for loc in ["in", "out"]:
+            data[mode]["rms"][loc] = np.sqrt(np.diag(data[mode]["cov"][loc]))
+
+    dims = ["x", "xp", "y", "yp", "z", "dE"]
+    for key in ["in", "out"]:
+        print(key.upper())
+        for i in range(6):
+            print("  rms {}:".format(dims[i]))
+            print("    env:   {}".format(data["env"]["rms"][key][i]))
+            print("    bunch: {}".format(data["bunch"]["rms"][key][i]))
+
+    for key in ["in", "out"]:
+        assert np.all(np.isclose(data["env"]["cov"][key], data["bunch"]["cov"][key]))
+
+
+def make_default_cov_matrix(scale: float = 0.001) -> np.ndarray:
+    cov_matrix = np.zeros((6, 6))
+    cov_matrix[0, 0] = scale ** 2
+    cov_matrix[2, 2] = scale ** 2
+    return cov_matrix
+
+
+def test_drift(kin_energy: float = 0.0025, length: float = 1.0, cov_matrix: np.ndarray = None):
+    nodes = [
+        DriftTEAPOT(length=1.0),
+    ]
+    if cov_matrix is None:
+        cov_matrix = make_default_cov_matrix()
+    track_and_compare(nodes, kin_energy, cov_matrix)
+
+def test_quad(kin_energy: float = 0.0025, length: float = 1.0, kq: float = 1.0, cov_matrix: np.ndarray = None):
+    nodes = [
+        QuadTEAPOT(length=length, kq=kq),
+    ]
+    if cov_matrix is None:
+        cov_matrix = make_default_cov_matrix()
+    track_and_compare(nodes, kin_energy, cov_matrix)
+
+
+def test_dipole(kin_energy: float = 0.0025, length: float = 1.0, theta: float = 20.0, cov_matrix: np.ndarray = None):
+    nodes = [
+        BendTEAPOT(length=length, theta=np.radians(theta))
+    ]
+    if cov_matrix is None:
+        cov_matrix = make_default_cov_matrix()
+    track_and_compare(nodes, kin_energy, cov_matrix)
+
+
+def test_dipole_matrix():
+    from orbit.envelope.matrix import MatrixFactory
+
+    bunch = Bunch()
+    bunch.mass(mass_proton)
+
+    sync_part = bunch.getSyncParticle()
+    sync_part.kinEnergy(0.0025)
+
+    node = BendTEAPOT(length=1.0, theta=np.radians(20.0))
+
+    matrix_factory = MatrixFactory()
+    matrix = matrix_factory.bend(length=node.getLength(), theta=node.getParam("theta"), sync_part=sync_part)
+
+    print(np.round(matrix, 2))
+
+    x = np.zeros(6)
+    x[1] = 0.001
+    x[1] = 0.001
+
+    bunch.addParticle(*x)
+
+    node.trackBunch(bunch)
+
+    x_out = [bunch.x(0), bunch.xp(0), bunch.y(0), bunch.yp(0), bunch.z(0), bunch.dE(0)]
+    x_out = np.array(x_out)
+
+    print(x)
+    print(x_out)
+    print(np.matmul(matrix[:6, :6], x))
+
+    cov_matrix = make_default_cov_matrix()
+    envelope = Envelope(sync_part=bunch.getSyncParticle(), cov_matrix=cov_matrix)
+    envelope.apply_transfer_matrix(matrix)
+    print(np.round(1e6 * envelope.cov(), 2))
+
+    particles_in = np.random.multivariate_normal(np.zeros(6), cov_matrix, size=100_000)
+    particles_out = np.matmul(particles_in, matrix[:6, :6].T)
+    print(np.round(1e6 * np.cov(particles_out.T), 2))
+
+    bunch.deleteAllParticles()
+    for x in particles_in:
+        bunch.addParticle(*x)
+    node.trackBunch(bunch)
+    particles_out = collect_bunch(bunch)["coords"]
+    print(np.round(1e6 * np.cov(particles_out.T), 2))
+
+
+if __name__ == "__main__":
+    # test_drift()
+    # test_quad()
+    test_dipole()
+    # test_dipole_matrix()
+
+
+
