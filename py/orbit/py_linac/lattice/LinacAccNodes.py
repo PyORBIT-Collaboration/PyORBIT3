@@ -41,9 +41,25 @@ class BaseLinacNode(AccNodeBunchTracker):
         self.setType("baseLinacNode")
         self.setParam("pos", 0.0)
         self.__linacSeqence = None
+        #-------------------------------------------------
+        # XML data adaptor of this node. 
+        #-------------------------------------------------
+        self.data_adaptor = None
         # by default we use the TEAPOT tracker module
         self.tracking_module = TPB
-
+        
+    def setDataAdaptor(self,data_adaptor):
+        """
+        Sets the XML data adaptor of this node.
+        """
+        self.data_adaptor = data_adaptor
+        
+    def getDataAdaptor(self):
+        """
+        Returns the XML data adaptor of this node.
+        """
+        return self.data_adaptor
+        
     def setLinacTracker(self, switch=True):
         """
         This method will switch tracker module to the linac specific traker by default
@@ -64,6 +80,9 @@ class BaseLinacNode(AccNodeBunchTracker):
         Sets the seqence.
         """
         self.__linacSeqence = seq
+        #---- set up Sequence for all children
+        for child_node in self.getAllChildren():
+            child_node.setSequence(seq)
 
     def setPosition(self, pos):
         """
