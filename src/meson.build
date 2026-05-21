@@ -3,7 +3,23 @@
 
 
 # Add Python installation details
-python = import('python').find_installation('python3', pure: false)
+pymod = import('python')
+with_numpy = get_option('WITH_NUMPY')
+
+if with_numpy
+  message('Compiling with Numpy support')
+  python = pymod.find_installation('python3', pure: false, modules: ['numpy'])
+  numpy_inc = run_command(
+    python, '-c', 'import numpy; print(numpy.get_include())',
+    check: true
+  ).stdout().strip()
+  add_project_arguments('-DWITH_NUMPY=1', language: 'cpp')
+  add_project_arguments('-I' + numpy_inc, language: 'cpp')
+
+else
+    python = pymod.find_installation('python3', pure: false)
+endif
+
 
 # Add C++ compiler details
 cpp = meson.get_compiler('cpp')
@@ -16,7 +32,6 @@ dependencies += python.dependency()
 dependencies += dependency('fftw3', version: '>= 3.0.0', required: true)
 
 # Detecting if MPICH or OPENMPI are installed and enabling support if present
-
 
 mpi_use = get_option('USE_MPI')
 # message('MPI_USE is set to', mpi_use)
@@ -278,6 +293,7 @@ inc = include_directories([
     'utils/integration',
     'orbit/Apertures'
 ])
+
 
 
 core_lib = library('core',
