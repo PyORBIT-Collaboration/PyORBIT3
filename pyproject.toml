@@ -1,6 +1,6 @@
 [build-system]
 build-backend = 'mesonpy'
-requires = ['meson-python', "setuptools>=45", "wheel", "setuptools_scm"]
+requires = ['meson-python', "setuptools>=45", "wheel", "setuptools_scm", "numpy>=2.0"]
 
 [project]
 name = 'PyORBIT'
