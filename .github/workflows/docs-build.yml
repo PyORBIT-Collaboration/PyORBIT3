@@ -24,16 +24,16 @@ jobs:
       - name: Install PyORBIT3
         shell: bash -l {0}
         run: |
-          # @woodtp -- MPI isn't required to build docs and enabling it causes Sphinx to segfault.
-          conda activate po3
-          pip install --config-settings=setup-args="-DUSE_MPI='none'" .
+          conda run -n po3 python -m pip install \
+            --config-settings=setup-args="-DUSE_MPI='none'" \
+            --no-build-isolation \
+            .
 
       - name: Build Documentation
         shell: bash -l {0}
         run: |
-          conda activate po3
           cd doc
-          make dirhtml
+          conda run -n po3 make dirhtml
 
       - name: Upload artifact
         if: ${{ inputs.upload-artifact }}

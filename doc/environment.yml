@@ -6,6 +6,8 @@ dependencies:
   - exhale
   - pydata-sphinx-theme
   - python=3.13
+  - pip
+  - meson-python
   - sphinx
   - sphinx-copybutton
   - sphinx-autodoc-typehints
@@ -21,3 +23,6 @@ dependencies:
   - pkg-config
   - ninja
   - graphviz
+  - pip:
+      - setuptools
+      - setuptools_scm
