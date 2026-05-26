@@ -808,6 +808,7 @@ void Bunch::updateClassicalRadius(){
     val *= OrbitConst::mass_proton/mass;
     val *= charge*charge;
     bunchAttr->doubleVal("classical_radius",val);
+    classicalRadius = val;
 }
 
 double  Bunch::setMacroSize(double val){
