@@ -1,0 +1,211 @@
+# Installation Guide
+
+```{contents}
+:depth: 3
+```
+
+This guide provides instructions how to install PyORBIT code. <br>
+This guide doesn't cover MPI enabled installation. <br>
+The following configurations are included in CI testing, versions will change as the runner images progress.
+
+| HW            | Architecture | OS            | Python  | Compiler     | Package      |
+|---------------|--------------|---------------|---------|--------------|--------------|
+| PC            | x86_64       | CentOS latest | 3.9.18  | gcc-11.4.1   | pip-24.0     |
+| PC            | x86_64       | Ubuntu latest | 3.12.3  | gcc-13.2.0   | pip-24.0     |
+| Apple Silicon | arm64        | macOS 14      | 3.12.3  | clang-15.0.0 | pip-24.0     |
+| PC            | x86_64       | Ubuntu latest | 3.10.14 | gcc-13.2.0   | conda-24.5.0 |
+
+
+
+## Installation from source
+
+First step is to clone the source code:
+
+```bash
+git clone https://github.com/PyORBIT-Collaboration/PyORBIT3.git
+```
+
+### Pip Setup
+**PIP** based setup is more involved, we recommend using **conda** if unsure.
+#### Prepare OS
+The following commands may require root access.
+
+<details>
+  <summary> Click for Ubuntu-based distributions</summary>
+
+  ```bash
+  apt-get update
+  apt-get install -y  build-essential python3 libfftw3-dev python3-venv libpython3-dev pkg-config git
+  ```
+</details>
+
+<details>
+  <summary> Click for Redhat-based distributions</summary>
+
+  ```bash
+  dnf group install -y "Development Tools"
+  dnf install -y python3-devel fftw3-devel
+  ```
+</details>
+
+<details>
+  <summary> Click for Mac</summary>
+
+  Install Homebrew, make sure that  homebrew programs are in the **$PATH** (optional step in Homebrew installation)
+
+  ```bash
+  brew install pkg-config fftw
+  ```
+</details>
+
+  #### Create Python virtual environment
+  Make sure that you have the correct python version installed. We require python>3.9. <br>
+  Create virtual environment.
+
+  ```
+  python3 -m venv .po3
+  . .po3/bin/activate
+  pip install -U pip
+  pip install -r requirements.txt
+  pip install -U setuptools
+  ```
+
+
+### Conda Setup
+
+First of all make sure you have conda installed and development packages.<br>
+Development packages for Ubuntu:
+
+```
+apt update -y
+apt install -y curl gpg git build-essential
+```
+
+Then run the following:
+
+```bash
+cd pyorbit3
+conda env create -n po3 --file environment.yml
+conda activate po3
+pip install -U meson-python setuptools setuptools-scm
+```
+
+
+## Build
+
+If you plan to modify PyORBIT's code, install it in editable mode.
+You will NOT need to rebuild after modifications to the code. [Meson](meson-primer) will rebuild as necessary on import.
+```
+pip install --no-build-isolation --editable .
+```
+
+Alternatively if you don't plan to modify PyORBIT's code
+
+```
+pip install .
+```
+
+## 4. Run full SNS linac example
+
+Navigate to your **examples** directory and launch tracking of SNS linac.
+
+```bash
+cd examples/SNS_Linac/pyorbit3_linac_model/
+python pyorbit3_sns_linac_mebt_hebt2.py
+```
+
+## MPI consideration
+
+By default, the build system will try to find MPI and compile against it. You can control which MPI to use with command line option when building.
+```bash
+pip install --config-settings=setup-args="-DUSE_MPI=none" .
+```
+Above will build PyORBIT without MPI even if MPI is present. You can change that option to `mpich`, `ompi`, `none` or `auto` (default).<br>
+| MPI flavor            | Installation command |
+|---------------|--------------|
+| No MPI                                  | `pip install --config-settings=setup-args="-DUSE_MPI=none" .`       |
+| The first found MPI installation if any | `pip install --config-settings=setup-args="-DUSE_MPI=auto" .`       |
+| OpenMPI | `pip install --config-settings=setup-args="-DUSE_MPI=ompi" .`       |
+| MPICH | `pip install --config-settings=setup-args="-DUSE_MPI=mpich" .`       |
+
+Meson uses PKG_CONFIG to discover packages. It could be useful to help it to find your MPI installation:
+
+```bash
+PKG_CONFIG_PATH=/opt/lib/pkgconfig pip install --verbose .
+```
+
+(meson-primer)=
+# Meson Primer
+
+This uses meson-python to build orbit package.
+
+There is no **setup.py** file, instead we have **meson.build**.
+**pyproject.toml** is changed to use meson.
+
+This is experimental setup that is work in progress.
+The pure python part is built with hierarchical **meson.build** files in **py/**.
+The C++ setup is combined in one file **src/meson.build**.
+
+## Main modifications in C++ code
+1. **src/libmain/** is not used, still there for reference but will be gone soon.
+2. **src/core/** contains one C++ file per module inside _orbit.core_
+3. The files **wrap_XXXX.cc** were modified to correctly reference modules
+```cpp
+// line
+PyObject* mod = PyImport_ImportModule("_bunch");
+// replaced with
+PyObject* mod = PyImport_ImportModule("orbit.core.bunch");
+```
+
+## Setup
+
+### 0. Required software
+
+One needs compilers, python and libfftw (and potentially mpi).
+See [PyORBIT3](https://github.com/PyORBIT-Collaboration/PyORBIT3) for external
+requirements.
+
+
+### 1. Preparing environment
+
+First step is to clone the source code from meson branch:
+
+```bash
+git clone -b meson https://github.com/azukov/PyORBIT3.git
+```
+
+Initialize new virtual environment and install packages
+
+```
+python -m venv .mes
+source .mes/bin/activate
+pip install -U pip
+pip install -r requirements
+```
+Edit **meson.build** and set correct paths/flags for python/fftw3 headers and libraries
+
+## 2. Build
+
+To install orbit package in development mode run following:
+```bash
+ pip install --no-build-isolation --editable .
+```
+No rebuild is necessary, just edit **py/** or **src/** and meson will rebuild as needed when import happens.
+
+
+### 3. Run examples
+
+Special examples used for meson testing
+
+```bash
+cd examples/meson
+python imports_test.py
+python uspas_test.py
+```
+
+SNS linac example
+```bash
+cd examples/SNS_Linac/pyorbit3_linac_model/
+python pyorbit3_sns_linac_mebt_hebt2.py
+```
+
