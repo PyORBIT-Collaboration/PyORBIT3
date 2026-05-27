@@ -268,8 +268,8 @@ class BaseRF_Gap(AbstractRF_Gap):
         if self.__isFirstGap:
             rfCavity.setDesignArrivalTime(arrival_time)
             rfCavity.setDesignSetUp(True)
-            rfCavity.setFirstGapEtnrancePhase(rfCavity.getPhase())
-            rfCavity.setFirstGapEtnranceDesignPhase(rfCavity.getPhase())
+            rfCavity.setFirstGapEntrancePhase(rfCavity.getPhase())
+            rfCavity.setFirstGapEntranceDesignPhase(rfCavity.getPhase())
             rfCavity._setDesignPhase(rfCavity.getPhase())
             rfCavity._setDesignAmp(rfCavity.getAmp())
         else:
@@ -616,7 +616,7 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
         arrival_time = syncPart.time()
         designArrivalTime = rfCavity.getDesignArrivalTime()
         phase_shift = rfCavity.getPhase() - rfCavity.getDesignPhase()
-        phase = rfCavity.getFirstGapEtnrancePhase() + phase_shift
+        phase = rfCavity.getFirstGapEntrancePhase() + phase_shift
         usePhaseAtEntrance = rfCavity.getUsePhaseAtEntrance()
         if(usePhaseAtEntrance):
             phase = rfCavity.getPhase()
@@ -714,7 +714,7 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
         rf_ampl = rfCavity.getDesignAmp()
         arrival_time = syncPart.time()
         frequency = rfCavity.getFrequency()
-        phase = rfCavity.getFirstGapEtnrancePhase()
+        phase = rfCavity.getFirstGapEntrancePhase()
         usePhaseAtEntrance = rfCavity.getUsePhaseAtEntrance()
         if(usePhaseAtEntrance):
             phase = rfCavity.getPhase()
@@ -723,8 +723,8 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
             rfCavity.setDesignArrivalTime(arrival_time)
             if(not usePhaseAtEntrance):
                 phase = self.__calculate_first_part_phase(bunch)
-            rfCavity.setFirstGapEtnrancePhase(phase)
-            rfCavity.setFirstGapEtnranceDesignPhase(phase)
+            rfCavity.setFirstGapEntrancePhase(phase)
+            rfCavity.setFirstGapEntranceDesignPhase(phase)
             rfCavity.setDesignSetUp(True)
             rfCavity._setDesignPhase(rfCavity.getPhase())
             rfCavity._setDesignAmp(rfCavity.getAmp())

@@ -1,0 +1,53 @@
+name: Deploy Documentation to Pages
+
+on:
+  push:
+    branches: ["main"]
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    uses: ./.github/workflows/docs-build.yml
+    with:
+      upload-artifact: true
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download Artifact
+      uses: actions/download-artifact@v5
+      with:
+        name: github-pages
+    - name: Extract artifact.tar in place
+      run: |
+        TARFILE=$(find . -type f -name "*.tar*" | head -n1)
+        if [ -z "$TARFILE" ]; then
+          echo "No tar archive found in workspace"
+          ls -la
+          exit 1
+        fi
+        mkdir -p ./site
+        tar -xvf "$TARFILE" -C ./site
+
+    - name: List extracted site
+      run: ls -R ./site
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+        external_repository: pyorbit-collaboration/pyorbit-collaboration.github.io
+        publish_dir: ./site
