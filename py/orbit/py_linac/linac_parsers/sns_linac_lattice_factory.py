@@ -10,6 +10,7 @@ The SNS Linac Lattice Factory uses a predefined set of Linac Acc Elements.
 import os
 import sys
 import math
+import collections.abc
 
 # import the XmlDataAdaptor XML parser
 from orbit.utils.xml import XmlDataAdaptor
@@ -447,34 +448,38 @@ class SNS_LinacLatticeFactory:
         linacAccLattice.initialize()
         return linacAccLattice
 
-    def filterSequences_and_OptionalCheck(self, accSeq_da_arr, names):
+    def filterSequences_and_OptionalCheck(
+            self,
+            accSeq_da_arr: collections.abc.Sequence[XmlDataAdaptor],
+            names: collections.abc.Sequence[str]
+    ) -> collections.abc.Sequence[XmlDataAdaptor]:
         """
-        This method will filter the sequences according to names list
-        and check the order of sequences in names.
-        All sequences should be in the right order. For SNS linac is
-        just a linac. It returns the filtered array with data adapters
-        with the names in the names array.
+        Filter sequence adaptors by name and preserve the requested order.
+
+        Parameters
+        ----------
+        accSeq_da_arr : collections.abc.Sequence[XmlDataAdaptor]
+            Available sequence data adaptors.
+        names : collections.abc.Sequence[str]
+            Sequence names to select, in the required output order.
+
+        Returns
+        -------
+        collections.abc.Sequence[XmlDataAdaptor]
+            Sequence adaptors matching ``names``, returned in the same order
+            as provided in ``names``.
         """
-        seqencesLocal = accSeq_da_arr
-        seqencesLocalNames = []
-        for seq_da in seqencesLocal:
-            seqencesLocalNames.append(seq_da.getName())
-        ind_old = -1
-        count = 0
-        for name in names:
-            ind = seqencesLocalNames.index(name)
-            if ind < 0 or (count > 0 and ind != (ind_old + 1)):
-                msg = "The LinacLatticeFactory method getLinacAccLattice(names): sequence names array is wrong!"
-                msg = msg + os.linesep
-                msg = msg + "existing names=" + str(seqencesLocalNames)
-                msg = msg + os.linesep
-                msg = msg + "sequence names=" + str(names)
-                orbitFinalize(msg)
-            ind_old = ind
-            count += 1
-        ind_start = seqencesLocalNames.index(names[0])
-        accSeq_da_arr = accSeq_da_arr[ind_start : ind_start + len(names)]
-        return accSeq_da_arr
+        sequence_map = {seq_da.getName(): seq_da for seq_da in accSeq_da_arr}
+        missing_sequences = [n for n in names if n not in sequence_map]
+        if missing_sequences:
+            msg = os.linesep.join([
+                "The LinacLatticeFactory method getLinacAccLattice(names): sequence names array is wrong!",
+                f"existing names={seqencesLocalNames}",
+                f"sequence names={names}",
+            ])
+            orbitFinalize(msg)
+        return [sequence_map[n] for n in names]
+
 
     def makeDataAdaptorforLinacLattice(self, linacAccLattice):
         """
