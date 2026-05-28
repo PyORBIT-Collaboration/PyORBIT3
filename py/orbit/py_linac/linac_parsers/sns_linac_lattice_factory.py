@@ -474,7 +474,7 @@ class SNS_LinacLatticeFactory:
         if missing_sequences:
             msg = os.linesep.join([
                 "The LinacLatticeFactory method getLinacAccLattice(names): sequence names array is wrong!",
-                f"existing names={seqencesLocalNames}",
+                f"existing names={list(sequence_map)}",
                 f"sequence names={names}",
             ])
             orbitFinalize(msg)
