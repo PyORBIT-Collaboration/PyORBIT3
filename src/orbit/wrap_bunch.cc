@@ -16,6 +16,19 @@
 
 #include "pyORBIT_Object.hh"
 
+#ifdef WITH_NUMPY
+#include <numpy/arrayobject.h>
+
+static int ensure_numpy() {
+  static int numpy_initialized = 0;
+  if (!numpy_initialized) {
+    import_array1(-1);
+    numpy_initialized = 1;
+  }
+  return 0;
+}
+#endif // WITH_NUMPY
+
 #include "Bunch.hh"
 #include "ParticleAttributesFactory.hh"
 
@@ -623,7 +636,7 @@ namespace wrap_orbit_bunch{
         }
         std::string attr_name_str(attr_name);
         val = cpp_bunch->getBunchAttributeDouble(attr_name_str);
-        return Py_BuildValue("d",val);
+      return Py_BuildValue("d",val);
       }
       else{
         //NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
@@ -1171,6 +1184,114 @@ namespace wrap_orbit_bunch{
         self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 
+#ifdef WITH_NUMPY
+static PyObject *Bunch_to_numpy(PyObject *self, PyObject *args) {
+  pyORBIT_Object *pyBunch = (pyORBIT_Object*)self;
+  Bunch *cpp_Bunch = (Bunch*)pyBunch->cpp_obj;
+
+  if (!PyArg_ParseTuple(args, ":to_numpy")) {
+    ORBIT_MPI_Finalize("PyBunch - to_numpy() - no parameters are needed.");
+  }
+
+  const npy_intp nparts = (npy_intp)cpp_Bunch->getSize();
+  const npy_intp ncoords = 6;
+
+  npy_intp dims[2] = { nparts, ncoords };
+
+  PyObject *py_array = PyArray_SimpleNew(2, dims, NPY_FLOAT64);
+  PyArrayObject *arr_obj = (PyArrayObject*)py_array;
+  double *data_buffer = (double*)PyArray_DATA(arr_obj);
+  double **src = cpp_Bunch->coordArr();
+
+  for (npy_intp i = 0; i < nparts; ++i) {
+    for (npy_intp j = 0; j < ncoords; ++j) {
+      data_buffer[j + i*ncoords] = src[i][j];
+    }
+  }
+
+  return py_array;
+}
+
+  static int bunch_fill_from_numpy_args(Bunch *cpp_Bunch, PyObject *args) {
+    PyObject *arr_in = NULL;
+
+    if (!PyArg_ParseTuple(args, "O:from_numpy", &arr_in)) {
+        return -1;
+    }
+
+    PyArrayObject *arr =
+        (PyArrayObject*)PyArray_FROM_OTF(arr_in, NPY_FLOAT64, NPY_ARRAY_IN_ARRAY);
+    if (!arr) return -1;
+
+    if (PyArray_NDIM(arr) != 2) {
+        Py_DECREF(arr);
+        PyErr_SetString(PyExc_ValueError,
+                        "from_numpy: array must be 2-dimensional with shape (nparts, 6)");
+        return -1;
+    }
+
+    const npy_intp nparts  = PyArray_DIM(arr, 0);
+    const npy_intp ncoords = PyArray_DIM(arr, 1);
+
+    if (ncoords != 6) {
+        Py_DECREF(arr);
+        PyErr_SetString(PyExc_ValueError,
+                        "from_numpy: expected coordinate dimension with shape 6 (x, px, y, py, z, dE)");
+        return -1;
+    }
+
+    const double *data = (const double*)PyArray_DATA(arr);
+
+    for (npy_intp i = 0; i < nparts; ++i) {
+        const npy_intp stride = i * ncoords;
+        cpp_Bunch->addParticle(
+            data[stride+0], data[stride+1], data[stride+2],
+            data[stride+3], data[stride+4], data[stride+5]
+        );
+    }
+
+    Py_DECREF(arr);
+    return 0;
+}
+
+static PyObject *Bunch_update_from_numpy(PyObject *self, PyObject *args) {
+  pyORBIT_Object *pyBunch = (pyORBIT_Object*)self;
+  Bunch *cpp_Bunch = (Bunch*)pyBunch->cpp_obj;
+
+  if (cpp_Bunch->getSizeGlobal() > 0) {
+    for (int i = 0; i < cpp_Bunch->getSizeGlobal(); ++i) {
+      cpp_Bunch->deleteParticleFast(i);
+    }
+    cpp_Bunch->compress();
+  }
+
+  if (bunch_fill_from_numpy_args(cpp_Bunch, args) < 0) return NULL;
+
+  Py_RETURN_NONE;
+}
+
+static PyObject *Bunch_from_numpy(PyObject *cls, PyObject *args) {
+  PyObject *py_bunch_obj = PyObject_CallNoArgs(cls);
+  if (!py_bunch_obj) return NULL;
+
+  pyORBIT_Object *pyBunch = (pyORBIT_Object*)py_bunch_obj;
+  Bunch *cpp_Bunch = (Bunch*)pyBunch->cpp_obj;
+
+  if (!cpp_Bunch) {
+    Py_DECREF(py_bunch_obj);
+    PyErr_SetString(PyExc_RuntimeError, "from_numpy: Constructed bunch has NULL cpp_obj");
+    return NULL;
+  }
+
+  if (bunch_fill_from_numpy_args(cpp_Bunch, args) < 0) {
+    Py_DECREF(py_bunch_obj);
+    return NULL;
+  }
+
+  return py_bunch_obj;
+}
+#endif // WITH_NUMPY
+
   static PyMethodDef BunchClassMethods[] = {
     //--------------------------------------------------------
     // class Bunch wrapper                        START
@@ -1230,6 +1351,11 @@ namespace wrap_orbit_bunch{
     { "copyEmptyBunchTo",               Bunch_copyEmptyBunchTo              ,METH_VARARGS,"Copy bunch attrubutes and structure to another bunch"},
     { "copyBunchTo",                    Bunch_copyBunchTo                   ,METH_VARARGS,"Copy bunch all info including particles coordinates and attributes to another bunch"},
     { "addParticlesTo",                 Bunch_addParticlesTo                ,METH_VARARGS,"Copy particles coordinates from one bunch to another"},
+#ifdef WITH_NUMPY
+    { "to_numpy",                       Bunch_to_numpy                      ,METH_VARARGS, "Convert bunch coordinates to a numpy array" },
+    { "update_from_numpy",              Bunch_update_from_numpy             ,METH_VARARGS, "Update bunch coordinates from a numpy array" },
+    { "from_numpy",                     Bunch_from_numpy                    ,METH_VARARGS | METH_CLASS, "Construct a new Bunch from a numpy array" },
+#endif
     {NULL,NULL}
     //--------------------------------------------------------
     // class Bunch wrapper                        STOP
@@ -1301,6 +1427,11 @@ extern "C" {
 
   /* The name of the function was changed to avoid collision with PyImport magic naming */
   PyMODINIT_FUNC initbunch(void) {
+  #ifdef WITH_NUMPY
+    if (ensure_numpy() != 0) {
+      throw std::runtime_error("NumPy C-API init failed");
+    }
+  #endif // WITH_NUMPY
       //check that the Bunch wrapper is ready
       if(PyType_Ready(&pyORBIT_Bunch_Type) < 0) return NULL;
       Py_INCREF(&pyORBIT_Bunch_Type);

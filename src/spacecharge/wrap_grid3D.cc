@@ -19,7 +19,7 @@ static int ensure_numpy() {
   }
   return 0;
 }
-#endif
+#endif // WITH_NUMPY
 
 #include "Grid3D.hh"
 
@@ -348,16 +348,10 @@ static void Grid3D_del(pyORBIT_Object *self) {
   self->ob_base.ob_type->tp_free((PyObject *)self);
 }
 
+#ifdef WITH_NUMPY
 static PyObject *Grid3D_to_numpy(PyObject *self, PyObject *args) {
   pyORBIT_Object *pyGrid3D = (pyORBIT_Object *)self;
   Grid3D *cpp_Grid3D = (Grid3D *)pyGrid3D->cpp_obj;
-
-#ifndef WITH_NUMPY
-  PyErr_SetString(PyExc_RuntimeError,
-                  "Grid3D.from_numpy is unavailable: built without NumPy "
-                  "support (compile with -DWITH_NUMPY).");
-  return NULL;
-#else
 
   if (!PyArg_ParseTuple(args, ":to_numpy")) {
     ORBIT_MPI_Finalize("PyGrid3D - to_numpy() - no parameters are needed.");
@@ -386,22 +380,16 @@ static PyObject *Grid3D_to_numpy(PyObject *self, PyObject *args) {
   }
 
   return arr_obj;
-#endif
 }
 
 static PyObject *Grid3D_from_numpy(PyObject *self, PyObject *args) {
   pyORBIT_Object *pyGrid3D = (pyORBIT_Object *)self;
   Grid3D *cpp_Grid3D = (Grid3D *)pyGrid3D->cpp_obj;
 
-#ifndef WITH_NUMPY
-  PyErr_SetString(PyExc_RuntimeError,
-                  "Grid3D.from_numpy is unavailable: built without NumPy "
-                  "support (compile with -DWITH_NUMPY).");
-  return NULL;
-#else
-
   PyObject *arr_in = NULL;
-  if (!PyArg_ParseTuple(args, "O:from_numpy", &arr_in)) {
+  const char* order = "zxy";
+
+  if (!PyArg_ParseTuple(args, "O|s:from_numpy", &arr_in, &order)) {
     ORBIT_MPI_Finalize("PyGrid3D - from_numpy() - ndarray is needed.");
   }
 
@@ -422,6 +410,7 @@ static PyObject *Grid3D_from_numpy(PyObject *self, PyObject *args) {
   const npy_intp nz_in = PyArray_DIM(arr, 0);
   const npy_intp nx_in = PyArray_DIM(arr, 1);
   const npy_intp ny_in = PyArray_DIM(arr, 2);
+
   const npy_intp nz_grid = (npy_intp)cpp_Grid3D->getSizeZ();
   const npy_intp nx_grid = (npy_intp)cpp_Grid3D->getSizeX();
   const npy_intp ny_grid = (npy_intp)cpp_Grid3D->getSizeY();
@@ -447,8 +436,8 @@ static PyObject *Grid3D_from_numpy(PyObject *self, PyObject *args) {
 
   Py_DECREF(arr);
   Py_RETURN_NONE;
-#endif
 }
+#endif // WITH_NUMPY
 
 // defenition of the methods of the python Grid3D wrapper class
 // they will be vailable from python level
@@ -477,8 +466,10 @@ static PyMethodDef Grid3DClassMethods[] = {
     {"calcGradient",   Grid3D_calcGradient,   METH_VARARGS, "returns gradient as (gx,gy,gz) for point (x,y,z)"},
     {"longWrapping",   Grid3D_longWrapping,   METH_VARARGS, "set/get isWrapping variable defining long. wrapping policy"},
     {"synchronizeMPI", Grid3D_synchronizeMPI, METH_VARARGS, "synchronize through the MPI communicator"},
+#ifdef WITH_NUMPY
     {"to_numpy",       Grid3D_to_numpy,       METH_VARARGS, "converts the 3D grid to a numpy array"},
     {"from_numpy",     Grid3D_from_numpy,     METH_VARARGS, "converts the numpy array to a 3D grid"},
+#endif // WITH_NUMPY
     {NULL}};
 
 // defenition of the memebers of the python Grid3D wrapper class
@@ -535,7 +526,7 @@ void initGrid3D(PyObject *module) {
   if (ensure_numpy() != 0) {
     throw std::runtime_error("NumPy C-API init failed");
   }
-#endif
+#endif // WITH_NUMPY
   if (PyType_Ready(&pyORBIT_Grid3D_Type) < 0)
     return;
   Py_INCREF(&pyORBIT_Grid3D_Type);
