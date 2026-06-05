@@ -16,7 +16,7 @@
 
 #include "pyORBIT_Object.hh"
 
-#ifdef WITH_NUMPY
+#ifdef PyORBIT_EXPERIMENTAL_WITH_NUMPY
 #include <numpy/arrayobject.h>
 
 static int ensure_numpy() {
@@ -27,7 +27,7 @@ static int ensure_numpy() {
   }
   return 0;
 }
-#endif // WITH_NUMPY
+#endif // PyORBIT_EXPERIMENTAL_WITH_NUMPY
 
 #include "Bunch.hh"
 #include "ParticleAttributesFactory.hh"
@@ -1184,7 +1184,7 @@ namespace wrap_orbit_bunch{
         self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 
-#ifdef WITH_NUMPY
+#ifdef PyORBIT_EXPERIMENTAL_WITH_NUMPY
 static PyObject *Bunch_to_numpy(PyObject *self, PyObject *args) {
   pyORBIT_Object *pyBunch = (pyORBIT_Object*)self;
   Bunch *cpp_Bunch = (Bunch*)pyBunch->cpp_obj;
@@ -1290,7 +1290,7 @@ static PyObject *Bunch_from_numpy(PyObject *cls, PyObject *args) {
 
   return py_bunch_obj;
 }
-#endif // WITH_NUMPY
+#endif // PyORBIT_EXPERIMENTAL_WITH_NUMPY
 
   static PyMethodDef BunchClassMethods[] = {
     //--------------------------------------------------------
@@ -1351,7 +1351,7 @@ static PyObject *Bunch_from_numpy(PyObject *cls, PyObject *args) {
     { "copyEmptyBunchTo",               Bunch_copyEmptyBunchTo              ,METH_VARARGS,"Copy bunch attrubutes and structure to another bunch"},
     { "copyBunchTo",                    Bunch_copyBunchTo                   ,METH_VARARGS,"Copy bunch all info including particles coordinates and attributes to another bunch"},
     { "addParticlesTo",                 Bunch_addParticlesTo                ,METH_VARARGS,"Copy particles coordinates from one bunch to another"},
-#ifdef WITH_NUMPY
+#ifdef PyORBIT_EXPERIMENTAL_WITH_NUMPY
     { "to_numpy",                       Bunch_to_numpy                      ,METH_VARARGS, "Convert bunch coordinates to a numpy array" },
     { "update_from_numpy",              Bunch_update_from_numpy             ,METH_VARARGS, "Update bunch coordinates from a numpy array" },
     { "from_numpy",                     Bunch_from_numpy                    ,METH_VARARGS | METH_CLASS, "Construct a new Bunch from a numpy array" },
@@ -1427,11 +1427,11 @@ extern "C" {
 
   /* The name of the function was changed to avoid collision with PyImport magic naming */
   PyMODINIT_FUNC initbunch(void) {
-  #ifdef WITH_NUMPY
+  #ifdef PyORBIT_EXPERIMENTAL_WITH_NUMPY
     if (ensure_numpy() != 0) {
       throw std::runtime_error("NumPy C-API init failed");
     }
-  #endif // WITH_NUMPY
+  #endif // PyORBIT_EXPERIMENTAL_WITH_NUMPY
       //check that the Bunch wrapper is ready
       if(PyType_Ready(&pyORBIT_Bunch_Type) < 0) return NULL;
       Py_INCREF(&pyORBIT_Bunch_Type);

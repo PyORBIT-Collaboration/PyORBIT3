@@ -4,7 +4,7 @@
 
 # Add Python installation details
 pymod = import('python')
-with_numpy = get_option('WITH_NUMPY')
+with_numpy = get_option('PyORBIT_EXPERIMENTAL_WITH_NUMPY')
 
 if with_numpy
   message('Compiling with Numpy support')
@@ -13,7 +13,7 @@ if with_numpy
     python, '-c', 'import numpy; print(numpy.get_include())',
     check: true
   ).stdout().strip()
-  add_project_arguments('-DWITH_NUMPY=1', language: 'cpp')
+  add_project_arguments('-DPyORBIT_EXPERIMENTAL_WITH_NUMPY=1', language: 'cpp')
   add_project_arguments('-I' + numpy_inc, language: 'cpp')
 
 else
@@ -34,37 +34,36 @@ dependencies += dependency('fftw3', version: '>= 3.0.0', required: true)
 # Detecting if MPICH or OPENMPI are installed and enabling support if present
 
 mpi_use = get_option('USE_MPI')
-# message('MPI_USE is set to', mpi_use)
+
+cpp_args = ['-fPIC', '-std=c++11', '-O3', '-march=native']
 
 if mpi_use == 'mpich'
     message('Requested to use MPICH as the MPI implementation.')
     dependencies += dependency('mpich', version: '>= 4.0.0', required: true)
-    cpp_args = ['-fPIC', '-std=c++11', '-DUSE_MPI=1']
+    cpp_args += ['-DUSE_MPI=1']
 
     # Configure dependencies or settings specific to MPICH
 elif mpi_use == 'ompi'
     message('Requested to use OpenMPI as the MPI implementation.')
     dependencies += dependency('ompi', version: '>= 4.0.0', required: true)
-    cpp_args = ['-fPIC', '-std=c++11', '-DUSE_MPI=1']
+    cpp_args += ['-DUSE_MPI=1']
 
 elif mpi_use == 'none'
     message('Requested to not use MPI.')
-    cpp_args = ['-fPIC', '-std=c++11']
 
 else
    mpich_dependency = dependency('mpich', version: '>= 4.0.0', required: false)
    openmpi_dependency = dependency('ompi', version: '>= 4.0.0', required: false)
 
    if mpich_dependency.found()
-        cpp_args = ['-fPIC', '-std=c++11', '-DUSE_MPI=1']
+        cpp_args = ['-DUSE_MPI=1']
         dependencies += mpich_dependency
         message('Using MPICH as the MPI implementation.')
    elif openmpi_dependency.found()
-        cpp_args = ['-fPIC', '-std=c++11', '-DUSE_MPI=1']
+        cpp_args = ['-DUSE_MPI=1']
         dependencies += openmpi_dependency
         message('Using OpenMPI as the MPI implementation.')
    else
-        cpp_args = ['-fPIC', '-std=c++11']
         message('MPI will not be used.')
    endif
 
@@ -320,7 +319,7 @@ python.extension_module('orbit_mpi',
 python.extension_module('bunch',
     sources: [base + '/bunch_init.cc'],
     include_directories: inc,
-    cpp_args: ['-fPIC', '-std=c++11'],
+    cpp_args: cpp_args, #['-fPIC', '-std=c++11'],
     dependencies: [core_dep],
     install: true,
     subdir: 'orbit/core',
@@ -329,7 +328,7 @@ python.extension_module('bunch',
 python.extension_module('spacecharge',
     sources: [base + '/spacecharge_init.cc'],
     include_directories: inc,
-    cpp_args: ['-fPIC', '-std=c++11'],
+    cpp_args: cpp_args, #['-fPIC', '-std=c++11'],
     dependencies: [core_dep],
     install: true,
     subdir: 'orbit/core',
@@ -338,7 +337,7 @@ python.extension_module('spacecharge',
 python.extension_module('trackerrk4',
     sources: [base + '/trackerrk4_init.cc'],
     include_directories: inc,
-    cpp_args: ['-fPIC', '-std=c++11'],
+    cpp_args: cpp_args, #['-fPIC', '-std=c++11'],
     dependencies: [core_dep],
     install: true,
     subdir: 'orbit/core',
@@ -347,7 +346,7 @@ python.extension_module('trackerrk4',
 python.extension_module('teapot_base',
     sources: [base + '/teapot_base_init.cc'],
     include_directories: inc,
-    cpp_args: ['-fPIC', '-std=c++11'],
+    cpp_args: cpp_args, #['-fPIC', '-std=c++11'],
     dependencies: [core_dep],
     install: true,
     subdir: 'orbit/core',
@@ -356,7 +355,7 @@ python.extension_module('teapot_base',
 python.extension_module('linac',
     sources: [base + '/linac_init.cc'],
     include_directories: inc,
-    cpp_args: ['-fPIC', '-std=c++11'],
+    cpp_args: cpp_args,
     dependencies: [core_dep],
     install: true,
     subdir: 'orbit/core',
@@ -365,7 +364,7 @@ python.extension_module('linac',
 python.extension_module('orbit_utils',
     sources: [base + '/utils_init.cc'],
     include_directories: inc,
-    cpp_args: ['-fPIC', '-std=c++11'],
+    cpp_args: cpp_args,
     dependencies: [core_dep],
     install: true,
     subdir: 'orbit/core',
@@ -374,7 +373,7 @@ python.extension_module('orbit_utils',
 python.extension_module('aperture',
     sources: [base + '/aperture_init.cc'],
     include_directories: inc,
-    cpp_args: ['-fPIC', '-std=c++11'],
+    cpp_args: cpp_args,
     dependencies: [core_dep],
     install: true,
     subdir: 'orbit/core',
@@ -383,7 +382,7 @@ python.extension_module('aperture',
 python.extension_module('foil',
     sources: [base + '/foil_init.cc'],
     include_directories: inc,
-    cpp_args: ['-fPIC', '-std=c++11'],
+    cpp_args: cpp_args,
     dependencies: [core_dep],
     install: true,
     subdir: 'orbit/core',
@@ -392,7 +391,7 @@ python.extension_module('foil',
 python.extension_module('field_sources',
     sources: [base + '/field_sources_init.cc'],
     include_directories: inc,
-    cpp_args: ['-fPIC', '-std=c++11'],
+    cpp_args: cpp_args,
     dependencies: [core_dep],
     install: true,
     subdir: 'orbit/core',
@@ -401,7 +400,7 @@ python.extension_module('field_sources',
 python.extension_module('rfcavities',
     sources: [base + '/rfcavities_init.cc'],
     include_directories: inc,
-    cpp_args: ['-fPIC', '-std=c++11'],
+    cpp_args: cpp_args,
     dependencies: [core_dep],
     install: true,
     subdir: 'orbit/core',
@@ -410,7 +409,7 @@ python.extension_module('rfcavities',
 python.extension_module('impedances',
     sources: [base + '/impedances_init.cc'],
     include_directories: inc,
-    cpp_args: ['-fPIC', '-std=c++11'],
+    cpp_args: cpp_args,
     dependencies: [core_dep],
     install: true,
     subdir: 'orbit/core',
@@ -419,7 +418,7 @@ python.extension_module('impedances',
 python.extension_module('fieldtracker',
     sources: [base + '/fieldtracker_init.cc'],
     include_directories: inc,
-    cpp_args: ['-fPIC', '-std=c++11'],
+    cpp_args: cpp_args,
     dependencies: [core_dep],
     install: true,
     subdir: 'orbit/core',
@@ -428,7 +427,7 @@ python.extension_module('fieldtracker',
 python.extension_module('collimator',
     sources: [base + '/collimator_init.cc'],
     include_directories: inc,
-    cpp_args: ['-fPIC', '-std=c++11'],
+    cpp_args: cpp_args,
     dependencies: [core_dep],
     install: true,
     subdir: 'orbit/core',
@@ -437,7 +436,7 @@ python.extension_module('collimator',
 python.extension_module('error_base',
    sources: [base + '/error_base_init.cc'],
     include_directories: inc,
-    cpp_args: ['-fPIC', '-std=c++11'],
+    cpp_args: cpp_args,
     dependencies: [core_dep],
     install: true,
    subdir: 'orbit/core',

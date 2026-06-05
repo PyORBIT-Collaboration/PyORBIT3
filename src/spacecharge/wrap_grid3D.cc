@@ -7,7 +7,7 @@
 #include "wrap_bunch.hh"
 #include "wrap_spacecharge.hh"
 
-#ifdef WITH_NUMPY
+#ifdef PyORBIT_EXPERIMENTAL_WITH_NUMPY
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <numpy/arrayobject.h>
 
@@ -19,7 +19,7 @@ static int ensure_numpy() {
   }
   return 0;
 }
-#endif // WITH_NUMPY
+#endif // PyORBIT_EXPERIMENTAL_WITH_NUMPY
 
 #include "Grid3D.hh"
 
@@ -348,7 +348,7 @@ static void Grid3D_del(pyORBIT_Object *self) {
   self->ob_base.ob_type->tp_free((PyObject *)self);
 }
 
-#ifdef WITH_NUMPY
+#ifdef PyORBIT_EXPERIMENTAL_WITH_NUMPY
 static PyObject *Grid3D_to_numpy(PyObject *self, PyObject *args) {
   pyORBIT_Object *pyGrid3D = (pyORBIT_Object *)self;
   Grid3D *cpp_Grid3D = (Grid3D *)pyGrid3D->cpp_obj;
@@ -437,7 +437,7 @@ static PyObject *Grid3D_from_numpy(PyObject *self, PyObject *args) {
   Py_DECREF(arr);
   Py_RETURN_NONE;
 }
-#endif // WITH_NUMPY
+#endif // PyORBIT_EXPERIMENTAL_WITH_NUMPY
 
 // defenition of the methods of the python Grid3D wrapper class
 // they will be vailable from python level
@@ -466,10 +466,10 @@ static PyMethodDef Grid3DClassMethods[] = {
     {"calcGradient",   Grid3D_calcGradient,   METH_VARARGS, "returns gradient as (gx,gy,gz) for point (x,y,z)"},
     {"longWrapping",   Grid3D_longWrapping,   METH_VARARGS, "set/get isWrapping variable defining long. wrapping policy"},
     {"synchronizeMPI", Grid3D_synchronizeMPI, METH_VARARGS, "synchronize through the MPI communicator"},
-#ifdef WITH_NUMPY
+#ifdef PyORBIT_EXPERIMENTAL_WITH_NUMPY
     {"to_numpy",       Grid3D_to_numpy,       METH_VARARGS, "converts the 3D grid to a numpy array"},
     {"from_numpy",     Grid3D_from_numpy,     METH_VARARGS, "converts the numpy array to a 3D grid"},
-#endif // WITH_NUMPY
+#endif // PyORBIT_EXPERIMENTAL_WITH_NUMPY
     {NULL}};
 
 // defenition of the memebers of the python Grid3D wrapper class
@@ -522,11 +522,11 @@ static PyTypeObject pyORBIT_Grid3D_Type = {
 // It will be called from SpaceCharge wrapper initialization
 //--------------------------------------------------
 void initGrid3D(PyObject *module) {
-#ifdef WITH_NUMPY
+#ifdef PyORBIT_EXPERIMENTAL_WITH_NUMPY
   if (ensure_numpy() != 0) {
     throw std::runtime_error("NumPy C-API init failed");
   }
-#endif // WITH_NUMPY
+#endif // PyORBIT_EXPERIMENTAL_WITH_NUMPY
   if (PyType_Ready(&pyORBIT_Grid3D_Type) < 0)
     return;
   Py_INCREF(&pyORBIT_Grid3D_Type);
