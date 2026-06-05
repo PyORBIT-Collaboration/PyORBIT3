@@ -1,6 +1,6 @@
 # Add Python installation details
 pymod = import('python')
-with_numpy = get_option('WITH_NUMPY')
+with_numpy = get_option('PyORBIT_EXPERIMENTAL_WITH_NUMPY')
 
 if with_numpy
   message('Compiling with Numpy support')
@@ -9,7 +9,7 @@ if with_numpy
     python, '-c', 'import numpy; print(numpy.get_include())',
     check: true
   ).stdout().strip()
-  add_project_arguments('-DWITH_NUMPY=1', language: 'cpp')
+  add_project_arguments('-DPyORBIT_EXPERIMENTAL_WITH_NUMPY=1', language: 'cpp')
   add_project_arguments('-I' + numpy_inc, language: 'cpp')
 
 else
