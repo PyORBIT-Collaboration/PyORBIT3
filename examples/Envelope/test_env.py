@@ -25,9 +25,6 @@ def calc_bunch_cov(bunch: Bunch) -> np.ndarray:
             cov_matrix[j, i] = cov_matrix[i, j]
     return cov_matrix
 
-    # coords = collect_bunch(bunch)["coords"]
-    # return np.cov(coords.T)
-
 
 def make_lattice(nodes: list[AccNode]) -> AccLattice:
     lattice = TEAPOT_Lattice()
@@ -45,10 +42,21 @@ def track_and_compare_rms(
     kin_energy: float,
     cov_matrix: np.ndarray,
     nparts: int = 100_000,
-    rtol: float = 1e-3,
-    atol: float = 1e-3,
+    rtol: float = 1e-5,
+    atol: float = 1e-4,
+    verbose: int = 1,
 ) -> dict:
-    """Track bunch/envelope and compare rms beam sizes.    """
+    """Track bunch/envelope and compare rms beam sizes.
+
+    Args:
+        lattice: Accelerator lattice.
+        kin_energy: Synchronous particle kinetic energy [GeV].
+        cov_matrix: 6 x 6 covariance matrix.
+        nparts: Number of particles in bunch.
+        rtol/atol: Relative/absolute tolerance on rms beam sizes (bunch vs. envelope).
+            Units are [mm, mrad].
+        verbose: Whether to print results.
+    """
     cov_scale = 1e6
 
     data = {}
@@ -84,19 +92,19 @@ def track_and_compare_rms(
     envelope_tracker.track(envelope)
     data["env"]["cov"]["out"] = cov_scale * envelope.cov()
 
-    # Calculate rms sizes
+    # Compare
     for mode in ["env", "bunch"]:
         for loc in ["in", "out"]:
             data[mode]["rms"][loc] = np.sqrt(np.diag(data[mode]["cov"][loc]))
 
-    # Print
-    dims = ["x", "xp", "y", "yp", "z", "dE"]
-    for key in ["in", "out"]:
-        print(key.upper())
-        for i in range(6):
-            print("  rms {}:".format(dims[i]))
-            print("    env:   {}".format(data["env"]["rms"][key][i]))
-            print("    bunch: {}".format(data["bunch"]["rms"][key][i]))
+    if verbose:
+        dims = ["x", "xp", "y", "yp", "z", "dE"]
+        for key in ["in", "out"]:
+            print(key.upper())
+            for i in range(6):
+                print("  rms {}:".format(dims[i]))
+                print("    env:   {}".format(data["env"]["rms"][key][i]))
+                print("    bunch: {}".format(data["bunch"]["rms"][key][i]))
 
     for key in ["in", "out"]:
         assert np.all(
@@ -110,6 +118,7 @@ def track_and_compare_rms(
 
 
 def make_default_cov_matrix(scale: float = 0.001) -> np.ndarray:
+    """Isotropic covariance matrix in 4D phase space."""
     cov_matrix = np.zeros((6, 6))
     cov_matrix[0, 0] = scale ** 2
     cov_matrix[1, 1] = scale ** 2
@@ -148,59 +157,7 @@ def test_dipole(kin_energy: float = 0.0025, length: float = 1.0, theta: float = 
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
 
 
-def test_dipole_matrix():
-    from orbit.envelope.matrix import MatrixFactory
-
-    bunch = Bunch()
-    bunch.mass(mass_proton)
-
-    sync_part = bunch.getSyncParticle()
-    sync_part.kinEnergy(0.0025)
-
-    node = BendTEAPOT(length=1.0, theta=np.radians(20.0))
-
-    matrix_factory = MatrixFactory()
-    matrix = matrix_factory.bend(length=node.getLength(), theta=node.getParam("theta"), sync_part=sync_part)
-
-    print(np.round(matrix, 2))
-
-    x = np.zeros(6)
-    x[1] = 0.001
-    x[1] = 0.001
-
-    bunch.addParticle(*x)
-
-    node.trackBunch(bunch)
-
-    x_out = [bunch.x(0), bunch.xp(0), bunch.y(0), bunch.yp(0), bunch.z(0), bunch.dE(0)]
-    x_out = np.array(x_out)
-
-    print(x)
-    print(x_out)
-    print(np.matmul(matrix[:6, :6], x))
-
-    cov_matrix = make_default_cov_matrix()
-    envelope = Envelope(sync_part=bunch.getSyncParticle(), cov_matrix=cov_matrix)
-    envelope.apply_transfer_matrix(matrix)
-    print(np.round(1e6 * envelope.cov(), 2))
-
-    particles_in = np.random.multivariate_normal(np.zeros(6), cov_matrix, size=100_000)
-    particles_out = np.matmul(particles_in, matrix[:6, :6].T)
-    print(np.round(1e6 * np.cov(particles_out.T), 2))
-
-    bunch.deleteAllParticles()
-    for x in particles_in:
-        bunch.addParticle(*x)
-    node.trackBunch(bunch)
-    particles_out = collect_bunch(bunch)["coords"]
-    print(np.round(1e6 * np.cov(particles_out.T), 2))
-
-
 if __name__ == "__main__":
-    # test_drift()
+    test_drift()
     test_quad()
-    # test_dipole()
-    # test_dipole_matrix()
-
-
-
+    test_dipole()
