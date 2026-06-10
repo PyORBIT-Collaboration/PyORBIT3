@@ -15,18 +15,18 @@ from orbit.envelope import EnvelopeTracker
 
 
 def calc_bunch_cov(bunch: Bunch) -> np.ndarray:
-    coords = collect_bunch(bunch)["coords"]
-    return np.cov(coords.T)
+    twiss_calc = BunchTwissAnalysis()
+    twiss_calc.analyzeBunch(bunch)
 
-    # twiss_calc = BunchTwissAnalysis()
-    # twiss_calc.computeBunchMoments(bunch, 2, 0, 0)
-    #
-    # cov_matrix = np.zeros((6, 6))
-    # for i in range(6):
-    #     for j in range(i + 1):
-    #         cov_matrix[i, j] = twiss_calc.getCorrelation(j, i)
-    #         cov_matrix[j, i] = cov_matrix[i, j]
-    # return cov_matrix
+    cov_matrix = np.zeros((6, 6))
+    for i in range(6):
+        for j in range(i + 1):
+            cov_matrix[i, j] = twiss_calc.getCorrelation(j, i)
+            cov_matrix[j, i] = cov_matrix[i, j]
+    return cov_matrix
+
+    # coords = collect_bunch(bunch)["coords"]
+    # return np.cov(coords.T)
 
 
 def make_lattice(nodes: list[AccNode]) -> AccLattice:
@@ -40,13 +40,15 @@ def make_lattice(nodes: list[AccNode]) -> AccLattice:
     return lattice
 
 
-def track_and_compare(
-    nodes: list[AccNode],
+def track_and_compare_rms(
+    lattice: AccLattice,
     kin_energy: float,
     cov_matrix: np.ndarray,
     nparts: int = 100_000,
+    rtol: float = 1e-3,
+    atol: float = 1e-3,
 ) -> dict:
-
+    """Track bunch/envelope and compare rms beam sizes.    """
     cov_scale = 1e6
 
     data = {}
@@ -57,34 +59,37 @@ def track_and_compare(
             for k3 in ["env", "bunch"]:
                 data[k1][k2][k3] = {}
 
-    lattice = make_lattice(nodes)
-
+    # Initialize bunch
     bunch = Bunch()
     bunch.mass(mass_proton)
+    bunch.getSyncParticle().kinEnergy(kin_energy)
 
-    sync_part = bunch.getSyncParticle()
-    sync_part.kinEnergy(kin_energy)
+    # Track bunch
+    particles = np.random.multivariate_normal(np.zeros(6), cov_matrix, size=nparts)
+    for x in particles:
+        bunch.addParticle(*x)
 
-    envelope = Envelope(sync_part=sync_part, cov_matrix=cov_matrix)
+    # Covariance matrix calculated from particles will be slightly different.
+    cov_matrix = calc_bunch_cov(bunch)
 
+    data["bunch"]["cov"]["in"] = cov_scale * calc_bunch_cov(bunch)
+    lattice.trackBunch(bunch)
+    data["bunch"]["cov"]["out"] = cov_scale * calc_bunch_cov(bunch)
+
+    # Track envelope
+    envelope = Envelope(sync_part=bunch.getSyncParticle(), cov_matrix=cov_matrix)
     envelope_tracker = EnvelopeTracker(lattice=lattice)
 
     data["env"]["cov"]["in"] = cov_scale * envelope.cov()
     envelope_tracker.track(envelope)
     data["env"]["cov"]["out"] = cov_scale * envelope.cov()
 
-    particles = np.random.multivariate_normal(np.zeros(6), cov_matrix, size=nparts)
-    for x in particles:
-        bunch.addParticle(*x)
-
-    data["bunch"]["cov"]["in"] = cov_scale * calc_bunch_cov(bunch)
-    lattice.trackBunch(bunch)
-    data["bunch"]["cov"]["out"] = cov_scale * calc_bunch_cov(bunch)
-
+    # Calculate rms sizes
     for mode in ["env", "bunch"]:
         for loc in ["in", "out"]:
             data[mode]["rms"][loc] = np.sqrt(np.diag(data[mode]["cov"][loc]))
 
+    # Print
     dims = ["x", "xp", "y", "yp", "z", "dE"]
     for key in ["in", "out"]:
         print(key.upper())
@@ -94,40 +99,53 @@ def track_and_compare(
             print("    bunch: {}".format(data["bunch"]["rms"][key][i]))
 
     for key in ["in", "out"]:
-        assert np.all(np.isclose(data["env"]["cov"][key], data["bunch"]["cov"][key]))
+        assert np.all(
+            np.isclose(
+                data["env"]["cov"][key],
+                data["bunch"]["cov"][key],
+                rtol=rtol,
+                atol=atol,
+            )
+        )
 
 
 def make_default_cov_matrix(scale: float = 0.001) -> np.ndarray:
     cov_matrix = np.zeros((6, 6))
     cov_matrix[0, 0] = scale ** 2
+    cov_matrix[1, 1] = scale ** 2
     cov_matrix[2, 2] = scale ** 2
+    cov_matrix[3, 3] = scale ** 2
     return cov_matrix
 
 
 def test_drift(kin_energy: float = 0.0025, length: float = 1.0, cov_matrix: np.ndarray = None):
     nodes = [
-        DriftTEAPOT(length=1.0),
+        DriftTEAPOT(length=length),
     ]
+    lattice = make_lattice(nodes)
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
-    track_and_compare(nodes, kin_energy, cov_matrix)
+    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+
 
 def test_quad(kin_energy: float = 0.0025, length: float = 1.0, kq: float = 1.0, cov_matrix: np.ndarray = None):
     nodes = [
         QuadTEAPOT(length=length, kq=kq),
     ]
+    lattice = make_lattice(nodes)
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
-    track_and_compare(nodes, kin_energy, cov_matrix)
+    track_and_compare_rms(lattice, kin_energy, cov_matrix)
 
 
 def test_dipole(kin_energy: float = 0.0025, length: float = 1.0, theta: float = 20.0, cov_matrix: np.ndarray = None):
     nodes = [
         BendTEAPOT(length=length, theta=np.radians(theta))
     ]
+    lattice = make_lattice(nodes)
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
-    track_and_compare(nodes, kin_energy, cov_matrix)
+    track_and_compare_rms(lattice, kin_energy, cov_matrix)
 
 
 def test_dipole_matrix():
@@ -180,8 +198,8 @@ def test_dipole_matrix():
 
 if __name__ == "__main__":
     # test_drift()
-    # test_quad()
-    test_dipole()
+    test_quad()
+    # test_dipole()
     # test_dipole_matrix()
 
 
