@@ -301,6 +301,9 @@ class SNS_LinacLatticeFactory:
                         accNode = MarkerLinacNode(node_da.stringValue("name"))
                     accNode.setParam("pos", node_pos)
                     thinNodes.append(accNode)
+                #--------------------------------------
+                #---- sets up copy of XML data adaptor of this node
+                accNode.setDataAdaptor(node_da.getDeepCopy())
             # ----- assign the thin nodes that are inside the thick nodes
             unusedThinNodes = []
             for thinNode in thinNodes:
