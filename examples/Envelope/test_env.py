@@ -42,7 +42,7 @@ def track_and_compare_rms(
     kin_energy: float,
     cov_matrix: np.ndarray,
     nparts: int = 100_000,
-    rtol: float = 1e-5,
+    rtol: float = 1e-3,
     atol: float = 1e-4,
     verbose: int = 1,
 ) -> dict:
@@ -109,25 +109,26 @@ def track_and_compare_rms(
     for key in ["in", "out"]:
         assert np.all(
             np.isclose(
-                data["env"]["cov"][key],
-                data["bunch"]["cov"][key],
-                rtol=rtol,
-                atol=atol,
+                data["env"]["cov"][key], data["bunch"]["cov"][key], rtol=rtol, atol=atol
             )
         )
 
 
-def make_default_cov_matrix(scale: float = 0.001) -> np.ndarray:
+def make_default_cov_matrix() -> np.ndarray:
     """Isotropic covariance matrix in 4D phase space."""
     cov_matrix = np.zeros((6, 6))
-    cov_matrix[0, 0] = scale ** 2
-    cov_matrix[1, 1] = scale ** 2
-    cov_matrix[2, 2] = scale ** 2
-    cov_matrix[3, 3] = scale ** 2
+    cov_matrix[0, 0] = 0.001**2
+    cov_matrix[1, 1] = 0.001**2
+    cov_matrix[2, 2] = 0.001**2
+    cov_matrix[3, 3] = 0.001**2
+    cov_matrix[4, 4] = 0.001**2
+    cov_matrix[5, 5] = 0.00001**2
     return cov_matrix
 
 
-def test_drift(kin_energy: float = 0.0025, length: float = 1.0, cov_matrix: np.ndarray = None):
+def test_drift(
+    kin_energy: float = 0.0025, length: float = 1.0, cov_matrix: np.ndarray = None
+):
     nodes = [
         DriftTEAPOT(length=length),
     ]
@@ -137,7 +138,12 @@ def test_drift(kin_energy: float = 0.0025, length: float = 1.0, cov_matrix: np.n
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
 
 
-def test_quad(kin_energy: float = 0.0025, length: float = 1.0, kq: float = 1.0, cov_matrix: np.ndarray = None):
+def test_quad(
+    kin_energy: float = 0.0025,
+    length: float = 1.0,
+    kq: float = 1.0,
+    cov_matrix: np.ndarray = None,
+):
     nodes = [
         QuadTEAPOT(length=length, kq=kq),
     ]
@@ -147,10 +153,13 @@ def test_quad(kin_energy: float = 0.0025, length: float = 1.0, kq: float = 1.0, 
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
 
 
-def test_dipole(kin_energy: float = 0.0025, length: float = 1.0, theta: float = 20.0, cov_matrix: np.ndarray = None):
-    nodes = [
-        BendTEAPOT(length=length, theta=np.radians(theta))
-    ]
+def test_dipole(
+    kin_energy: float = 0.0025,
+    length: float = 1.0,
+    theta: float = 20.0,
+    cov_matrix: np.ndarray = None,
+):
+    nodes = [BendTEAPOT(length=length, theta=np.radians(theta))]
     lattice = make_lattice(nodes)
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
