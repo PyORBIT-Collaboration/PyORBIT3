@@ -39,7 +39,16 @@ def convert_matrix_dp_p_to_dE(matrix: np.ndarray, sync_part: SyncParticle) -> np
     dp_p_coeff = get_dp_p_coeff(sync_part)
     matrix[:5, 5] *= dp_p_coeff
     matrix[5, :5] /= dp_p_coeff
+    matrix[5, 6] /= dp_p_coeff
     return matrix
+
+    # scale = np.identity(7)
+    # scale[5, 5] = dp_p_coeff
+    #
+    # scale_inv = np.identity(7)
+    # scale_inv[5, 5] = 1.0 / dp_p_coeff
+    #
+    # return np.linalg.multi_dot([scale, matrix, scale_inv])
 
 
 class MatrixFactory:
@@ -57,7 +66,7 @@ class MatrixFactory:
         ]
         self.handle_unknown = handle_unknown
 
-    def drift(self, length: float, sync_part: SyncParticle) -> np.ndarray:
+    def drift_matrix(self, length: float, sync_part: SyncParticle) -> np.ndarray:
         matrix = np.identity(7)
         matrix[0, 1] = length
         matrix[2, 3] = length
@@ -65,7 +74,7 @@ class MatrixFactory:
         matrix = convert_matrix_dp_p_to_dE(matrix, sync_part)
         return matrix
 
-    def quad(self, length: float, kq: float, sync_part: SyncParticle) -> np.ndarray:
+    def quad_matrix(self, length: float, kq: float, sync_part: SyncParticle) -> np.ndarray:
         sqrt_abs_kq = math.sqrt(abs(kq))
 
         matrix = np.identity(7)
@@ -100,7 +109,7 @@ class MatrixFactory:
         matrix = convert_matrix_dp_p_to_dE(matrix, sync_part)
         return matrix
 
-    def bend(self, length: float, theta: float, sync_part: SyncParticle) -> np.ndarray:
+    def bend_matrix(self, length: float, theta: float, sync_part: SyncParticle) -> np.ndarray:
         if length <= 0:
             return np.identity(7)
 
@@ -127,7 +136,7 @@ class MatrixFactory:
         matrix = convert_matrix_dp_p_to_dE(matrix, sync_part)
         return matrix
 
-    def tilt(self, angle: float) -> np.ndarray:
+    def tilt_matrix(self, angle: float) -> np.ndarray:
         matrix = np.identity(7)
         matrix[0, 0] = matrix[1, 1] = +math.cos(angle)
         matrix[0, 2] = matrix[1, 3] = +math.sin(angle)
@@ -135,24 +144,30 @@ class MatrixFactory:
         matrix[2, 2] = matrix[3, 3] = +math.cos(angle)
         return matrix
 
-    def translation(self, x: float = 0.0, y: float = 0.0, z: float = 0.0) -> np.ndarray:
+    def translation_matrix(self, x: float = 0.0, y: float = 0.0, z: float = 0.0) -> np.ndarray:
         matrix = np.identity(7)
         matrix[0, 6] = x
         matrix[2, 6] = y
         matrix[4, 6] = z
         return matrix
 
-    def kick(self, kx: float, ky: float, dE: float) -> np.ndarray:
+    def kick_matrix(self, kx: float, ky: float, dE: float) -> np.ndarray:
         matrix = np.identity(7)
         matrix[1, 6] = kx
         matrix[3, 6] = ky
         matrix[5, 6] = dE
         return matrix
 
+    def solenoid_matrix(self, length: float, B: float, sync_part: SyncParticle) -> np.ndarray:
+        raise NotImplementedError()
+
+    def cf_matrix(self, length: float, kq: float, sync_part: SyncParticle) -> np.ndarray:
+        raise NotImplementedError()
+
     def __call__(self, node: AccNode, sync_part: SyncParticle, part_index: int = 0) -> np.ndarray:
         if type(node) is DriftTEAPOT:
             length = node.getLength(part_index)
-            return self.drift(length=length, sync_part=sync_part)
+            return self.drift_matrix(length=length, sync_part=sync_part)
 
         elif type(node) is QuadTEAPOT:
             length = node.getLength(part_index)
@@ -162,14 +177,15 @@ class MatrixFactory:
                 scale = node.waveform.getStrength()
 
             kq = scale * node.getParam("kq")
-            return self.quad(length=length, kq=kq, sync_part=sync_part)
+            return self.quad_matrix(length=length, kq=kq, sync_part=sync_part)
 
         elif type(node) is BendTEAPOT:
             length = node.getLength(part_index)
             theta = node.getParam("theta") / node.getnParts()
-            return self.bend(length=length, theta=theta, sync_part=sync_part)
+            return self.bend_matrix(length=length, theta=theta, sync_part=sync_part)
 
         elif type(node) is KickTEAPOT:
+            length = node.getLength(part_index)
             nparts = node.getnParts()
 
             scale = 1.0
@@ -179,18 +195,22 @@ class MatrixFactory:
             kx = scale * node.getParam("kx") / nparts
             ky = scale * node.getParam("ky") / nparts
             dE = node.getParam("dE") / nparts
-            return self.kick(kx, ky, dE)
+
+            return np.matmul(
+                self.kick_matrix(kx=kx, ky=ky, dE=dE),
+                self.drift_matrix(length=length, sync_part=sync_part)
+            )
 
         elif type(node) is TiltTEAPOT:
             angle = node.getTiltAngle()
-            return self.tilt(angle)
+            return self.tilt_matrix(angle)
 
         elif type(node) in self.ignore_node_types:
             return np.identity(7)
 
         else:
             if self.handle_unknown == "drift":
-                return self.drift(length=node.getLength(), sync_part=sync_part)
+                return self.drift_matrix(length=node.getLength(), sync_part=sync_part)
             elif self.handle_unknown == "fit":
                 raise NotImplementedError()
             raise NotImplementedError("Unsupported node type: {}. See `handle_unknown` attribute.".format(type(node)))

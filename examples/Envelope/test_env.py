@@ -4,7 +4,7 @@ from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTwissAnalysis
 from orbit.lattice import AccNode
 from orbit.lattice import AccLattice
-from orbit.teapot import QuadTEAPOT
+from orbit.teapot import QuadTEAPOT, KickTEAPOT, TiltTEAPOT
 from orbit.teapot import BendTEAPOT
 from orbit.teapot import DriftTEAPOT
 from orbit.teapot import TEAPOT_Lattice
@@ -126,10 +126,8 @@ def make_default_cov_matrix(
 
 def test_drift(
     kin_energy: float = 0.0025, length: float = 1.0, cov_matrix: np.ndarray = None
-):
-    nodes = [
-        DriftTEAPOT(length=length),
-    ]
+) -> None:
+    nodes = [DriftTEAPOT(length=length)]
     lattice = make_lattice(nodes)
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
@@ -141,10 +139,8 @@ def test_quad(
     length: float = 1.0,
     kq: float = 1.0,
     cov_matrix: np.ndarray = None,
-):
-    nodes = [
-        QuadTEAPOT(length=length, kq=kq),
-    ]
+) -> None:
+    nodes = [QuadTEAPOT(length=length, kq=kq)]
     lattice = make_lattice(nodes)
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
@@ -156,8 +152,35 @@ def test_dipole(
     length: float = 1.0,
     theta: float = 20.0,
     cov_matrix: np.ndarray = None,
-):
+) -> None:
     nodes = [BendTEAPOT(length=length, theta=np.radians(theta))]
+    lattice = make_lattice(nodes)
+    if cov_matrix is None:
+        cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+
+
+def test_kick(
+    kin_energy: float = 0.0025,
+    length: float = 0.1,
+    kx: float = 0.001,
+    ky: float = 0.001,
+    dE: float = 0.001,
+    cov_matrix: np.ndarray = None,
+) -> None:
+    nodes = [KickTEAPOT(kx=kx, ky=ky, dE=dE, length=length)]
+    lattice = make_lattice(nodes)
+    if cov_matrix is None:
+        cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+    
+    
+def test_tilt(
+    kin_energy: float = 0.0025,
+    angle: float = 0.25 * np.pi,
+    cov_matrix: np.ndarray = None,
+) -> None:
+    nodes = [TiltTEAPOT(angle=angle)]
     lattice = make_lattice(nodes)
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
@@ -168,4 +191,5 @@ if __name__ == "__main__":
     test_drift()
     test_quad()
     test_dipole()
+    test_kick()
 
