@@ -129,9 +129,10 @@ def make_default_cov_matrix(
 
 
 def test_drift(
-    kin_energy: float = 0.0025, length: float = 1.0, cov_matrix: np.ndarray = None
+    kin_energy: float = 0.0025, length: float = 1.0, cov_matrix: np.ndarray = None,
+    nparts: int = 6,
 ) -> None:
-    nodes = [DriftTEAPOT(length=length)]
+    nodes = [DriftTEAPOT(length=length, nparts=nparts)]
     lattice = make_lattice(nodes)
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
@@ -143,8 +144,9 @@ def test_quad(
     length: float = 1.0,
     kq: float = 1.0,
     cov_matrix: np.ndarray = None,
+    nparts: int = 10,
 ) -> None:
-    nodes = [QuadTEAPOT(length=length, kq=kq)]
+    nodes = [QuadTEAPOT(length=length, kq=kq, nparts=nparts)]
     lattice = make_lattice(nodes)
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
@@ -156,8 +158,9 @@ def test_dipole(
     length: float = 1.0,
     theta: float = 20.0,
     cov_matrix: np.ndarray = None,
+    nparts: int = 2,
 ) -> None:
-    nodes = [BendTEAPOT(length=length, theta=np.radians(theta))]
+    nodes = [BendTEAPOT(length=length, theta=np.radians(theta), nparts=nparts)]
     lattice = make_lattice(nodes)
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
@@ -171,8 +174,9 @@ def test_kick(
     ky: float = 0.001,
     dE: float = 0.00001,
     cov_matrix: np.ndarray = None,
+    nparts: int = 4,
 ) -> None:
-    nodes = [KickTEAPOT(kx=kx, ky=ky, dE=dE, length=length)]
+    nodes = [KickTEAPOT(kx=kx, ky=ky, dE=dE, length=length, nparts=nparts)]
     lattice = make_lattice(nodes)
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
