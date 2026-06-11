@@ -2,7 +2,6 @@ import numpy as np
 
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTwissAnalysis
-from orbit.bunch_utils import collect_bunch
 from orbit.lattice import AccNode
 from orbit.lattice import AccLattice
 from orbit.teapot import QuadTEAPOT
@@ -42,8 +41,8 @@ def track_and_compare_rms(
     kin_energy: float,
     cov_matrix: np.ndarray,
     nparts: int = 100_000,
-    rtol: float = 1e-3,
-    atol: float = 1e-4,
+    rtol: float = 1e-5,
+    atol: float = 1e12,
     verbose: int = 1,
 ) -> dict:
     """Track bunch/envelope and compare rms beam sizes.
@@ -114,16 +113,15 @@ def track_and_compare_rms(
         )
 
 
-def make_default_cov_matrix() -> np.ndarray:
-    """Isotropic covariance matrix in 4D phase space."""
-    cov_matrix = np.zeros((6, 6))
-    cov_matrix[0, 0] = 0.001**2
-    cov_matrix[1, 1] = 0.001**2
-    cov_matrix[2, 2] = 0.001**2
-    cov_matrix[3, 3] = 0.001**2
-    cov_matrix[4, 4] = 0.001**2
-    cov_matrix[5, 5] = 0.00001**2
-    return cov_matrix
+def make_default_cov_matrix(
+    rms_x: float = 0.001,
+    rms_xp: float = 0.001,
+    rms_y: float = 0.001,
+    rms_yp: float = 0.001,
+    rms_z: float = 0.001,
+    rms_dE: float = 0.00001,
+) -> np.ndarray:
+    return np.diag(np.square([rms_x, rms_xp, rms_y, rms_yp, rms_z, rms_dE]))
 
 
 def test_drift(
@@ -170,3 +168,4 @@ if __name__ == "__main__":
     test_drift()
     test_quad()
     test_dipole()
+

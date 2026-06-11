@@ -20,7 +20,26 @@ from ..utils import speed_of_light
 
 
 def get_dp_p_coeff(sync_part: SyncParticle) -> float:
-    return 1.0 / (sync_part.momentum() * sync_part.beta())
+    beta = sync_part.beta()
+    gamma = sync_part.gamma()
+    rest_energy = sync_part.mass()  # GeV
+
+    # dE/E = (beta^2) * dp/p
+    # dE = (beta^2 * E) * dp/p
+    # dE = (beta^2 * gamma * m * c^2) * dp/p
+    return 1.0 / (beta**2 * gamma * rest_energy)
+
+
+def convert_matrix_dp_p_to_dE(matrix: np.ndarray, sync_part: SyncParticle) -> np.ndarray:
+    # v = [x, x', y, y', z, dp/p]
+    # w = [x, x', y, y', z, dE]
+    # v = A w
+    # v -> M v
+    # w -> A M A^-1
+    dp_p_coeff = get_dp_p_coeff(sync_part)
+    matrix[:5, 5] *= dp_p_coeff
+    matrix[5, :5] /= dp_p_coeff
+    return matrix
 
 
 class MatrixFactory:
@@ -43,10 +62,7 @@ class MatrixFactory:
         matrix[0, 1] = length
         matrix[2, 3] = length
         matrix[4, 5] = length / sync_part.gamma() ** 2
-
-        # Matrix above is for dp_p; switch to dE.
-        matrix[4, 5] *= get_dp_p_coeff(sync_part)
-        matrix[5, 4] /= get_dp_p_coeff(sync_part)
+        matrix = convert_matrix_dp_p_to_dE(matrix, sync_part)
         return matrix
 
     def quad(self, length: float, kq: float, sync_part: SyncParticle) -> np.ndarray:
@@ -81,8 +97,7 @@ class MatrixFactory:
             matrix[3, 3] = cy
 
         matrix[4, 5] = length / sync_part.gamma() ** 2
-        matrix[4, 5] *= get_dp_p_coeff(sync_part)
-        matrix[5, 4] /= get_dp_p_coeff(sync_part)
+        matrix = convert_matrix_dp_p_to_dE(matrix, sync_part)
         return matrix
 
     def bend(self, length: float, theta: float, sync_part: SyncParticle) -> np.ndarray:
@@ -91,10 +106,6 @@ class MatrixFactory:
 
         v = speed_of_light * sync_part.beta()
         sync_part.time(sync_part.time() + length / v)
-
-        rho = length / theta
-        cx = math.cos(theta)
-        sx = math.sin(theta)
 
         betasq = sync_part.beta() ** 2
 
@@ -113,8 +124,7 @@ class MatrixFactory:
         matrix[4, 0] = -sx
         matrix[4, 1] = -rho * (1.0 - cx)
         matrix[4, 5] = -betasq * length + rho * sx
-
-        matrix[:, 5] *= get_dp_p_coeff(sync_part)
+        matrix = convert_matrix_dp_p_to_dE(matrix, sync_part)
         return matrix
 
     def tilt(self, angle: float) -> np.ndarray:
@@ -143,6 +153,7 @@ class MatrixFactory:
         if type(node) is DriftTEAPOT:
             length = node.getLength(part_index)
             return self.drift(length=length, sync_part=sync_part)
+
         elif type(node) is QuadTEAPOT:
             length = node.getLength(part_index)
 
