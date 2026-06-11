@@ -31,8 +31,11 @@ def make_lattice(nodes: list[AccNode]) -> AccLattice:
         lattice.addNode(node)
     lattice.initialize()
     for node in lattice.getNodes():
-        node.setUsageFringeFieldIN(False)
-        node.setUsageFringeFieldOUT(False)
+        try:
+            node.setUsageFringeFieldIN(False)
+            node.setUsageFringeFieldOUT(False)
+        except:
+            pass
     return lattice
 
 
@@ -193,4 +196,5 @@ if __name__ == "__main__":
     test_quad()
     test_dipole()
     test_kick()
+    test_tilt()
 

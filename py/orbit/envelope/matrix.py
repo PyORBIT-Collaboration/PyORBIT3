@@ -139,8 +139,8 @@ class MatrixFactory:
     def tilt_matrix(self, angle: float) -> np.ndarray:
         matrix = np.identity(7)
         matrix[0, 0] = matrix[1, 1] = +math.cos(angle)
-        matrix[0, 2] = matrix[1, 3] = +math.sin(angle)
-        matrix[2, 0] = matrix[3, 1] = -math.sin(angle)
+        matrix[0, 2] = matrix[1, 3] = -math.sin(angle)
+        matrix[2, 0] = matrix[3, 1] = +math.sin(angle)
         matrix[2, 2] = matrix[3, 3] = +math.cos(angle)
         return matrix
 
@@ -189,12 +189,12 @@ class MatrixFactory:
             nparts = node.getnParts()
 
             scale = 1.0
-            if node.waveform:
+            if node.waveform is not None:
                 scale = node.waveform.getStrength()
 
-            kx = scale * node.getParam("kx") / (nparts - 1)
-            ky = scale * node.getParam("ky") / (nparts - 1)
-            kE = node.getParam("dE") / (nparts - 1)
+            kx = scale * node.getParam("kx") / nparts
+            ky = scale * node.getParam("ky") / nparts
+            kE = node.getParam("dE") / nparts
 
             return np.matmul(
                 self.kick_matrix(kx=kx, ky=ky, kE=kE),
