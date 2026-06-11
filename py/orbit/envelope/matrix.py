@@ -15,7 +15,7 @@ from ..teapot import BunchWrapTEAPOT
 from ..teapot import FringeFieldTEAPOT
 from ..teapot import MonitorTEAPOT
 from ..teapot import TurnCounterTEAPOT
-
+from ..teapot import MultipoleTEAPOT
 from ..utils import speed_of_light
 
 
@@ -146,16 +146,16 @@ class MatrixFactory:
 
     def translation_matrix(self, x: float = 0.0, y: float = 0.0, z: float = 0.0) -> np.ndarray:
         matrix = np.identity(7)
-        matrix[0, 6] = x
-        matrix[2, 6] = y
-        matrix[4, 6] = z
+        matrix[0, -1] = x
+        matrix[2, -1] = y
+        matrix[4, -1] = z
         return matrix
 
-    def kick_matrix(self, kx: float, ky: float, dE: float) -> np.ndarray:
+    def kick_matrix(self, kx: float = 0.0, ky: float = 0.0, kE: float = 0.0) -> np.ndarray:
         matrix = np.identity(7)
-        matrix[1, 6] = kx
-        matrix[3, 6] = ky
-        matrix[5, 6] = dE
+        matrix[1, -1] = kx
+        matrix[3, -1] = ky
+        matrix[5, -1] = kE
         return matrix
 
     def solenoid_matrix(self, length: float, B: float, sync_part: SyncParticle) -> np.ndarray:
@@ -192,12 +192,12 @@ class MatrixFactory:
             if node.waveform:
                 scale = node.waveform.getStrength()
 
-            kx = scale * node.getParam("kx") / nparts
-            ky = scale * node.getParam("ky") / nparts
-            dE = node.getParam("dE") / nparts
+            kx = scale * node.getParam("kx") / (nparts - 1)
+            ky = scale * node.getParam("ky") / (nparts - 1)
+            kE = node.getParam("dE") / (nparts - 1)
 
             return np.matmul(
-                self.kick_matrix(kx=kx, ky=ky, dE=dE),
+                self.kick_matrix(kx=kx, ky=ky, kE=kE),
                 self.drift_matrix(length=length, sync_part=sync_part)
             )
 
@@ -211,6 +211,8 @@ class MatrixFactory:
         else:
             if self.handle_unknown == "drift":
                 return self.drift_matrix(length=node.getLength(), sync_part=sync_part)
+
             elif self.handle_unknown == "fit":
                 raise NotImplementedError()
-            raise NotImplementedError("Unsupported node type: {}. See `handle_unknown` attribute.".format(type(node)))
+
+            raise NotImplementedError("Unsupported node: {}.".format(node))

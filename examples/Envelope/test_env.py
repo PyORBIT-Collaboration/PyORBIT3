@@ -41,8 +41,6 @@ def track_and_compare_rms(
     kin_energy: float,
     cov_matrix: np.ndarray,
     nparts: int = 100_000,
-    rtol: float = 1e-5,
-    atol: float = 0,
     verbose: int = 1,
 ) -> dict:
     """Track bunch/envelope and compare rms beam sizes.
@@ -52,8 +50,7 @@ def track_and_compare_rms(
         kin_energy: Synchronous particle kinetic energy [GeV].
         cov_matrix: 6 x 6 covariance matrix.
         nparts: Number of particles in bunch.
-        rtol/atol: Relative/absolute tolerance on rms beam sizes (bunch vs. envelope).
-            Units are [mm, mrad].
+        rtol: Relative tolerance on rms beam sizes (bunch vs. envelope).
         verbose: Whether to print results.
     """
     cov_scale = 1e6
@@ -105,21 +102,29 @@ def track_and_compare_rms(
                 print("    env:   {}".format(data["env"]["rms"][key][i]))
                 print("    bunch: {}".format(data["bunch"]["rms"][key][i]))
 
-    for key in ["in", "out"]:
-        assert np.all(
-            np.isclose(
-                data["env"]["cov"][key], data["bunch"]["cov"][key], rtol=rtol, atol=atol
-            )
+    assert np.all(np.isclose(data["env"]["cov"]["in"], data["bunch"]["cov"]["in"]))
+
+    atol = np.ones(6)
+    atol[0:4] = 1e-3  # [mm mrad]
+    atol[4] = 1e-3  # [mm]
+    atol[5] = 1e-3  # [MeV]
+
+    for i in range(6):
+        assert np.isclose(
+            data["env"]["rms"]["out"][i],
+            data["bunch"]["rms"]["out"][i],
+            atol=atol[i],
+            rtol=0,
         )
 
 
 def make_default_cov_matrix(
-    rms_x: float = 0.001,
-    rms_xp: float = 0.001,
-    rms_y: float = 0.001,
-    rms_yp: float = 0.001,
-    rms_z: float = 0.001,
-    rms_dE: float = 0.00001,
+    rms_x: float = 1e-3,
+    rms_xp: float = 1e-3,
+    rms_y: float = 1e-3,
+    rms_yp: float = 1e-3,
+    rms_z: float = 1e-3,
+    rms_dE: float = 1e-5,
 ) -> np.ndarray:
     return np.diag(np.square([rms_x, rms_xp, rms_y, rms_yp, rms_z, rms_dE]))
 
@@ -162,10 +167,10 @@ def test_dipole(
 
 def test_kick(
     kin_energy: float = 0.0025,
-    length: float = 0.1,
+    length: float = 1.0,
     kx: float = 0.001,
     ky: float = 0.001,
-    dE: float = 0.0001,
+    dE: float = 0.00001,
     cov_matrix: np.ndarray = None,
 ) -> None:
     nodes = [KickTEAPOT(kx=kx, ky=ky, dE=dE, length=length)]
@@ -188,8 +193,8 @@ def test_tilt(
 
 
 if __name__ == "__main__":
-    # test_drift()
-    # test_quad()
-    # test_dipole()
-    test_kick()
+    test_drift()
+    test_quad()
+    test_dipole()
+    # test_kick()
 

@@ -46,12 +46,11 @@ class Envelope:
             and U is 6 x 1 "driving" vector. The augmented vector Y evolves according
             to Y -> NY, where N = [[M, U], [0, 1]] is a 7 x 7 matrix.
 
-            We track the 7 x 7 covariance matrix of Y:
-
-            R = <YY^T> = [[<XX^T>, <X>], [<X^T>, 1]],
-
-            which contains both the phase space covariance matrix and centroid vector.
-            R evolves according to R -> N R N^T.
+            Let S = <YY^T> = [[<XX^T>, <X>], [<X^T>, 1]] = [[R, C], [C^T, 1]]. Here
+            R = <XX^T> is the matrix of second moments, or "autocorrelation" matrix,
+            and C = <X> is the mean/centroid vector. (To get the covariance matrix:
+            <(X - C)(X - C)^T> = <XX^T> - <X><X>^T = R - CC^T.) S evolves according
+            to S -> N S N^T.
     """
 
     def __init__(
@@ -62,22 +61,21 @@ class Envelope:
         intensity: float = 0.0,
     ) -> None:
         self.sync_part = sync_part
+        self.dim = 6
 
         if centroid is None:
             centroid = np.zeros(6)
 
         if cov_matrix is None:
             cov_matrix = np.eye(6)
-
-        self.matrix = np.zeros((7, 7))
-        self.matrix[0:6, 0:6] = cov_matrix
-        self.matrix[0:6, 6] = centroid
-        self.matrix[6, 0:6] = centroid
-        self.matrix[6, 6] = 1.0
+            
+        self.moment_matrix = np.zeros((7, 7))
+        self.moment_matrix[:self.dim, :self.dim] = cov_matrix + np.outer(centroid, centroid)
+        self.moment_matrix[:self.dim, self.dim] = centroid
+        self.moment_matrix[self.dim, :self.dim] = centroid
+        self.moment_matrix[self.dim, self.dim] = 1.0
 
         self.intensity = 0.0
-        self.perveance_2d = 0.0
-        self.perveance_3d = 0.0
         self.set_intensity(intensity)
 
     def set_intensity(self, intensity: float) -> None:
@@ -99,24 +97,24 @@ class Envelope:
         return self.sync_part.mass()
 
     def centroid(self) -> np.ndarray:
-        return np.copy(self.matrix[0:6, 6])
+        return np.copy(self.moment_matrix[:self.dim, self.dim])
 
     def cov(self) -> np.ndarray:
-        return np.copy(self.matrix[0:6, 0:6])
+        autocorrelation_matrix = self.moment_matrix[:self.dim, :self.dim]
+        centroid = self.moment_matrix[:self.dim, self.dim]
+        return autocorrelation_matrix - np.outer(centroid, centroid)
 
     def rms(self, axis: int = None) -> float | np.ndarray:
         rms_arr = np.sqrt(np.diag(self.cov()))
         return rms_arr[axis]
 
-    def apply_transfer_matrix(self, transfer_matrix: np.ndarray) -> None:
-        self.matrix = np.linalg.multi_dot(
-            [transfer_matrix, self.matrix, transfer_matrix.T]
-        )
+    def apply_transfer_matrix(self, m: np.ndarray) -> None:
+        self.moment_matrix = np.linalg.multi_dot([m, self.moment_matrix, m.T])
 
-    def sample(self, n: int, dist: str = "kv") -> np.ndarray:
+    def sample(self, size: int, dist: str = "kv") -> np.ndarray:
         # Issue: covariance matrix is becoming non semi-positive definite,
         # giving error in cholesky decomposition.
-        particles = gen_dist(n=n, cov_matrix=self.cov(), name=dist)
+        particles = gen_dist(n=size, cov_matrix=self.cov(), name=dist)
         particles = particles + self.centroid()
         return particles
 
