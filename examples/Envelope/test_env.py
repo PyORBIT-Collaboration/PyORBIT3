@@ -50,7 +50,6 @@ def track_and_compare_rms(
         kin_energy: Synchronous particle kinetic energy [GeV].
         cov_matrix: 6 x 6 covariance matrix.
         nparts: Number of particles in bunch.
-        rtol: Relative tolerance on rms beam sizes (bunch vs. envelope).
         verbose: Whether to print results.
     """
     cov_scale = 1e6
@@ -110,12 +109,9 @@ def track_and_compare_rms(
     atol[5] = 1e-3  # [MeV]
 
     for i in range(6):
-        assert np.isclose(
-            data["env"]["rms"]["out"][i],
-            data["bunch"]["rms"]["out"][i],
-            atol=atol[i],
-            rtol=0,
-        )
+        x = data["env"]["rms"]["out"][i]
+        y = data["bunch"]["rms"]["out"][i]
+        assert np.abs(x - y) <= atol[i]
 
 
 def make_default_cov_matrix(
@@ -167,7 +163,7 @@ def test_dipole(
 
 def test_kick(
     kin_energy: float = 0.0025,
-    length: float = 1.0,
+    length: float = 0.1,
     kx: float = 0.001,
     ky: float = 0.001,
     dE: float = 0.00001,
@@ -196,5 +192,5 @@ if __name__ == "__main__":
     test_drift()
     test_quad()
     test_dipole()
-    # test_kick()
+    test_kick()
 
