@@ -17,6 +17,7 @@ from orbit.envelope import Envelope
 from orbit.envelope import EnvelopeTracker
 from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.space_charge.sc2p5d import setSC2p5DAccNodes
+from orbit.teapot import TEAPOT_Lattice
 from orbit.teapot import TEAPOT_Ring
 from orbit.teapot import TEAPOT_MATRIX_Lattice
 from orbit.utils.consts import mass_proton
@@ -43,7 +44,7 @@ def main(args: argparse.Namespace) -> None:
     # Create lattice
     # ------------------------------------------------------------------------------
 
-    lattice = TEAPOT_Ring()
+    lattice = TEAPOT_Lattice()
     lattice.readMADX("inputs/sns_ring.lat", "rnginjsol")
     lattice.initialize()
 
@@ -58,6 +59,47 @@ def main(args: argparse.Namespace) -> None:
         for name in ["scbdsol_c13a", "scbdsol_c13b"]:
             node = lattice.getNodeForName(name)
             node.setParam("B", 0.15)
+
+    if args.simple_lattice:
+        from orbit.teapot import QuadTEAPOT, DriftTEAPOT, BendTEAPOT
+
+        new_nodes = []
+        for node in lattice.getNodes():
+            new_node = None
+            if type(node) is DriftTEAPOT:
+                new_node = DriftTEAPOT(length=node.getLength(), nparts=node.getnParts())
+            elif type(node) is QuadTEAPOT:
+                new_node = QuadTEAPOT(length=node.getLength(), nparts=node.getnParts(), kq=node.getParam("kq"))
+            elif type(node) is BendTEAPOT:
+                new_node = BendTEAPOT(length=node.getLength(), nparts=node.getnParts(), theta=node.getParam("theta"))
+            else:
+                try:
+                    new_node = DriftTEAPOT(length=node.getLength())
+                except:
+                    pass
+
+            if new_node is not None:
+                new_nodes.append(new_node)
+
+        lattice = TEAPOT_Ring()
+        for node in new_nodes:
+            lattice.addNode(node)
+        lattice.initialize()
+
+        for node in lattice.getNodes():
+            try:
+                node.setUsageFringeFieldIN(False)
+                node.setUsageFringeFieldOUT(False)
+            except:
+                pass
+
+        for node in lattice.getNodes():
+            print(node)
+
+    for node in lattice.getNodes():
+        max_length = 1.0
+        if node.getLength() > max_length:
+            node.setnParts(1 + int(node.getLength() / max_length))
 
 
     # Create envelope
@@ -78,6 +120,8 @@ def main(args: argparse.Namespace) -> None:
     beta_y = matrix_lattice_params["beta y [m]"]
     eps_x = 25.0e-06
     eps_y = eps_x
+
+    print(matrix_lattice_params)
 
     # Generate covariance matrix
     cov_matrix = np.zeros((6, 6))
@@ -170,7 +214,7 @@ def main(args: argparse.Namespace) -> None:
         bunch.addParticle(*bunch_coords[i])
 
     if args.sc:
-        sc_calc = SpaceChargeCalc2p5D(128, 128, 1)
+        sc_calc = SpaceChargeCalc2p5D(64, 64, 1)
         sc_path_length_min = 1.00e-06
         sc_nodes = setSC2p5DAccNodes(lattice, sc_path_length_min, sc_calc)
 
@@ -306,7 +350,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--bunch-length", type=float, default=120.0)
     parser.add_argument("--kin-energy", type=float, default=1.300)
-    parser.add_argument("--intensity", type=float, default=5e14)
+    parser.add_argument("--intensity", type=float, default=2e14)
 
     parser.add_argument("--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"])
     parser.add_argument("--mismatch-x", type=float, default=0.0)
@@ -322,6 +366,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sc-grid", type=int, default=64)
 
     parser.add_argument("--handle-unknown", type=str, default=None, choices=["drift", "fit"])
+    parser.add_argument("--simple-lattice", type=int, default=0)
     return parser.parse_args()
 
 
