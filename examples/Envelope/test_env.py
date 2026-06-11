@@ -42,7 +42,7 @@ def track_and_compare_rms(
     cov_matrix: np.ndarray,
     nparts: int = 100_000,
     rtol: float = 1e-5,
-    atol: float = 1e12,
+    atol: float = 0,
     verbose: int = 1,
 ) -> dict:
     """Track bunch/envelope and compare rms beam sizes.
@@ -165,7 +165,7 @@ def test_kick(
     length: float = 0.1,
     kx: float = 0.001,
     ky: float = 0.001,
-    dE: float = 0.001,
+    dE: float = 0.0001,
     cov_matrix: np.ndarray = None,
 ) -> None:
     nodes = [KickTEAPOT(kx=kx, ky=ky, dE=dE, length=length)]
@@ -188,8 +188,8 @@ def test_tilt(
 
 
 if __name__ == "__main__":
-    test_drift()
-    test_quad()
-    test_dipole()
+    # test_drift()
+    # test_quad()
+    # test_dipole()
     test_kick()
 
