@@ -4,9 +4,12 @@ from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTwissAnalysis
 from orbit.lattice import AccNode
 from orbit.lattice import AccLattice
-from orbit.teapot import QuadTEAPOT, KickTEAPOT, TiltTEAPOT
 from orbit.teapot import BendTEAPOT
 from orbit.teapot import DriftTEAPOT
+from orbit.teapot import KickTEAPOT
+from orbit.teapot import QuadTEAPOT
+from orbit.teapot import SolenoidTEAPOT
+from orbit.teapot import TiltTEAPOT
 from orbit.teapot import TEAPOT_Lattice
 from orbit.utils.consts import mass_proton
 from orbit.envelope import Envelope
@@ -195,10 +198,25 @@ def test_tilt(
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
 
 
+def test_solenoid(
+    kin_energy: float = 0.0025,
+    length: float = 2.0,
+    B: float = 1.0,
+    cov_matrix: np.ndarray = None,
+    nparts: int = 10,
+) -> None:
+    nodes = [SolenoidTEAPOT(length=length, B=B, nparts=nparts)]
+    lattice = make_lattice(nodes)
+    if cov_matrix is None:
+        cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+
+
 if __name__ == "__main__":
     test_drift()
     test_quad()
     test_dipole()
     test_kick()
     test_tilt()
+    test_solenoid()
 
