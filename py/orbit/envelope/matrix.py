@@ -115,9 +115,6 @@ class MatrixFactory:
         if length <= 0:
             return np.identity(7)
 
-        v = speed_of_light * sync_part.beta()
-        sync_part.time(sync_part.time() + length / v)
-
         betasq = sync_part.beta() ** 2
 
         rho = length / theta
