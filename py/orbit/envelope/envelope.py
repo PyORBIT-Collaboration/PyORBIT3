@@ -214,8 +214,6 @@ class Envelope:
 
 
 class EnvelopeTracker:
-    """Tracks envelope through linear lattice with optional linear space charge kicks."""
-
     def __init__(
         self,
         lattice: AccLattice,
