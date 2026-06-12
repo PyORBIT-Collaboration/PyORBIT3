@@ -60,42 +60,6 @@ def main(args: argparse.Namespace) -> None:
             node = lattice.getNodeForName(name)
             node.setParam("B", 0.15)
 
-    if args.simple_lattice:
-        from orbit.teapot import QuadTEAPOT, DriftTEAPOT, BendTEAPOT
-
-        new_nodes = []
-        for node in lattice.getNodes():
-            new_node = None
-            if type(node) is DriftTEAPOT:
-                new_node = DriftTEAPOT(length=node.getLength(), nparts=node.getnParts())
-            elif type(node) is QuadTEAPOT:
-                new_node = QuadTEAPOT(length=node.getLength(), nparts=node.getnParts(), kq=node.getParam("kq"))
-            elif type(node) is BendTEAPOT:
-                new_node = BendTEAPOT(length=node.getLength(), nparts=node.getnParts(), theta=node.getParam("theta"))
-            else:
-                try:
-                    new_node = DriftTEAPOT(length=node.getLength())
-                except:
-                    pass
-
-            if new_node is not None:
-                new_nodes.append(new_node)
-
-        lattice = TEAPOT_Ring()
-        for node in new_nodes:
-            lattice.addNode(node)
-        lattice.initialize()
-
-        for node in lattice.getNodes():
-            try:
-                node.setUsageFringeFieldIN(False)
-                node.setUsageFringeFieldOUT(False)
-            except:
-                pass
-
-        for node in lattice.getNodes():
-            print(node)
-
     for node in lattice.getNodes():
         max_length = 1.0
         if node.getLength() > max_length:
@@ -309,7 +273,6 @@ def main(args: argparse.Namespace) -> None:
     limits = list(zip(-xmax, xmax))
     labels = ["x [mm]", "xp [mrad]", "y [mm]", "yp [mrad]", "z [m]", "dE [GeV]"]
 
-
     # Plot x-x'
     fig, ax = plt.subplots(figsize=(4, 4))
     ax.hist2d(particles[:, 0], particles[:, 1], bins=100, range=[limits[0], limits[1]])
@@ -366,7 +329,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sc-grid", type=int, default=64)
 
     parser.add_argument("--handle-unknown", type=str, default=None, choices=["drift", "fit"])
-    parser.add_argument("--simple-lattice", type=int, default=0)
     return parser.parse_args()
 
 
