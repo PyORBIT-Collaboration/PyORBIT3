@@ -211,7 +211,11 @@ class MatrixFactory:
             return np.identity(7)
 
         else:
-            if self.handle_unknown == "drift":
+            if type(node) is MultipoleTEAPOT:
+                if np.all(np.abs(node.getParam("kls")) == 0):
+                    return self.drift_matrix(length=node.getLength(), sync_part=sync_part)
+
+            elif self.handle_unknown == "drift":
                 return self.drift_matrix(length=node.getLength(), sync_part=sync_part)
 
             elif self.handle_unknown == "fit":
