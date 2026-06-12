@@ -16,6 +16,7 @@ from ..teapot import FringeFieldTEAPOT
 from ..teapot import MonitorTEAPOT
 from ..teapot import TurnCounterTEAPOT
 from ..teapot import MultipoleTEAPOT
+from ..teapot import NodeTEAPOT
 from ..utils import speed_of_light
 
 
@@ -63,6 +64,7 @@ class MatrixFactory:
             FringeFieldTEAPOT,
             MonitorTEAPOT,
             TurnCounterTEAPOT,
+            NodeTEAPOT,
         ]
         self.handle_unknown = handle_unknown
 
