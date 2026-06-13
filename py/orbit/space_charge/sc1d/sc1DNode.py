@@ -54,7 +54,6 @@ class SC1D_AccNode(DriftTEAPOT):
         The SC1D-teapot class implementation of the
         AccNodeBunchTracker class trackBunch(probe) method.
         """
-        length = self.getLength(self.getActivePartIndex())
         self.lspacecharge.trackBunch(bunch)  # track method goes here
 
     def track(self, params_dict: dict) -> None:
@@ -62,7 +61,6 @@ class SC1D_AccNode(DriftTEAPOT):
         The SC1D-teapot class implementation of the
         AccNodeBunchTracker class track(probe) method.
         """
-        length = self.getLength(self.getActivePartIndex())
         bunch = params_dict["bunch"]
         self.lspacecharge.trackBunch(bunch)
 
