@@ -48,15 +48,15 @@ static PyObject* mpi_allreduce(PyObject *self, PyObject *args){
 	//it is NOT SEQUENCE
 	if(is_seq == 0){
 		if(pyDatatype->datatype == MPI_INT){
-			int val = (int) PyLong_AsLong(pyO_arr);
-			int val_out = 0;
-			ORBIT_MPI_Allreduce(&val,&val_out,1,MPI_INT,pyOp->op,pyComm->comm);
+			int val_out = (int) PyLong_AsLong(pyO_arr);
+			// int val_out = 0;
+			ORBIT_MPI_Allreduce(MPI_IN_PLACE, &val_out, 1, MPI_INT, pyOp->op, pyComm->comm);
 			return Py_BuildValue("i",val_out);
 		}
 		if(pyDatatype->datatype == MPI_DOUBLE){
-			double val = PyFloat_AsDouble(pyO_arr);
-			double val_out = 0.;
-			ORBIT_MPI_Allreduce(&val,&val_out,1,MPI_DOUBLE,pyOp->op,pyComm->comm);
+			double val_out = PyFloat_AsDouble(pyO_arr);
+			// double val_out = 0.;
+			ORBIT_MPI_Allreduce(MPI_IN_PLACE, &val_out,1,MPI_DOUBLE,pyOp->op,pyComm->comm);
 			return Py_BuildValue("d",val_out);
 		}
 		error("MPI_Allreduce(...) - use only INT or DOUBLE data types");
@@ -66,38 +66,38 @@ static PyObject* mpi_allreduce(PyObject *self, PyObject *args){
 	PyObject* pyRes = PyTuple_New(size);
 	//data is an INT array
 	if(pyDatatype->datatype == MPI_INT){
-		int buff_index0 = 0;
+		// int buff_index0 = 0;
 		int buff_index1 = 0;
-		int* arr =  BufferStore::getBufferStore()->getFreeIntArr(buff_index0,size);
-		int* arr_out =  BufferStore::getBufferStore()->getFreeIntArr(buff_index1,size);
+		// int* arr =  BufferStore::getBufferStore()->getFreeIntArr(buff_index0,size);
+		int* arr_out =  BufferStore::getBufferStore()->getFreeIntArr(buff_index1, size);
 		for(int i = 0; i < size; i++){
-			arr[i]= (int) PyLong_AsLong(PySequence_Fast_GET_ITEM(pyO_arr, i));
+			arr_out[i]= (int) PyLong_AsLong(PySequence_Fast_GET_ITEM(pyO_arr, i));
 		}
-		ORBIT_MPI_Allreduce(arr,arr_out,size,MPI_INT,pyOp->op,pyComm->comm);
+		ORBIT_MPI_Allreduce(MPI_IN_PLACE, arr_out, size, MPI_INT, pyOp->op, pyComm->comm);
 		for(int i = 0; i < size; i++){
 			if(PyTuple_SetItem(pyRes,i,Py_BuildValue("i",arr_out[i])) != 0){
 				error("MPI_Allreduce(...)  cannot create a resulting tuple.");
 			}
 		}
-		BufferStore::getBufferStore()->setUnusedIntArr(buff_index0);
+		// BufferStore::getBufferStore()->setUnusedIntArr(buff_index0);
 		BufferStore::getBufferStore()->setUnusedIntArr(buff_index1);
 	}
 	//data is an DOUBLE array
 	if(pyDatatype->datatype == MPI_DOUBLE){
-		int buff_index0 = 0;
+		// int buff_index0 = 0;
 		int buff_index1 = 0;
-		double* arr =  BufferStore::getBufferStore()->getFreeDoubleArr(buff_index0,size);
+		// double* arr =  BufferStore::getBufferStore()->getFreeDoubleArr(buff_index0,size);
 		double* arr_out =  BufferStore::getBufferStore()->getFreeDoubleArr(buff_index1,size);
 		for(int i = 0; i < size; i++){
-			arr[i]= PyFloat_AsDouble(PySequence_Fast_GET_ITEM(pyO_arr, i));
+			arr_out[i]= PyFloat_AsDouble(PySequence_Fast_GET_ITEM(pyO_arr, i));
 		}
-		ORBIT_MPI_Allreduce(arr,arr_out,size,MPI_DOUBLE,pyOp->op,pyComm->comm);
+		ORBIT_MPI_Allreduce(MPI_IN_PLACE, arr_out,size,MPI_DOUBLE,pyOp->op,pyComm->comm);
 		for(int i = 0; i < size; i++){
 			if(PyTuple_SetItem(pyRes,i,Py_BuildValue("d",arr_out[i])) != 0){
 				error("MPI_Allreduce(...)  cannot create a resulting tuple.");
 			}
 		}
-		BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index0);
+		// BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index0);
 		BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index1);
 	}
 	return pyRes;

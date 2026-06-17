@@ -93,6 +93,10 @@
  #define MPI_ANY_SOURCE         (-2)
  #define MPI_ANY_TAG            (-1)
 
+ /* MPI in-place operations */
+ #include <cstdint>
+ #define MPI_IN_PLACE ((void*)(intptr_t)-1)
+
 #endif
 //-------------------------------------------------------------
 //END the case when USE_MPI is defined or not.
