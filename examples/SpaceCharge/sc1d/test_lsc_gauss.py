@@ -27,6 +27,7 @@ parser.add_argument("--nparts", type=int, default=10_000)
 parser.add_argument("--intensity", type=float, default=2e14)
 
 parser.add_argument("--grad", type=int, default=0)
+parser.add_argument("--grad-smooth", type=int, default=1)
 parser.add_argument("--modes", type=int, default=None)
 args = parser.parse_args()
 
@@ -66,7 +67,7 @@ if args.modes:
     sc_calc.setNumModes(args.modes)
 if args.grad:
     sc_calc.setUseGrad(args.grad)
-    sc_calc.setSmoothGrad(1)
+    sc_calc.setSmoothGrad(args.grad_smooth)
 
 # Track bunch
 coords_in = collect_bunch(bunch)["coords"]
@@ -99,10 +100,14 @@ xmax = np.array(xmax)
 limits = list(zip(-xmax, xmax))
 
 fig, ax = plt.subplots()
-ax.scatter(coords_out[:, 4], 1000.0 * coords_out[:, 5], ec="none", s=1.0, c="black")
 ax.plot(z_pred, 1000.0 * dE_pred, color="red", zorder=0)
+ax.scatter(coords_out[:, 4], 1000.0 * coords_out[:, 5], ec="none", s=1.0, c="black")
 ax.set_xlim(limits[0])
 ax.set_ylim(limits[1])
+ax.set_ylim(
+    -1000.0 * 1.2 * np.max(np.abs(dE_pred)),
+    +1000.0 * 1.2 * np.max(np.abs(dE_pred)),
+)
 ax.set_xlabel("z [m]")
 ax.set_ylabel("dE [MeV]")
 plt.savefig(os.path.join(output_dir, "fig_lsc_gauss.png"), dpi=300)
