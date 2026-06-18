@@ -28,79 +28,141 @@ static PyObject* mpi_wait(PyObject *self, PyObject *args){
 	return Py_BuildValue("i",res);
 }
 
+static PyObject* allreduce_scalar_int(PyObject* obj, pyORBIT_MPI_Op* pyOp, pyORBIT_MPI_Comm* pyComm) {
+  long v = PyLong_AsLong(obj);
+  if (PyErr_Occurred()) return NULL;
+
+  int val = (int)v;
+  ORBIT_MPI_Allreduce(MPI_IN_PLACE, &val, 1, MPI_INT, pyOp->op, pyComm->comm);
+  return Py_BuildValue("i", val);
+}
+
+static PyObject* allreduce_scalar_double(PyObject* obj, pyORBIT_MPI_Op* pyOp, pyORBIT_MPI_Comm* pyComm) {
+  double val = PyFloat_AsDouble(obj);
+  if (PyErr_Occurred()) return NULL;
+
+  ORBIT_MPI_Allreduce(MPI_IN_PLACE, &val, 1, MPI_DOUBLE, pyOp->op, pyComm->comm);
+  return Py_BuildValue("d", val);
+}
+
+static PyObject* allreduce_sequence_int(PyObject* obj, pyORBIT_MPI_Op* pyOp, pyORBIT_MPI_Comm* pyComm) {
+  PyObject *seq = PySequence_Fast(obj, "MPI_Allreduce(...) expected a sequence of ints");
+  if (seq == NULL) return NULL;
+
+  Py_ssize_t size = PySequence_Fast_GET_SIZE(seq);
+  PyObject *pyRes = PyTuple_New(size);
+
+  if (pyRes == NULL) {
+	Py_DECREF(seq);
+	return NULL;
+  }
+
+  int buff_index = 0;
+  int *buf = BufferStore::getBufferStore()->getFreeIntArr(buff_index, (int)size);
+
+  for (Py_ssize_t i = 0; i < size; ++i) {
+    long v = PyLong_AsLong(PySequence_Fast_GET_ITEM(seq, i));
+	if (PyErr_Occurred()) {
+	  BufferStore::getBufferStore()->setUnusedIntArr(buff_index);
+	  Py_DECREF(pyRes);
+	  Py_DECREF(seq);
+	  return NULL;
+	}
+	buf[i] = (int)v;
+  }
+
+  ORBIT_MPI_Allreduce(MPI_IN_PLACE, buf, (int)size, MPI_INT, pyOp->op, pyComm->comm);
+
+  for (Py_ssize_t i = 0; i < size; ++i) {
+	PyObject *item = Py_BuildValue("i", buf[i]);
+	if (item == NULL || PyTuple_SetItem(pyRes, i, item) != 0) {
+	  Py_XDECREF(item);
+	  BufferStore::getBufferStore()->setUnusedIntArr(buff_index);
+	  Py_DECREF(pyRes);
+	  Py_DECREF(seq);
+	  return NULL;
+	}
+  }
+
+  BufferStore::getBufferStore()->setUnusedIntArr(buff_index);
+  Py_DECREF(seq);
+  return pyRes;
+}
+
+static PyObject* allreduce_sequence_double(PyObject* obj, pyORBIT_MPI_Op* pyOp, pyORBIT_MPI_Comm* pyComm) {
+  PyObject *seq = PySequence_Fast(obj, "MPI_Allreduce(...) expected a sequence of ints");
+  if (seq == NULL) return NULL;
+
+  Py_ssize_t size = PySequence_Fast_GET_SIZE(seq);
+  PyObject *pyRes = PyTuple_New(size);
+
+  if (pyRes == NULL) {
+	Py_DECREF(seq);
+	return NULL;
+  }
+
+  int buff_index = 0;
+  double *buf = BufferStore::getBufferStore()->getFreeDoubleArr(buff_index, (int)size);
+
+  for (Py_ssize_t i = 0; i < size; ++i) {
+	double v = PyFloat_AsDouble(PySequence_Fast_GET_ITEM(seq, i));
+	if (PyErr_Occurred()) {
+	  BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index);
+	  Py_DECREF(pyRes);
+	  Py_DECREF(seq);
+	  return NULL;
+	}
+	buf[i] = v;
+  }
+
+  ORBIT_MPI_Allreduce(MPI_IN_PLACE, buf, (int)size, MPI_DOUBLE, pyOp->op, pyComm->comm);
+
+  for (Py_ssize_t i = 0; i < size; ++i) {
+	PyObject *item = Py_BuildValue("d", buf[i]);
+	if (item == NULL || PyTuple_SetItem(pyRes, i, item) != 0) {
+	  Py_XDECREF(item);
+	  BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index);
+	  Py_DECREF(pyRes);
+	  Py_DECREF(seq);
+	  return NULL;
+	}
+  }
+
+  BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index);
+  Py_DECREF(seq);
+  return pyRes;
+}
+
 static PyObject* mpi_allreduce(PyObject *self, PyObject *args){
-	PyObject* pyO_arr; PyObject* pyO_datatype; PyObject* pyO_op;  PyObject* pyO_comm;
-	if(!PyArg_ParseTuple(	args,"OOOO:mpi_allreduce",&pyO_arr,&pyO_datatype,&pyO_op,&pyO_comm)){
-		error("MPI_Allreduce([...data],MPI_Datatype type,MPI_Op op,MPI_Comm out) - needs 4 params.");
-	}
-	pyORBIT_MPI_Comm* pyComm = (pyORBIT_MPI_Comm*) pyO_comm;
-	pyORBIT_MPI_Datatype* pyDatatype = (pyORBIT_MPI_Datatype*) pyO_datatype;
-	pyORBIT_MPI_Op* pyOp = (pyORBIT_MPI_Op*) pyO_op;
-	//check the data type
-	if(pyDatatype->datatype != MPI_INT && pyDatatype->datatype != MPI_DOUBLE){
-		error("MPI_Allreduce(...)  data type could be INT or DOUBLE. STOP.");
-	}
-	//check if it is not sequence
-	int is_seq = 0;
-	if(PySequence_Check(pyO_arr) == 1){
-		is_seq = 1;
-	}
-	//it is NOT SEQUENCE
-	if(is_seq == 0){
-		if(pyDatatype->datatype == MPI_INT){
-			int val_out = (int) PyLong_AsLong(pyO_arr);
-			// int val_out = 0;
-			ORBIT_MPI_Allreduce(MPI_IN_PLACE, &val_out, 1, MPI_INT, pyOp->op, pyComm->comm);
-			return Py_BuildValue("i",val_out);
-		}
-		if(pyDatatype->datatype == MPI_DOUBLE){
-			double val_out = PyFloat_AsDouble(pyO_arr);
-			// double val_out = 0.;
-			ORBIT_MPI_Allreduce(MPI_IN_PLACE, &val_out,1,MPI_DOUBLE,pyOp->op,pyComm->comm);
-			return Py_BuildValue("d",val_out);
-		}
-		error("MPI_Allreduce(...) - use only INT or DOUBLE data types");
-	}
-	//it IS A SEQUENCE
-  int size = PySequence_Size(pyO_arr);
-	PyObject* pyRes = PyTuple_New(size);
-	//data is an INT array
-	if(pyDatatype->datatype == MPI_INT){
-		// int buff_index0 = 0;
-		int buff_index1 = 0;
-		// int* arr =  BufferStore::getBufferStore()->getFreeIntArr(buff_index0,size);
-		int* arr_out =  BufferStore::getBufferStore()->getFreeIntArr(buff_index1, size);
-		for(int i = 0; i < size; i++){
-			arr_out[i]= (int) PyLong_AsLong(PySequence_Fast_GET_ITEM(pyO_arr, i));
-		}
-		ORBIT_MPI_Allreduce(MPI_IN_PLACE, arr_out, size, MPI_INT, pyOp->op, pyComm->comm);
-		for(int i = 0; i < size; i++){
-			if(PyTuple_SetItem(pyRes,i,Py_BuildValue("i",arr_out[i])) != 0){
-				error("MPI_Allreduce(...)  cannot create a resulting tuple.");
-			}
-		}
-		// BufferStore::getBufferStore()->setUnusedIntArr(buff_index0);
-		BufferStore::getBufferStore()->setUnusedIntArr(buff_index1);
-	}
-	//data is an DOUBLE array
-	if(pyDatatype->datatype == MPI_DOUBLE){
-		// int buff_index0 = 0;
-		int buff_index1 = 0;
-		// double* arr =  BufferStore::getBufferStore()->getFreeDoubleArr(buff_index0,size);
-		double* arr_out =  BufferStore::getBufferStore()->getFreeDoubleArr(buff_index1,size);
-		for(int i = 0; i < size; i++){
-			arr_out[i]= PyFloat_AsDouble(PySequence_Fast_GET_ITEM(pyO_arr, i));
-		}
-		ORBIT_MPI_Allreduce(MPI_IN_PLACE, arr_out,size,MPI_DOUBLE,pyOp->op,pyComm->comm);
-		for(int i = 0; i < size; i++){
-			if(PyTuple_SetItem(pyRes,i,Py_BuildValue("d",arr_out[i])) != 0){
-				error("MPI_Allreduce(...)  cannot create a resulting tuple.");
-			}
-		}
-		// BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index0);
-		BufferStore::getBufferStore()->setUnusedDoubleArr(buff_index1);
-	}
-	return pyRes;
+  PyObject *pyO_arr, *pyO_datatype, *pyO_op,  *pyO_comm;
+
+  if(!PyArg_ParseTuple(args,"OOOO:mpi_allreduce", &pyO_arr, &pyO_datatype, &pyO_op, &pyO_comm)) {
+  	error("MPI_Allreduce([...data],MPI_Datatype type,MPI_Op op,MPI_Comm out) - needs 4 params.");
+  }
+
+  pyORBIT_MPI_Comm* pyComm = (pyORBIT_MPI_Comm*) pyO_comm;
+  pyORBIT_MPI_Datatype* pyDatatype = (pyORBIT_MPI_Datatype*) pyO_datatype;
+  pyORBIT_MPI_Op* pyOp = (pyORBIT_MPI_Op*) pyO_op;
+
+  //check the data type
+  MPI_Datatype dtype = pyDatatype->datatype;
+
+  if(dtype != MPI_INT && dtype != MPI_DOUBLE){
+  	error("MPI_Allreduce(...)  data type should be INT or DOUBLE. STOP.");
+  }
+
+ //check if it is a sequence or a scalar
+ if (PySequence_Check(pyO_arr) == 0) {
+   if (dtype == MPI_INT) {
+     return allreduce_scalar_int(pyO_arr, pyOp, pyComm);
+   }
+   return allreduce_scalar_double(pyO_arr, pyOp, pyComm);
+ } else {
+   if (dtype == MPI_INT) {
+     return allreduce_sequence_int(pyO_arr, pyOp, pyComm);
+   }
+   return allreduce_sequence_double(pyO_arr, pyOp, pyComm);
+ }
 }
 
 static PyObject* mpi_bcast(PyObject *self, PyObject *args){
