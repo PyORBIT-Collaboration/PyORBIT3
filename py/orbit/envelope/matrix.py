@@ -26,14 +26,23 @@ from orbit.py_linac.lattice import FringeField
 
 
 def get_dp_p_coeff(sync_part: SyncParticle) -> float:
-    beta = sync_part.beta()
-    gamma = sync_part.gamma()
-    rest_energy = sync_part.mass()  # GeV
-
     # dE/E = (beta^2) * dp/p
     # dE = (beta^2 * E) * dp/p
     # dE = (beta^2 * gamma * m * c^2) * dp/p
+    beta = sync_part.beta()
+    gamma = sync_part.gamma()
+    rest_energy = sync_part.mass()  # GeV
     return 1.0 / (beta**2 * gamma * rest_energy)
+
+
+def get_zp_coeff(sync_part: SyncParticle) -> float:
+    # dE/E = (beta^2) * dp/p = (beta^2) * (gamma^2) z'
+    # dE = (beta^2 * gamma^2 * E) * z'
+    # dE = (beta^2 * gamma^3 * m * c^2) * z'
+    beta = sync_part.beta()
+    gamma = sync_part.gamma()
+    rest_energy = sync_part.mass()
+    return 1.0 / (beta**2 * gamma**3 * rest_energy)
 
 
 def convert_matrix_dp_p_to_dE(matrix: np.ndarray, sync_part: SyncParticle) -> np.ndarray:
@@ -55,6 +64,14 @@ def convert_matrix_dp_p_to_dE(matrix: np.ndarray, sync_part: SyncParticle) -> np
     matrix[:5, 5] *= dp_p_coeff
     matrix[5, :5] /= dp_p_coeff
     matrix[5, 6] /= dp_p_coeff
+    return matrix
+
+
+def convert_matrix_zp_to_dE(matrix: np.ndarray, sync_part: SyncParticle) -> np.ndarray:
+    zp_coeff = get_zp_coeff(sync_part)
+    matrix[:5, 5] *= zp_coeff
+    matrix[5, :5] /= zp_coeff
+    matrix[5, 6] /= zp_coeff
     return matrix
 
 

@@ -11,6 +11,7 @@ from orbit.utils.consts import speed_of_light
 from orbit.utils.consts import charge_electron
 
 from .matrix import MatrixFactory
+from .matrix import convert_matrix_zp_to_dE
 from .utils import gen_dist
 from .utils import proj_cov_matrix
 
@@ -131,6 +132,8 @@ class Envelope:
         return particles
 
     def sc_transfer_matrix_2d(self, length: float) -> np.ndarray:
+        # [TO DO] Move this to matrix.py?
+
         # Extract beam centroid and covariance matrix.
         centroid = self.centroid()
         cov_matrix = self.cov()
@@ -175,11 +178,15 @@ class Envelope:
         return np.linalg.multi_dot([V, M, V_inv])
 
     def sc_transfer_matrix_3d(self, length: float) -> np.ndarray:
+        # [TO DO] Move this to matrix.py?
+
         centroid = self.centroid()
         centroid[4] *= self.gamma()
 
         cov_matrix = self.cov()
         cov_matrix[4, 4] *= self.gamma() ** 2
+
+        # Project covariance matrix onto x-y-z plane.
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2, 4))
 
         # Compute eigenvalues and eigenvectors of x-y covariance matrix.
@@ -197,7 +204,6 @@ class Envelope:
         kappa_x = factor * RDx  # [1 / m]
         kappa_y = factor * RDy  # [1 / m]
         kappa_z = factor * RDz  # [1 / m]
-        kappa_z *= self.gamma() ** 3 * self.beta() ** 2 * self.mass()  # [GeV / m]
 
         M = np.identity(7)
         M[1, 0] = kappa_x * length
@@ -221,8 +227,10 @@ class Envelope:
         #   u -> M u
         #   x -> V M V^-1 x
         V = np.matmul(T, A)
-        V_inv = np.linalg.inv(V)
-        return np.linalg.multi_dot([V, M, V_inv])
+        M = V @ M @ np.linalg.inv(V)
+
+        # Convert from z' to dE.
+        return convert_matrix_zp_to_dE(M, self.sync_part)
 
 
 class EnvelopeTracker:

@@ -1,7 +1,7 @@
-"""Test 3D envelope tracker in drift.
+"""Test 3D envelope tracker in drift
 
-The initial beam is a uniform-density ball in the x-y-z plane (in the beam rest frame),
-with zero initial velocity.
+The initial beam is a uniform-density ellipsoid in the x-y-z plane, with zero initial velocity.
+The ellipsoid can have arbitrary size and orientation.
 """
 
 import argparse
@@ -12,6 +12,7 @@ import pathlib
 
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.spatial
 
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTwissAnalysis
@@ -30,6 +31,17 @@ from utils import gen_dist
 from utils import project_cov_matrix
 
 plt.style.use("style.mplstyle")
+
+
+def rotation_matrix_3d(angle_x: float, angle_y: float, angle_z: float) -> np.ndarray:
+    return scipy.spatial.transform.Rotation.from_euler("xyz", [angle_x, angle_y, angle_z]).as_matrix()
+
+
+def build_cov_matrix_xyz(rms_sizes: np.ndarray, rotation_matrix: np.ndarray = None) -> np.ndarray:
+    cov_matrix = np.diag(np.square(rms_sizes))
+    if rotation_matrix is None:
+        return cov_matrix
+    return rotation_matrix @ cov_matrix @ rotation_matrix.T
 
 
 def main(args: argparse.Namespace) -> None:
@@ -60,9 +72,26 @@ def main(args: argparse.Namespace) -> None:
     sync_part.kinEnergy(args.kin_energy)
 
     cov_matrix_init = np.zeros((6, 6))
-    cov_matrix_init[0, 0] = args.xrms**2
-    cov_matrix_init[2, 2] = args.yrms**2
-    cov_matrix_init[4, 4] = (args.zrms / sync_part.gamma()) ** 2
+
+    rotation_matrix = rotation_matrix_3d(
+        math.radians(args.rot_x),
+        math.radians(args.rot_y),
+        math.radians(args.rot_z)
+    )
+    print(rotation_matrix)
+
+    cov_matrix_xyz = build_cov_matrix_xyz([args.rms_x, args.rms_y, args.rms_z], rotation_matrix=rotation_matrix)
+
+    lorentz_matrix = np.diag([1.0, 1.0, 1.0 / sync_part.gamma()])
+    cov_matrix_xyz = lorentz_matrix @ cov_matrix_xyz @ lorentz_matrix
+
+    spatial_idx = np.ix_([0, 2, 4], [0, 2, 4])
+    cov_matrix_init[spatial_idx] = cov_matrix_xyz
+
+    print(cov_matrix_xyz * 1e6)
+    print()
+    print(cov_matrix_init * 1e6)
+
 
     centroid_init = np.zeros(6)
 
@@ -107,11 +136,8 @@ def main(args: argparse.Namespace) -> None:
 
     bunch_coords = np.zeros((args.nparts, 6))
     bunch_coords[:, (0, 2, 4)] = gen_dist(
-        args.nparts, cov_matrix=np.eye(3), name="waterbag"
+        args.nparts, cov_matrix=cov_matrix_xyz, name="waterbag"
     )
-    bunch_coords[:, 0] *= args.xrms
-    bunch_coords[:, 2] *= args.yrms
-    bunch_coords[:, 4] *= args.zrms / sync_part.gamma()
 
     for x, xp, y, yp, z, dE in bunch_coords:
         bunch.addParticle(x, xp, y, yp, z, dE)
@@ -171,7 +197,7 @@ def main(args: argparse.Namespace) -> None:
             color = ["black", "red"][i]
             lw = [None, 0][i]
             ax.plot(histories[model][key], marker=".", lw=lw, color=color, label=model)
-        ax.set_ylim(0.0, ax.get_ylim()[1])
+        ax.set_ylim(0.0, ax.get_ylim()[1] * 1.2)
         ax.set_xlabel("s [mm]")
         ax.set_ylabel("rms size [mm]")
         ax.legend(loc="upper left")
@@ -231,11 +257,15 @@ def main(args: argparse.Namespace) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--kin-energy", type=float, default=0.0025)
-    parser.add_argument("--intensity", type=float, default=5e10)
+    parser.add_argument("--intensity", type=float, default=3e10)
 
-    parser.add_argument("--xrms", type=float, default=0.010)
-    parser.add_argument("--yrms", type=float, default=0.010)
-    parser.add_argument("--zrms", type=float, default=0.010)
+    parser.add_argument("--rms-x", type=float, default=0.010)
+    parser.add_argument("--rms-y", type=float, default=0.010)
+    parser.add_argument("--rms-z", type=float, default=0.010)
+
+    parser.add_argument("--rot-x", type=float, default=0.0)
+    parser.add_argument("--rot-y", type=float, default=0.0)
+    parser.add_argument("--rot-z", type=float, default=0.0)
 
     parser.add_argument("--nslice", type=int, default=10)
     parser.add_argument("--length", type=float, default=0.1)
