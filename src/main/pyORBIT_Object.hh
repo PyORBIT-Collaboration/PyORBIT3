@@ -17,7 +17,7 @@
 #ifndef PY_ORBIT_OBJECT_H
 #define PY_ORBIT_OBJECT_H
 
-#include "structmember.h"
+#include <structmember.h>
 
 #ifdef __cplusplus
 extern "C" {

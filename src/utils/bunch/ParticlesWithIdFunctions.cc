@@ -51,8 +51,8 @@ namespace OrbitUtils{
 		int n_parts = bunch->getSize();
 		if(n_parts == 0) return;
 		int size_MPI,rank_MPI;
-		ORBIT_MPI_Comm_size(bunch->getMPI_Comm_Local()->comm, &size_MPI);
-		ORBIT_MPI_Comm_rank(bunch->getMPI_Comm_Local()->comm, &rank_MPI);
+		ORBIT_MPI_Comm_size(bunch->getMPI_Comm_Local(), &size_MPI);
+		ORBIT_MPI_Comm_rank(bunch->getMPI_Comm_Local(), &rank_MPI);
 		if(bunch->hasParticleAttributes("ParticleIdNumber") == 0){
 			if(rank_MPI == 0){
 				std::cerr << "OrbitUtils::bunch_utils_functions::bunch_sort_id(Bunch* bunch) function"<< std::endl;
@@ -99,8 +99,8 @@ namespace OrbitUtils{
 	*/
 	int transport_mtrx(Bunch* bunch_in, Bunch* bunch_out, Matrix* A_mtr, int appl_twiss_x, int appl_twiss_y, int appl_twiss_z){
 		int size_MPI,rank_MPI;
-		ORBIT_MPI_Comm_size(bunch_in->getMPI_Comm_Local()->comm, &size_MPI);
-		ORBIT_MPI_Comm_rank(bunch_in->getMPI_Comm_Local()->comm, &rank_MPI);
+		ORBIT_MPI_Comm_size(bunch_in->getMPI_Comm_Local(), &size_MPI);
+		ORBIT_MPI_Comm_rank(bunch_in->getMPI_Comm_Local(), &rank_MPI);
 		if(bunch_in->hasParticleAttributes("ParticleIdNumber") == 0 || bunch_out->hasParticleAttributes("ParticleIdNumber") == 0){
 			if(rank_MPI == 0){
 				std::cerr << "OrbitUtils::bunch_utils_functions::transport_mtrx(...) function"<< std::endl;
@@ -218,9 +218,9 @@ namespace OrbitUtils{
 				}
 			}
 
-			ORBIT_MPI_Allreduce(&total_macrosize,&total_macrosize_mpi,1,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local()->comm);
-			ORBIT_MPI_Allreduce(arr_avg_in,arr_avg_in_mpi,6,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local()->comm);
-			ORBIT_MPI_Allreduce(arr_avg_out,arr_avg_out_mpi,6,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local()->comm);
+			ORBIT_MPI_Allreduce(&total_macrosize,&total_macrosize_mpi,1,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local());
+			ORBIT_MPI_Allreduce(arr_avg_in,arr_avg_in_mpi,6,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local());
+			ORBIT_MPI_Allreduce(arr_avg_out,arr_avg_out_mpi,6,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local());
 
 			total_macrosize = total_macrosize_mpi;
 
@@ -276,7 +276,7 @@ namespace OrbitUtils{
 					count++;
 				}
 			}
-			ORBIT_MPI_Allreduce(mtrx_arr,mtrx_arr_mpi,36,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local()->comm);
+			ORBIT_MPI_Allreduce(mtrx_arr,mtrx_arr_mpi,36,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local());
 			count = 0;
 			for (int i = 0; i < 6; i++){
 				for (int j = 0; j < 6; j++){
@@ -292,7 +292,7 @@ namespace OrbitUtils{
 					count++;
 				}
 			}
-			ORBIT_MPI_Allreduce(mtrx_arr,mtrx_arr_mpi,36,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local()->comm);
+			ORBIT_MPI_Allreduce(mtrx_arr,mtrx_arr_mpi,36,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local());
 			count = 0;
 			for (int i = 0; i < 6; i++){
 				for (int j = 0; j < 6; j++){

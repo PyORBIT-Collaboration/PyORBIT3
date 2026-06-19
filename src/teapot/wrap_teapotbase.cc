@@ -1,4 +1,4 @@
-#include "Python.h"
+#include <Python.h>
 #include "orbit_mpi.hh"
 
 #include "pyORBIT_Object.hh"

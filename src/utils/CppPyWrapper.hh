@@ -15,7 +15,7 @@
 #ifndef CPP_PY_WRAPPER_H
 #define CPP_PY_WRAPPER_H
 
-#include "Python.h"
+#include <Python.h>
 
 namespace OrbitUtils{
 

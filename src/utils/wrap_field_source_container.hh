@@ -2,7 +2,7 @@
 #define WRAP_FIELD_SOURCE_CONTAINER_HH_
 
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,7 +1,7 @@
 #ifndef WRAP_ORBIT_UTILS_H
 #define WRAP_ORBIT_UTILS_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

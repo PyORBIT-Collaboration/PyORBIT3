@@ -759,7 +759,7 @@ void Grid1D::getBinIndAndWZSmoothed(double z,
 }
 
 /** synchronizeMPI */
-void Grid1D::synchronizeMPI(pyORBIT_MPI_Comm* pyComm)
+void Grid1D::synchronizeMPI(MPI_Comm comm)
 {
   // ====== MPI  start ========
 
@@ -776,7 +776,7 @@ void Grid1D::synchronizeMPI(pyORBIT_MPI_Comm* pyComm)
     inArr[i] = arr_[i];
   }
 
-  if(pyComm == NULL)
+  if(comm == MPI_COMM_NULL)
   {
     ORBIT_MPI_Allreduce(inArr, outArr, size_MPI,
                         MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
@@ -784,7 +784,7 @@ void Grid1D::synchronizeMPI(pyORBIT_MPI_Comm* pyComm)
   else
   {
     ORBIT_MPI_Allreduce(inArr, outArr, size_MPI,
-                        MPI_DOUBLE, MPI_SUM, pyComm->comm);
+                        MPI_DOUBLE, MPI_SUM, comm);
   }
 
   for(int i = 0; i < zSize_; i++)

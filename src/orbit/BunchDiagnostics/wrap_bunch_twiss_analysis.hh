@@ -1,7 +1,7 @@
 #ifndef WRAP_BUNCH_TWISS_ANALYSIS_HH_
 #define WRAP_BUNCH_TWISS_ANALYSIS_HH_
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

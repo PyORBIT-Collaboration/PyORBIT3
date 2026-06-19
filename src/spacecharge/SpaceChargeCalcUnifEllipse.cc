@@ -143,7 +143,7 @@ void SpaceChargeCalcUnifEllipse::bunchAnalysis(Bunch* bunch){
 	}
 
 	//calculates sum over all  CPUs
-	ORBIT_MPI_Allreduce(coord_avg,coord_avg_out,7,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local()->comm);
+	ORBIT_MPI_Allreduce(coord_avg,coord_avg_out,7,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local());
 
 	total_macrosize = coord_avg_out[6];
 	if(total_macrosize == 0.){
@@ -233,7 +233,7 @@ void SpaceChargeCalcUnifEllipse::bunchAnalysis(Bunch* bunch){
 		}
 	}
 	//calculates sum over all  CPUs
-	ORBIT_MPI_Allreduce(macroSizesEll_arr,macroSizesEll_MPI_arr,nEllipses,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local()->comm);
+	ORBIT_MPI_Allreduce(macroSizesEll_arr,macroSizesEll_MPI_arr,nEllipses,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local());
 	for(int ie = 0; ie < nEllipses; ie++){
 		macroSizesEll_arr[ie] = macroSizesEll_MPI_arr[ie];
 		//std::cout<<"debug 0 ie ="<< ie <<" macrosize="<< macroSizesEll_MPI_arr[ie] << std::endl;

@@ -1,7 +1,7 @@
 #ifndef WRAP_RFCAVITIES_H
 #define WRAP_RFCAVITIES_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C"

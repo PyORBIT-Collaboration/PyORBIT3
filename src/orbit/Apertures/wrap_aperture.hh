@@ -1,7 +1,7 @@
 #ifndef WRAP_ORBIT_APERTURE_MODULE_HH_
 #define WRAP_ORBIT_APERTURE_MODULE_HH_
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

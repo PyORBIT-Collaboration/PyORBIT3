@@ -18,7 +18,6 @@
 
 //MPI Function Wrappers
 #include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
 
 //ORBIT bunch
 #include "Bunch.hh"
@@ -175,7 +174,7 @@ public:
   double getSliceSum(double z);
 
   /** synchronize MPI */
-  void synchronizeMPI(pyORBIT_MPI_Comm* pyComm);
+  void synchronizeMPI(MPI_Comm pyComm);
 
 protected:
   //---------------------------------------

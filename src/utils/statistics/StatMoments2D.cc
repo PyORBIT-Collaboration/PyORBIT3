@@ -167,7 +167,7 @@ int StatMoments2D::getCount()
 }
 
 /** It will synchronize the moments through the MPI communicator */
-void StatMoments2D::synchronizeMPI(pyORBIT_MPI_Comm* pyComm)
+void StatMoments2D::synchronizeMPI(MPI_Comm pyComm)
 {
 	int mpi_size = (max_order+1)*(max_order+1);
 	int buff_index0 = -1;
@@ -183,10 +183,10 @@ void StatMoments2D::synchronizeMPI(pyORBIT_MPI_Comm* pyComm)
 		}
 	}
 
-	if(pyComm == NULL) {
+	if(pyComm == MPI_COMM_NULL) {
 		ORBIT_MPI_Allreduce(inArr,outArr,mpi_size,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
 	} else {
-		ORBIT_MPI_Allreduce(inArr,outArr,mpi_size,MPI_DOUBLE,MPI_SUM,pyComm->comm);
+		ORBIT_MPI_Allreduce(inArr,outArr,mpi_size,MPI_DOUBLE,MPI_SUM,pyComm);
 	}
 
 	ii = 0;
@@ -198,10 +198,10 @@ void StatMoments2D::synchronizeMPI(pyORBIT_MPI_Comm* pyComm)
 	}
 
 	int count_MPI = -1;
-	if(pyComm == NULL) {
+	if(pyComm == MPI_COMM_NULL) {
 		ORBIT_MPI_Allreduce(&count,&count_MPI,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
 	}	else {
-		ORBIT_MPI_Allreduce(&count,&count_MPI,1,MPI_INT,MPI_SUM,pyComm->comm);
+		ORBIT_MPI_Allreduce(&count,&count_MPI,1,MPI_INT,MPI_SUM,pyComm);
 	}
 	count = count_MPI;
 

@@ -65,7 +65,7 @@ void BunchExtremaCalculator::getExtremaXYZ(Bunch* bunch,
 	gridLimArr[2] = - gridLimArr[2];
 	gridLimArr[4] = - gridLimArr[4];
 
-	ORBIT_MPI_Allreduce(gridLimArr,gridLimArr_out,6,MPI_DOUBLE,MPI_MAX,bunch->getMPI_Comm_Local()->comm);
+	ORBIT_MPI_Allreduce(gridLimArr,gridLimArr_out,6,MPI_DOUBLE,MPI_MAX,bunch->getMPI_Comm_Local());
 
 	gridLimArr_out[0] = - gridLimArr_out[0];
 	gridLimArr_out[2] = - gridLimArr_out[2];
@@ -114,7 +114,7 @@ void BunchExtremaCalculator::getExtremaXpYpdE(Bunch* bunch,
 	gridLimArr[2] = - gridLimArr[2];
 	gridLimArr[4] = - gridLimArr[4];
 
-	ORBIT_MPI_Allreduce(gridLimArr,gridLimArr_out,6,MPI_DOUBLE,MPI_MAX,bunch->getMPI_Comm_Local()->comm);
+	ORBIT_MPI_Allreduce(gridLimArr,gridLimArr_out,6,MPI_DOUBLE,MPI_MAX,bunch->getMPI_Comm_Local());
 
 	gridLimArr_out[0] = - gridLimArr_out[0];
 	gridLimArr_out[2] = - gridLimArr_out[2];
@@ -152,7 +152,7 @@ void BunchExtremaCalculator::getExtremaZ(Bunch* bunch,
 
 	gridLimArr[0] = - gridLimArr[0];
 
-	ORBIT_MPI_Allreduce(gridLimArr,gridLimArr_out,2,MPI_DOUBLE,MPI_MAX,bunch->getMPI_Comm_Local()->comm);
+	ORBIT_MPI_Allreduce(gridLimArr,gridLimArr_out,2,MPI_DOUBLE,MPI_MAX,bunch->getMPI_Comm_Local());
 
 	gridLimArr_out[0] = - gridLimArr_out[0];
 
@@ -182,8 +182,8 @@ void BunchExtremaCalculator::getExtremaR(Bunch* bunch, double& rMax)
 	double x_avg_global = 0.;
 	double y_avg_global = 0.;
 
-	ORBIT_MPI_Allreduce(&x_avg,&x_avg_global,1,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local()->comm);
-	ORBIT_MPI_Allreduce(&y_avg,&y_avg_global,1,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local()->comm);
+	ORBIT_MPI_Allreduce(&x_avg,&x_avg_global,1,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local());
+	ORBIT_MPI_Allreduce(&y_avg,&y_avg_global,1,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local());
 
 	if(nParts > 0){
 		x_avg = x_avg_global/nParts;
@@ -203,7 +203,7 @@ void BunchExtremaCalculator::getExtremaR(Bunch* bunch, double& rMax)
 		if(rMax > rMax_local) rMax_local = rMax;
 	}
 
-	ORBIT_MPI_Allreduce(&rMax_local,&rMax_global,1,MPI_DOUBLE,MPI_MAX,bunch->getMPI_Comm_Local()->comm);
+	ORBIT_MPI_Allreduce(&rMax_local,&rMax_global,1,MPI_DOUBLE,MPI_MAX,bunch->getMPI_Comm_Local());
 
 	rMax = rMax_global;
 }
