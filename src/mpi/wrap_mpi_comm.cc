@@ -1,4 +1,13 @@
+///////////////////////////////////////////////////////////////////////////
+//
+// INCLUDE FILES
+//
+///////////////////////////////////////////////////////////////////////////
 #include "orbit_mpi.hh"
+
+//this header is from Python package
+#include <structmember.h>
+
 #include "wrap_mpi_comm.hh"
 
 namespace wrap_orbit_mpi_comm{
@@ -9,6 +18,12 @@ namespace wrap_orbit_mpi_comm{
 extern "C" {
 #endif
 
+	//---------------------------------------------------------
+	//Python MPI_Comm class definition
+	//---------------------------------------------------------
+
+	//constructor for python class wrapping MPI_Comm instance
+	//It never will be called directly
 	static PyObject* mpi_comm_new(PyTypeObject *type, PyObject *Py_UNUSED(args), PyObject *Py_UNUSED(kwds))
 	{
 		pyORBIT_MPI_Comm* self;
@@ -17,6 +32,8 @@ extern "C" {
 		return (PyObject *) self;
 	}
 
+  //initializator for python MPI_Comm  class
+  //this is implementation of the __init__ method
 	static int mpi_comm_init(pyORBIT_MPI_Comm *Py_UNUSED(self), PyObject *args, PyObject *Py_UNUSED(kwds)){
 		if(PyTuple_Size(args) != 0){
 			error("MPI_Comm constructor cannot have an input parameter.");
@@ -24,6 +41,7 @@ extern "C" {
 		return 0;
 	}
 
+  //feeing the mpi comm in the python MPI_Comm  class
 	static PyObject* mpi_comm_free(PyObject *self, PyObject *Py_UNUSED(ignored)){
 		pyORBIT_MPI_Comm* pyMPI_Comm = (pyORBIT_MPI_Comm*) self;
 		if(pyMPI_Comm->comm != MPI_COMM_WORLD && pyMPI_Comm->comm != MPI_COMM_SELF){
@@ -34,7 +52,12 @@ extern "C" {
 		return Py_None;
 	}
 
+  //-----------------------------------------------------
+  //destructor for python MPI_Comm class.
+  //-----------------------------------------------------
+  //this is implementation of the __del__ method
 	static void mpi_comm_del(pyORBIT_MPI_Comm* self){
+		//std::cerr<<"The MPI_Comm __del__ has been called!"<<std::endl;
 		MPI_Comm comm = self->comm;
 		if(comm != MPI_COMM_NULL && comm != MPI_COMM_WORLD && comm != MPI_COMM_SELF){
 			ORBIT_MPI_Comm_free(&comm);
@@ -42,58 +65,68 @@ extern "C" {
 		self->ob_base.ob_type->tp_free((PyObject*)self);
 	}
 
+	// defenition of the methods of the python MPI_Comm wrapper class
+	// they will be vailable from python level
 	static PyMethodDef MPI_CommClassMethods[] = {
 		{ "free",       mpi_comm_free ,METH_NOARGS,"Free MPI communicator."},
 		{NULL}
 	};
 
+	// defenition of the memebers of the python MPI_Comm wrapper class
+	// they will be vailable from python level
 	static PyMemberDef MPI_CommClassMembers[] = {
 		{NULL}
 	};
 
+	//new python MPI_Comm wrapper type definition
 	PyTypeObject pyORBIT_MPI_Comm_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
-		"MPI_Comm",
-		sizeof(pyORBIT_MPI_Comm),
-		0,
-		(destructor) mpi_comm_del,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
-		"The MPI_Comm python wrapper",
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		MPI_CommClassMethods,
-		MPI_CommClassMembers,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		(initproc) mpi_comm_init,
-		0,
-		mpi_comm_new,
+		"MPI_Comm", /*tp_name*/
+		sizeof(pyORBIT_MPI_Comm), /*tp_basicsize*/
+		0, /*tp_itemsize*/
+		(destructor) mpi_comm_del, /*tp_dealloc*/
+		0, /*tp_print*/
+		0, /*tp_getattr*/
+		0, /*tp_setattr*/
+		0, /*tp_compare*/
+		0, /*tp_repr*/
+		0, /*tp_as_number*/
+		0, /*tp_as_sequence*/
+		0, /*tp_as_mapping*/
+		0, /*tp_hash */
+		0, /*tp_call*/
+		0, /*tp_str*/
+		0, /*tp_getattro*/
+		0, /*tp_setattro*/
+		0, /*tp_as_buffer*/
+		Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /*tp_flags*/
+		"The MPI_Comm python wrapper", /* tp_doc */
+		0, /* tp_traverse */
+		0, /* tp_clear */
+		0, /* tp_richcompare */
+		0, /* tp_weaklistoffset */
+		0, /* tp_iter */
+		0, /* tp_iternext */
+		MPI_CommClassMethods, /* tp_methods */
+		MPI_CommClassMembers, /* tp_members */
+		0, /* tp_getset */
+		0, /* tp_base */
+		0, /* tp_dict */
+		0, /* tp_descr_get */
+		0, /* tp_descr_set */
+		0, /* tp_dictoffset */
+		(initproc) mpi_comm_init, /* tp_init */
+		0, /* tp_alloc */
+		mpi_comm_new, /* tp_new */
 	};
 
+	//--------------------------------------------------
+	//Initialization function of the MPI_Comm class
+	//It will be called from orbit_mpi wrapper initialization
+	//--------------------------------------------------
 	void init_orbit_mpi_comm(PyObject* module){
 		if (PyType_Ready(&pyORBIT_MPI_Comm_Type) < 0) return;
+		//we put Py_INCREF(...) because PyModule_AddObject() steal the reference
 		Py_INCREF(&pyORBIT_MPI_Comm_Type);
 
 		PyObject * comm_module = PyModule_New("mpi_comm");
@@ -119,6 +152,9 @@ extern "C" {
 		PyModule_AddObject(module, "mpi_comm", comm_module);
 	}
 
+	//-----------------------------------------------------------
+	//The function that will be exposed as C/C++ API for MPI_Comm
+	//-----------------------------------------------------------
 	pyORBIT_MPI_Comm* newMPI_Comm(){
 		pyORBIT_MPI_Comm* pyMPI_Comm = PyObject_New(pyORBIT_MPI_Comm,&pyORBIT_MPI_Comm_Type);
 		pyMPI_Comm->comm = MPI_COMM_WORLD;
@@ -134,4 +170,11 @@ extern "C" {
 }
 #endif
 
+//end of namespace wrap_orbit_mpi_comm
 }
+
+///////////////////////////////////////////////////////////////////////////
+//
+// END OF FILE
+//
+///////////////////////////////////////////////////////////////////////////
