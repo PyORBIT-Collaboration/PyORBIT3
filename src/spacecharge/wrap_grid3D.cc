@@ -4,6 +4,7 @@
 #include "wrap_grid3D.hh"
 #include "wrap_spacecharge.hh"
 #include "wrap_bunch.hh"
+#include "wrap_mpi_comm.hh"
 
 #include <iostream>
 
@@ -195,7 +196,7 @@ extern "C" {
 			if((!PyObject_IsInstance(pyMPIComm,py_mpi_comm_type))){
 				ORBIT_MPI_Finalize("Grid3D.synchronizeMPI(MPI_Comm) - input parameter is not MPI_Comm");
 			}
-			cpp_Grid3D->synchronizeMPI((pyORBIT_MPI_Comm*) pyMPIComm);
+			cpp_Grid3D->synchronizeMPI(((pyORBIT_MPI_Comm*) pyMPIComm)->comm);
 		}
 	 	Py_INCREF(Py_None);
 		return Py_None;

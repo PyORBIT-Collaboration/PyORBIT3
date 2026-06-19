@@ -445,7 +445,7 @@ static PyObject* Grid1D_synchronizeMPI(PyObject *self, PyObject *args)
     {
       ORBIT_MPI_Finalize("Grid1D.synchronizeMPI(MPI_Comm) - input parameter is not MPI_Comm");
     }
-    cpp_Grid1D->synchronizeMPI((pyORBIT_MPI_Comm*) pyMPIComm);
+    cpp_Grid1D->synchronizeMPI(((pyORBIT_MPI_Comm*) pyMPIComm)->comm);
   }
   Py_INCREF(Py_None);
   return Py_None;

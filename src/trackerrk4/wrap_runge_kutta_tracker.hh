@@ -1,7 +1,7 @@
 #ifndef WRAP_RUNGE_KUTTA_TRACKER_H
 #define WRAP_RUNGE_KUTTA_TRACKER_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

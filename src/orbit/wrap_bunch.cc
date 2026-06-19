@@ -9,6 +9,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 #include "wrap_bunch.hh"
+#include "wrap_mpi_comm.hh"
 #include "wrap_syncpart.hh"
 #include "wrap_bunch_twiss_analysis.hh"
 #include "wrap_bunch_tune_analysis.hh"
@@ -28,7 +29,7 @@ namespace wrap_orbit_bunch{
 
     //constructor for python class wrapping Bunch instance
     //It never will be called directly
-    static PyObject* Bunch_new(PyTypeObject *type, PyObject *args, PyObject *kwds){
+    static PyObject* Bunch_new(PyTypeObject *type, PyObject *Py_UNUSED(args), PyObject *Py_UNUSED(kwds)) {
         pyORBIT_Object* self;
         self = (pyORBIT_Object *) type->tp_alloc(type, 0);
         self->cpp_obj = NULL;
@@ -37,7 +38,7 @@ namespace wrap_orbit_bunch{
 
   //initializator for python Bunch class
   //this is implementation of the __init__ method
-  static int Bunch_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
+  static int Bunch_init(pyORBIT_Object *self, PyObject *Py_UNUSED(args), PyObject *Py_UNUSED(kwds)){
 		//std::cerr<<"The Bunch __init__ has been called!"<<std::endl;
 		//instantiation of a new c++ Bunch
 		self->cpp_obj = (void*) new Bunch();
@@ -62,7 +63,7 @@ namespace wrap_orbit_bunch{
   //----------------------------------------------------------------
 
   //returns the SyncPart python class wrapper instance
-    static PyObject* Bunch_getSyncParticle(PyObject *self, PyObject *args){
+    static PyObject* Bunch_getSyncParticle(PyObject *self, PyObject *Py_UNUSED(ignored)){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
         PyObject* pySyncPart = cpp_bunch->getSyncPart()->getPyWrapper();
         Py_INCREF(pySyncPart);
@@ -76,29 +77,34 @@ namespace wrap_orbit_bunch{
   //----------------------------------------------------------------
 
     //returns the local MPI Comm for this bunch
-    static PyObject* Bunch_getMPIComm(PyObject *self, PyObject *args){
+    static PyObject* Bunch_getMPIComm(PyObject *self, PyObject *Py_UNUSED(ignored)) {
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
-        PyObject* pyMPIComm = (PyObject*) cpp_bunch->getMPI_Comm_Local();
-        Py_INCREF(pyMPIComm);
-    return pyMPIComm;
+
+		PyObject* mpi_comm_type = wrap_orbit_mpi_comm::getMPI_CommType("MPI_Comm");
+		PyObject* pyComm = PyObject_CallFunction(mpi_comm_type, NULL);
+		if (pyComm == NULL) {
+			return NULL;
+		}
+
+		((pyORBIT_MPI_Comm*)pyComm)->comm = cpp_bunch->getMPI_Comm_Local();
+
+    return pyComm;
   }
 
-    //sets a new local MPI Comm for this bunch
-    static PyObject* Bunch_setMPIComm(PyObject *self, PyObject *args){
-        Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
-        int nVars = PyTuple_Size(args);
-        PyObject* pyMPIComm;
-        if(nVars == 1){
-            if(!PyArg_ParseTuple(args,"O:setMPIComm",&pyMPIComm)){
-                error("The Bunch method setMPIComm(mpi_comm) - mpi_comm is needed.");
-            }
-            cpp_bunch->setMPI_Comm_Local( (pyORBIT_MPI_Comm*) pyMPIComm);
-        }
-        else{
-            error("The Bunch method should be setMPIComm(mpi_comm).");
-        }
-        Py_INCREF(Py_None);
-    return Py_None;
+  //sets a new local MPI Comm for this bunch
+  static PyObject* Bunch_setMPIComm(PyObject *self, PyObject *arg) {
+    Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
+
+    PyObject* mpi_comm_type = wrap_orbit_mpi_comm::getMPI_CommType("MPI_Comm");
+    if (!PyObject_TypeCheck(arg, (PyTypeObject*)mpi_comm_type)) {
+	PyErr_SetString(PyExc_TypeError, "expected an MPI_Comm object");
+      return NULL;
+    }
+
+    pyORBIT_MPI_Comm *pyComm = (pyORBIT_MPI_Comm*)arg;
+    cpp_bunch->setMPI_Comm_Local(pyComm->comm);
+
+    Py_RETURN_NONE;
   }
 
   //---------------------------------------------------------------
@@ -1175,9 +1181,9 @@ namespace wrap_orbit_bunch{
     //--------------------------------------------------------
     // class Bunch wrapper                        START
     //--------------------------------------------------------
-    { "getMPIComm",                     Bunch_getMPIComm                    ,METH_VARARGS,"Returns MPI Comm of this bunch"},
-    { "setMPIComm",                     Bunch_setMPIComm                    ,METH_VARARGS,"Sets a new MPI Comm for this bunch"},
-    { "getSyncParticle",                Bunch_getSyncParticle               ,METH_VARARGS,"Returns syncParticle class instance"},
+    { "getMPIComm",                     Bunch_getMPIComm                    ,METH_NOARGS,"Returns MPI Comm of this bunch"},
+    { "setMPIComm",                     Bunch_setMPIComm                    ,METH_O,"Sets a new MPI Comm for this bunch"},
+    { "getSyncParticle",                Bunch_getSyncParticle               ,METH_NOARGS,"Returns syncParticle class instance"},
     { "addParticle",                    Bunch_addParticle                   ,METH_VARARGS,"Adds a macro-particle to the bunch"},
     { "deleteParticle",                 Bunch_deleteParticle                ,METH_VARARGS,"Removes macro-particle from the bunch and call compress inside"},
     { "deleteParticleFast",             Bunch_deleteParticleFast            ,METH_VARARGS,"Removes macro-particle from the bunch very fast"},
@@ -1313,15 +1319,6 @@ extern "C" {
       wrap_synch_part_redefinition::initsynchpartredefinition(module);
       return module;
   }
-
-	PyObject* getBunchType(const char* name){
-		PyObject* mod = PyImport_ImportModule("orbit.core.bunch");
-		PyObject* pyType = PyObject_GetAttrString(mod,name);
-		Py_DECREF(mod);
-		Py_DECREF(pyType);
-		return pyType;
-	}
-
 
 #ifdef __cplusplus
 }

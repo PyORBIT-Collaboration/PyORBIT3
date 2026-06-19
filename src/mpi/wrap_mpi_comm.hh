@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-  namespace wrap_orbit_mpi_comm{
+  namespace wrap_orbit_mpi_comm {
     void init_orbit_mpi_comm(PyObject* module);
 
 		//The function that will be exposed as C/C++ API for MPI_Comm

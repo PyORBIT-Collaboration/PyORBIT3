@@ -1,10 +1,7 @@
-# Add Python installation details
 python = import('python').find_installation('python3', pure: false)
 
-# Add C++ compiler details
 cpp = meson.get_compiler('cpp')
 
-# Add -march=native if the compiler supports it
 if cpp.has_argument('-march=native')
   add_project_arguments('-march=native', language: 'cpp')
 endif
@@ -14,8 +11,16 @@ dependencies = []
 dependencies += python.dependency()
 dependencies += dependency('fftw3', version: '>= 3.0.0', required: true)
 
-# Detecting if MPICH or OPENMPI are installed and enabling support if present
+py_link_args = []
 
+if host_machine.system() == 'darwin'
+  # The unresolved symbols will be resolved once the Python interpreter loads libpyorbit.
+  # The linker on MacOS is a bit more strict, so we need to explicitly tell it that
+  # symbols from libpython will be nont resolvable for now.
+  py_link_args += ['-Wl,-undefined,dynamic_lookup']
+endif
+
+# Detecting if MPICH or OPENMPI are installed and enabling support if present
 mpi_use = get_option('USE_MPI')
 use_mpi_flag = '0'
 
@@ -192,11 +197,11 @@ inc = include_directories([
 ])
 
 core_lib = library(
-  'pyorbit3_core',
+  'pyorbit3',
   sources: sources,
   include_directories: inc,
   dependencies: dependencies,
-  override_options: ['b_lundef=false'],
+  link_args: py_link_args,
   install: true,
 )
 
@@ -351,6 +356,7 @@ ext_modules = {
   ),
   'bunch': files(
     'core/bunch_init.cc',
+    'core/type_accessors.cc',
     'orbit/wrap_bunch.cc',
     'orbit/wrap_syncpart.cc',
     'orbit/BunchDiagnostics/wrap_bunch_tune_analysis.cc',
@@ -359,6 +365,7 @@ ext_modules = {
   ),
   'spacecharge': files(
     'core/spacecharge_init.cc',
+    'core/type_accessors.cc',
     'spacecharge/wrap_spacecharge.cc',
     'spacecharge/wrap_grid1D.cc',
     'spacecharge/wrap_grid2D.cc',
@@ -385,11 +392,13 @@ ext_modules = {
   ),
   'teapot_base': files(
     'core/teapot_base_init.cc',
+    'core/type_accessors.cc',
     'teapot/wrap_teapotbase.cc',
     'teapot/wrap_matrix_generator.cc',
   ),
   'linac': files(
     'core/linac_init.cc',
+    'core/type_accessors.cc',
     'linac/wrap_linacmodule.cc',
     'linac/tracking/wrap_linac_tracking.cc',
     'linac/rfgap/wrap_BaseRfGap.cc',
@@ -403,6 +412,7 @@ ext_modules = {
   ),
   'orbit_utils': files(
     'core/utils_init.cc',
+    'core/type_accessors.cc',
     'utils/wrap_utils.cc',
     'utils/matrix/wrap_matrix.cc',
     'utils/matrix/wrap_phase_vector.cc',
@@ -421,6 +431,7 @@ ext_modules = {
   ),
   'aperture': files(
     'core/aperture_init.cc',
+    'core/type_accessors.cc',
     'orbit/Apertures/wrap_aperture.cc',
     'orbit/Apertures/wrap_TAperture.cc',
     'orbit/Apertures/wrap_PhaseAperture.cc',
@@ -433,10 +444,12 @@ ext_modules = {
   ),
   'foil': files(
     'core/foil_init.cc',
+    'core/type_accessors.cc',
     'orbit/MaterialInteractions/wrap_foil.cc',
   ),
   'field_sources': files(
     'core/field_sources_init.cc',
+    'core/type_accessors.cc',
     'utils/field_sources/wrap_field_sources_module.cc',
     'utils/field_sources/wrap_magnetic_field_source_grid3d.cc',
     'utils/field_sources/wrap_quad_field_source.cc',
@@ -445,6 +458,7 @@ ext_modules = {
   ),
   'rfcavities': files(
     'core/rfcavities_init.cc',
+    'core/type_accessors.cc',
     'orbit/RFCavities/wrap_rfcavities.cc',
     'orbit/RFCavities/wrap_Frequency_Cav.cc',
     'orbit/RFCavities/wrap_Harmonic_Cav.cc',
@@ -453,16 +467,19 @@ ext_modules = {
   ),
   'impedances': files(
     'core/impedances_init.cc',
+    'core/type_accessors.cc',
     'orbit/Impedances/wrap_impedances.cc',
     'orbit/Impedances/wrap_LImpedance.cc',
     'orbit/Impedances/wrap_TImpedance.cc',
   ),
   'fieldtracker': files(
     'core/fieldtracker_init.cc',
+    'core/type_accessors.cc',
     'orbit/FieldTracker/wrap_fieldtracker.cc',
   ),
   'collimator': files(
     'core/collimator_init.cc',
+    'core/type_accessors.cc',
     'orbit/MaterialInteractions/wrap_collimator.cc',
   ),
   'error_base': files(
@@ -476,7 +493,8 @@ foreach name, src_list : ext_modules
   name,
   sources: src_list,
   include_directories: inc,
-  dependencies: [core_dep],
+  link_with: core_lib,
+  dependencies: dependencies,
   install: true,
   subdir: 'orbit/core',
   )

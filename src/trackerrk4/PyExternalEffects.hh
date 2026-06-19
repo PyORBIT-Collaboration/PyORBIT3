@@ -29,7 +29,7 @@
 #ifndef PY_EXTERNAL_EFFECTS_H
 #define PY_EXTERNAL_EFFECTS_H
 
-#include "Python.h"
+#include <Python.h>
 
 #include "ExternalEffects.hh"
 

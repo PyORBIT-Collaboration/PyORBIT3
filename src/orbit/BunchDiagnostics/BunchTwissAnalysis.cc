@@ -108,15 +108,15 @@ void BunchTwissAnalysis::analyzeBunch(Bunch* bunch){
 	}
 
 	int count_MPI = 0;
-	ORBIT_MPI_Allreduce(&count,&count_MPI,1,MPI_INT,MPI_SUM,bunch->getMPI_Comm_Local()->comm);
+	ORBIT_MPI_Allreduce(&count,&count_MPI,1,MPI_INT,MPI_SUM,bunch->getMPI_Comm_Local());
 	count = count_MPI;
 
 	double total_macrosize_MPI = 0.;
-	ORBIT_MPI_Allreduce(&total_macrosize,&total_macrosize_MPI,1,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local()->comm);
+	ORBIT_MPI_Allreduce(&total_macrosize,&total_macrosize_MPI,1,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local());
 	total_macrosize = total_macrosize_MPI;
 
-	ORBIT_MPI_Allreduce(avg_arr,avg_arr_MPI,6,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local()->comm);
-	ORBIT_MPI_Allreduce(corr_arr,corr_arr_MPI,36,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local()->comm);
+	ORBIT_MPI_Allreduce(avg_arr,avg_arr_MPI,6,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local());
+	ORBIT_MPI_Allreduce(corr_arr,corr_arr_MPI,36,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local());
 
 	if(fabs(total_macrosize) > 0.){
 		for(int i = 0; i < 6; i++){
@@ -189,11 +189,11 @@ void BunchTwissAnalysis::computeBunchMoments(Bunch* bunch, int order, int disper
 		}
 
 
-		ORBIT_MPI_Allreduce(&total_macrosize,&total_macrosize_MPI,1,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local()->comm);
+		ORBIT_MPI_Allreduce(&total_macrosize,&total_macrosize_MPI,1,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local());
 		total_macrosize = total_macrosize_MPI;
 
 		double xAvg_MPI = 0;
-		ORBIT_MPI_Allreduce(&xAvg,&xAvg_MPI,1,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local()->comm);
+		ORBIT_MPI_Allreduce(&xAvg,&xAvg_MPI,1,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local());
 		if(fabs(total_macrosize) > 0.){
 			xAvg = xAvg_MPI/total_macrosize;
 		}
@@ -294,7 +294,7 @@ void BunchTwissAnalysis::computeBunchMoments(Bunch* bunch, int order, int disper
 
 	}
 
-	ORBIT_MPI_Allreduce(&total_macrosize,&total_macrosize_MPI,1,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local()->comm);
+	ORBIT_MPI_Allreduce(&total_macrosize,&total_macrosize_MPI,1,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local());
 	total_macrosize = total_macrosize_MPI;
 
 	//if( nMPIsize_ > 1){
@@ -310,7 +310,7 @@ void BunchTwissAnalysis::computeBunchMoments(Bunch* bunch, int order, int disper
 
 	//MPI_Allreduce(buff_0, buff_1, count, MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
 
-	ORBIT_MPI_Allreduce(buff_0, buff_1, count, MPI_DOUBLE, MPI_SUM, bunch->getMPI_Comm_Local()->comm);
+		ORBIT_MPI_Allreduce(buff_0, buff_1, count, MPI_DOUBLE, MPI_SUM, bunch->getMPI_Comm_Local());
 
 	count = 0;
 	for(j=0; j<_order+1; j++){

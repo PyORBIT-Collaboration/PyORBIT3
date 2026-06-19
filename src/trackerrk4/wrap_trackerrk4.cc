@@ -29,14 +29,6 @@ extern "C" {
 
 		return module;
 }
-  PyObject* getTrackerRK4Type(const char* name){
-		PyObject* mod = PyImport_ImportModule("orbit.core.trackerrk4");
-		PyObject* pyType = PyObject_GetAttrString(mod,name);
-		Py_DECREF(mod);
-		Py_DECREF(pyType);
-		return pyType;
-	}
-
 #ifdef __cplusplus
 }
 #endif

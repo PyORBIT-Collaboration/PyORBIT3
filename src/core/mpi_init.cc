@@ -1,4 +1,4 @@
-#include "Python.h"
+#include <Python.h>
 #include "wrap_orbit_mpi.hh"
 
 PyMODINIT_FUNC PyInit_orbit_mpi(void) {

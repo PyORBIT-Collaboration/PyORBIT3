@@ -2,7 +2,6 @@
 #define STAT_MOMENTS_2D_H
 
 #include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
 
 //pyORBIT utils
 #include "CppPyWrapper.hh"
@@ -66,7 +65,7 @@ namespace OrbitUtils{
 		int getCount();
 
 		/** It will synchronize the moments through the MPI communicator */
-		void synchronizeMPI(pyORBIT_MPI_Comm* pyComm);
+		void synchronizeMPI(MPI_Comm pyComm);
 
     /** Returns the emittance */
 		double getEmittance();

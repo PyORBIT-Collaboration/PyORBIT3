@@ -1,7 +1,7 @@
 #ifndef WRAP_UTILS_PY_BASE_FILELD_SOURCE_H
 #define WRAP_UTILS_PY_BASE_FILELD_SOURCE_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

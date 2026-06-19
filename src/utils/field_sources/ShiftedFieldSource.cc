@@ -23,7 +23,7 @@
 //    the external coordinate system by coordTransformBack (3x3) matrix.
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "Python.h"
+#include <Python.h>
 
 #include "orbit_mpi.hh"
 

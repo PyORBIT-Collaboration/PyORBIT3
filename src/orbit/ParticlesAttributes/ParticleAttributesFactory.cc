@@ -46,7 +46,7 @@ ParticleAttributes* ParticleAttributesFactory::getParticleAttributesInstance(
 	int rank_MPI = 0;
 	int size_MPI = 1;
 	int iMPIini  = 0;
-	MPI_Comm MPI_COMM_Local = bunch->getMPI_Comm_Local()->comm;
+	MPI_Comm MPI_COMM_Local = bunch->getMPI_Comm_Local();
 	ORBIT_MPI_Initialized(&iMPIini);
 
 	if(iMPIini > 0){

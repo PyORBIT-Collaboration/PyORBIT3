@@ -2,7 +2,7 @@
 #define WRAP_ORBIT_UTILS_GAUSS_LEGENDRE_INTEGRATOR_HH_
 
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

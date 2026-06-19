@@ -22,7 +22,7 @@
 #ifndef PY_BASE_FIELD_SOURCE_H
 #define PY_BASE_FIELD_SOURCE_H
 
-#include "Python.h"
+#include <Python.h>
 
 #include "BaseFieldSource.hh"
 

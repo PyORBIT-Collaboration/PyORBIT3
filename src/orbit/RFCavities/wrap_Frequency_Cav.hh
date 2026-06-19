@@ -1,7 +1,7 @@
 #ifndef WRAP_FREQUENCY_CAV_H
 #define WRAP_FREQUENCY_CAV_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C"
