@@ -136,7 +136,7 @@ def main(args: argparse.Namespace) -> None:
 
     bunch_coords = np.zeros((args.nparts, 6))
     bunch_coords[:, (0, 2, 4)] = gen_dist(
-        args.nparts, cov_matrix=cov_matrix_xyz, name="waterbag"
+        size=args.nparts, cov_matrix=cov_matrix_xyz, name="waterbag"
     )
 
     for x, xp, y, yp, z, dE in bunch_coords:

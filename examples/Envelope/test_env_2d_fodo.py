@@ -188,7 +188,7 @@ def main(args: argparse.Namespace) -> None:
 
     bunch_coords = np.zeros((args.nparts, 6))
     bunch_coords[:, :4] = gen_dist(
-        n=args.nparts, cov_matrix=cov_matrix_init[0:4, 0:4], name=args.dist
+        size=args.nparts, cov_matrix=cov_matrix_init[0:4, 0:4], name=args.dist
     )
     bunch_coords[:, 4] = 2.0 * rng.uniform(-args.zrms, args.zrms, size=args.nparts)
     bunch_coords += centroid_init[None, :6]
