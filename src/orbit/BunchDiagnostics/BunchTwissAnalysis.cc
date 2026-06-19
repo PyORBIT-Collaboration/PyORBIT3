@@ -337,10 +337,6 @@ void BunchTwissAnalysis::computeBunchMoments(Bunch* bunch, int order, int disper
 
 }
 
-
-
-
-/** Returns the centered correlation <(x-<x>)*(y-<y>)> = <x*y> - <x>*<y> */
 double BunchTwissAnalysis::getCorrelation(int ic, int jc){
 	if(ic < 0 || ic > 5 || jc < 0 || jc >5) return 0.;
 	return (corr_arr[ic+6*jc] - avg_arr[ic]* avg_arr[jc]);
