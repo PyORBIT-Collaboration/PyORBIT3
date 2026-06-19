@@ -8,7 +8,6 @@ endif
 
 dependencies = []
 
-dependencies += python.dependency()
 dependencies += dependency('fftw3', version: '>= 3.0.0', required: true)
 
 py_link_args = []
@@ -17,7 +16,10 @@ if host_machine.system() == 'darwin'
   # The unresolved symbols will be resolved once the Python interpreter loads libpyorbit.
   # The linker on MacOS is a bit more strict, so we need to explicitly tell it that
   # symbols from libpython will be nont resolvable for now.
+  dependencies += python.dependency()
   py_link_args += ['-Wl,-undefined,dynamic_lookup']
+else
+  dependencies += python.dependency(embed : true)
 endif
 
 # Detecting if MPICH or OPENMPI are installed and enabling support if present
