@@ -3,11 +3,12 @@ import math
 import numpy as np
 import scipy.special
 
-from ..core.bunch import SyncParticle
-from ..lattice import AccNode
-from ..lattice import AccLattice
-from ..utils.consts import speed_of_light
-from ..utils.consts import charge_electron
+from orbit.core.bunch import Bunch
+from orbit.core.bunch import SyncParticle
+from orbit.lattice import AccNode
+from orbit.lattice import AccLattice
+from orbit.utils.consts import speed_of_light
+from orbit.utils.consts import charge_electron
 
 from .matrix import MatrixFactory
 from .utils import gen_dist
@@ -38,7 +39,6 @@ class Envelope:
 
     Attributes:
         matrix: 7 x 7 covariance matrix for augmented phase space vector.
-
             Define the phase space vector X = [x, x', y, y', z, dE]^T and
             augmented vector Y = [x, x', y, y', z, dE, 1].
 
@@ -51,16 +51,25 @@ class Envelope:
             and C = <X> is the mean/centroid vector. (To get the covariance matrix:
             <(X - C)(X - C)^T> = <XX^T> - <X><X>^T = R - CC^T.) S evolves according
             to S -> N S N^T.
+        bunch: Bunch containing synchronous particle and (optionally) test particles.
     """
 
     def __init__(
         self,
-        sync_part: SyncParticle,
+        bunch: Bunch,
         cov_matrix: np.ndarray = None,
         centroid: np.ndarray = None,
         intensity: float = 0.0,
     ) -> None:
-        self.sync_part = sync_part
+
+        # Eventually allow:
+        #   - setting covariance matrix from bunch particles
+        #   - tracking bunch particles as test particles
+        empty_bunch = Bunch()
+        bunch.copyEmptyBunchTo(empty_bunch)
+        self.bunch = empty_bunch
+
+        self.sync_part = bunch.getSyncParticle()
         self.dim = 6
 
         if centroid is None:
@@ -95,6 +104,9 @@ class Envelope:
 
     def mass(self) -> float:
         return self.sync_part.mass()
+
+    def charge(self) -> float:
+        return self.bunch.charge()
 
     def centroid(self) -> np.ndarray:
         return np.copy(self.moment_matrix[:self.dim, self.dim])
@@ -228,13 +240,13 @@ class EnvelopeTracker:
         for node in self.lattice.getNodes():
             for child_node in node.getChildNodes(ENTRANCE):
                 envelope.apply_transfer_matrix(
-                    self.matrix_factory(child_node, envelope.sync_part)
+                    self.matrix_factory(child_node, envelope.bunch)
                 )
 
             for part_index in range(node.getnParts()):
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
                     envelope.apply_transfer_matrix(
-                        self.matrix_factory(child_node, envelope.sync_part)
+                        self.matrix_factory(child_node, envelope.bunch)
                     )
 
                 if self.space_charge:
@@ -250,15 +262,15 @@ class EnvelopeTracker:
                     envelope.apply_transfer_matrix(matrix)
 
                 envelope.apply_transfer_matrix(
-                    self.matrix_factory(node, envelope.sync_part, part_index)
+                    self.matrix_factory(node, envelope.bunch, part_index)
                 )
 
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
                     envelope.apply_transfer_matrix(
-                        self.matrix_factory(child_node, envelope.sync_part)
+                        self.matrix_factory(child_node, envelope.bunch)
                     )
 
             for child_node in node.getChildNodes(EXIT):
                 envelope.apply_transfer_matrix(
-                    self.matrix_factory(child_node, envelope.sync_part)
+                    self.matrix_factory(child_node, envelope.bunch)
                 )

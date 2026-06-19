@@ -63,7 +63,7 @@ def main(args: argparse.Namespace) -> None:
     centroid_init = np.zeros(6)
 
     envelope = Envelope(
-        sync_part=sync_part,
+        bunch=bunch,
         cov_matrix=cov_matrix_init,
         centroid=centroid_init,
         intensity=args.intensity,

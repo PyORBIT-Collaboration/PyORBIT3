@@ -38,6 +38,9 @@ from orbit.py_linac.lattice.LinacTransportMatrixGenNodes import LinacTrMatrixGen
 from orbit.py_linac.lattice.LinacTransportMatrixGenNodes import LinacTrMatricesController
 
 from orbit.py_linac.lattice.LinacDiagnosticsNodes import LinacBPM
+from orbit.py_linac.lattice.LinacAccNodes import TiltElement
+from orbit.py_linac.lattice.LinacAccNodes import FringeField
+
 
 __all__ = []
 __all__.append("LinacAccLattice")
@@ -91,3 +94,5 @@ __all__.append("LinacTrMatrixGenNode")
 __all__.append("LinacTrMatricesController")
 
 __all__.append("LinacBPM")
+__all__.append("TiltElement")
+__all__.append("FringeField")

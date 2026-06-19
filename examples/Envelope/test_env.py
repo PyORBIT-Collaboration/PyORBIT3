@@ -2,8 +2,13 @@ import numpy as np
 
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTwissAnalysis
+
 from orbit.lattice import AccNode
 from orbit.lattice import AccLattice
+from orbit.py_linac.lattice import Drift
+from orbit.py_linac.lattice import Quad
+from orbit.py_linac.lattice import Bend
+from orbit.py_linac.lattice import TiltElement
 from orbit.teapot import BendTEAPOT
 from orbit.teapot import DriftTEAPOT
 from orbit.teapot import KickTEAPOT
@@ -14,6 +19,12 @@ from orbit.teapot import TEAPOT_Lattice
 from orbit.utils.consts import mass_proton
 from orbit.envelope import Envelope
 from orbit.envelope import EnvelopeTracker
+
+
+def get_lorentz_factors(kin_energy: float, mass: float) -> tuple[float, float]:
+    gamma = 1.0 + kin_energy / mass
+    beta = np.sqrt(1.0 - (1.0 / gamma)**2)
+    return (gamma, beta)
 
 
 def calc_bunch_cov(bunch: Bunch) -> np.ndarray:
@@ -86,7 +97,7 @@ def track_and_compare_rms(
     data["bunch"]["cov"]["out"] = cov_scale * calc_bunch_cov(bunch)
 
     # Track envelope
-    envelope = Envelope(sync_part=bunch.getSyncParticle(), cov_matrix=cov_matrix)
+    envelope = Envelope(bunch=bunch, cov_matrix=cov_matrix)
     envelope_tracker = EnvelopeTracker(lattice=lattice)
 
     data["env"]["cov"]["in"] = cov_scale * envelope.cov()
@@ -131,9 +142,8 @@ def make_default_cov_matrix(
     return np.diag(np.square([rms_x, rms_xp, rms_y, rms_yp, rms_z, rms_dE]))
 
 
-def test_drift(
-    kin_energy: float = 0.0025, length: float = 1.0, cov_matrix: np.ndarray = None,
-    nparts: int = 6,
+def test_drift_teapot(
+    kin_energy: float = 0.0025, length: float = 1.0, cov_matrix: np.ndarray = None, nparts: int = 6,
 ) -> None:
     nodes = [DriftTEAPOT(length=length, nparts=nparts)]
     lattice = make_lattice(nodes)
@@ -142,7 +152,21 @@ def test_drift(
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
 
 
-def test_quad(
+def test_drift_linac(
+    kin_energy: float = 0.0025, length: float = 1.0, cov_matrix: np.ndarray = None, nparts: int = 6,
+) -> None:
+    node = Drift()
+    node.setLength(length)
+    node.setnParts(nparts)
+    nodes = [node]
+
+    lattice = make_lattice(nodes)
+    if cov_matrix is None:
+        cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+
+
+def test_quad_teapot(
     kin_energy: float = 0.0025,
     length: float = 1.0,
     kq: float = 1.0,
@@ -156,7 +180,26 @@ def test_quad(
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
 
 
-def test_dipole(
+def test_quad_linac(
+    kin_energy: float = 0.0025,
+    length: float = 1.0,
+    field_grad: float = 0.23,
+    cov_matrix: np.ndarray = None,
+    nparts: int = 10,
+) -> None:
+    node = Quad()
+    node.setLength(length)
+    node.setnParts(nparts)
+    node.setParam("dB/dr", field_grad)
+    nodes = [node]
+
+    lattice = make_lattice(nodes)
+    if cov_matrix is None:
+        cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+
+
+def test_dipole_teapot(
     kin_energy: float = 0.0025,
     length: float = 1.0,
     theta: float = 20.0,
@@ -164,6 +207,25 @@ def test_dipole(
     nparts: int = 2,
 ) -> None:
     nodes = [BendTEAPOT(length=length, theta=np.radians(theta), nparts=nparts)]
+    lattice = make_lattice(nodes)
+    if cov_matrix is None:
+        cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+
+
+def test_dipole_linac(
+    kin_energy: float = 0.0025,
+    length: float = 1.0,
+    theta: float = 20.0,
+    cov_matrix: np.ndarray = None,
+    nparts: int = 2,
+) -> None:
+    node = Bend()
+    node.setLength(length)
+    node.setnParts(nparts)
+    node.setParam("theta", np.radians(theta))
+    nodes = [node]
+
     lattice = make_lattice(nodes)
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
@@ -186,12 +248,26 @@ def test_kick(
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
     
     
-def test_tilt(
+def test_tilt_teapot(
     kin_energy: float = 0.0025,
     angle: float = 0.25 * np.pi,
     cov_matrix: np.ndarray = None,
 ) -> None:
     nodes = [TiltTEAPOT(angle=angle)]
+    lattice = make_lattice(nodes)
+    if cov_matrix is None:
+        cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+
+
+def test_tilt_linac(
+    kin_energy: float = 0.0025,
+    angle: float = 0.25 * np.pi,
+    cov_matrix: np.ndarray = None,
+) -> None:
+    node = TiltElement()
+    node.setTiltAngle(angle)
+    nodes = [node]
     lattice = make_lattice(nodes)
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
@@ -213,10 +289,14 @@ def test_solenoid(
 
 
 if __name__ == "__main__":
-    test_drift()
-    test_quad()
-    test_dipole()
+    test_drift_teapot()
+    test_drift_linac()
+    test_quad_teapot()
+    test_quad_linac()
+    test_dipole_teapot()
+    test_dipole_linac()
     test_kick()
-    test_tilt()
+    test_tilt_teapot()
+    test_tilt_linac()
     test_solenoid()
 

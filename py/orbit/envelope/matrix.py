@@ -2,23 +2,27 @@ import math
 
 import numpy as np
 
-from ..core.bunch import Bunch
-from ..core.bunch import SyncParticle
-from ..lattice import AccNode
-from ..teapot import DriftTEAPOT
-from ..teapot import QuadTEAPOT
-from ..teapot import BendTEAPOT
-from ..teapot import TiltTEAPOT
-from ..teapot import KickTEAPOT
-from ..teapot import ApertureTEAPOT
-from ..teapot import BunchWrapTEAPOT
-from ..teapot import FringeFieldTEAPOT
-from ..teapot import MonitorTEAPOT
-from ..teapot import TurnCounterTEAPOT
-from ..teapot import MultipoleTEAPOT
-from ..teapot import NodeTEAPOT
-from ..teapot import SolenoidTEAPOT
-from ..utils import speed_of_light
+from orbit.core.bunch import Bunch
+from orbit.core.bunch import SyncParticle
+from orbit.lattice import AccNode
+from orbit.teapot import DriftTEAPOT
+from orbit.teapot import QuadTEAPOT
+from orbit.teapot import BendTEAPOT
+from orbit.teapot import TiltTEAPOT
+from orbit.teapot import KickTEAPOT
+from orbit.teapot import ApertureTEAPOT
+from orbit.teapot import BunchWrapTEAPOT
+from orbit.teapot import FringeFieldTEAPOT
+from orbit.teapot import MonitorTEAPOT
+from orbit.teapot import TurnCounterTEAPOT
+from orbit.teapot import MultipoleTEAPOT
+from orbit.teapot import NodeTEAPOT
+from orbit.teapot import SolenoidTEAPOT
+from orbit.py_linac.lattice import Drift
+from orbit.py_linac.lattice import Quad
+from orbit.py_linac.lattice import Bend
+from orbit.py_linac.lattice import TiltElement
+from orbit.py_linac.lattice import FringeField
 
 
 def get_dp_p_coeff(sync_part: SyncParticle) -> float:
@@ -67,6 +71,7 @@ class MatrixFactory:
             MonitorTEAPOT,
             TurnCounterTEAPOT,
             NodeTEAPOT,
+            FringeField,
         ]
         self.handle_unknown = handle_unknown
 
@@ -193,7 +198,9 @@ class MatrixFactory:
     def cf_matrix(self, length: float, kq: float, sync_part: SyncParticle) -> np.ndarray:
         raise NotImplementedError()
 
-    def __call__(self, node: AccNode, sync_part: SyncParticle, part_index: int = 0) -> np.ndarray:
+    def __call__(self, node: AccNode, bunch: Bunch, part_index: int = 0) -> np.ndarray:
+        sync_part = bunch.getSyncParticle()
+
         if type(node) is DriftTEAPOT:
             length = node.getLength(part_index)
             return self.drift_matrix(length=length, sync_part=sync_part)
@@ -240,6 +247,24 @@ class MatrixFactory:
                 B *= node.waveform.getStrength()
             length = node.getLength(part_index)
             return self.solenoid_matrix(length=length, B=B, sync_part=sync_part)
+
+        elif type(node) is Drift:
+            length = node.getLength(part_index)
+            return self.drift_matrix(length=length, sync_part=sync_part)
+
+        elif type(node) is Quad:
+            length = node.getLength(part_index)
+            kq = node.getParam("dB/dr") / bunch.B_Rho()
+            return self.quad_matrix(length=length, kq=kq, sync_part=sync_part)
+
+        elif type(node) is Bend:
+            length = node.getLength(part_index)
+            theta = node.getParam("theta") / node.getnParts()
+            return self.bend_matrix(length=length, theta=theta, sync_part=sync_part)
+
+        elif type(node) is TiltElement:
+            angle = node.getTiltAngle()
+            return self.tilt_matrix(angle)
 
         elif type(node) in self.ignore_node_types:
             return np.identity(7)
