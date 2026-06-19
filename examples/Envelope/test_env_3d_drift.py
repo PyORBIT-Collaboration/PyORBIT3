@@ -1,4 +1,8 @@
-"""Test 3D envelope tracker in drift."""
+"""Test 3D envelope tracker in drift.
+
+The initial beam is a uniform-density ball in the x-y-z plane (in the beam rest frame),
+with zero initial velocity.
+"""
 
 import argparse
 import copy
@@ -162,14 +166,14 @@ def main(args: argparse.Namespace) -> None:
 
     # Plot rms bunch sizes
     for key in ["xrms", "yrms", "zrms"]:
-        fig, ax = plt.subplots(figsize=(5, 3))
+        fig, ax = plt.subplots(figsize=(4, 3))
         for i, model in enumerate(["envelope", "bunch"]):
             color = ["black", "red"][i]
             lw = [None, 0][i]
             ax.plot(histories[model][key], marker=".", lw=lw, color=color, label=model)
         ax.set_ylim(0.0, ax.get_ylim()[1])
-        ax.set_xlabel("Turn")
-        ax.set_ylabel("RMS [mm]")
+        ax.set_xlabel("s [mm]")
+        ax.set_ylabel("rms size [mm]")
         ax.legend(loc="upper left")
         plt.savefig(os.path.join(output_dir, f"fig_{key}"))
         plt.close()
