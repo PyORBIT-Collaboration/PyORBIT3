@@ -6,6 +6,28 @@
 #include <ctime>
 
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+
+#if USE_MPI == 0
+static std::size_t ORBIT_MPI_Type_size(MPI_Datatype data) {
+  switch(data){
+    case MPI_CHAR:           return sizeof(char);
+    case MPI_UNSIGNED_CHAR:  return sizeof(unsigned char);
+    case MPI_BYTE:           return sizeof(char);
+    case MPI_SHORT:          return sizeof(short);
+    case MPI_UNSIGNED_SHORT: return sizeof(unsigned short);
+    case MPI_INT:            return sizeof(int);
+    case MPI_UNSIGNED:       return sizeof(unsigned);
+    case MPI_LONG:           return sizeof(long);
+    case MPI_UNSIGNED_LONG:  return sizeof(unsigned long);
+    case MPI_FLOAT:          return sizeof(float);
+    case MPI_DOUBLE:         return sizeof(double);
+    case MPI_LONG_DOUBLE:    return sizeof(long double);
+    case MPI_LONG_LONG_INT:  return sizeof(long long);
+    default:                 return 0;
+  }
+}
+#endif
+
 /** A C wrapper around MPI_Init. */
 int ORBIT_MPI_Init(){
   int res = 0;
@@ -552,15 +574,19 @@ int ORBIT_MPI_Wait(MPI_Request  *request, MPI_Status *status){
 }
 
 /** A C wrapper around MPI_Allreduce. */
-int ORBIT_MPI_Allreduce(void* ar1, void* ar2, int n, MPI_Datatype data, MPI_Op op, MPI_Comm comm){
-  int res = 0;
+int ORBIT_MPI_Allreduce(void* ar1, void* ar2, int n, MPI_Datatype data, MPI_Op op, MPI_Comm comm) {
 #if USE_MPI > 0
-  res = MPI_Allreduce(ar1, ar2, n, data, op, comm);
+  return MPI_Allreduce(ar1, ar2, n, data, op, comm);
 #else
-	memcpy(ar2, ar1, n*sizeof(ar1));
-  res  = MPI_SUCCESS;
+  if (ar1 == MPI_IN_PLACE || ar1 == ar2) return MPI_SUCCESS;
+
+  std::size_t nbytes = (std::size_t)n * ORBIT_MPI_Type_size(data);
+  if (nbytes > 0) {
+    std::memcpy(ar2, ar1, nbytes);
+  }
+
+  return MPI_SUCCESS;
 #endif
-  return res;
 }
 
 /** A C wrapper around MPI_Bcast. */
