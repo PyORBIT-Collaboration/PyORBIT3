@@ -18,6 +18,9 @@ from .ParamsDictObject import ParamsDictObject
 
 from .phaseOperations import phaseNearTargetPhase, phaseNearTargetPhaseDeg
 from .consts import speed_of_light
+from .consts import mass_proton
+from .consts import mass_electron
+from .consts import charge_electron
 
 __all__ = []
 __all__.append("multiDimDoubleArray")
@@ -29,3 +32,6 @@ __all__.append("ParamsDictObject")
 __all__.append("phaseNearTargetPhase")
 __all__.append("phaseNearTargetPhaseDeg")
 __all__.append("speed_of_light")
+__all__.append("mass_proton")
+__all__.append("mass_electron")
+__all__.append("charge_electron")
