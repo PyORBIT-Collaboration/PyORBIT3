@@ -34,12 +34,19 @@ public:
 	/** Destructor */
 	virtual ~LSpaceChargeCalc();
 
-	/** Calculates space charge and applies the transverse and
-	longitudinal SC kicks to the macro-particles in the bunch. */
+	/** Sets number of FFT modes used to calculate energy kick from impedance. **/
+	void setNumModes(int n);
+
+	/** Sets option to use gradient rather than impedance. **/
+	void setUseGrad(int setting);
+
+	/** Sets option to use smooth gradient of longitudinal density. **/
+	void setSmoothGrad(int setting);
+
+	/** Calculates space charge and applies the transverse and longitudinal SC kicks to the macro-particles in the bunch. */
 	void trackBunch(Bunch* bunch);
 
-	/** Assigns the real and imaginary parts of the
-        machine impedance for index n**/
+	/** Assigns the real and imaginary parts of the machine impedance for index n**/
 	void assignImpedanceValue(int n, double real, double imag);
 
 	/** Routine for calculating the kick to the particle **/
@@ -52,6 +59,9 @@ public:
 	int nBins;
 	int nMacrosMin;
 	int useSpaceCharge;
+    int nModes;
+    int useGrad;
+    int smooth;
 
 //protected:
 	Grid1D* zGrid;
