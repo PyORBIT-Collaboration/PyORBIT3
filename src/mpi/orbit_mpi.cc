@@ -456,7 +456,7 @@ int ORBIT_MPI_Graphdims_get(MPI_Comm comm, int *nnodes, int *nedges){
 int ORBIT_MPI_Graph_get(MPI_Comm comm, int maxindex, int maxedges, int *index, int *edges){
   int res = 0;
 #if USE_MPI > 0
-  res = ORBIT_MPI_Graph_get(comm, maxindex, maxedges, index, edges);
+  res = MPI_Graph_get(comm, maxindex, maxedges, index, edges);
 #else
   res  = MPI_SUCCESS;
 #endif
