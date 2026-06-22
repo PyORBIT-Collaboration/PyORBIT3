@@ -8,42 +8,14 @@
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 /** A C wrapper around MPI_Init. */
 int ORBIT_MPI_Init(){
-  int res = 0;
 #if USE_MPI > 0
-  int len=0;
-  char** ch = NULL;
-  // Getting arguments from sys.argv
-  PyObject* sys_module = PyImport_ImportModule("sys");
-  PyObject* argv_list = PyObject_GetAttrString(sys_module, "argv");
-
-  // Check if argv_list is a list
-  if (PyList_Check(argv_list)) {
-    // Access individual command-line arguments
-    len = PyList_Size(argv_list);
-    ch = (char**) malloc(sizeof(char*) * len);
-    for (Py_ssize_t i = 0; i < len; ++i) {
-      PyObject* item = PyList_GetItem(argv_list, i);
-      if (item && PyUnicode_Check(item)) {
-        ch[i] = const_cast<char*>(PyUnicode_AsUTF8(item));
-      }
-    }
-  }
-
-  // Release references
-  Py_XDECREF(argv_list);
-  Py_XDECREF(sys_module);
-
-  res = MPI_Init(&len,&ch);
-
-  free(ch);
-  ch = NULL;
+  // Ignoring result; if it fails, the proc is doomed anyway.
+  MPI_Init(NULL, NULL);
 
   // Registering MPI finalize method at cleanup stage
   Py_AtExit(ORBIT_MPI_Finalize);
-#else
-  res  = MPI_SUCCESS;
 #endif
-  return res;
+  return MPI_SUCCESS;
 }
 
 /** A C wrapper around MPI_Initialized. */
@@ -484,7 +456,7 @@ int ORBIT_MPI_Graphdims_get(MPI_Comm comm, int *nnodes, int *nedges){
 int ORBIT_MPI_Graph_get(MPI_Comm comm, int maxindex, int maxedges, int *index, int *edges){
   int res = 0;
 #if USE_MPI > 0
-  res = ORBIT_MPI_Graph_get(comm, maxindex, maxedges, index, edges);
+  res = MPI_Graph_get(comm, maxindex, maxedges, index, edges);
 #else
   res  = MPI_SUCCESS;
 #endif
