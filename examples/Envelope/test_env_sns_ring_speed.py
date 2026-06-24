@@ -26,7 +26,7 @@ parser.add_argument("--kin-energy", type=float, default=1.300)
 parser.add_argument("--intensity", type=float, default=2e14)
 
 parser.add_argument("--nparts", type=int, default=10_000)
-parser.add_argument("--turns", type=int, default=100)
+parser.add_argument("--turns", type=int, default=25)
 parser.add_argument("--sc", type=int, default=0)
 parser.add_argument("--sc-grid", type=int, default=64)
 args = parser.parse_args()
