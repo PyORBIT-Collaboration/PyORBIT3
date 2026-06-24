@@ -149,7 +149,7 @@ def main(args: argparse.Namespace) -> None:
 
         message = ""
         message += " turn={}".format(turn)
-        message += " time={:0.2f}".format(time.time() - start_time)
+        message += " time={:0.3f}".format(time.time() - start_time)
         message += " xrms={:0.2f}".format(xrms)
         message += " yrms={:0.2f}".format(yrms)
         message += " xavg={:0.2f}".format(xavg)
@@ -212,7 +212,7 @@ def main(args: argparse.Namespace) -> None:
 
         message = ""
         message += " turn={}".format(turn)
-        message += " time={:0.2f}".format(time.time() - start_time)
+        message += " time={:0.3f}".format(time.time() - start_time)
         message += " xrms={:0.2f}".format(xrms)
         message += " yrms={:0.2f}".format(yrms)
         message += " xavg={:0.2f}".format(xavg)
