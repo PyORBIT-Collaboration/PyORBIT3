@@ -167,16 +167,17 @@ class Envelope:
 
         # Build matrix to undo x-y diagonalization.
         A = build_diag_matrix_from_xyz_eig(cov_eig_vecs)
+        A_inv = A.T
 
         # Build matrix to translate to centroid.
         T = np.identity(7)
         T[0, -1] = centroid[0]
         T[2, -1] = centroid[2]
+        T_inv = np.copy(T)
+        T_inv[:-1, -1] = -T[:-1, -1]
 
         # Compute transfer matrix in lab frame.
-        V = np.matmul(T, A)
-        V_inv = np.linalg.inv(V)
-        return np.linalg.multi_dot([V, M, V_inv])
+        return T @ A @ M @ A_inv @ T_inv
 
     def sc_transfer_matrix_3d(self, length: float) -> np.ndarray:
         # Build Lorentz matrix: rest frame to lab frame.
@@ -186,11 +187,11 @@ class Envelope:
         # x' = dx/ds -> x' / gamma
         # y' = dy/ds -> y' / gamma
         # z' = dz/ds -> z'
-        lorentz_matrix = np.identity(7)
-        lorentz_matrix[1, 1] = self.gamma()
-        lorentz_matrix[3, 3] = self.gamma()
-        lorentz_matrix[4, 4] = 1.0 / self.gamma()
-        lorentz_matrix_inv = np.linalg.inv(lorentz_matrix)
+        L = np.identity(7)
+        L[1, 1] = self.gamma()
+        L[3, 3] = self.gamma()
+        L[4, 4] = 1.0 / self.gamma()
+        L_inv = np.diag(1.0 / np.diag(L))
 
         # Get centroid in rest frame.
         centroid = self.centroid
@@ -198,9 +199,7 @@ class Envelope:
 
         # Get covariance matrix in rest frame.
         cov_matrix = self.cov_matrix
-        cov_matrix = np.linalg.multi_dot(
-            [lorentz_matrix_inv[:-1, :-1], cov_matrix, lorentz_matrix_inv[:-1, :-1].T]
-        )
+        cov_matrix = L_inv[:-1, :-1] @ cov_matrix @ L_inv[:-1, :-1].T
 
         # Project covariance matrix onto x-y-z plane.
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2, 4))
@@ -228,18 +227,17 @@ class Envelope:
 
         # Build matrix to undo x-y-z diagonalization.
         A = build_diag_matrix_from_xyz_eig(cov_eig_vecs)
+        A_inv = A.T
 
         # Build matrix for translation to centroid.
         T = np.identity(7)
         for i in (0, 2, 4):
             T[i, -1] = centroid[i]
-
-        # Build matrix for Lorentz boost (length contraction).
-        L = lorentz_matrix
+        T_inv = np.copy(T)
+        T_inv[:-1, -1] = -T[:-1, -1]
 
         # Compute transfer matrix in lab frame.
-        V = np.linalg.multi_dot([L, T, A])
-        M = np.linalg.multi_dot([V, M, np.linalg.inv(V)])
+        M = L @ T @ A @ M @ A_inv @ T_inv @ L_inv
 
         # Convert from z' to dE
         return convert_matrix_zp_to_dE(M, self.sync_part)
