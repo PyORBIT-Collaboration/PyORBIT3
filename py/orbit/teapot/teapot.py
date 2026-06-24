@@ -36,13 +36,19 @@ from ..parsers.mad_parser import MAD_LattElement
 from ..parsers.madx_parser import MADX_Parser
 from ..parsers.madx_parser import MADX_LattElement
 
-from ..envelope.matrix import drift_matrix
-from ..envelope.matrix import bend_matrix
-from ..envelope.matrix import quad_matrix
-from ..envelope.matrix import solenoid_matrix
-from ..envelope.matrix import kick_matrix
-from ..envelope.matrix import tilt_matrix
-from ..envelope.matrix import translation_matrix
+# from orbit.matrix_lattice import drift_matrix
+# from orbit.matrix_lattice import bend_matrix
+# from orbit.matrix_lattice import quad_matrix
+# from orbit.matrix_lattice import solenoid_matrix
+# from orbit.matrix_lattice import kick_matrix
+# from orbit.matrix_lattice import tilt_matrix
+
+from orbit.matrix_lattice.analytic import drift_matrix
+from orbit.matrix_lattice.analytic import bend_matrix
+from orbit.matrix_lattice.analytic import quad_matrix
+from orbit.matrix_lattice.analytic import solenoid_matrix
+from orbit.matrix_lattice.analytic import kick_matrix
+from orbit.matrix_lattice.analytic import tilt_matrix
 
 from orbit.core.aperture import Aperture
 from orbit.core.bunch import Bunch
@@ -915,7 +921,9 @@ class MultipoleTEAPOT(NodeTEAPOT):
         if np.all(np.abs(self.getParam("kls")) == 0):
             length = self.getLength(index)
             return drift_matrix(length=length, sync_part=sync_part)
-        raise NotImplementedError()
+
+        # [TO DO] Return matrix for dipole + quadrupole components?
+        raise NotImplementedError(str(self))
 
 
 class QuadTEAPOT(NodeTEAPOT):

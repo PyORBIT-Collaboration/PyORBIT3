@@ -29,13 +29,19 @@ from orbit.core.linac import linac_tracking
 
 from orbit.core.bunch import SyncParticle
 
-from orbit.envelope.matrix import drift_matrix
-from orbit.envelope.matrix import bend_matrix
-from orbit.envelope.matrix import quad_matrix
-from orbit.envelope.matrix import solenoid_matrix
-from orbit.envelope.matrix import kick_matrix
-from orbit.envelope.matrix import tilt_matrix
-from orbit.envelope.matrix import translation_matrix
+# from orbit.matrix_lattice import drift_matrix
+# from orbit.matrix_lattice import bend_matrix
+# from orbit.matrix_lattice import quad_matrix
+# from orbit.matrix_lattice import solenoid_matrix
+# from orbit.matrix_lattice import kick_matrix
+# from orbit.matrix_lattice import tilt_matrix
+
+from orbit.matrix_lattice.analytic import drift_matrix
+from orbit.matrix_lattice.analytic import bend_matrix
+from orbit.matrix_lattice.analytic import quad_matrix
+from orbit.matrix_lattice.analytic import solenoid_matrix
+from orbit.matrix_lattice.analytic import kick_matrix
+from orbit.matrix_lattice.analytic import tilt_matrix
 
 
 class BaseLinacNode(AccNodeBunchTracker):

@@ -7,10 +7,10 @@ from orbit.core.bunch import Bunch
 from orbit.core.bunch import SyncParticle
 from orbit.lattice import AccNode
 from orbit.lattice import AccLattice
+from orbit.matrix_lattice.analytic import convert_matrix_zp_to_dE
 from orbit.utils.consts import speed_of_light
 from orbit.utils.consts import charge_electron
 
-from .matrix import convert_matrix_zp_to_dE
 from .utils import gen_dist
 from .utils import proj_cov_matrix
 
@@ -39,7 +39,7 @@ class Envelope:
     """Represents beam envelope and centroid.
 
     Attributes:
-        matrix: 7 x 7 covariance matrix for augmented phase space vector.
+        moment_matrix: 7 x 7 covariance matrix for augmented phase space vector.
             Define the phase space vector X = [x, x', y, y', z, dE]^T and
             augmented vector Y = [x, x', y, y', z, dE, 1].
 
