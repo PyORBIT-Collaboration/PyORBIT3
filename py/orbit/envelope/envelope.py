@@ -177,16 +177,18 @@ class Envelope:
         return np.linalg.multi_dot([V, M, V_inv])
 
     def sc_transfer_matrix_3d(self, length: float) -> np.ndarray:
+        # Get centroid in rest frame.
         centroid = self.centroid()
         centroid[4] *= self.gamma()
 
+        # Get covariance matrix in rest frame.
         cov_matrix = self.cov()
         cov_matrix[4, 4] *= self.gamma() ** 2
 
         # Project covariance matrix onto x-y-z plane.
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2, 4))
 
-        # Compute eigenvalues and eigenvectors of x-y covariance matrix.
+        # Compute eigenvalues and eigenvectors of x-y-z covariance matrix.
         cov_eig_res = np.linalg.eig(cov_matrix_proj)
         cov_eig_vals = cov_eig_res.eigenvalues
         cov_eig_vecs = cov_eig_res.eigenvectors
@@ -226,7 +228,7 @@ class Envelope:
         V = np.linalg.multi_dot([L, T, A])
         M = np.linalg.multi_dot([V, M, np.linalg.inv(V)])
 
-        # Convert from z' to dE.
+        # Convert from z' to dE
         return convert_matrix_zp_to_dE(M, self.sync_part)
 
 
