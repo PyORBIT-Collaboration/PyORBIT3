@@ -154,7 +154,7 @@ class Envelope:
         ry = 2.0 * math.sqrt(cov_eig_vals[1])
 
         # Build transfer matrix in upright frame.
-        bunch_length = 4.0 * self.rms(axis=4)
+        bunch_length = 4.0 * np.sqrt(cov_matrix[4, 4])
         perveance = self.sc_factor / bunch_length
         factor = 2.0 * perveance / (rx + ry)
         kappa_x = factor / rx
