@@ -433,6 +433,9 @@ class BaseTEAPOT(AccNodeBunchTracker):
         AccNodeBunchTracker.__init__(self, name)
         self.setType("base teapot")
 
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        raise NotImplementedError(str(self))
+
 
 class TurnCounterTEAPOT(BaseTEAPOT):
     def __init__(self, name: str = "TurnCounter") -> None:
@@ -450,6 +453,9 @@ class TurnCounterTEAPOT(BaseTEAPOT):
         if bunch.hasBunchAttrInt("TurnNumber") != 0:
             turn = bunch.bunchAttrInt("TurnNumber")
             bunch.bunchAttrInt("TurnNumber", turn + 1)
+
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        return None
 
 
 class NodeTEAPOT(BaseTEAPOT):
@@ -570,7 +576,7 @@ class NodeTEAPOT(BaseTEAPOT):
         return self.__fringeFieldOUT.getUsage()
 
     def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
-        raise NotImplementedError(str(self))
+        return None
 
 
 class DriftTEAPOT(NodeTEAPOT):

@@ -242,23 +242,16 @@ class EnvelopeTracker:
         handle_unknown: str | None = None,
     ) -> None:
         self.lattice = lattice
-        # self.matrix_factory = MatrixFactory(handle_unknown=handle_unknown)
         self.space_charge = space_charge
 
     def track(self, envelope: Envelope) -> None:
         for node in self.lattice.getNodes():
             for child_node in node.getChildNodes(ENTRANCE):
-                envelope.apply_transfer_matrix(
-                    child_node.matrix(envelope.sync_part)
-                    # self.matrix_factory(child_node, envelope.bunch)
-                )
+                envelope.apply_transfer_matrix(child_node.matrix(envelope.sync_part))
 
             for index in range(node.getnParts()):
                 for child_node in node.getChildNodes(BODY, index, place_in_part=BEFORE):
-                    envelope.apply_transfer_matrix(
-                        child_node.matrix(envelope.sync_part)
-                        # self.matrix_factory(child_node, envelope.bunch)
-                    )
+                    envelope.apply_transfer_matrix(child_node.matrix(envelope.sync_part))
 
                 if self.space_charge:
                     length = node.getLength(index)
@@ -272,19 +265,10 @@ class EnvelopeTracker:
                         )
                     envelope.apply_transfer_matrix(matrix)
 
-                envelope.apply_transfer_matrix(
-                    node.matrix(envelope.sync_part, index)
-                    # self.matrix_factory(node, envelope.bunch, index)
-                )
+                envelope.apply_transfer_matrix(node.matrix(envelope.sync_part, index))
 
                 for child_node in node.getChildNodes(BODY, index, place_in_part=AFTER):
-                    envelope.apply_transfer_matrix(
-                        child_node.matrix(envelope.sync_part)
-                        # self.matrix_factory(child_node, envelope.bunch)
-                    )
+                    envelope.apply_transfer_matrix(child_node.matrix(envelope.sync_part))
 
             for child_node in node.getChildNodes(EXIT):
-                envelope.apply_transfer_matrix(
-                    child_node.matrix(envelope.sync_part)
-                    # self.matrix_factory(child_node, envelope.bunch)
-                )
+                envelope.apply_transfer_matrix(child_node.matrix(envelope.sync_part))
