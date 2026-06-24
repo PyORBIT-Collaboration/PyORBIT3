@@ -4,6 +4,7 @@ import numpy as np
 
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import SyncParticle
+from orbit.utils.consts import speed_of_light
 
 
 def get_dp_p_coeff(sync_part: SyncParticle) -> float:
@@ -185,3 +186,55 @@ def solenoid_matrix(length: float, B: float, sync_part: SyncParticle) -> np.ndar
 
 def cf_matrix(length: float, kq: float, sync_part: SyncParticle) -> np.ndarray:
     raise NotImplementedError()
+
+
+def rf_gap_matrix(
+    frequency: float, E0TL: float, phase: float, sync_part: SyncParticle
+) -> np.ndarray:
+    """Matrix for thin RF gap.
+
+    E0TL: maximal energy gain in the gap [GeV].
+    frequency: RF frequency [Hz]
+    phase: RF phase [rad]
+    """
+    gamma = sync_part.gamma()
+    beta = sync_part.beta()
+    mass = sync_part.mass()
+    charge = 1.0  # TEMP!
+
+    kin_energy_in = sync_part.kinEnergy()
+    chargeE0TLsin = charge * E0TL * math.sin(phase)
+    kin_energy_delta = charge * E0TL * math.cos(phase)
+
+    # Calculate parameters in the center of the gap.
+    sync_part.momentum(sync_part.energyToMomentum(kin_energy_in + kin_energy_delta / 2.0))
+    gamma_gap = sync_part.gamma()
+    beta_gap = sync_part.beta()
+
+    # Move to the end of the gap.
+    kin_energy_out = kin_energy_in + kin_energy_delta
+    sync_part.momentum(sync_part.energyToMomentum(kin_energy_out))
+
+    # The base RF gap is simple - no phase correction.
+    delta_time = 0.0
+    sync_part.time(sync_part.time() + delta_time)
+    gamma_out = sync_part.gamma()
+    beta_out = sync_part.beta()
+    prime_coeff = (beta * gamma) / (beta_out * gamma_out)
+
+    # Wave momentum
+    k = 2.0 * math.pi * frequency / speed_of_light
+    phase_time_coeff = k / beta
+
+    # Transverse focusing coefficient
+    kappa = -charge * E0TL * k / (2.0 * mass * beta_gap**2 * beta_out * gamma_gap**2 * gamma_out)
+    d_rp = kappa * math.sin(phase)
+
+    M = np.eye(7)
+    M[5, 4] = chargeE0TLsin * phase_time_coeff
+    M[4, 4] = beta_out / beta
+    M[1, 1] = prime_coeff
+    M[3, 3] = prime_coeff
+    M[1, 0] = d_rp
+    M[3, 2] = d_rp
+    return M

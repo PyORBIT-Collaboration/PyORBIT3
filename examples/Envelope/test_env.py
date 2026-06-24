@@ -2,7 +2,8 @@ import numpy as np
 
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTwissAnalysis
-
+from orbit.core.linac import MatrixRfGap
+from orbit.bunch_utils import collect_bunch
 from orbit.lattice import AccNode
 from orbit.lattice import AccLattice
 from orbit.py_linac.lattice import Drift
@@ -314,6 +315,49 @@ def test_solenoid_linac(
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
 
 
+def test_rf_gap_matrix(
+    kin_energy: float = 0.0025,
+    frequency: float = 402.5e+06,
+    E0TL: float = 0.001,
+    phase: float = 0.0,
+):
+    # Just tests matrix against MatrixRFGap. Node not implemented yet.
+
+    cov_matrix = make_default_cov_matrix()
+
+    bunch_in = Bunch()
+    bunch_in.mass(mass_proton)
+    bunch_in.getSyncParticle().kinEnergy(kin_energy)
+
+    coords_in = np.random.multivariate_normal(np.zeros(6), cov_matrix, size=10)
+    for x in coords_in:
+        bunch_in.addParticle(*x)
+
+    bunch_out_1 = Bunch()
+    bunch_in.copyBunchTo(bunch_out_1)
+
+    matrix_rf_gap = MatrixRfGap()
+    matrix_rf_gap.trackBunch(bunch_out_1, frequency, E0TL, phase)
+
+    coords_out_1 = collect_bunch(bunch_out_1)["coords"]
+
+    from orbit.matrix_lattice.analytic import rf_gap_matrix
+
+    bunch_out_2 = Bunch()
+    bunch_in.copyBunchTo(bunch_out_2)
+
+    matrix = rf_gap_matrix(
+        frequency=frequency,
+        E0TL=E0TL,
+        phase=phase,
+        sync_part=bunch_out_2.getSyncParticle(),
+    )
+    coords_in = np.column_stack([coords_in, np.ones(coords_in.shape[0])])
+    coords_out_2 = np.matmul(coords_in, matrix.T)
+    coords_out_2 = coords_out_2[:, :-1]
+    assert np.allclose(coords_out_1, coords_out_2)
+
+
 def test_sc_3d_cold_expansion():
     # This should test expansion of cold uniform-density sphere
     # (in rest frame). We can calculate the time to expand to
@@ -335,3 +379,5 @@ if __name__ == "__main__":
     test_bend_linac()
     test_tilt_linac()
     test_solenoid_linac()
+
+    test_rf_gap_matrix()
