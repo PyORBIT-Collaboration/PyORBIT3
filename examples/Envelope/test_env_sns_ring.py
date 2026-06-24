@@ -7,9 +7,6 @@ import os
 import pathlib
 import time
 
-import cProfile
-import pstats
-
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -129,17 +126,10 @@ def main(args: argparse.Namespace) -> None:
 
     print("TRACK ENVELOPE")
 
-    tracker = EnvelopeTracker(
-        lattice,
-        handle_unknown=args.handle_unknown,
-        space_charge=("2d" if args.sc else None),
-    )
+    tracker = EnvelopeTracker(lattice, space_charge=("2d" if args.sc else None))
 
     history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
     start_time = time.time()
-
-    profiler = cProfile.Profile()
-    profiler.enable()
 
     for turn in range(args.turns + 1):
         if turn > 0:
@@ -166,11 +156,6 @@ def main(args: argparse.Namespace) -> None:
         history["yrms"].append(yrms)
         history["xavg"].append(xavg)
         history["yavg"].append(yavg)
-
-    profiler.disable()
-    stats = pstats.Stats(profiler)
-    stats.sort_stats(pstats.SortKey.TIME)
-    stats.print_stats(20)
 
     histories = {}
     histories["envelope"] = copy.deepcopy(history)
