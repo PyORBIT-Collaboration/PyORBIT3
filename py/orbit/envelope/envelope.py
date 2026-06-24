@@ -141,7 +141,7 @@ class Envelope:
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2))
 
         # Compute eigenvalues and eigenvectors of x-y covariance matrix.
-        cov_eig_res = np.linalg.eig(cov_matrix_proj)
+        cov_eig_res = np.linalg.eigh(cov_matrix_proj)
         cov_eig_vals = cov_eig_res.eigenvalues
         cov_eig_vecs = cov_eig_res.eigenvectors
 
@@ -197,7 +197,7 @@ class Envelope:
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2, 4))
 
         # Compute eigenvalues and eigenvectors of x-y-z covariance matrix.
-        cov_eig_res = np.linalg.eig(cov_matrix_proj)
+        cov_eig_res = np.linalg.eigh(cov_matrix_proj)
         cov_eig_vals = cov_eig_res.eigenvalues
         cov_eig_vecs = cov_eig_res.eigenvectors
 
