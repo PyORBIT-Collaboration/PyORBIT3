@@ -254,9 +254,7 @@ class EnvelopeTracker:
 
             for index in range(node.getnParts()):
                 for child_node in node.getChildNodes(BODY, index, place_in_part=BEFORE):
-                    envelope.apply_transfer_matrix(
-                        child_node.matrix(envelope.sync_part)
-                    )
+                    envelope.apply_transfer_matrix(child_node.matrix(envelope.sync_part))
 
                 if self.space_charge:
                     length = node.getLength(index)
@@ -265,17 +263,13 @@ class EnvelopeTracker:
                     elif self.space_charge == "3d":
                         matrix = envelope.sc_transfer_matrix_3d(length)
                     else:
-                        raise ValueError(
-                            f"Invalid space charge model: {self.space_charge}"
-                        )
+                        raise ValueError(f"Invalid space charge model: {self.space_charge}")
                     envelope.apply_transfer_matrix(matrix)
 
                 envelope.apply_transfer_matrix(node.matrix(envelope.sync_part, index))
 
                 for child_node in node.getChildNodes(BODY, index, place_in_part=AFTER):
-                    envelope.apply_transfer_matrix(
-                        child_node.matrix(envelope.sync_part)
-                    )
+                    envelope.apply_transfer_matrix(child_node.matrix(envelope.sync_part))
 
             for child_node in node.getChildNodes(EXIT):
                 envelope.apply_transfer_matrix(child_node.matrix(envelope.sync_part))
