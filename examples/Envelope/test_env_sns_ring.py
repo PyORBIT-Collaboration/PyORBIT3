@@ -5,6 +5,7 @@ import copy
 import math
 import os
 import pathlib
+import time
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -132,6 +133,8 @@ def main(args: argparse.Namespace) -> None:
     )
 
     history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
+    start_time = time.time()
+
     for turn in range(args.turns):
         if turn > 0:
             tracker.track(envelope)
@@ -144,9 +147,14 @@ def main(args: argparse.Namespace) -> None:
         xavg = 1000.0 * centroid[0]
         yavg = 1000.0 * centroid[2]
 
-        print(
-            f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} xavg={xavg:0.3f} yavg={yavg:0.3f}"
-        )
+        message = ""
+        message += " turn={}".format(turn)
+        message += " time={:0.2f}".format(time.time() - start_time)
+        message += " xrms={:0.2f}".format(xrms)
+        message += " yrms={:0.2f}".format(yrms)
+        message += " xavg={:0.2f}".format(xavg)
+        message += " yavg={:0.2f}".format(yavg)
+        print(message)
 
         history["xrms"].append(xrms)
         history["yrms"].append(yrms)
@@ -182,6 +190,8 @@ def main(args: argparse.Namespace) -> None:
         bunch.macroSize(args.intensity / bunch_size)
 
     history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
+    start_time = time.time()
+
     for turn in range(args.turns):
         if turn > 0:
             lattice.trackBunch(bunch)
@@ -200,9 +210,15 @@ def main(args: argparse.Namespace) -> None:
         xavg = 1000.0 * twiss_calc.getAverage(0)
         yavg = 1000.0 * twiss_calc.getAverage(2)
 
-        print(
-            f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} xavg={xavg:0.3f} yavg={yavg:0.3f}"
-        )
+        message = ""
+        message += " turn={}".format(turn)
+        message += " time={:0.2f}".format(time.time() - start_time)
+        message += " xrms={:0.2f}".format(xrms)
+        message += " yrms={:0.2f}".format(yrms)
+        message += " xavg={:0.2f}".format(xavg)
+        message += " yavg={:0.2f}".format(yavg)
+        print(message)
+
 
         history["xrms"].append(xrms)
         history["yrms"].append(yrms)
@@ -309,9 +325,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--kin-energy", type=float, default=1.300)
     parser.add_argument("--intensity", type=float, default=2e14)
 
-    parser.add_argument(
-        "--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"]
-    )
+    parser.add_argument("--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"])
     parser.add_argument("--mismatch-x", type=float, default=0.0)
     parser.add_argument("--mismatch-y", type=float, default=0.0)
     parser.add_argument("--offset-x", type=float, default=0.0)
@@ -319,14 +333,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--tilt", type=float, default=0)
 
     parser.add_argument("--nparts", type=int, default=100_000)
-    parser.add_argument("--turns", type=int, default=25)
+    parser.add_argument("--turns", type=int, default=100)
     parser.add_argument("--sol", type=int, default=0)
     parser.add_argument("--sc", type=int, default=0)
     parser.add_argument("--sc-grid", type=int, default=64)
 
-    parser.add_argument(
-        "--handle-unknown", type=str, default=None, choices=["drift", "fit"]
-    )
+    parser.add_argument("--handle-unknown", type=str, default=None, choices=["drift", "fit"])
     return parser.parse_args()
 
 
