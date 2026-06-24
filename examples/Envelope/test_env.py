@@ -308,6 +308,14 @@ def test_solenoid_linac(
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
 
 
+def test_sc_3d_cold_expansion():
+    # This should test expansion of cold uniform-density sphere
+    # (in rest frame). We can calculate the time to expand to
+    # twice the initial size. (See examples from A. Shishlo or
+    # from the ImpactX repo.)
+    raise NotImplementedError
+
+
 if __name__ == "__main__":
     test_drift_teapot()
     test_quad_teapot()
