@@ -8,8 +8,6 @@ from orbit.core.bunch import SyncParticle
 from orbit.lattice import AccNode
 from orbit.lattice import AccLattice
 from orbit.matrix_lattice.analytic import convert_matrix_zp_to_dE
-from orbit.utils.consts import speed_of_light
-from orbit.utils.consts import charge_electron
 
 from .utils import gen_dist
 from .utils import proj_cov_matrix
@@ -78,11 +76,13 @@ class Envelope:
 
         if cov_matrix is None:
             cov_matrix = np.eye(6)
-            
+
         self.moment_matrix = np.zeros((7, 7))
-        self.moment_matrix[:self.dim, :self.dim] = cov_matrix + np.outer(centroid, centroid)
-        self.moment_matrix[:self.dim, self.dim] = centroid
-        self.moment_matrix[self.dim, :self.dim] = centroid
+        self.moment_matrix[: self.dim, : self.dim] = cov_matrix + np.outer(
+            centroid, centroid
+        )
+        self.moment_matrix[: self.dim, self.dim] = centroid
+        self.moment_matrix[self.dim, : self.dim] = centroid
         self.moment_matrix[self.dim, self.dim] = 1.0
 
         self.intensity = 0.0
@@ -110,11 +110,11 @@ class Envelope:
         return self.bunch.charge()
 
     def centroid(self) -> np.ndarray:
-        return np.copy(self.moment_matrix[:self.dim, self.dim])
+        return np.copy(self.moment_matrix[: self.dim, self.dim])
 
     def cov(self) -> np.ndarray:
-        autocorrelation_matrix = self.moment_matrix[:self.dim, :self.dim]
-        centroid = self.moment_matrix[:self.dim, self.dim]
+        autocorrelation_matrix = self.moment_matrix[: self.dim, : self.dim]
+        centroid = self.moment_matrix[: self.dim, self.dim]
         return autocorrelation_matrix - np.outer(centroid, centroid)
 
     def rms(self, axis: int = None) -> float | np.ndarray:
@@ -123,7 +123,9 @@ class Envelope:
 
     def apply_transfer_matrix(self, transfer_matrix: np.ndarray | None) -> None:
         if transfer_matrix is not None:
-            self.moment_matrix = transfer_matrix @ self.moment_matrix @ transfer_matrix.T
+            self.moment_matrix = (
+                transfer_matrix @ self.moment_matrix @ transfer_matrix.T
+            )
 
     def sample(self, size: int, dist: str = "kv") -> np.ndarray:
         # Issue: covariance matrix is becoming non semi-positive definite,
@@ -174,7 +176,13 @@ class Envelope:
         return np.linalg.multi_dot([V, M, V_inv])
 
     def sc_transfer_matrix_3d(self, length: float) -> np.ndarray:
-        # Build Lorentz matrix
+        # Build Lorentz matrix: rest frame to lab frame.
+        # x -> x
+        # y -> y
+        # z -> gamma * z
+        # x' = dx/ds -> x' / gamma
+        # y' = dy/ds -> y' / gamma
+        # z' = dz/ds -> z'
         lorentz_matrix = np.identity(7)
         lorentz_matrix[1, 1] = self.gamma()
         lorentz_matrix[3, 3] = self.gamma()
@@ -187,10 +195,8 @@ class Envelope:
 
         # Get covariance matrix in rest frame.
         cov_matrix = self.cov()
-        cov_matrix = np.linalg.multi_dot([
-            lorentz_matrix_inv[:-1, :-1],
-            cov_matrix,
-            lorentz_matrix_inv[:-1, :-1].T]
+        cov_matrix = np.linalg.multi_dot(
+            [lorentz_matrix_inv[:-1, :-1], cov_matrix, lorentz_matrix_inv[:-1, :-1].T]
         )
 
         # Project covariance matrix onto x-y-z plane.
@@ -208,8 +214,8 @@ class Envelope:
         RDz = scipy.special.elliprd(cov_xx, cov_yy, cov_zz)
 
         factor = 0.5 * self.sc_factor * ((1.0 / 5.0) ** 1.5)
-        kappa_x = factor * RDx # [1 / m]
-        kappa_y = factor * RDy # [1 / m]
+        kappa_x = factor * RDx  # [1 / m]
+        kappa_y = factor * RDy  # [1 / m]
         kappa_z = factor * RDz  # [1 / m]
 
         M = np.identity(7)
@@ -233,9 +239,7 @@ class Envelope:
         M = np.linalg.multi_dot([V, M, np.linalg.inv(V)])
 
         # Convert from z' to dE
-        M = convert_matrix_zp_to_dE(M, self.sync_part)
-
-        return M
+        return convert_matrix_zp_to_dE(M, self.sync_part)
 
 
 class EnvelopeTracker:
@@ -255,7 +259,9 @@ class EnvelopeTracker:
 
             for index in range(node.getnParts()):
                 for child_node in node.getChildNodes(BODY, index, place_in_part=BEFORE):
-                    envelope.apply_transfer_matrix(child_node.matrix(envelope.sync_part))
+                    envelope.apply_transfer_matrix(
+                        child_node.matrix(envelope.sync_part)
+                    )
 
                 if self.space_charge:
                     length = node.getLength(index)
@@ -264,13 +270,17 @@ class EnvelopeTracker:
                     elif self.space_charge == "3d":
                         matrix = envelope.sc_transfer_matrix_3d(length)
                     else:
-                        raise ValueError(f"Invalid space charge model: {self.space_charge}")
+                        raise ValueError(
+                            f"Invalid space charge model: {self.space_charge}"
+                        )
                     envelope.apply_transfer_matrix(matrix)
 
                 envelope.apply_transfer_matrix(node.matrix(envelope.sync_part, index))
 
                 for child_node in node.getChildNodes(BODY, index, place_in_part=AFTER):
-                    envelope.apply_transfer_matrix(child_node.matrix(envelope.sync_part))
+                    envelope.apply_transfer_matrix(
+                        child_node.matrix(envelope.sync_part)
+                    )
 
             for child_node in node.getChildNodes(EXIT):
                 envelope.apply_transfer_matrix(child_node.matrix(envelope.sync_part))

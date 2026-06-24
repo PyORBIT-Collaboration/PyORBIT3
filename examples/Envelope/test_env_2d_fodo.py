@@ -43,7 +43,6 @@ def main(args: argparse.Namespace) -> None:
     output_dir = os.path.join("outputs", path.stem)
     os.makedirs(output_dir, exist_ok=True)
 
-
     # Create lattice
     # ------------------------------------------------------------------------------
 
@@ -63,7 +62,6 @@ def main(args: argparse.Namespace) -> None:
         lattice.addNode(node)
 
     lattice.initialize()
-
 
     # Create envelope
     # ------------------------------------------------------------------------------
@@ -119,7 +117,6 @@ def main(args: argparse.Namespace) -> None:
         intensity=args.intensity,
     )
 
-
     # Track envelope
     # ------------------------------------------------------------------------------
 
@@ -151,7 +148,6 @@ def main(args: argparse.Namespace) -> None:
 
     histories = {}
     histories["envelope"] = copy.deepcopy(history)
-
 
     # Track bunch
     # ------------------------------------------------------------------------------
@@ -208,7 +204,6 @@ def main(args: argparse.Namespace) -> None:
 
     histories["bunch"] = copy.deepcopy(history)
 
-
     # Analysis
     # ------------------------------------------------------------------------------
 
@@ -251,7 +246,6 @@ def main(args: argparse.Namespace) -> None:
         plt.savefig(os.path.join(output_dir, f"fig_{key}"))
         plt.close()
 
-
     # Collect bunch/envelope data on final turn.
     particles = collect_bunch(bunch)["coords"]
     particles[:, :4] *= 1000.0
@@ -265,7 +259,6 @@ def main(args: argparse.Namespace) -> None:
     xmax = 4.0 * np.std(particles, axis=0)
     limits = list(zip(-xmax, xmax))
     labels = ["x [mm]", "xp [mrad]", "y [mm]", "yp [mrad]", "z [m]", "dE [GeV]"]
-
 
     # Plot x-x'
     fig, ax = plt.subplots(figsize=(4, 4))
@@ -309,7 +302,9 @@ if __name__ == "__main__":
     parser.add_argument("--kin-energy", type=float, default=0.0025)
     parser.add_argument("--intensity", type=float, default=5e9)
 
-    parser.add_argument("--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"])
+    parser.add_argument(
+        "--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"]
+    )
     parser.add_argument("--mismatch-x", type=float, default=0.0)
     parser.add_argument("--mismatch-y", type=float, default=0.0)
     parser.add_argument("--offset-x", type=float, default=0.0)

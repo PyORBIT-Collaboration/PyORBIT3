@@ -40,7 +40,6 @@ def main(args: argparse.Namespace) -> None:
     output_dir = os.path.join("outputs", path.stem)
     os.makedirs(output_dir, exist_ok=True)
 
-
     # Create lattice
     # ------------------------------------------------------------------------------
 
@@ -64,7 +63,6 @@ def main(args: argparse.Namespace) -> None:
         max_length = 1.0
         if node.getLength() > max_length:
             node.setnParts(1 + int(node.getLength() / max_length))
-
 
     # Create envelope
     # ------------------------------------------------------------------------------
@@ -122,7 +120,6 @@ def main(args: argparse.Namespace) -> None:
         intensity=args.intensity,
     )
 
-
     # Track envelope
     # ------------------------------------------------------------------------------
 
@@ -158,7 +155,6 @@ def main(args: argparse.Namespace) -> None:
 
     histories = {}
     histories["envelope"] = copy.deepcopy(history)
-
 
     # Track bunch
     # ------------------------------------------------------------------------------
@@ -215,7 +211,6 @@ def main(args: argparse.Namespace) -> None:
 
     histories["bunch"] = copy.deepcopy(history)
 
-
     # Analysis
     # ------------------------------------------------------------------------------
 
@@ -257,7 +252,6 @@ def main(args: argparse.Namespace) -> None:
         ax.legend(loc="upper right")
         plt.savefig(os.path.join(output_dir, f"fig_{key}"))
         plt.close()
-
 
     # Collect bunch/envelope data on final turn.
     particles = collect_bunch(bunch)["coords"]
@@ -315,7 +309,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--kin-energy", type=float, default=1.300)
     parser.add_argument("--intensity", type=float, default=2e14)
 
-    parser.add_argument("--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"])
+    parser.add_argument(
+        "--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"]
+    )
     parser.add_argument("--mismatch-x", type=float, default=0.0)
     parser.add_argument("--mismatch-y", type=float, default=0.0)
     parser.add_argument("--offset-x", type=float, default=0.0)
@@ -328,7 +324,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sc", type=int, default=0)
     parser.add_argument("--sc-grid", type=int, default=64)
 
-    parser.add_argument("--handle-unknown", type=str, default=None, choices=["drift", "fit"])
+    parser.add_argument(
+        "--handle-unknown", type=str, default=None, choices=["drift", "fit"]
+    )
     return parser.parse_args()
 
 

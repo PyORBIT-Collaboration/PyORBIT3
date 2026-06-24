@@ -24,7 +24,7 @@ from orbit.envelope import EnvelopeTracker
 
 def get_lorentz_factors(kin_energy: float, mass: float) -> tuple[float, float]:
     gamma = 1.0 + kin_energy / mass
-    beta = np.sqrt(1.0 - (1.0 / gamma)**2)
+    beta = np.sqrt(1.0 - (1.0 / gamma) ** 2)
     return (gamma, beta)
 
 
@@ -144,7 +144,10 @@ def make_default_cov_matrix(
 
 
 def test_drift_teapot(
-    kin_energy: float = 0.0025, length: float = 1.0, cov_matrix: np.ndarray = None, nparts: int = 6,
+    kin_energy: float = 0.0025,
+    length: float = 1.0,
+    cov_matrix: np.ndarray = None,
+    nparts: int = 6,
 ) -> None:
     nodes = [DriftTEAPOT(length=length, nparts=nparts)]
     lattice = make_lattice(nodes)
@@ -154,7 +157,10 @@ def test_drift_teapot(
 
 
 def test_drift_linac(
-    kin_energy: float = 0.0025, length: float = 1.0, cov_matrix: np.ndarray = None, nparts: int = 6,
+    kin_energy: float = 0.0025,
+    length: float = 1.0,
+    cov_matrix: np.ndarray = None,
+    nparts: int = 6,
 ) -> None:
     node = Drift()
     node.setLength(length)
@@ -247,8 +253,8 @@ def test_kick_teapot(
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
-    
-    
+
+
 def test_tilt_teapot(
     kin_energy: float = 0.0025,
     angle: float = 0.25 * np.pi,
@@ -329,5 +335,3 @@ if __name__ == "__main__":
     test_bend_linac()
     test_tilt_linac()
     test_solenoid_linac()
-
-

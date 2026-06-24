@@ -34,10 +34,14 @@ plt.style.use("style.mplstyle")
 
 
 def rotation_matrix_3d(angle_x: float, angle_y: float, angle_z: float) -> np.ndarray:
-    return scipy.spatial.transform.Rotation.from_euler("xyz", [angle_x, angle_y, angle_z]).as_matrix()
+    return scipy.spatial.transform.Rotation.from_euler(
+        "xyz", [angle_x, angle_y, angle_z]
+    ).as_matrix()
 
 
-def build_cov_matrix_xyz(rms_sizes: np.ndarray, rotation_matrix: np.ndarray = None) -> np.ndarray:
+def build_cov_matrix_xyz(
+    rms_sizes: np.ndarray, rotation_matrix: np.ndarray = None
+) -> np.ndarray:
     cov_matrix = np.diag(np.square(rms_sizes))
     if rotation_matrix is None:
         return cov_matrix
@@ -52,7 +56,6 @@ def main(args: argparse.Namespace) -> None:
     output_dir = os.path.join("outputs", path.stem)
     os.makedirs(output_dir, exist_ok=True)
 
-
     # Create lattice
     # ------------------------------------------------------------------------------
     node = DriftTEAPOT(length=args.length)
@@ -62,7 +65,6 @@ def main(args: argparse.Namespace) -> None:
     lattice = TEAPOT_Lattice()
     lattice.addNode(node)
     lattice.initialize()
-
 
     # Create envelope
     # ------------------------------------------------------------------------------
@@ -74,13 +76,13 @@ def main(args: argparse.Namespace) -> None:
     cov_matrix_init = np.zeros((6, 6))
 
     rotation_matrix = rotation_matrix_3d(
-        math.radians(args.rot_x),
-        math.radians(args.rot_y),
-        math.radians(args.rot_z)
+        math.radians(args.rot_x), math.radians(args.rot_y), math.radians(args.rot_z)
     )
     print(rotation_matrix)
 
-    cov_matrix_xyz = build_cov_matrix_xyz([args.rms_x, args.rms_y, args.rms_z], rotation_matrix=rotation_matrix)
+    cov_matrix_xyz = build_cov_matrix_xyz(
+        [args.rms_x, args.rms_y, args.rms_z], rotation_matrix=rotation_matrix
+    )
 
     lorentz_matrix = np.diag([1.0, 1.0, 1.0 / sync_part.gamma()])
     cov_matrix_xyz = lorentz_matrix @ cov_matrix_xyz @ lorentz_matrix.T
@@ -91,7 +93,6 @@ def main(args: argparse.Namespace) -> None:
     print(cov_matrix_xyz * 1e6)
     print()
     print(cov_matrix_init * 1e6)
-
 
     centroid_init = np.zeros(6)
 
@@ -128,7 +129,6 @@ def main(args: argparse.Namespace) -> None:
 
     histories = {}
     histories["envelope"] = copy.deepcopy(history)
-
 
     # Track bunch
     # ------------------------------------------------------------------------------
@@ -175,7 +175,6 @@ def main(args: argparse.Namespace) -> None:
         print(f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} zrms={zrms:0.3f}")
 
     histories["bunch"] = copy.deepcopy(history)
-
 
     # Analysis
     # ------------------------------------------------------------------------------
