@@ -168,10 +168,7 @@ class Envelope:
         T[0, -1] = centroid[0]
         T[2, -1] = centroid[2]
 
-        # Compute matrix in lab frame.
-        #   x = V u = T A u.
-        #   u -> M u
-        #   x -> V M V^-1 x
+        # Compute transfer matrix in lab frame.
         V = np.matmul(T, A)
         V_inv = np.linalg.inv(V)
         return np.linalg.multi_dot([V, M, V_inv])
@@ -229,10 +226,7 @@ class Envelope:
         # Build matrix for Lorentz boost (length contraction).
         L = lorentz_matrix
 
-        # Compute matrix in lab frame.
-        #   x = L V u = L T A u.
-        #   u -> M u
-        #   x -> V M V^-1 x
+        # Compute transfer matrix in lab frame.
         V = np.linalg.multi_dot([L, T, A])
         M = np.linalg.multi_dot([V, M, np.linalg.inv(V)])
 
