@@ -243,12 +243,7 @@ class Envelope:
 
 
 class EnvelopeTracker:
-    def __init__(
-        self,
-        lattice: AccLattice,
-        space_charge: str | None = None,
-        handle_unknown: str | None = None,
-    ) -> None:
+    def __init__(self, lattice: AccLattice, space_charge: str | None = None) -> None:
         self.lattice = lattice
         self.space_charge = space_charge
 
