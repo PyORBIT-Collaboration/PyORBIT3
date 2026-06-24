@@ -7,6 +7,9 @@ import os
 import pathlib
 import time
 
+import cProfile
+import pstats
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -124,6 +127,9 @@ def main(args: argparse.Namespace) -> None:
     # Track envelope
     # ------------------------------------------------------------------------------
 
+    profiler = cProfile.Profile()
+    profiler.enable()
+
     print("TRACK ENVELOPE")
 
     tracker = EnvelopeTracker(
@@ -135,7 +141,7 @@ def main(args: argparse.Namespace) -> None:
     history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
     start_time = time.time()
 
-    for turn in range(args.turns):
+    for turn in range(args.turns + 1):
         if turn > 0:
             tracker.track(envelope)
 
@@ -161,8 +167,15 @@ def main(args: argparse.Namespace) -> None:
         history["xavg"].append(xavg)
         history["yavg"].append(yavg)
 
+    profiler.disable()
+
+    stats = pstats.Stats(profiler)
+    stats.sort_stats(pstats.SortKey.TIME)
+    stats.print_stats(20)
+
     histories = {}
     histories["envelope"] = copy.deepcopy(history)
+
 
     # Track bunch
     # ------------------------------------------------------------------------------
@@ -192,7 +205,7 @@ def main(args: argparse.Namespace) -> None:
     history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
     start_time = time.time()
 
-    for turn in range(args.turns):
+    for turn in range(args.turns + 1):
         if turn > 0:
             lattice.trackBunch(bunch)
 
@@ -333,7 +346,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--tilt", type=float, default=0)
 
     parser.add_argument("--nparts", type=int, default=100_000)
-    parser.add_argument("--turns", type=int, default=100)
+    parser.add_argument("--turns", type=int, default=25)
     parser.add_argument("--sol", type=int, default=0)
     parser.add_argument("--sc", type=int, default=0)
     parser.add_argument("--sc-grid", type=int, default=64)
