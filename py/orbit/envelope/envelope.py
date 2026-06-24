@@ -69,7 +69,6 @@ class Envelope:
         self.bunch = empty_bunch
 
         self.sync_part = bunch.getSyncParticle()
-        self.dim = 6
 
         if centroid is None:
             centroid = np.zeros(6)
@@ -78,10 +77,10 @@ class Envelope:
             cov_matrix = np.eye(6)
 
         self.moment_matrix = np.zeros((7, 7))
-        self.moment_matrix[:self.dim, :self.dim] = cov_matrix + np.outer(centroid, centroid)
-        self.moment_matrix[:self.dim, self.dim] = centroid
-        self.moment_matrix[self.dim, :self.dim] = centroid
-        self.moment_matrix[self.dim, self.dim] = 1.0
+        self.moment_matrix[:-1, :-1] = cov_matrix + np.outer(centroid, centroid)
+        self.moment_matrix[:-1, -1] = centroid
+        self.moment_matrix[-1, :-1] = centroid
+        self.moment_matrix[-1, -1] = 1.0
 
         self.intensity = 0.0
         self.set_intensity(intensity)
@@ -109,11 +108,11 @@ class Envelope:
 
     @property
     def centroid(self):
-        return self.moment_matrix[:self.dim, self.dim]
+        return self.moment_matrix[:-1, -1]
 
     @property
     def autocorr_matrix(self):
-        return self.moment_matrix[:self.dim, :self.dim]
+        return self.moment_matrix[:-1, :-1]
 
     @property
     def cov_matrix(self):
@@ -173,6 +172,7 @@ class Envelope:
         T = np.identity(7)
         T[0, -1] = centroid[0]
         T[2, -1] = centroid[2]
+
         T_inv = np.copy(T)
         T_inv[:-1, -1] = -T[:-1, -1]
 
@@ -187,15 +187,18 @@ class Envelope:
         # x' = dx/ds -> x' / gamma
         # y' = dy/ds -> y' / gamma
         # z' = dz/ds -> z'
+        gamma = self.gamma()
+        gamma_inv = 1.0 / gamma
+
         L = np.identity(7)
-        L[1, 1] = self.gamma()
-        L[3, 3] = self.gamma()
-        L[4, 4] = 1.0 / self.gamma()
+        L[1, 1] = gamma
+        L[3, 3] = gamma
+        L[4, 4] = gamma_inv
+
         L_inv = np.diag(1.0 / np.diag(L))
 
         # Get centroid in rest frame.
-        centroid = self.centroid
-        centroid[4] *= self.gamma()
+        centroid = np.matmul(L_inv[:-1, :-1], self.centroid)
 
         # Get covariance matrix in rest frame.
         cov_matrix = self.cov_matrix
@@ -233,6 +236,7 @@ class Envelope:
         T = np.identity(7)
         for i in (0, 2, 4):
             T[i, -1] = centroid[i]
+
         T_inv = np.copy(T)
         T_inv[:-1, -1] = -T[:-1, -1]
 
