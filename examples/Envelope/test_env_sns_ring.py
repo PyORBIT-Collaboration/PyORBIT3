@@ -160,7 +160,6 @@ def main(args: argparse.Namespace) -> None:
     histories = {}
     histories["envelope"] = copy.deepcopy(history)
 
-
     # Track bunch
     # ------------------------------------------------------------------------------
 
@@ -215,7 +214,6 @@ def main(args: argparse.Namespace) -> None:
         message += " xavg={:0.2f}".format(xavg)
         message += " yavg={:0.2f}".format(yavg)
         print(message)
-
 
         history["xrms"].append(xrms)
         history["yrms"].append(yrms)

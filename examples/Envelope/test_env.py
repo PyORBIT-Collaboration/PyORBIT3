@@ -317,7 +317,7 @@ def test_solenoid_linac(
 
 def test_rf_gap_matrix(
     kin_energy: float = 0.0025,
-    frequency: float = 402.5e+06,
+    frequency: float = 402.5e06,
     E0TL: float = 0.001,
     phase: float = 0.0,
 ):

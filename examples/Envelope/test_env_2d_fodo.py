@@ -137,9 +137,7 @@ def main(args: argparse.Namespace) -> None:
         xavg = 1000.0 * centroid[0]
         yavg = 1000.0 * centroid[2]
 
-        print(
-            f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} xavg={xavg:0.3f} yavg={yavg:0.3f}"
-        )
+        print(f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} xavg={xavg:0.3f} yavg={yavg:0.3f}")
 
         history["xrms"].append(xrms)
         history["yrms"].append(yrms)
@@ -193,9 +191,7 @@ def main(args: argparse.Namespace) -> None:
         xavg = 1000.0 * twiss_calc.getAverage(0)
         yavg = 1000.0 * twiss_calc.getAverage(2)
 
-        print(
-            f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} xavg={xavg:0.3f} yavg={yavg:0.3f}"
-        )
+        print(f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} xavg={xavg:0.3f} yavg={yavg:0.3f}")
 
         history["xrms"].append(xrms)
         history["yrms"].append(yrms)
@@ -302,9 +298,7 @@ if __name__ == "__main__":
     parser.add_argument("--kin-energy", type=float, default=0.0025)
     parser.add_argument("--intensity", type=float, default=5e9)
 
-    parser.add_argument(
-        "--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"]
-    )
+    parser.add_argument("--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"])
     parser.add_argument("--mismatch-x", type=float, default=0.0)
     parser.add_argument("--mismatch-y", type=float, default=0.0)
     parser.add_argument("--offset-x", type=float, default=0.0)

@@ -39,9 +39,7 @@ def rotation_matrix_3d(angle_x: float, angle_y: float, angle_z: float) -> np.nda
     ).as_matrix()
 
 
-def build_cov_matrix_xyz(
-    rms_sizes: np.ndarray, rotation_matrix: np.ndarray = None
-) -> np.ndarray:
+def build_cov_matrix_xyz(rms_sizes: np.ndarray, rotation_matrix: np.ndarray = None) -> np.ndarray:
     cov_matrix = np.diag(np.square(rms_sizes))
     if rotation_matrix is None:
         return cov_matrix
