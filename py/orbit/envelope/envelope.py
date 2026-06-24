@@ -67,20 +67,15 @@ class Envelope:
         empty_bunch = Bunch()
         bunch.copyEmptyBunchTo(empty_bunch)
         self.bunch = empty_bunch
-
         self.sync_part = bunch.getSyncParticle()
 
-        if centroid is None:
-            centroid = np.zeros(6)
+        self.centroid = centroid
+        if self.centroid is None:
+            self.centroid = np.zeros(6)
 
-        if cov_matrix is None:
-            cov_matrix = np.eye(6)
-
-        self.moment_matrix = np.zeros((7, 7))
-        self.moment_matrix[:-1, :-1] = cov_matrix + np.outer(centroid, centroid)
-        self.moment_matrix[:-1, -1] = centroid
-        self.moment_matrix[-1, :-1] = centroid
-        self.moment_matrix[-1, -1] = 1.0
+        self.cov_matrix = cov_matrix
+        if self.cov_matrix is None:
+            self.cov_matrix = np.eye(6)
 
         self.intensity = 0.0
         self.set_intensity(intensity)
@@ -106,28 +101,16 @@ class Envelope:
     def charge(self) -> float:
         return self.bunch.charge()
 
-    @property
-    def centroid(self):
-        return self.moment_matrix[:-1, -1]
-
-    @property
-    def autocorr_matrix(self):
-        return self.moment_matrix[:-1, :-1]
-
-    @property
-    def cov_matrix(self):
-        mu = self.centroid
-        return self.autocorr_matrix - np.outer(mu, mu)
-
     def rms(self, axis: int = None) -> float | np.ndarray:
         rms_arr = np.sqrt(np.diag(self.cov_matrix))
         return rms_arr[axis]
 
     def apply_transfer_matrix(self, transfer_matrix: np.ndarray | None) -> None:
         if transfer_matrix is not None:
-            self.moment_matrix = (
-                transfer_matrix @ self.moment_matrix @ transfer_matrix.T
-            )
+            M = transfer_matrix[:-1, :-1]
+            u = transfer_matrix[:-1, -1]
+            self.cov_matrix = M @ self.cov_matrix @ M.T
+            self.centroid = np.matmul(M, self.centroid) + u
 
     def sample(self, size: int, dist: str = "kv") -> np.ndarray:
         # Issue: covariance matrix is becoming non semi-positive definite,
@@ -200,8 +183,7 @@ class Envelope:
         centroid = np.matmul(L_inv[:-1, :-1], self.centroid)
 
         # Get covariance matrix in rest frame.
-        cov_matrix = self.cov_matrix
-        cov_matrix = L_inv[:-1, :-1] @ cov_matrix @ L_inv[:-1, :-1].T
+        cov_matrix = L_inv[:-1, :-1] @ self.cov_matrix @ L_inv[:-1, :-1].T
 
         # Project covariance matrix onto x-y-z plane.
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2, 4))
