@@ -33,15 +33,6 @@ def convert_matrix_dp_p_to_dE(matrix: np.ndarray, sync_part: SyncParticle) -> np
     # v = A w
     # v -> M v
     # w -> A M A^-1
-
-    # scale = np.identity(7)
-    # scale[5, 5] = dp_p_coeff
-    #
-    # scale_inv = np.identity(7)
-    # scale_inv[5, 5] = 1.0 / dp_p_coeff
-    #
-    # return np.linalg.multi_dot([scale, matrix, scale_inv])
-
     dp_p_coeff = get_dp_p_coeff(sync_part)
     matrix[:5, 5] *= dp_p_coeff
     matrix[5, :5] /= dp_p_coeff
@@ -175,7 +166,7 @@ def solenoid_matrix(length: float, B: float, sync_part: SyncParticle) -> np.ndar
     M[1, 1] = -1.0
     M[2, 2] = math.cos(phase)
     M[2, 3] = math.sin(phase) / B
-    M[3, 2] = math.sin(phase) * (-B)
+    M[3, 2] = math.sin(phase) * B * -1.0
     M[3, 3] = math.cos(phase)
     M[4, 5] = length / sync_part.gamma() ** 2
 
