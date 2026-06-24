@@ -36,7 +36,7 @@ def convert_matrix_dp_p_to_dE(matrix: np.ndarray, sync_part: SyncParticle) -> np
     dp_p_coeff = get_dp_p_coeff(sync_part)
     matrix[:5, 5] *= dp_p_coeff
     matrix[5, :5] /= dp_p_coeff
-    matrix[5, 6] /= dp_p_coeff
+    matrix[5, 6] /= dp_p_coeff  # driving term
     return matrix
 
 
@@ -44,7 +44,7 @@ def convert_matrix_zp_to_dE(matrix: np.ndarray, sync_part: SyncParticle) -> np.n
     zp_coeff = get_zp_coeff(sync_part)
     matrix[:5, 5] *= zp_coeff
     matrix[5, :5] /= zp_coeff
-    matrix[5, 6] /= zp_coeff
+    matrix[5, 6] /= zp_coeff  # driving term
     return matrix
 
 
@@ -52,8 +52,8 @@ def drift_matrix(length: float, sync_part: SyncParticle) -> np.ndarray:
     M = np.identity(7)
     M[0, 1] = length
     M[2, 3] = length
-    M[4, 5] = length / sync_part.gamma() ** 2
-    M = convert_matrix_dp_p_to_dE(M, sync_part)
+    M[4, 5] = length / (sync_part.gamma() ** 2)
+    M[4, 5] *= get_dp_p_coeff(sync_part)  # convert_matrix_dp_p_to_dE(M, sync_part)
     return M
 
 
@@ -91,8 +91,8 @@ def quad_matrix(length: float, kq: float, sync_part: SyncParticle) -> np.ndarray
         M[3, 2] = -sy * sqrt_abs_kq
         M[3, 3] = cy
 
-    M[4, 5] = length / sync_part.gamma() ** 2
-    M = convert_matrix_dp_p_to_dE(M, sync_part)
+    M[4, 5] = length / (sync_part.gamma()**2)
+    M[4, 5] *= get_dp_p_coeff(sync_part)  # convert_matrix_dp_p_to_dE(M, sync_part)
     return M
 
 
@@ -115,7 +115,7 @@ def bend_matrix(length: float, theta: float, sync_part: SyncParticle) -> np.ndar
     M[4, 0] = -sx
     M[4, 1] = -rho * (1.0 - cx)
     M[4, 5] = -(sync_part.beta() ** 2) * length + rho * sx
-    M = convert_matrix_dp_p_to_dE(M, sync_part)
+    M[:5, 5] *= get_dp_p_coeff(sync_part)  # convert_matrix_dp_p_to_dE(M, sync_part)
     return M
 
 
@@ -168,10 +168,10 @@ def solenoid_matrix(length: float, B: float, sync_part: SyncParticle) -> np.ndar
     M[2, 3] = math.sin(phase) / B
     M[3, 2] = math.sin(phase) * B * -1.0
     M[3, 3] = math.cos(phase)
-    M[4, 5] = length / sync_part.gamma() ** 2
+    M[4, 5] = length / (sync_part.gamma()**2)
 
     M = np.linalg.multi_dot([np.linalg.inv(V), M, V])
-    M = convert_matrix_dp_p_to_dE(M, sync_part)
+    M[4, 5] *= get_dp_p_coeff(sync_part)  # convert_matrix_dp_p_to_dE(M, sync_part)
     return M
 
 

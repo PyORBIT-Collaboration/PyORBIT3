@@ -127,9 +127,6 @@ def main(args: argparse.Namespace) -> None:
     # Track envelope
     # ------------------------------------------------------------------------------
 
-    profiler = cProfile.Profile()
-    profiler.enable()
-
     print("TRACK ENVELOPE")
 
     tracker = EnvelopeTracker(
@@ -140,6 +137,9 @@ def main(args: argparse.Namespace) -> None:
 
     history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
     start_time = time.time()
+
+    profiler = cProfile.Profile()
+    profiler.enable()
 
     for turn in range(args.turns + 1):
         if turn > 0:
@@ -168,7 +168,6 @@ def main(args: argparse.Namespace) -> None:
         history["yavg"].append(yavg)
 
     profiler.disable()
-
     stats = pstats.Stats(profiler)
     stats.sort_stats(pstats.SortKey.TIME)
     stats.print_stats(20)
