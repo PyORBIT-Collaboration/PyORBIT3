@@ -43,6 +43,11 @@ for node in lattice.getNodes():
     except:
         pass
 
+for node in lattice.getNodes():
+    max_length = 1.0
+    if node.getLength() > max_length:
+        node.setnParts(1 + int(node.getLength() / max_length))
+
 bunch = Bunch()
 bunch.mass(mass_proton)
 sync_part = bunch.getSyncParticle()
