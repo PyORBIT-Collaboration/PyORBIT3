@@ -177,13 +177,22 @@ class Envelope:
         return np.linalg.multi_dot([V, M, V_inv])
 
     def sc_transfer_matrix_3d(self, length: float) -> np.ndarray:
+        # Build Lorentz matrix
+        lorentz_matrix = np.identity(7)
+        lorentz_matrix[4, 4] = 1.0 / self.gamma()
+        lorentz_matrix_inv = np.linalg.inv(lorentz_matrix)
+
         # Get centroid in rest frame.
         centroid = self.centroid()
         centroid[4] *= self.gamma()
 
         # Get covariance matrix in rest frame.
         cov_matrix = self.cov()
-        cov_matrix[4, 4] *= self.gamma() ** 2
+        cov_matrix = np.linalg.multi_dot([
+            lorentz_matrix_inv[:-1, :-1],
+            cov_matrix,
+            lorentz_matrix_inv[:-1, :-1].T]
+        )
 
         # Project covariance matrix onto x-y-z plane.
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2, 4))
@@ -218,8 +227,7 @@ class Envelope:
             T[i, -1] = centroid[i]
 
         # Build matrix for Lorentz boost (length contraction).
-        L = np.identity(7)
-        L[4, 4] = 1.0 / self.gamma()
+        L = lorentz_matrix
 
         # Compute matrix in lab frame.
         #   x = L V u = L T A u.
