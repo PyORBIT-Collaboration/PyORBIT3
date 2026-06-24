@@ -176,10 +176,7 @@ class Envelope:
     def sc_transfer_matrix_3d(self, length: float) -> np.ndarray:
         # Build Lorentz matrix
         lorentz_matrix = np.identity(7)
-        # lorentz_matrix[1, 1] = 1.0 / self.gamma()
-        # lorentz_matrix[3, 3] = 1.0 / self.gamma()
         lorentz_matrix[4, 4] = 1.0 / self.gamma()
-        # lorentz_matrix[5, 5] = 1.0 / self.gamma()
         lorentz_matrix_inv = np.linalg.inv(lorentz_matrix)
 
         # Get centroid in rest frame.
