@@ -83,7 +83,7 @@ def main(args: argparse.Namespace) -> None:
     cov_matrix_xyz = build_cov_matrix_xyz([args.rms_x, args.rms_y, args.rms_z], rotation_matrix=rotation_matrix)
 
     lorentz_matrix = np.diag([1.0, 1.0, 1.0 / sync_part.gamma()])
-    cov_matrix_xyz = lorentz_matrix @ cov_matrix_xyz @ lorentz_matrix
+    cov_matrix_xyz = lorentz_matrix @ cov_matrix_xyz @ lorentz_matrix.T
 
     spatial_idx = np.ix_([0, 2, 4], [0, 2, 4])
     cov_matrix_init[spatial_idx] = cov_matrix_xyz
