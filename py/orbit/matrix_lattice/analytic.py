@@ -188,9 +188,7 @@ def cf_matrix(length: float, kq: float, sync_part: SyncParticle) -> np.ndarray:
     raise NotImplementedError()
 
 
-def rf_gap_matrix(
-    frequency: float, E0TL: float, phase: float, sync_part: SyncParticle
-) -> np.ndarray:
+def rf_gap_matrix(frequency: float, E0TL: float, phase: float, sync_part: SyncParticle) -> np.ndarray:
     """Matrix for thin RF gap.
 
     E0TL: maximal energy gain in the gap [GeV].
@@ -216,8 +214,6 @@ def rf_gap_matrix(
     sync_part.momentum(sync_part.energyToMomentum(kin_energy_out))
 
     # The base RF gap is simple - no phase correction.
-    delta_time = 0.0
-    sync_part.time(sync_part.time() + delta_time)
     gamma_out = sync_part.gamma()
     beta_out = sync_part.beta()
     prime_coeff = (beta * gamma) / (beta_out * gamma_out)
