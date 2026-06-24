@@ -610,7 +610,8 @@ class DriftTEAPOT(NodeTEAPOT):
 
     def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
         length = self.getLength(index)
-        return drift_matrix(length=length, sync_part=sync_part)
+        if length > 0:
+            return drift_matrix(length=length, sync_part=sync_part)
 
 
 class ApertureTEAPOT(NodeTEAPOT):
@@ -765,7 +766,10 @@ class SolenoidTEAPOT(NodeTEAPOT):
         if self.waveform is not None:
             B *= self.waveform.getStrength()
         length = self.getLength(index)
-        return solenoid_matrix(length=length, B=B, sync_part=sync_part)
+        if abs(B) > 0:
+            return solenoid_matrix(length=length, B=B, sync_part=sync_part)
+        elif length > 0:
+            return drift_matrix(length=length, sync_part=sync_part)
 
 
 class MultipoleTEAPOT(NodeTEAPOT):
@@ -1093,7 +1097,10 @@ class QuadTEAPOT(NodeTEAPOT):
         kq = self.getParam("kq")
         if self.waveform:
             kq *= self.waveform.getStrength()
-        return quad_matrix(length=length, kq=kq, sync_part=sync_part)
+        if abs(kq) > 0:
+            return quad_matrix(length=length, kq=kq, sync_part=sync_part)
+        elif length > 0:
+            return drift_matrix(length=length, sync_part=sync_part)
 
 
 class BendTEAPOT(NodeTEAPOT):
@@ -1312,7 +1319,10 @@ class BendTEAPOT(NodeTEAPOT):
     def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
         length = self.getLength(index)
         theta = self.getParam("theta") / self.getnParts()
-        return bend_matrix(length=length, theta=theta, sync_part=sync_part)
+        if abs(theta) > 0:
+            return bend_matrix(length=length, theta=theta, sync_part=sync_part)
+        elif length > 0:
+            return drift_matrix(length=length, sync_part=sync_part)
 
 
 class RingRFTEAPOT(NodeTEAPOT):
@@ -1492,10 +1502,13 @@ class KickTEAPOT(NodeTEAPOT):
         ky = scale * self.getParam("ky") / nparts
         kE = self.getParam("dE") / nparts
 
-        return np.matmul(
-            kick_matrix(kx=kx, ky=ky, kE=kE),
-            drift_matrix(length=length, sync_part=sync_part)
-        )
+        if abs(kx) > 0 or abs(ky) > 0 or abs(kE) > 0:
+            return np.matmul(
+                kick_matrix(kx=kx, ky=ky, kE=kE),
+                drift_matrix(length=length, sync_part=sync_part)
+            )
+        elif length > 0:
+            return drift_matrix(length=length, sync_part=sync_part)
 
 
 class TiltTEAPOT(BaseTEAPOT):
@@ -1533,7 +1546,10 @@ class TiltTEAPOT(BaseTEAPOT):
             TPB.rotatexy(bunch, self.__angle)
 
     def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
-        return tilt_matrix(self.getTiltAngle())
+        tilt_angle = self.getTiltAngle()
+        if abs(tilt_angle) > 0:
+            return tilt_matrix(self.getTiltAngle())
+
 
 class FringeFieldTEAPOT(BaseTEAPOT):
     """
