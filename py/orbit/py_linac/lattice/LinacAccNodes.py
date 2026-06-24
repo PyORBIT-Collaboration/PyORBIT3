@@ -9,6 +9,8 @@ The abstract AbstractRF_Gap class is a parent class for all RF gap model classes
 import os
 import math
 
+import numpy as np
+
 # import the finalization function
 from orbit.utils import orbitFinalize
 
@@ -24,6 +26,16 @@ from orbit.teapot_base import TPB
 # quad1 - linac quad linear part of tracking
 # quad2 - linac quad non-linear part of tracking
 from orbit.core.linac import linac_tracking
+
+from orbit.core.bunch import SyncParticle
+
+from orbit.envelope.matrix import drift_matrix
+from orbit.envelope.matrix import bend_matrix
+from orbit.envelope.matrix import quad_matrix
+from orbit.envelope.matrix import solenoid_matrix
+from orbit.envelope.matrix import kick_matrix
+from orbit.envelope.matrix import tilt_matrix
+from orbit.envelope.matrix import translation_matrix
 
 
 class BaseLinacNode(AccNodeBunchTracker):
@@ -129,6 +141,9 @@ class BaseLinacNode(AccNodeBunchTracker):
         self.trackActions(actionContainer, paramsDict)
         actionContainer.removeAction(trackDesign, AccActionsContainer.BODY)
 
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        raise NotImplementedError()
+
 
 class MarkerLinacNode(BaseLinacNode):
     """
@@ -139,6 +154,9 @@ class MarkerLinacNode(BaseLinacNode):
     def __init__(self, name="none"):
         BaseLinacNode.__init__(self, name)
         self.setType("markerLinacNode")
+
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        return None
 
 
 class LinacNode(BaseLinacNode):
@@ -306,6 +324,10 @@ class Drift(BaseLinacNode):
         length = self.getLength(self.getActivePartIndex())
         bunch = paramsDict["bunch"]
         self.tracking_module.drift(bunch, length)
+
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        length = self.getLength(index)
+        return drift_matrix(length=length, sync_part=sync_part)
 
 
 class Quad(LinacMagnetNode):
@@ -504,6 +526,13 @@ class Quad(LinacMagnetNode):
             self.tracking_module.quad1(bunch, length, kq)
         """
         return
+
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        length = self.getLength(index)
+        charge = 1.0  # sync_part has no charge parameter...
+        brho = 3.335640952 * sync_part.momentum() / charge
+        kq = self.getParam("dB/dr") / brho
+        return quad_matrix(length=length, kq=kq, sync_part=sync_part)
 
     def getTotalField(self, z):
         """
@@ -708,6 +737,11 @@ class Bend(LinacMagnetNode):
             TPB.bend1(bunch, length, theta / 2.0)
         return
 
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        length = self.getLength(index)
+        theta = self.getParam("theta") / self.getnParts()
+        return bend_matrix(length=length, theta=theta, sync_part=sync_part)
+
 
 class DCorrectorH(LinacMagnetNode):
     """
@@ -753,6 +787,14 @@ class DCorrectorH(LinacMagnetNode):
         kick = -field * charge * length * 0.299792 / momentum
         self.tracking_module.kick(bunch, kick, 0.0, 0.0)
 
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        length = self.getParam("effLength") / self.getnParts()
+        field = self.getParam("B")
+        charge = 1.0
+        # dp/p = Q*c*B*L/p p in GeV/c c = 2.99792*10^8/10^9
+        delta_xp = -field * charge * length * 0.299792 / sync_part.momentum()
+        return kick_matrix(delta_xp, 0.0, 0.0)
+
 
 class DCorrectorV(LinacMagnetNode):
     """
@@ -797,6 +839,14 @@ class DCorrectorV(LinacMagnetNode):
         # dp/p = Q*c*B*L/p p in GeV/c, c = 2.99792*10^8/10^9
         kick = field * charge * length * 0.299792 / momentum
         self.tracking_module.kick(bunch, 0, kick, 0.0)
+
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        length = self.getParam("effLength") / self.getnParts()
+        field = self.getParam("B")
+        charge = 1.0
+        # dp/p = Q*c*B*L/p p in GeV/c c = 2.99792*10^8/10^9
+        delta_yp = -field * charge * length * 0.299792 / sync_part.momentum()
+        return kick_matrix(0.0, delta_yp, 0.0)
 
 
 class ThickKick(LinacMagnetNode):
@@ -894,6 +944,12 @@ class Solenoid(BaseLinacNode):
         if "useCharge" in paramsDict:
             useCharge = paramsDict["useCharge"]
         TPB.soln(bunch, length, B, useCharge)
+
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        B = self.getParam("B")
+        length = self.getLength(index)
+        return solenoid_matrix(length=length, B=B, sync_part=sync_part)
+
 
 class AbstractRF_Gap(BaseLinacNode):
     """
@@ -1013,6 +1069,9 @@ class TiltElement(BaseLinacNode):
             bunch = paramsDict["bunch"]
             TPB.rotatexy(bunch, self.__angle)
 
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        return tilt_matrix(self.__angle)
+
 
 class FringeField(BaseLinacNode):
     """
@@ -1062,3 +1121,6 @@ class FringeField(BaseLinacNode):
         field will be used in calculation.
         """
         return self.__usage
+
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        return None

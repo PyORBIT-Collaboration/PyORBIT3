@@ -10,10 +10,10 @@ from orbit.lattice import AccLattice
 from orbit.utils.consts import speed_of_light
 from orbit.utils.consts import charge_electron
 
-from .matrix import MatrixFactory
 from .matrix import convert_matrix_zp_to_dE
 from .utils import gen_dist
 from .utils import proj_cov_matrix
+
 
 ENTRANCE = AccNode.ENTRANCE
 BODY = AccNode.BODY
@@ -121,8 +121,9 @@ class Envelope:
         rms_arr = np.sqrt(np.diag(self.cov()))
         return rms_arr[axis]
 
-    def apply_transfer_matrix(self, m: np.ndarray) -> None:
-        self.moment_matrix = np.linalg.multi_dot([m, self.moment_matrix, m.T])
+    def apply_transfer_matrix(self, transfer_matrix: np.ndarray | None) -> None:
+        if transfer_matrix is not None:
+            self.moment_matrix = transfer_matrix @ self.moment_matrix @ transfer_matrix.T
 
     def sample(self, size: int, dist: str = "kv") -> np.ndarray:
         # Issue: covariance matrix is becoming non semi-positive definite,
@@ -241,24 +242,26 @@ class EnvelopeTracker:
         handle_unknown: str | None = None,
     ) -> None:
         self.lattice = lattice
-        self.matrix_factory = MatrixFactory(handle_unknown=handle_unknown)
+        # self.matrix_factory = MatrixFactory(handle_unknown=handle_unknown)
         self.space_charge = space_charge
 
     def track(self, envelope: Envelope) -> None:
         for node in self.lattice.getNodes():
             for child_node in node.getChildNodes(ENTRANCE):
                 envelope.apply_transfer_matrix(
-                    self.matrix_factory(child_node, envelope.bunch)
+                    child_node.matrix(envelope.sync_part)
+                    # self.matrix_factory(child_node, envelope.bunch)
                 )
 
-            for part_index in range(node.getnParts()):
-                for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
+            for index in range(node.getnParts()):
+                for child_node in node.getChildNodes(BODY, index, place_in_part=BEFORE):
                     envelope.apply_transfer_matrix(
-                        self.matrix_factory(child_node, envelope.bunch)
+                        child_node.matrix(envelope.sync_part)
+                        # self.matrix_factory(child_node, envelope.bunch)
                     )
 
                 if self.space_charge:
-                    length = node.getLength(part_index)
+                    length = node.getLength(index)
                     if self.space_charge == "2d":
                         matrix = envelope.sc_transfer_matrix_2d(length)
                     elif self.space_charge == "3d":
@@ -270,15 +273,18 @@ class EnvelopeTracker:
                     envelope.apply_transfer_matrix(matrix)
 
                 envelope.apply_transfer_matrix(
-                    self.matrix_factory(node, envelope.bunch, part_index)
+                    node.matrix(envelope.sync_part, index)
+                    # self.matrix_factory(node, envelope.bunch, index)
                 )
 
-                for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
+                for child_node in node.getChildNodes(BODY, index, place_in_part=AFTER):
                     envelope.apply_transfer_matrix(
-                        self.matrix_factory(child_node, envelope.bunch)
+                        child_node.matrix(envelope.sync_part)
+                        # self.matrix_factory(child_node, envelope.bunch)
                     )
 
             for child_node in node.getChildNodes(EXIT):
                 envelope.apply_transfer_matrix(
-                    self.matrix_factory(child_node, envelope.bunch)
+                    child_node.matrix(envelope.sync_part)
+                    # self.matrix_factory(child_node, envelope.bunch)
                 )

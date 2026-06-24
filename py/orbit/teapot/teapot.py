@@ -23,6 +23,8 @@ from typing import Any
 from typing import Callable
 from typing import Union
 
+import numpy as np
+
 from ..lattice import AccLattice
 from ..lattice import AccNode
 from ..lattice import AccActionsContainer
@@ -34,9 +36,18 @@ from ..parsers.mad_parser import MAD_LattElement
 from ..parsers.madx_parser import MADX_Parser
 from ..parsers.madx_parser import MADX_LattElement
 
+from ..envelope.matrix import drift_matrix
+from ..envelope.matrix import bend_matrix
+from ..envelope.matrix import quad_matrix
+from ..envelope.matrix import solenoid_matrix
+from ..envelope.matrix import kick_matrix
+from ..envelope.matrix import tilt_matrix
+from ..envelope.matrix import translation_matrix
+
 from orbit.core.aperture import Aperture
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTwissAnalysis
+from orbit.core.bunch import SyncParticle
 
 
 class TEAPOT_Lattice(AccLattice):
@@ -558,6 +569,9 @@ class NodeTEAPOT(BaseTEAPOT):
         """
         return self.__fringeFieldOUT.getUsage()
 
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        raise NotImplementedError()
+
 
 class DriftTEAPOT(NodeTEAPOT):
     """
@@ -581,6 +595,10 @@ class DriftTEAPOT(NodeTEAPOT):
         length = self.getLength(self.getActivePartIndex())
         bunch = paramsDict["bunch"]
         TPB.drift(bunch, length)
+
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        length = self.getLength(index)
+        return drift_matrix(length=length, sync_part=sync_part)
 
 
 class ApertureTEAPOT(NodeTEAPOT):
@@ -622,6 +640,9 @@ class ApertureTEAPOT(NodeTEAPOT):
         lostbunch = paramsDict["lostbunch"]
         self.aperture.checkBunch(bunch, lostbunch)
 
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        return None
+
 
 class MonitorTEAPOT(NodeTEAPOT):
     """
@@ -649,6 +670,9 @@ class MonitorTEAPOT(NodeTEAPOT):
         self.addParam("yAvg", self.twiss.getAverage(2))
         self.addParam("ypAvg", self.twiss.getAverage(3))
 
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        return None
+
 
 class BunchWrapTEAPOT(NodeTEAPOT):
     """
@@ -672,6 +696,9 @@ class BunchWrapTEAPOT(NodeTEAPOT):
         bunch = paramsDict["bunch"]
         length = self.getParam("ring_length")
         TPB.wrapbunch(bunch, length)
+
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        return None
 
 
 class SolenoidTEAPOT(NodeTEAPOT):
@@ -720,6 +747,13 @@ class SolenoidTEAPOT(NodeTEAPOT):
         Sets the time dependent waveform function
         """
         self.waveform = waveform
+
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        B = self.getParam("B")
+        if self.waveform is not None:
+            B *= self.waveform.getStrength()
+        length = self.getLength(index)
+        return solenoid_matrix(length=length, B=B, sync_part=sync_part)
 
 
 class MultipoleTEAPOT(NodeTEAPOT):
@@ -870,6 +904,12 @@ class MultipoleTEAPOT(NodeTEAPOT):
         Sets the time dependent waveform function
         """
         self.waveform = waveform
+
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        if np.all(np.abs(self.getParam("kls")) == 0):
+            length = self.getLength(index)
+            return drift_matrix(length=length, sync_part=sync_part)
+        raise NotImplementedError()
 
 
 class QuadTEAPOT(NodeTEAPOT):
@@ -1033,6 +1073,13 @@ class QuadTEAPOT(NodeTEAPOT):
         Sets the time dependent waveform function
         """
         self.waveform = waveform
+
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        length = self.getLength(index)
+        kq = self.getParam("kq")
+        if self.waveform:
+            kq *= self.waveform.getStrength()
+        return quad_matrix(length=length, kq=kq, sync_part=sync_part)
 
 
 class BendTEAPOT(NodeTEAPOT):
@@ -1248,6 +1295,11 @@ class BendTEAPOT(NodeTEAPOT):
             TPB.bend1(bunch, length, theta / 2.0)
         return
 
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        length = self.getLength(index)
+        theta = self.getParam("theta") / self.getnParts()
+        return bend_matrix(length=length, theta=theta, sync_part=sync_part)
+
 
 class RingRFTEAPOT(NodeTEAPOT):
     """
@@ -1414,6 +1466,23 @@ class KickTEAPOT(NodeTEAPOT):
         """
         self.waveform = waveform
 
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        length = self.getLength(index)
+        nparts = self.getnParts()
+
+        scale = 1.0
+        if self.waveform is not None:
+            scale = self.waveform.getStrength()
+
+        kx = scale * self.getParam("kx") / nparts
+        ky = scale * self.getParam("ky") / nparts
+        kE = self.getParam("dE") / nparts
+
+        return np.matmul(
+            kick_matrix(kx=kx, ky=ky, kE=kE),
+            drift_matrix(length=length, sync_part=sync_part)
+        )
+
 
 class TiltTEAPOT(BaseTEAPOT):
     """
@@ -1449,6 +1518,8 @@ class TiltTEAPOT(BaseTEAPOT):
             bunch = paramsDict["bunch"]
             TPB.rotatexy(bunch, self.__angle)
 
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        return tilt_matrix(self.getTiltAngle())
 
 class FringeFieldTEAPOT(BaseTEAPOT):
     """
@@ -1503,6 +1574,9 @@ class FringeFieldTEAPOT(BaseTEAPOT):
         field will be used in calculation.
         """
         return self.__usage
+
+    def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
+        return None
 
 
 class ContinuousLinearFocusingTEAPOT(NodeTEAPOT):

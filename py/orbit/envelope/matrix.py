@@ -5,24 +5,6 @@ import numpy as np
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import SyncParticle
 from orbit.lattice import AccNode
-from orbit.teapot import DriftTEAPOT
-from orbit.teapot import QuadTEAPOT
-from orbit.teapot import BendTEAPOT
-from orbit.teapot import TiltTEAPOT
-from orbit.teapot import KickTEAPOT
-from orbit.teapot import ApertureTEAPOT
-from orbit.teapot import BunchWrapTEAPOT
-from orbit.teapot import FringeFieldTEAPOT
-from orbit.teapot import MonitorTEAPOT
-from orbit.teapot import TurnCounterTEAPOT
-from orbit.teapot import MultipoleTEAPOT
-from orbit.teapot import NodeTEAPOT
-from orbit.teapot import SolenoidTEAPOT
-from orbit.py_linac.lattice import Drift
-from orbit.py_linac.lattice import Quad
-from orbit.py_linac.lattice import Bend
-from orbit.py_linac.lattice import TiltElement
-from orbit.py_linac.lattice import FringeField
 
 
 def get_dp_p_coeff(sync_part: SyncParticle) -> float:
@@ -43,56 +25,6 @@ def get_zp_coeff(sync_part: SyncParticle) -> float:
     gamma = sync_part.gamma()
     rest_energy = sync_part.mass()
     return 1.0 / (beta**2 * gamma**3 * rest_energy)
-
-
-def convert_matrix_dp_p_to_dE(matrix: np.ndarray, sync_part: SyncParticle) -> np.ndarray:
-    # v = [x, x', y, y', z, dp/p]
-    # w = [x, x', y, y', z, dE]
-    # v = A w
-    # v -> M v
-    # w -> A M A^-1
-
-    # scale = np.identity(7)
-    # scale[5, 5] = dp_p_coeff
-    #
-    # scale_inv = np.identity(7)
-    # scale_inv[5, 5] = 1.0 / dp_p_coeff
-    #
-    # return np.linalg.multi_dot([scale, matrix, scale_inv])
-
-    dp_p_coeff = get_dp_p_coeff(sync_part)
-    matrix[:5, 5] *= dp_p_coeff
-    matrix[5, :5] /= dp_p_coeff
-    matrix[5, 6] /= dp_p_coeff
-    return matrix
-
-
-def convert_matrix_zp_to_dE(matrix: np.ndarray, sync_part: SyncParticle) -> np.ndarray:
-    zp_coeff = get_zp_coeff(sync_part)
-    matrix[:5, 5] *= zp_coeff
-    matrix[5, :5] /= zp_coeff
-    matrix[5, 6] /= zp_coeff
-    return matrix
-
-
-def get_dp_p_coeff(sync_part: SyncParticle) -> float:
-    # dE/E = (beta^2) * dp/p
-    # dE = (beta^2 * E) * dp/p
-    # dE = (beta^2 * gamma * m * c^2) * dp/p
-    beta = sync_part.beta()
-    gamma = sync_part.gamma()
-    rest_energy = sync_part.mass()  # GeV
-    return 1.0 / (beta ** 2 * gamma * rest_energy)
-
-
-def get_zp_coeff(sync_part: SyncParticle) -> float:
-    # dE/E = (beta^2) * dp/p = (beta^2) * (gamma^2) z'
-    # dE = (beta^2 * gamma^2 * E) * z'
-    # dE = (beta^2 * gamma^3 * m * c^2) * z'
-    beta = sync_part.beta()
-    gamma = sync_part.gamma()
-    rest_energy = sync_part.mass()
-    return 1.0 / (beta ** 2 * gamma ** 3 * rest_energy)
 
 
 def convert_matrix_dp_p_to_dE(matrix: np.ndarray, sync_part: SyncParticle) -> np.ndarray:
@@ -255,104 +187,104 @@ def solenoid_matrix(length: float, B: float, sync_part: SyncParticle) -> np.ndar
 def cf_matrix(length: float, kq: float, sync_part: SyncParticle) -> np.ndarray:
     raise NotImplementedError()
 
-
-class MatrixFactory:
-    """Factory for 7 x 7 transfer matrices.
-
-    Units: x [m], x' [rad], y [m], y' [rad], z [m], dE [GeV]
-    """
-    def __init__(self, handle_unknown: str | None = None) -> None:
-        self.ignore_node_types = [
-            ApertureTEAPOT,
-            BunchWrapTEAPOT,
-            FringeFieldTEAPOT,
-            MonitorTEAPOT,
-            TurnCounterTEAPOT,
-            NodeTEAPOT,
-            FringeField,
-        ]
-        self.handle_unknown = handle_unknown
-
-    def __call__(self, node: AccNode, bunch: Bunch, part_index: int = 0) -> np.ndarray:
-        sync_part = bunch.getSyncParticle()
-
-        if type(node) is DriftTEAPOT:
-            length = node.getLength(part_index)
-            return drift_matrix(length=length, sync_part=sync_part)
-
-        elif type(node) is QuadTEAPOT:
-            length = node.getLength(part_index)
-
-            scale = 1.0
-            if node.waveform:
-                scale = node.waveform.getStrength()
-
-            kq = scale * node.getParam("kq")
-            return quad_matrix(length=length, kq=kq, sync_part=sync_part)
-
-        elif type(node) is BendTEAPOT:
-            length = node.getLength(part_index)
-            theta = node.getParam("theta") / node.getnParts()
-            return bend_matrix(length=length, theta=theta, sync_part=sync_part)
-
-        elif type(node) is KickTEAPOT:
-            length = node.getLength(part_index)
-            nparts = node.getnParts()
-
-            scale = 1.0
-            if node.waveform is not None:
-                scale = node.waveform.getStrength()
-
-            kx = scale * node.getParam("kx") / nparts
-            ky = scale * node.getParam("ky") / nparts
-            kE = node.getParam("dE") / nparts
-
-            return np.matmul(
-                kick_matrix(kx=kx, ky=ky, kE=kE),
-                drift_matrix(length=length, sync_part=sync_part)
-            )
-
-        elif type(node) is TiltTEAPOT:
-            angle = node.getTiltAngle()
-            return tilt_matrix(angle)
-
-        elif type(node) is SolenoidTEAPOT:
-            B = node.getParam("B")
-            if node.waveform is not None:
-                B *= node.waveform.getStrength()
-            length = node.getLength(part_index)
-            return solenoid_matrix(length=length, B=B, sync_part=sync_part)
-
-        elif type(node) is Drift:
-            length = node.getLength(part_index)
-            return drift_matrix(length=length, sync_part=sync_part)
-
-        elif type(node) is Quad:
-            length = node.getLength(part_index)
-            kq = node.getParam("dB/dr") / bunch.B_Rho()
-            return quad_matrix(length=length, kq=kq, sync_part=sync_part)
-
-        elif type(node) is Bend:
-            length = node.getLength(part_index)
-            theta = node.getParam("theta") / node.getnParts()
-            return bend_matrix(length=length, theta=theta, sync_part=sync_part)
-
-        elif type(node) is TiltElement:
-            angle = node.getTiltAngle()
-            return tilt_matrix(angle)
-
-        elif type(node) in self.ignore_node_types:
-            return np.identity(7)
-
-        else:
-            if type(node) is MultipoleTEAPOT:
-                if np.all(np.abs(node.getParam("kls")) == 0):
-                    return drift_matrix(length=node.getLength(part_index), sync_part=sync_part)
-
-            elif self.handle_unknown == "drift":
-                return drift_matrix(length=node.getLength(part_index), sync_part=sync_part)
-
-            elif self.handle_unknown == "fit":
-                raise NotImplementedError()
-
-            raise NotImplementedError("Unsupported node: {}.".format(node))
+#
+# class MatrixFactory:
+#     """Factory for 7 x 7 transfer matrices.
+#
+#     Units: x [m], x' [rad], y [m], y' [rad], z [m], dE [GeV]
+#     """
+#     def __init__(self, handle_unknown: str | None = None) -> None:
+#         self.ignore_node_types = [
+#             ApertureTEAPOT,
+#             BunchWrapTEAPOT,
+#             FringeFieldTEAPOT,
+#             MonitorTEAPOT,
+#             TurnCounterTEAPOT,
+#             NodeTEAPOT,
+#             FringeField,
+#         ]
+#         self.handle_unknown = handle_unknown
+#
+#     def __call__(self, node: AccNode, bunch: Bunch, part_index: int = 0) -> np.ndarray:
+#         sync_part = bunch.getSyncParticle()
+#
+#         if type(node) is DriftTEAPOT:
+#             length = node.getLength(part_index)
+#             return drift_matrix(length=length, sync_part=sync_part)
+#
+#         elif type(node) is QuadTEAPOT:
+#             length = node.getLength(part_index)
+#
+#             scale = 1.0
+#             if node.waveform:
+#                 scale = node.waveform.getStrength()
+#
+#             kq = scale * node.getParam("kq")
+#             return quad_matrix(length=length, kq=kq, sync_part=sync_part)
+#
+#         elif type(node) is BendTEAPOT:
+#             length = node.getLength(part_index)
+#             theta = node.getParam("theta") / node.getnParts()
+#             return bend_matrix(length=length, theta=theta, sync_part=sync_part)
+#
+#         elif type(node) is KickTEAPOT:
+#             length = node.getLength(part_index)
+#             nparts = node.getnParts()
+#
+#             scale = 1.0
+#             if node.waveform is not None:
+#                 scale = node.waveform.getStrength()
+#
+#             kx = scale * node.getParam("kx") / nparts
+#             ky = scale * node.getParam("ky") / nparts
+#             kE = node.getParam("dE") / nparts
+#
+#             return np.matmul(
+#                 kick_matrix(kx=kx, ky=ky, kE=kE),
+#                 drift_matrix(length=length, sync_part=sync_part)
+#             )
+#
+#         elif type(node) is TiltTEAPOT:
+#             angle = node.getTiltAngle()
+#             return tilt_matrix(angle)
+#
+#         elif type(node) is SolenoidTEAPOT:
+#             B = node.getParam("B")
+#             if node.waveform is not None:
+#                 B *= node.waveform.getStrength()
+#             length = node.getLength(part_index)
+#             return solenoid_matrix(length=length, B=B, sync_part=sync_part)
+#
+#         elif type(node) is Drift:
+#             length = node.getLength(part_index)
+#             return drift_matrix(length=length, sync_part=sync_part)
+#
+#         elif type(node) is Quad:
+#             length = node.getLength(part_index)
+#             kq = node.getParam("dB/dr") / bunch.B_Rho()
+#             return quad_matrix(length=length, kq=kq, sync_part=sync_part)
+#
+#         elif type(node) is Bend:
+#             length = node.getLength(part_index)
+#             theta = node.getParam("theta") / node.getnParts()
+#             return bend_matrix(length=length, theta=theta, sync_part=sync_part)
+#
+#         elif type(node) is TiltElement:
+#             angle = node.getTiltAngle()
+#             return tilt_matrix(angle)
+#
+#         elif type(node) in self.ignore_node_types:
+#             return np.identity(7)
+#
+#         else:
+#             if type(node) is MultipoleTEAPOT:
+#                 if np.all(np.abs(node.getParam("kls")) == 0):
+#                     return drift_matrix(length=node.getLength(part_index), sync_part=sync_part)
+#
+#             elif self.handle_unknown == "drift":
+#                 return drift_matrix(length=node.getLength(part_index), sync_part=sync_part)
+#
+#             elif self.handle_unknown == "fit":
+#                 raise NotImplementedError()
+#
+#             raise NotImplementedError("Unsupported node: {}.".format(node))

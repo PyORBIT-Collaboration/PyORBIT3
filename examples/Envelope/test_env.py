@@ -9,6 +9,7 @@ from orbit.py_linac.lattice import Drift
 from orbit.py_linac.lattice import Quad
 from orbit.py_linac.lattice import Bend
 from orbit.py_linac.lattice import TiltElement
+from orbit.py_linac.lattice import Solenoid
 from orbit.teapot import BendTEAPOT
 from orbit.teapot import DriftTEAPOT
 from orbit.teapot import KickTEAPOT
@@ -199,7 +200,7 @@ def test_quad_linac(
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
 
 
-def test_dipole_teapot(
+def test_bend_teapot(
     kin_energy: float = 0.0025,
     length: float = 1.0,
     theta: float = 20.0,
@@ -213,7 +214,7 @@ def test_dipole_teapot(
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
 
 
-def test_dipole_linac(
+def test_bend_linac(
     kin_energy: float = 0.0025,
     length: float = 1.0,
     theta: float = 20.0,
@@ -232,7 +233,7 @@ def test_dipole_linac(
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
 
 
-def test_kick(
+def test_kick_teapot(
     kin_energy: float = 0.0025,
     length: float = 0.1,
     kx: float = 0.001,
@@ -274,7 +275,7 @@ def test_tilt_linac(
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
 
 
-def test_solenoid(
+def test_solenoid_teapot(
     kin_energy: float = 0.0025,
     length: float = 2.0,
     B: float = 1.0,
@@ -288,15 +289,37 @@ def test_solenoid(
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
 
 
+def test_solenoid_linac(
+    kin_energy: float = 0.0025,
+    length: float = 2.0,
+    B: float = 1.0,
+    cov_matrix: np.ndarray = None,
+    nparts: int = 10,
+) -> None:
+    node = Solenoid()
+    node.setLength(length)
+    node.setnParts(nparts)
+    node.setParam("B", B)
+    nodes = [node]
+
+    lattice = make_lattice(nodes)
+    if cov_matrix is None:
+        cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+
+
 if __name__ == "__main__":
     test_drift_teapot()
-    test_drift_linac()
     test_quad_teapot()
-    test_quad_linac()
-    test_dipole_teapot()
-    test_dipole_linac()
-    test_kick()
+    test_bend_teapot()
     test_tilt_teapot()
+    test_solenoid_teapot()
+    test_kick_teapot()
+
+    test_drift_linac()
+    test_quad_linac()
+    test_bend_linac()
     test_tilt_linac()
-    test_solenoid()
+    test_solenoid_linac()
+
 

@@ -34,32 +34,6 @@ from utils import project_cov_matrix
 plt.style.use("style.mplstyle")
 
 
-# Parse arguments
-# ------------------------------------------------------------------------------
-
-parser = argparse.ArgumentParser()
-parser.add_argument("--zrms", type=float, default=5.0)
-parser.add_argument("--kin-energy", type=float, default=0.0025)
-parser.add_argument("--intensity", type=float, default=5e9)
-
-parser.add_argument(
-    "--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"]
-)
-parser.add_argument("--mismatch-x", type=float, default=0.0)
-parser.add_argument("--mismatch-y", type=float, default=0.0)
-parser.add_argument("--offset-x", type=float, default=0.0)
-parser.add_argument("--offset-y", type=float, default=0.0)
-parser.add_argument("--tilt", type=float, default=0)
-
-parser.add_argument("--nslice", type=int, default=10)
-parser.add_argument("--kq", type=float, default=0.25)
-
-parser.add_argument("--nparts", type=int, default=100_000)
-parser.add_argument("--turns", type=int, default=25)
-parser.add_argument("--sc", type=int, default=0)
-args = parser.parse_args()
-
-
 def main(args: argparse.Namespace) -> None:
 
     # Setup
