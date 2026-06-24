@@ -223,8 +223,8 @@ class Envelope:
         #   x = L V u = L T A u.
         #   u -> M u
         #   x -> V M V^-1 x
-        V = np.matmul(T, A)
-        M = V @ M @ np.linalg.inv(V)
+        V = np.linalg.multi_dot([L, T, A])
+        M = np.linalg.multi_dot([V, M, np.linalg.inv(V)])
 
         # Convert from z' to dE.
         return convert_matrix_zp_to_dE(M, self.sync_part)
