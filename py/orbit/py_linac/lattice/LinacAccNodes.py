@@ -7,7 +7,6 @@ The abstract AbstractRF_Gap class is a parent class for all RF gap model classes
 """
 
 import os
-import math
 
 import numpy as np
 
@@ -28,13 +27,6 @@ from orbit.teapot_base import TPB
 from orbit.core.linac import linac_tracking
 
 from orbit.core.bunch import SyncParticle
-
-# from orbit.matrix_lattice import drift_matrix
-# from orbit.matrix_lattice import bend_matrix
-# from orbit.matrix_lattice import quad_matrix
-# from orbit.matrix_lattice import solenoid_matrix
-# from orbit.matrix_lattice import kick_matrix
-# from orbit.matrix_lattice import tilt_matrix
 
 from orbit.matrix_lattice.analytic import drift_matrix
 from orbit.matrix_lattice.analytic import bend_matrix
@@ -333,7 +325,8 @@ class Drift(BaseLinacNode):
 
     def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
         length = self.getLength(index)
-        return drift_matrix(length=length, sync_part=sync_part)
+        if length > 0:
+            return drift_matrix(length=length, sync_part=sync_part)
 
 
 class Quad(LinacMagnetNode):
@@ -538,7 +531,10 @@ class Quad(LinacMagnetNode):
         charge = 1.0  # sync_part has no charge parameter...
         brho = 3.335640952 * sync_part.momentum() / charge
         kq = self.getParam("dB/dr") / brho
-        return quad_matrix(length=length, kq=kq, sync_part=sync_part)
+        if abs(kq) > 0:
+            return quad_matrix(length=length, kq=kq, sync_part=sync_part)
+        elif length > 0:
+            return drift_matrix(length=length, sync_part=sync_part)
 
     def getTotalField(self, z):
         """
@@ -796,10 +792,10 @@ class DCorrectorH(LinacMagnetNode):
     def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
         length = self.getParam("effLength") / self.getnParts()
         field = self.getParam("B")
-        charge = 1.0
-        # dp/p = Q*c*B*L/p p in GeV/c c = 2.99792*10^8/10^9
+        charge = 1.0  # TEMP
         delta_xp = -field * charge * length * 0.299792 / sync_part.momentum()
-        return kick_matrix(delta_xp, 0.0, 0.0)
+        if abs(delta_xp) > 0:
+            return kick_matrix(delta_xp, 0.0, 0.0)
 
 
 class DCorrectorV(LinacMagnetNode):
@@ -849,10 +845,10 @@ class DCorrectorV(LinacMagnetNode):
     def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
         length = self.getParam("effLength") / self.getnParts()
         field = self.getParam("B")
-        charge = 1.0
-        # dp/p = Q*c*B*L/p p in GeV/c c = 2.99792*10^8/10^9
+        charge = 1.0  # TEMP
         delta_yp = -field * charge * length * 0.299792 / sync_part.momentum()
-        return kick_matrix(0.0, delta_yp, 0.0)
+        if abs(delta_yp) > 0:
+            return kick_matrix(0.0, delta_yp, 0.0)
 
 
 class ThickKick(LinacMagnetNode):
@@ -924,6 +920,7 @@ class ThickKick(LinacMagnetNode):
         self.tracking_module.kick(bunch, kickX, kickY, 0.0)
         self.tracking_module.drift(bunch, length / 2.0)
 
+
 class Solenoid(BaseLinacNode):
     """
     Solenoid TEAPOT based element.
@@ -954,7 +951,10 @@ class Solenoid(BaseLinacNode):
     def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
         B = self.getParam("B")
         length = self.getLength(index)
-        return solenoid_matrix(length=length, B=B, sync_part=sync_part)
+        if abs(B) > 0:
+            return solenoid_matrix(length=length, B=B, sync_part=sync_part)
+        elif length > 0:
+            return drift_matrix(length=length, sync_part=sync_part)
 
 
 class AbstractRF_Gap(BaseLinacNode):
@@ -1076,7 +1076,9 @@ class TiltElement(BaseLinacNode):
             TPB.rotatexy(bunch, self.__angle)
 
     def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
-        return tilt_matrix(self.__angle)
+        angle = self.__angle
+        if abs(angle) > 0:
+            return tilt_matrix(angle)
 
 
 class FringeField(BaseLinacNode):
