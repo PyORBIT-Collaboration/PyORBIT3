@@ -367,17 +367,18 @@ def test_sc_3d_cold_expansion():
 
 
 if __name__ == "__main__":
-    test_drift_teapot()
-    test_quad_teapot()
-    test_bend_teapot()
-    test_tilt_teapot()
-    test_solenoid_teapot()
-    test_kick_teapot()
+    for kin_energy in [0.0025, 1.0, 10.0]:
+        test_drift_teapot(kin_energy=kin_energy)
+        test_quad_teapot(kin_energy=kin_energy)
+        test_bend_teapot(kin_energy=kin_energy)
+        test_tilt_teapot(kin_energy=kin_energy)
+        test_solenoid_teapot(kin_energy=kin_energy)
+        test_kick_teapot(kin_energy=kin_energy)
 
-    test_drift_linac()
-    test_quad_linac()
-    test_bend_linac()
-    test_tilt_linac()
-    test_solenoid_linac()
+        test_drift_linac(kin_energy=kin_energy)
+        test_quad_linac(kin_energy=kin_energy)
+        test_bend_linac(kin_energy=kin_energy)
+        test_tilt_linac(kin_energy=kin_energy)
+        test_solenoid_linac(kin_energy=kin_energy)
 
-    test_rf_gap_matrix()
+        test_rf_gap_matrix(kin_energy=kin_energy)
