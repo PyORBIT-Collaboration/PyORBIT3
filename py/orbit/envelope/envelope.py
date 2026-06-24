@@ -133,8 +133,6 @@ class Envelope:
         return particles
 
     def sc_transfer_matrix_2d(self, length: float) -> np.ndarray:
-        # [TO DO] Move this to matrix.py?
-
         # Extract beam centroid and covariance matrix.
         centroid = self.centroid()
         cov_matrix = self.cov()
@@ -179,8 +177,6 @@ class Envelope:
         return np.linalg.multi_dot([V, M, V_inv])
 
     def sc_transfer_matrix_3d(self, length: float) -> np.ndarray:
-        # [TO DO] Move this to matrix.py?
-
         centroid = self.centroid()
         centroid[4] *= self.gamma()
 
