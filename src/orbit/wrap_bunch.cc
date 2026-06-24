@@ -158,6 +158,19 @@ namespace wrap_orbit_bunch{
     return Py_BuildValue("i",ind);
   }
 
+  static PyObject* Bunch_recoverParticle(PyObject *self, PyObject *args){
+    Bunch *cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
+    int ind;
+
+    if(!PyArg_ParseTuple(args,"i:recoverParticle",&ind)){
+      error("PyBunch - recoverParticle - needs index of particle for recovering");
+    }
+
+    cpp_bunch->recoverParticle(ind);
+    Py_INCREF(Py_None);
+    return Py_None;
+  }
+
   //removes all particles from the Bunch object
   //this is implementation of the deleteAllParticles()  method
   static PyObject* Bunch_deleteAllParticles(PyObject *self, PyObject *args){
@@ -1181,6 +1194,7 @@ namespace wrap_orbit_bunch{
     { "addParticle",                    Bunch_addParticle                   ,METH_VARARGS,"Adds a macro-particle to the bunch"},
     { "deleteParticle",                 Bunch_deleteParticle                ,METH_VARARGS,"Removes macro-particle from the bunch and call compress inside"},
     { "deleteParticleFast",             Bunch_deleteParticleFast            ,METH_VARARGS,"Removes macro-particle from the bunch very fast"},
+    { "recoverParticle",                Bunch_recoverParticle               ,METH_VARARGS,"Recovers a particle marked for removal"},
     { "deleteAllParticles",             Bunch_deleteAllParticles            ,METH_VARARGS,"Removes all macro-particles from the bunch"},
     { "compress",                       Bunch_compress                      ,METH_VARARGS,"Compress the bunch"},
     { "x",                              Bunch_x                             ,METH_VARARGS,"Set x(index,value) or get x(index) coordinate"},
