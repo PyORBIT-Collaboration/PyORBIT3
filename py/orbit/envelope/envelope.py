@@ -90,7 +90,7 @@ class Envelope:
 
     def set_intensity(self, intensity: float) -> None:
         self.intensity = intensity
-        self.perveance = (
+        self.sc_factor = (
             2.0
             * intensity
             * CLASSICAL_PROTON_RADIUS
@@ -151,7 +151,7 @@ class Envelope:
 
         # Build transfer matrix in upright frame.
         bunch_length = 4.0 * self.rms(axis=4)
-        perveance = self.perveance / bunch_length
+        perveance = self.sc_factor / bunch_length
         factor = 2.0 * perveance / (rx + ry)
         kappa_x = factor / rx
         kappa_y = factor / ry
@@ -197,7 +197,7 @@ class Envelope:
         RDy = scipy.special.elliprd(cov_xx, cov_zz, cov_yy)
         RDz = scipy.special.elliprd(cov_xx, cov_yy, cov_zz)
 
-        factor = 0.5 * self.perveance * ((1.0 / 5.0) ** 1.5)
+        factor = 0.5 * self.sc_factor * ((1.0 / 5.0) ** 1.5)
         kappa_x = factor * RDx  # [1 / m]
         kappa_y = factor * RDy  # [1 / m]
         kappa_z = factor * RDz  # [1 / m]
