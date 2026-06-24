@@ -37,7 +37,7 @@ class Envelope:
     """Represents beam envelope and centroid.
 
     Attributes:
-        moment_matrix: 7 x 7 covariance matrix for augmented phase space vector.
+        moment_matrix: 7 x 7 matrix containing first and second moments.
             Define the phase space vector X = [x, x', y, y', z, dE]^T and
             augmented vector Y = [x, x', y, y', z, dE, 1].
 
@@ -78,11 +78,9 @@ class Envelope:
             cov_matrix = np.eye(6)
 
         self.moment_matrix = np.zeros((7, 7))
-        self.moment_matrix[: self.dim, : self.dim] = cov_matrix + np.outer(
-            centroid, centroid
-        )
-        self.moment_matrix[: self.dim, self.dim] = centroid
-        self.moment_matrix[self.dim, : self.dim] = centroid
+        self.moment_matrix[:self.dim, :self.dim] = cov_matrix + np.outer(centroid, centroid)
+        self.moment_matrix[:self.dim, self.dim] = centroid
+        self.moment_matrix[self.dim, :self.dim] = centroid
         self.moment_matrix[self.dim, self.dim] = 1.0
 
         self.intensity = 0.0
@@ -109,16 +107,21 @@ class Envelope:
     def charge(self) -> float:
         return self.bunch.charge()
 
-    def centroid(self) -> np.ndarray:
-        return np.copy(self.moment_matrix[: self.dim, self.dim])
+    @property
+    def centroid(self):
+        return self.moment_matrix[:self.dim, self.dim]
 
-    def cov(self) -> np.ndarray:
-        autocorrelation_matrix = self.moment_matrix[: self.dim, : self.dim]
-        centroid = self.moment_matrix[: self.dim, self.dim]
-        return autocorrelation_matrix - np.outer(centroid, centroid)
+    @property
+    def autocorr_matrix(self):
+        return self.moment_matrix[:self.dim, :self.dim]
+
+    @property
+    def cov_matrix(self):
+        mu = self.centroid
+        return self.autocorr_matrix - np.outer(mu, mu)
 
     def rms(self, axis: int = None) -> float | np.ndarray:
-        rms_arr = np.sqrt(np.diag(self.cov()))
+        rms_arr = np.sqrt(np.diag(self.cov_matrix))
         return rms_arr[axis]
 
     def apply_transfer_matrix(self, transfer_matrix: np.ndarray | None) -> None:
@@ -130,14 +133,14 @@ class Envelope:
     def sample(self, size: int, dist: str = "kv") -> np.ndarray:
         # Issue: covariance matrix is becoming non semi-positive definite,
         # giving error in cholesky decomposition.
-        particles = gen_dist(size=size, cov_matrix=self.cov(), name=dist)
-        particles = particles + self.centroid()
+        particles = gen_dist(size=size, cov_matrix=self.cov_matrix, name=dist)
+        particles = particles + self.centroid
         return particles
 
     def sc_transfer_matrix_2d(self, length: float) -> np.ndarray:
         # Extract beam centroid and covariance matrix.
-        centroid = self.centroid()
-        cov_matrix = self.cov()
+        centroid = self.centroid
+        cov_matrix = self.cov_matrix
 
         # Project covariance matrix onto x-y plane.
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2))
@@ -190,11 +193,11 @@ class Envelope:
         lorentz_matrix_inv = np.linalg.inv(lorentz_matrix)
 
         # Get centroid in rest frame.
-        centroid = self.centroid()
+        centroid = self.centroid
         centroid[4] *= self.gamma()
 
         # Get covariance matrix in rest frame.
-        cov_matrix = self.cov()
+        cov_matrix = self.cov_matrix
         cov_matrix = np.linalg.multi_dot(
             [lorentz_matrix_inv[:-1, :-1], cov_matrix, lorentz_matrix_inv[:-1, :-1].T]
         )

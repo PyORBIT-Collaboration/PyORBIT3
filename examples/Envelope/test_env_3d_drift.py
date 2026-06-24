@@ -112,8 +112,8 @@ def main(args: argparse.Namespace) -> None:
         if turn > 0:
             tracker.track(envelope)
 
-        cov_matrix = envelope.cov()
-        centroid = envelope.centroid()
+        cov_matrix = envelope.cov_matrix
+        centroid = envelope.centroid
 
         xrms = 1000.0 * math.sqrt(cov_matrix[0, 0])
         yrms = 1000.0 * math.sqrt(cov_matrix[2, 2])
@@ -205,10 +205,10 @@ def main(args: argparse.Namespace) -> None:
     particles = collect_bunch(bunch)["coords"]
     particles *= 1e3
 
-    env_cov_matrix = envelope.cov()
+    env_cov_matrix = envelope.cov_matrix
     env_cov_matrix *= 1e6
 
-    env_centroid = envelope.centroid()
+    env_centroid = envelope.centroid
     env_centroid *= 1e3
 
     xmax = 4.0 * np.std(particles, axis=0)

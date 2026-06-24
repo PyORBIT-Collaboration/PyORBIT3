@@ -102,9 +102,9 @@ def track_and_compare_rms(
     envelope = Envelope(bunch=bunch, cov_matrix=cov_matrix)
     envelope_tracker = EnvelopeTracker(lattice=lattice)
 
-    data["env"]["cov"]["in"] = cov_scale * envelope.cov()
+    data["env"]["cov"]["in"] = cov_scale * envelope.cov_matrix
     envelope_tracker.track(envelope)
-    data["env"]["cov"]["out"] = cov_scale * envelope.cov()
+    data["env"]["cov"]["out"] = cov_scale * envelope.cov_matrix
 
     # Compare
     for mode in ["env", "bunch"]:
@@ -382,3 +382,4 @@ if __name__ == "__main__":
         test_solenoid_linac(kin_energy=kin_energy)
 
         test_rf_gap_matrix(kin_energy=kin_energy)
+
