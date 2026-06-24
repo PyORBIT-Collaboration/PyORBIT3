@@ -128,7 +128,7 @@ class Envelope:
     def sample(self, size: int, dist: str = "kv") -> np.ndarray:
         # Issue: covariance matrix is becoming non semi-positive definite,
         # giving error in cholesky decomposition.
-        particles = gen_dist(n=size, cov_matrix=self.cov(), name=dist)
+        particles = gen_dist(size=size, cov_matrix=self.cov(), name=dist)
         particles = particles + self.centroid()
         return particles
 
