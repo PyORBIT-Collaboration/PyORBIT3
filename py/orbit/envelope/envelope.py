@@ -176,6 +176,8 @@ class Envelope:
     def sc_transfer_matrix_3d(self, length: float) -> np.ndarray:
         # Build Lorentz matrix
         lorentz_matrix = np.identity(7)
+        lorentz_matrix[1, 1] = self.gamma()
+        lorentz_matrix[3, 3] = self.gamma()
         lorentz_matrix[4, 4] = 1.0 / self.gamma()
         lorentz_matrix_inv = np.linalg.inv(lorentz_matrix)
 
@@ -209,9 +211,6 @@ class Envelope:
         kappa_x = factor * RDx # [1 / m]
         kappa_y = factor * RDy # [1 / m]
         kappa_z = factor * RDz  # [1 / m]
-
-        kappa_x *= self.gamma()
-        kappa_y *= self.gamma()
 
         M = np.identity(7)
         M[1, 0] = kappa_x * length
