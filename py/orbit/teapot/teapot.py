@@ -570,7 +570,7 @@ class NodeTEAPOT(BaseTEAPOT):
         return self.__fringeFieldOUT.getUsage()
 
     def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
-        raise NotImplementedError()
+        raise NotImplementedError(str(self))
 
 
 class DriftTEAPOT(NodeTEAPOT):

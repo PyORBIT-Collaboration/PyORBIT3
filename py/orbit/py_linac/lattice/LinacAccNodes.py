@@ -142,7 +142,7 @@ class BaseLinacNode(AccNodeBunchTracker):
         actionContainer.removeAction(trackDesign, AccActionsContainer.BODY)
 
     def matrix(self, sync_part: SyncParticle, index: int = -1) -> np.ndarray:
-        raise NotImplementedError()
+        raise NotImplementedError(str(self))
 
 
 class MarkerLinacNode(BaseLinacNode):
