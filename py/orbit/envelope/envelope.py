@@ -137,38 +137,38 @@ class Envelope:
         return particles
 
     def sc_transfer_matrix_2d(self, length: float) -> np.ndarray:
-        # Extract beam centroid and covariance matrix.
         centroid = self.centroid
         cov_matrix = self.cov_matrix
 
-        # Project covariance matrix onto x-y plane.
-        cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2))
+        # Calculate transfer matrix in normalized (upright) frame.
+        cov_xx = cov_matrix[0, 0]
+        cov_yy = cov_matrix[2, 2]
+        cov_xy = cov_matrix[0, 2]
 
-        # Compute eigenvalues and eigenvectors of x-y covariance matrix.
-        cov_eig_res = np.linalg.eigh(cov_matrix_proj)
-        cov_eig_vals = cov_eig_res.eigenvalues
-        cov_eig_vecs = cov_eig_res.eigenvectors
+        phi = -0.5 * np.arctan2(2 * cov_xy, cov_xx - cov_yy)
+        sin_phi = np.sin(phi)
+        cos_phi = np.cos(phi)
+        rx = 2.0 * np.sqrt(abs(cov_xx * cos_phi**2 + cov_yy * sin_phi**2 - 2.0 * cov_xy * sin_phi * cos_phi))
+        ry = 2.0 * np.sqrt(abs(cov_xx * sin_phi**2 + cov_yy * cos_phi**2 + 2.0 * cov_xy * sin_phi * cos_phi))
 
-        # Compute rms beam sizes in upright frame.
-        rx = 2.0 * math.sqrt(cov_eig_vals[0])
-        ry = 2.0 * math.sqrt(cov_eig_vals[1])
-
-        # Build transfer matrix in upright frame.
         bunch_length = 4.0 * np.sqrt(cov_matrix[4, 4])
         perveance = self.sc_factor / bunch_length
-        factor = 2.0 * perveance / (rx + ry)
-        kappa_x = factor / rx
-        kappa_y = factor / ry
+        kappa_factor = 2.0 * perveance / (rx + ry)
 
         M = np.identity(7)
-        M[1, 0] = kappa_x * length
-        M[3, 2] = kappa_y * length
+        M[1, 0] = kappa_factor * length / rx
+        M[3, 2] = kappa_factor * length / ry
 
-        # Build matrix to undo x-y diagonalization.
-        A = build_diag_matrix_from_xyz_eig(cov_eig_vecs)
+        # Build matrix A to transform out of normalized frame.
+        A = np.eye(7)
+        A[0, 0] = A[1, 1] = +cos_phi
+        A[0, 2] = A[1, 3] = +sin_phi
+        A[2, 0] = A[3, 1] = -sin_phi
+        A[2, 2] = A[3, 3] = +cos_phi
+
         A_inv = A.T
 
-        # Build matrix to translate to centroid.
+        # Build matrix T to shift to beam centroid.
         T = np.identity(7)
         T[0, -1] = centroid[0]
         T[2, -1] = centroid[2]
@@ -194,7 +194,6 @@ class Envelope:
         L[1, 1] = gamma
         L[3, 3] = gamma
         L[4, 4] = gamma_inv
-
         L_inv = np.diag(1.0 / np.diag(L))
 
         # Get centroid in rest frame.
