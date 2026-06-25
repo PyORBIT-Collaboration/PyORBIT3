@@ -6,6 +6,8 @@ The RF Cavities and gaps in them are different from the ring RF.
 import os
 import math
 
+import numpy as np
+
 # ---- MPI module function and classes
 from orbit.core.orbit_mpi import mpi_comm, mpi_datatype, MPI_Comm_rank, MPI_Bcast
 
@@ -35,6 +37,9 @@ from orbit.py_linac.lattice.LinacAccNodes import AbstractRF_Gap
 # quad2 - linac quad non-linear part of tracking
 
 from orbit.core.bunch import Bunch
+from orbit.core.bunch import SyncParticle
+
+from orbit.matrix_lattice.analytic import rf_gap_matrix
 
 
 class BaseRF_Gap(AbstractRF_Gap):
@@ -329,6 +334,39 @@ class BaseRF_Gap(AbstractRF_Gap):
             msg = msg + os.linesep
             orbitFinalize(msg)
         self.cppGapModel.trackBunch(bunch, frequency, E0L, phase, self.polyT, self.polyS, self.polyTp, self.polySp)
+
+    def matrix(self, sync_part: SyncParticle, charge: float, index: int = -1) -> np.ndarray:
+        E0TL = self.getParam("E0TL")
+        mode_phase = self.getParam("mode") * math.pi
+
+        cavity = self.getRF_Cavity()
+        frequency = cavity.getFrequency()
+        phase = cavity.getPhase() + mode_phase
+        amplitude = cavity.getAmp()
+
+        arrival_time = sync_part.time()
+        arrival_time_design = cavity.getDesignArrivalTime()
+
+        if self.__isFirstGap:
+            if cavity.isDesignSetUp():
+                phase = math.fmod(frequency * (arrival_time - arrival_time_design) * 2.0 * math.pi + phase, 2.0 * math.pi)
+            else:
+                orbitFinalize("Run `trackDesign` first to initialize cavity phases.")
+        else:
+            phase = math.fmod(frequency * (arrival_time - arrival_time_design) * 2.0 * math.pi + phase, 2.0 * math.pi)
+
+        self.setGapPhase(phase)
+
+        if amplitude == 0.0:
+            return None
+
+        return rf_gap_matrix(
+            frequency=frequency,
+            E0TL=(E0TL * amplitude),
+            phase=phase,
+            sync_part=sync_part,
+            charge=charge,
+        )
 
 
 # -----------------------------------------------------------------------

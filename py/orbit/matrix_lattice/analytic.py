@@ -1,3 +1,7 @@
+"""Functions to compute transfer matrices.
+
+These functions track the synchronous particle!
+"""
 import math
 
 import numpy as np
@@ -54,11 +58,13 @@ def drift_matrix(length: float, sync_part: SyncParticle) -> np.ndarray:
     M[2, 3] = length
     M[4, 5] = length / (sync_part.gamma() ** 2)
     M[4, 5] *= get_dp_p_coeff(sync_part)  # convert_matrix_dp_p_to_dE(M, sync_part)
+
+    sync_part.time(sync_part.time() + length / (sync_part.beta() * speed_of_light))
     return M
 
 
-def quad_matrix(length: float, kq: float, sync_part: SyncParticle) -> np.ndarray:
-    if abs(kq) == 0:
+def quad_matrix(length: float, kq: float, sync_part: SyncParticle, charge: float) -> np.ndarray:
+    if abs(kq) == 0 or charge == 0:
         return drift_matrix(length=length, sync_part=sync_part)
 
     sqrt_abs_kq = math.sqrt(abs(kq))
@@ -93,10 +99,12 @@ def quad_matrix(length: float, kq: float, sync_part: SyncParticle) -> np.ndarray
 
     M[4, 5] = length / (sync_part.gamma()**2)
     M[4, 5] *= get_dp_p_coeff(sync_part)  # convert_matrix_dp_p_to_dE(M, sync_part)
+
+    sync_part.time(sync_part.time() + length / (sync_part.beta() * speed_of_light))
     return M
 
 
-def bend_matrix(length: float, theta: float, sync_part: SyncParticle) -> np.ndarray:
+def bend_matrix(length: float, theta: float, sync_part: SyncParticle, charge: float) -> np.ndarray:
     if length <= 0:
         return np.identity(7)
 
@@ -116,6 +124,8 @@ def bend_matrix(length: float, theta: float, sync_part: SyncParticle) -> np.ndar
     M[4, 1] = -rho * (1.0 - cx)
     M[4, 5] = -(sync_part.beta() ** 2) * length + rho * sx
     M[:5, 5] *= get_dp_p_coeff(sync_part)  # convert_matrix_dp_p_to_dE(M, sync_part)
+
+    sync_part.time(sync_part.time() + length / (sync_part.beta() * speed_of_light))
     return M
 
 
@@ -144,7 +154,7 @@ def kick_matrix(kx: float = 0.0, ky: float = 0.0, kE: float = 0.0) -> np.ndarray
     return M
 
 
-def solenoid_matrix(length: float, B: float, sync_part: SyncParticle) -> np.ndarray:
+def solenoid_matrix(length: float, B: float, sync_part: SyncParticle, charge: float) -> np.ndarray:
     if B == 0:
         return drift_matrix(length=length, sync_part=sync_part)
 
@@ -172,6 +182,8 @@ def solenoid_matrix(length: float, B: float, sync_part: SyncParticle) -> np.ndar
 
     M = np.linalg.multi_dot([np.linalg.inv(V), M, V])
     M[4, 5] *= get_dp_p_coeff(sync_part)  # convert_matrix_dp_p_to_dE(M, sync_part)
+
+    sync_part.time(sync_part.time() + length / (sync_part.beta() * speed_of_light))
     return M
 
 
@@ -179,20 +191,20 @@ def cf_matrix(length: float, kq: float, sync_part: SyncParticle) -> np.ndarray:
     raise NotImplementedError()
 
 
-def rf_gap_matrix(frequency: float, E0TL: float, phase: float, sync_part: SyncParticle) -> np.ndarray:
+def rf_gap_matrix(frequency: float, E0TL: float, phase: float, sync_part: SyncParticle, charge: float) -> np.ndarray:
     """Matrix for thin RF gap.
 
-    E0TL: maximal energy gain in the gap [GeV].
-    frequency: RF frequency [Hz]
-    phase: RF phase [rad]
+    Args:
+        frequency: RF frequency [Hz]
+        E0TL: maximum energy gain in the gap [GeV].
+        phase: RF phase [rad]
     """
     gamma = sync_part.gamma()
     beta = sync_part.beta()
     mass = sync_part.mass()
-    charge = 1.0  # TEMP!
 
     kin_energy_in = sync_part.kinEnergy()
-    chargeE0TLsin = charge * E0TL * math.sin(phase)
+    charge_E0TL_sin = charge * E0TL * math.sin(phase)
     kin_energy_delta = charge * E0TL * math.cos(phase)
 
     # Calculate parameters in the center of the gap.
@@ -218,7 +230,7 @@ def rf_gap_matrix(frequency: float, E0TL: float, phase: float, sync_part: SyncPa
     d_rp = kappa * math.sin(phase)
 
     M = np.eye(7)
-    M[5, 4] = chargeE0TLsin * phase_time_coeff
+    M[5, 4] = charge_E0TL_sin * phase_time_coeff
     M[4, 4] = beta_out / beta
     M[1, 1] = prime_coeff
     M[3, 3] = prime_coeff
