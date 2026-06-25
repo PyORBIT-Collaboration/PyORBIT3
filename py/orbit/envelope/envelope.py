@@ -142,7 +142,9 @@ def track_sync_part(
     elif node_type is BendTEAPOT:
         if length <= 0:
             return None
-        theta = node.getParam("theta") / nparts
+        theta = node.getParam("theta") / (nparts - 1)
+        if index == 0 or index == nparts - 1:
+            theta *= 0.5
         return track_sync_part_bend(sync_part=sync_part, length=length, theta=theta, charge=charge)
 
     elif node_type is KickTEAPOT:
@@ -150,14 +152,15 @@ def track_sync_part(
         if node.waveform is not None:
             scale = node.waveform.getStrength()
 
-        kx = scale * node.getParam("kx") / nparts
-        ky = scale * node.getParam("ky") / nparts
-        kE = node.getParam("dE") / nparts
+        scale /= (nparts - 1)
+        kx = scale * node.getParam("kx")
+        ky = scale * node.getParam("ky")
+        kE = node.getParam("dE")
 
         if abs(kx) > 0 or abs(ky) > 0 or abs(kE) > 0:
             return np.matmul(
                 track_sync_part_kick(sync_part=sync_part, kx=kx, ky=ky, kE=kE),
-                track_sync_part_drift(sync_part=sync_part, length=length)
+                track_sync_part_drift(sync_part=sync_part, length=length),
             )
         else:
             return track_sync_part_drift(sync_part=sync_part, length=length)
@@ -191,7 +194,9 @@ def track_sync_part(
     elif node_type is BendLINAC:
         if length <= 0:
             return None
-        theta = node.getParam("theta") / nparts
+        theta = node.getParam("theta") / (nparts - 1)
+        if index == 0 or index == nparts - 1:
+            theta *= 0.5
         return track_sync_part_bend(sync_part=sync_part, length=length, theta=theta, charge=charge)
 
     elif node_type is DCorrectorHLINAC:
