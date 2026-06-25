@@ -22,6 +22,7 @@ from orbit.space_charge.sc2p5d import setSC2p5DAccNodes
 from orbit.teapot import TEAPOT_Lattice
 from orbit.teapot import TEAPOT_Ring
 from orbit.teapot import TEAPOT_MATRIX_Lattice
+from orbit.teapot import teapot
 from orbit.utils.consts import mass_proton
 
 sys.path.append("..")
@@ -46,16 +47,17 @@ def main(args: argparse.Namespace) -> None:
     # Lattice
     # ------------------------------------------------------------------------------
 
-    lattice = TEAPOT_Lattice()
+    lattice = TEAPOT_Ring()
     lattice.readMADX("inputs/sns_ring.lat", "rnginjsol")
     lattice.initialize()
 
     for node in lattice.getNodes():
-        try:
+        if type(node) != teapot.TurnCounterTEAPOT:
             node.setUsageFringeFieldIN(False)
             node.setUsageFringeFieldOUT(False)
-        except:
-            pass
+        if type(node) is teapot.BendTEAPOT:
+            node.setParam("ea1", 0.0)
+            node.setParam("ea2", 0.0)
 
     if args.sol:
         for name in ["scbdsol_c13a", "scbdsol_c13b"]:
@@ -81,8 +83,8 @@ def main(args: argparse.Namespace) -> None:
     alpha_y = matrix_lattice_params["alpha y"]
     beta_x = matrix_lattice_params["beta x [m]"]
     beta_y = matrix_lattice_params["beta y [m]"]
-    eps_x = 25.0e-06
-    eps_y = eps_x
+    eps_x = args.eps_x * 1e-6
+    eps_y = args.eps_y * 1e-6
 
     cov_matrix = np.zeros((6, 6))
     cov_matrix[0, 0] = eps_x * beta_x
@@ -113,6 +115,7 @@ def main(args: argparse.Namespace) -> None:
         size=args.nparts, cov_matrix=cov_matrix[0:4, 0:4], name=args.dist
     )
     bunch_coords[:, 4] = args.bunch_length * rng.uniform(-0.5, 0.5, size=args.nparts)
+    bunch_coords[:, 5] *= 0.0
     bunch_coords += centroid[None, :6]
 
     for i in range(bunch_coords.shape[0]):
@@ -319,6 +322,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--intensity", type=float, default=2e14)
 
     parser.add_argument("--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"])
+    parser.add_argument("--eps-x", type=float, default=25.0)
+    parser.add_argument("--eps-y", type=float, default=25.0)
     parser.add_argument("--mismatch-x", type=float, default=0.0)
     parser.add_argument("--mismatch-y", type=float, default=0.0)
     parser.add_argument("--offset-x", type=float, default=0.0)
