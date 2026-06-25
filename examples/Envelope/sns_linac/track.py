@@ -79,7 +79,7 @@ args = parser.parse_args()
 output_dir = "outputs"
 os.makedirs(output_dir, exist_ok=True)
 
-random.seed(100)
+random.seed(23)
 
 
 # Bunch
