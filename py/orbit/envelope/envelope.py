@@ -304,6 +304,7 @@ class Envelope:
         self.intensity = 0.0
         self.set_intensity(intensity)
 
+        self.rms_bunch_length_factor = np.sqrt(12.0)
 
     def set_intensity(self, intensity: float) -> None:
         self.intensity = intensity
@@ -359,7 +360,7 @@ class Envelope:
         rx = 2.0 * np.sqrt(abs(cov_xx * cos_phi**2 + cov_yy * sin_phi**2 - 2.0 * cov_xy * sin_phi * cos_phi))
         ry = 2.0 * np.sqrt(abs(cov_xx * sin_phi**2 + cov_yy * cos_phi**2 + 2.0 * cov_xy * sin_phi * cos_phi))
 
-        bunch_length = 4.0 * np.sqrt(cov_matrix[4, 4])
+        bunch_length = self.rms_bunch_length_factor * np.sqrt(cov_matrix[4, 4])
         perveance = self.sc_factor / bunch_length
         kappa_factor = 2.0 * perveance / (rx + ry)
 
