@@ -386,4 +386,3 @@ if __name__ == "__main__":
         test_solenoid_linac(kin_energy=kin_energy)
 
         test_rf_gap_matrix(kin_energy=kin_energy)
-

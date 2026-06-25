@@ -213,18 +213,8 @@ for mode in histories:
         histories[mode][key] = np.array(histories[mode][key])
 
 plot_kws = {}
-plot_kws["bunch"] = dict(
-    color="black",
-    lw=0,
-    marker=".",
-    ms=1
-)
-plot_kws["envelope"] = dict(
-    color="red",
-    lw=0,
-    marker=".",
-    ms=1
-)
+plot_kws["bunch"] = dict(color="black", lw=0, marker=".", ms=1)
+plot_kws["envelope"] = dict(color="red", lw=0, marker=".", ms=1)
 
 fig, axs = plt.subplots(nrows=3, figsize=(5, 7), sharex=True, constrained_layout=True)
 for mode in ["bunch", "envelope"]:

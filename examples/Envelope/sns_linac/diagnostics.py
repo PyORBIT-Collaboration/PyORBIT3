@@ -54,5 +54,3 @@ class BunchMonitor:
         self.history["rms_y"].append(yrms)
         self.history["rms_z"].append(zrms)
         self.history["kin_energy"].append(sync_part.kinEnergy())
-
-
