@@ -81,7 +81,30 @@ def build_diag_matrix_from_xyz_eig(eigenvectors: np.ndarray) -> np.ndarray:
     return A
 
 
-def track_sync_part(node: AccNode, sync_part: SyncParticle, charge: float, index: int = -1) -> np.ndarray:
+def track_sync_part(
+    node: AccNode,
+    sync_part: SyncParticle,
+    charge: float,
+    index: int = -1,
+) -> np.ndarray | None:
+    """Calculate transfer matrix and update synchronous particle.
+
+    This function maps various accelerator nodes to 7 x 7 transfer matrices
+    for envelope tracking. For non-accelerating, finite-length nodes, the
+    synchronous particle time is updated as in a drift. Accelerating nodes
+    such as RF gaps will update the synchronous particle energy.
+
+    Args:
+        node: The accelerator node.
+        sync_part: Synchronous particle.
+        charge: Particle charge. (The charge is currently an attribute of the
+            bunch, not the synchronous particle.)
+        index: Node part index. An index of -1 will return the transfer matrix
+            for the entire node.
+    Returns:
+        7 x 7 transfer matrix or None. If None, the node can be ignored during
+        envelope tracking.
+    """
     node_type = type(node)
     if node_type in IGNORE_NODE_TYPES:
         return None
@@ -236,23 +259,13 @@ def track_sync_part(node: AccNode, sync_part: SyncParticle, charge: float, index
 
 
 class Envelope:
-    """Represents beam envelope and centroid.
+    """Represents beam envelope/centroid.
 
     Attributes:
-        moment_matrix: 7 x 7 matrix containing first and second moments.
-            Define the phase space vector X = [x, x', y, y', z, dE]^T and
-            augmented vector Y = [x, x', y, y', z, dE, 1].
-
-            Let X evolve according to X -> MX + U, where M is a 6 x 6 transfer matrix
-            and U is 6 x 1 "driving" vector. The augmented vector Y evolves according
-            to Y -> NY, where N = [[M, U], [0, 1]] is a 7 x 7 matrix.
-
-            Let S = <YY^T> = [[<XX^T>, <X>], [<X^T>, 1]] = [[R, C], [C^T, 1]]. Here
-            R = <XX^T> is the matrix of second moments, or "autocorrelation" matrix,
-            and C = <X> is the mean/centroid vector. (To get the covariance matrix:
-            <(X - C)(X - C)^T> = <XX^T> - <X><X>^T = R - CC^T.) S evolves according
-            to S -> N S N^T.
         bunch: Bunch containing synchronous particle and (optionally) test particles.
+        cov_matrix: 6 x 6 covariance matrix
+        centroid: 6 x 1 centroid vector.
+        intensity: Total number of particles.
     """
 
     def __init__(
@@ -477,6 +490,7 @@ class EnvelopeTracker:
 
 
     def track_history(self, envelope: Envelope) -> dict[str, list]:
+        """Same as track but returns parameters vs. position in lattice."""
         history = {}
         history["position"] = []
         history["rms_x"] = []
