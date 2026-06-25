@@ -5,7 +5,6 @@
 from .MATRIX_Lattice import MATRIX_Lattice
 from .BaseMATRIX import BaseMATRIX
 
-
 __all__ = []
 __all__.append("MATRIX_Lattice")
 __all__.append("BaseMATRIX")

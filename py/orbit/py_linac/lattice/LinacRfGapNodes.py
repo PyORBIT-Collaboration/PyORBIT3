@@ -665,7 +665,7 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
         # ---- Calculate the phase at the center
         if index == (nParts - 1):
             self._phase_gap_func_analysis()
-
+            
     def _phase_gap_func_analysis(self):
         """
         Performs analysis of the RF gap function phase vs. postion
@@ -687,7 +687,7 @@ class AxisFieldRF_Gap(AbstractRF_Gap):
                 phase_gap = self.gap_pos_phase_func.y(pos_ind)
                 self.gap_pos_phase_func.updatePoint(pos_ind,phase_gap - phase_gap_shift)
         self.setGapPhase(phase_gap_center)
-
+        
     def getPhaseVsPositionFuncion(self):
         """
         Retuns the RF gap function phase vs. postion.

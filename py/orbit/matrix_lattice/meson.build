@@ -4,7 +4,7 @@
 py_sources = files([
     'MATRIX_Lattice.py',
 	'__init__.py',
-	'BaseMATRIX.py',
+	'BaseMATRIX.py'
 ])
 
 python.install_sources(

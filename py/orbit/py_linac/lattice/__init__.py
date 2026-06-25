@@ -13,6 +13,8 @@ from orbit.py_linac.lattice.LinacAccNodes import MarkerLinacNode, Drift, Quad, A
 from orbit.py_linac.lattice.LinacAccNodes import Solenoid
 from orbit.py_linac.lattice.LinacAccNodes import DCorrectorH, DCorrectorV
 from orbit.py_linac.lattice.LinacAccNodes import ThickKick
+from orbit.py_linac.lattice.LinacAccNodes import TiltElement
+from orbit.py_linac.lattice.LinacAccNodes import FringeField
 
 from orbit.py_linac.lattice.LinacRfGapNodes import BaseRF_Gap, AxisFieldRF_Gap, RF_AxisFieldsStore
 
@@ -38,9 +40,6 @@ from orbit.py_linac.lattice.LinacTransportMatrixGenNodes import LinacTrMatrixGen
 from orbit.py_linac.lattice.LinacTransportMatrixGenNodes import LinacTrMatricesController
 
 from orbit.py_linac.lattice.LinacDiagnosticsNodes import LinacBPM
-from orbit.py_linac.lattice.LinacAccNodes import TiltElement
-from orbit.py_linac.lattice.LinacAccNodes import FringeField
-
 
 __all__ = []
 __all__.append("LinacAccLattice")
@@ -59,14 +58,12 @@ __all__.append("ThickKick")
 __all__.append("Bend")
 __all__.append("Solenoid")
 
-
 __all__.append("LinacApertureNode")
 __all__.append("CircleLinacApertureNode")
 __all__.append("EllipseLinacApertureNode")
 __all__.append("RectangleLinacApertureNode")
 __all__.append("LinacPhaseApertureNode")
 __all__.append("LinacEnergyApertureNode")
-
 
 __all__.append("RF_Cavity")
 __all__.append("Sequence")
@@ -94,5 +91,6 @@ __all__.append("LinacTrMatrixGenNode")
 __all__.append("LinacTrMatricesController")
 
 __all__.append("LinacBPM")
-__all__.append("TiltElement")
+
 __all__.append("FringeField")
+__all__.append("TiltElement")
