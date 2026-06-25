@@ -320,13 +320,13 @@ def test_rf_gap_matrix(
     frequency: float = 402.5e06,
     E0TL: float = 0.001,
     phase: float = 0.0,
-):
-    # Just tests matrix against MatrixRFGap. Node not implemented yet.
-
+    charge: float = -1.0,
+) -> None:
     cov_matrix = make_default_cov_matrix()
 
     bunch_in = Bunch()
     bunch_in.mass(mass_proton)
+    bunch_in.charge(charge)
     bunch_in.getSyncParticle().kinEnergy(kin_energy)
 
     coords_in = np.random.multivariate_normal(np.zeros(6), cov_matrix, size=10)
@@ -351,6 +351,7 @@ def test_rf_gap_matrix(
         E0TL=E0TL,
         phase=phase,
         sync_part=bunch_out_2.getSyncParticle(),
+        charge=bunch_in.charge(),
     )
     coords_in = np.column_stack([coords_in, np.ones(coords_in.shape[0])])
     coords_out_2 = np.matmul(coords_in, matrix.T)
