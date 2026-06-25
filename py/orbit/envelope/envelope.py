@@ -333,12 +333,11 @@ class Envelope:
         rms_arr = np.sqrt(np.diag(self.cov_matrix))
         return rms_arr[axis]
 
-    def transform(self, matrix: np.ndarray | None) -> None:
-        if matrix is not None:
-            m = matrix[:-1, :-1]
-            u = matrix[:-1, -1]
-            self.cov_matrix = m @ self.cov_matrix @ m.T
-            self.centroid = np.matmul(m, self.centroid) + u
+    def transform(self, matrix: np.ndarray) -> None:
+        m = matrix[:-1, :-1]
+        u = matrix[:-1, -1]
+        self.cov_matrix = m @ self.cov_matrix @ m.T
+        self.centroid = np.matmul(m, self.centroid) + u
 
     def sample(self, size: int, dist: str = "kv") -> np.ndarray:
         particles = gen_dist(size=size, cov_matrix=self.cov_matrix, name=dist)
@@ -477,33 +476,37 @@ class EnvelopeTracker:
         for node_index, node in enumerate(self.lattice.getNodes()):
             for child_node in node.getChildNodes(ENTRANCE):
                 matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
-                envelope.transform(matrix)
+                if matrix is not None:
+                    envelope.transform(matrix)
 
             for part_index in range(node.getnParts()):
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
                     matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
-                    envelope.transform(matrix)
-
-                if self.space_charge:
-                    length = node.getLength(part_index)
-                    if self.space_charge == "2d":
-                        matrix = envelope.sc_matrix_2d(length)
-                    elif self.space_charge == "3d":
-                        matrix = envelope.sc_matrix_3d(length)
-                    else:
-                        raise ValueError(f"Invalid space charge model: {self.space_charge}")
-                    envelope.transform(matrix)
+                    if matrix is not None:
+                        envelope.transform(matrix)
 
                 matrix = track_sync_part(node, sync_part=sync_part, charge=charge, index=part_index)
-                envelope.transform(matrix)
+                if matrix is not None:
+                    if self.space_charge:
+                        length = node.getLength(part_index)
+                        if self.space_charge == "2d":
+                            matrix_sc = envelope.sc_matrix_2d(length)
+                        elif self.space_charge == "3d":
+                            matrix_sc = envelope.sc_matrix_3d(length)
+                        else:
+                            raise ValueError(f"Invalid space charge model: {self.space_charge}")
+                        matrix = matrix @ matrix_sc
+                    envelope.transform(matrix)
 
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
                     matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
-                    envelope.transform(matrix)
+                    if matrix is not None:
+                        envelope.transform(matrix)
 
             for child_node in node.getChildNodes(EXIT):
                 matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
-                envelope.transform(matrix)
+                if matrix is not None:
+                    envelope.transform(matrix)
 
 
     def track_history(self, envelope: Envelope) -> dict[str, list]:
@@ -528,25 +531,27 @@ class EnvelopeTracker:
         for node_index, node in enumerate(self.lattice.getNodes()):
             for child_node in node.getChildNodes(ENTRANCE):
                 matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
-                envelope.transform(matrix)
+                if matrix is not None:
+                    envelope.transform(matrix)
 
             for part_index in range(node.getnParts()):
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
                     matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
-                    envelope.transform(matrix)
-
-                if self.space_charge:
-                    length = node.getLength(part_index)
-                    if self.space_charge == "2d":
-                        matrix = envelope.sc_matrix_2d(length)
-                    elif self.space_charge == "3d":
-                        matrix = envelope.sc_matrix_3d(length)
-                    else:
-                        raise ValueError(f"Invalid space charge model: {self.space_charge}")
-                    envelope.transform(matrix)
+                    if matrix is not None:
+                        envelope.transform(matrix)
 
                 matrix = track_sync_part(node, sync_part=sync_part, charge=charge, index=part_index)
-                envelope.transform(matrix)
+                if matrix is not None:
+                    if self.space_charge:
+                        length = node.getLength(part_index)
+                        if self.space_charge == "2d":
+                            matrix_sc = envelope.sc_matrix_2d(length)
+                        elif self.space_charge == "3d":
+                            matrix_sc = envelope.sc_matrix_3d(length)
+                        else:
+                            raise ValueError(f"Invalid space charge model: {self.space_charge}")
+                        matrix = matrix @ matrix_sc
+                    envelope.transform(matrix)
 
                 position_start, position_stop = node_positions[node]
                 position = position_start + node.getLength(part_index) * (part_index + 1)
@@ -559,10 +564,12 @@ class EnvelopeTracker:
 
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
                     matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
-                    envelope.transform(matrix)
+                    if matrix is not None:
+                        envelope.transform(matrix)
 
             for child_node in node.getChildNodes(EXIT):
                 matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
-                envelope.transform(matrix)
+                if matrix is not None:
+                    envelope.transform(matrix)
 
         return history
