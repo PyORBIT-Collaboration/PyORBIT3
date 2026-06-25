@@ -1,4 +1,5 @@
 import math
+import warnings
 
 import numpy as np
 import scipy.constants
@@ -62,12 +63,12 @@ AFTER = AccNode.AFTER
 IGNORE_NODE_TYPES = [
     NodeTEAPOT,
     MonitorTEAPOT,
+    FringeFieldTEAPOT,
     ApertureTEAPOT,
     BunchWrapTEAPOT,
-    FringeFieldTEAPOT,
+    TurnCounterTEAPOT,
     MarkerLINAC,
     FringeFieldLINAC,
-    TurnCounterTEAPOT,
 ]
 
 
@@ -457,6 +458,17 @@ class EnvelopeTracker:
     def __init__(self, lattice: AccLattice, space_charge: str | None = None) -> None:
         self.lattice = lattice
         self.space_charge = space_charge
+
+        for node in self.lattice.getNodes():
+            if type(node) in (BendTEAPOT, BendLINAC):
+                if node.getParam("ea1") != 0.0 or node.getParam("ea2") != 0.0:
+                    message = f"Found bend ea1 or ea2 != 0.0 ({node.getName()}.)"
+                    message += " Nonzero edge angles are not yet supported in envelope tracking."
+                    message += " Setting ea1 and ea2 to 0.0."
+                    warnings.warn(message)
+
+                    node.setParam("ea1", 0.0)
+                    node.setParam("ea2", 0.0)
 
     def track(self, envelope: Envelope) -> None:
         sync_part = envelope.sync_part
