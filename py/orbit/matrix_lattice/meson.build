@@ -5,7 +5,6 @@ py_sources = files([
     'MATRIX_Lattice.py',
 	'__init__.py',
 	'BaseMATRIX.py',
-	'analytic.py'
 ])
 
 python.install_sources(

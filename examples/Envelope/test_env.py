@@ -45,13 +45,16 @@ def make_lattice(nodes: list[AccNode]) -> AccLattice:
     lattice = TEAPOT_Lattice()
     for node in nodes:
         lattice.addNode(node)
+
     lattice.initialize()
+
     for node in lattice.getNodes():
         try:
             node.setUsageFringeFieldIN(False)
             node.setUsageFringeFieldOUT(False)
         except:
             pass
+
     return lattice
 
 
@@ -341,16 +344,16 @@ def test_rf_gap_matrix(
 
     coords_out_1 = collect_bunch(bunch_out_1)["coords"]
 
-    from orbit.matrix_lattice.analytic import rf_gap_matrix
+    from orbit.envelope.matrix import track_sync_part_rf_gap
 
     bunch_out_2 = Bunch()
     bunch_in.copyBunchTo(bunch_out_2)
 
-    matrix = rf_gap_matrix(
+    matrix = track_sync_part_rf_gap(
+        sync_part=bunch_in.getSyncParticle(),
         frequency=frequency,
         E0TL=E0TL,
         phase=phase,
-        sync_part=bunch_out_2.getSyncParticle(),
         charge=bunch_in.charge(),
     )
     coords_in = np.column_stack([coords_in, np.ones(coords_in.shape[0])])

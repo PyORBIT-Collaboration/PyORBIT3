@@ -8,8 +8,46 @@ from orbit.core.bunch import Bunch
 from orbit.core.bunch import SyncParticle
 from orbit.lattice import AccNode
 from orbit.lattice import AccLattice
-from orbit.matrix_lattice.analytic import convert_matrix_zp_to_dE
 
+from orbit.teapot import ApertureTEAPOT
+from orbit.teapot import DriftTEAPOT
+from orbit.teapot import BendTEAPOT
+from orbit.teapot import KickTEAPOT
+from orbit.teapot import MonitorTEAPOT
+from orbit.teapot import MultipoleTEAPOT
+from orbit.teapot import NodeTEAPOT
+from orbit.teapot import QuadTEAPOT
+from orbit.teapot import SolenoidTEAPOT
+from orbit.teapot import FringeFieldTEAPOT
+from orbit.teapot import BunchWrapTEAPOT
+from orbit.teapot import TiltTEAPOT
+from orbit.teapot import ContinuousLinearFocusingTEAPOT
+from orbit.teapot import TurnCounterTEAPOT
+
+from orbit.py_linac.lattice import MarkerLinacNode as MarkerLINAC
+from orbit.py_linac.lattice import Drift as DriftLINAC
+from orbit.py_linac.lattice import Quad as QuadLINAC
+from orbit.py_linac.lattice import Bend as BendLINAC
+from orbit.py_linac.lattice import DCorrectorH as DCorrectorHLINAC
+from orbit.py_linac.lattice import DCorrectorV as DCorrectorVLINAC
+from orbit.py_linac.lattice import Solenoid as SolenoidLINAC
+from orbit.py_linac.lattice import TiltElement as TiltLINAC
+from orbit.py_linac.lattice import FringeField as FringeFieldLINAC
+from orbit.py_linac.lattice import BaseRF_Gap as BaseRF_Gap
+from orbit.py_linac.lattice import LinacApertureNode as ApertureLINAC
+
+from .matrix import get_dp_p_coeff
+from .matrix import get_zp_coeff
+from .matrix import convert_matrix_dp_p_to_dE
+from .matrix import convert_matrix_zp_to_dE
+from .matrix import track_sync_part_tilt
+from .matrix import track_sync_part_kick
+from .matrix import track_sync_part_drift
+from .matrix import track_sync_part_quad
+from .matrix import track_sync_part_bend
+from .matrix import track_sync_part_solenoid
+from .matrix import track_sync_part_rf_gap
+from .matrix import track_sync_part_cf
 from .utils import gen_dist
 from .utils import proj_cov_matrix
 
@@ -21,6 +59,17 @@ EXIT = AccNode.EXIT
 BEFORE = AccNode.BEFORE
 AFTER = AccNode.AFTER
 
+IGNORE_NODE_TYPES = [
+    NodeTEAPOT,
+    MonitorTEAPOT,
+    ApertureTEAPOT,
+    BunchWrapTEAPOT,
+    FringeFieldTEAPOT,
+    MarkerLINAC,
+    FringeFieldLINAC,
+    TurnCounterTEAPOT,
+]
+
 
 def build_diag_matrix_from_xyz_eig(eigenvectors: np.ndarray) -> np.ndarray:
     A = np.eye(7)
@@ -30,6 +79,160 @@ def build_diag_matrix_from_xyz_eig(eigenvectors: np.ndarray) -> np.ndarray:
             col = j * 2
             A[row, col] = A[row + 1, col + 1] = eigenvectors[i, j]
     return A
+
+
+def track_sync_part(node: AccNode, sync_part: SyncParticle, charge: float, index: int = -1) -> np.ndarray:
+    node_type = type(node)
+    if node_type in IGNORE_NODE_TYPES:
+        return None
+
+    length = node.getLength(index)
+    nparts = node.getnParts()
+
+    if node_type is DriftTEAPOT:
+        if length <= 0:
+            return None
+        return track_sync_part_drift(sync_part=sync_part, length=length)
+
+    elif node_type is SolenoidTEAPOT:
+        if length <= 0:
+            return None
+        B = node.getParam("B")
+        if node.waveform:
+            B *= self.waveform.getStrength()
+        return track_sync_part_solenoid(sync_part=sync_part, length=length, B=B, charge=charge)
+
+    elif node_type is MultipoleTEAPOT:
+        if length <= 0:
+            return None
+        if np.all(np.abs(node.getParam("kls")) == 0):
+            return track_sync_part_drift(sync_part=sync_part, length=length)
+
+    elif node_type is QuadTEAPOT:
+        if length <= 0:
+            return None
+        kq = node.getParam("kq")
+        if node.waveform:
+            kq *= node.waveform.getStrength()
+        return track_sync_part_quad(sync_part=sync_part, length=length, kq=kq, charge=charge)
+
+    elif node_type is BendTEAPOT:
+        if length <= 0:
+            return None
+        theta = node.getParam("theta") / nparts
+        return track_sync_part_bend(sync_part=sync_part, length=length, theta=theta, charge=charge)
+
+    elif node_type is KickTEAPOT:
+        scale = 1.0
+        if node.waveform is not None:
+            scale = node.waveform.getStrength()
+
+        kx = scale * node.getParam("kx") / nparts
+        ky = scale * node.getParam("ky") / nparts
+        kE = node.getParam("dE") / nparts
+
+        if abs(kx) > 0 or abs(ky) > 0 or abs(kE) > 0:
+            return np.matmul(
+                track_sync_part_kick(sync_part=sync_part, kx=kx, ky=ky, kE=kE),
+                track_sync_part_drift(sync_part=sync_part, length=length)
+            )
+        else:
+            return track_sync_part_drift(sync_part=sync_part, length=length)
+
+    elif node_type is TiltTEAPOT:
+        angle = node.getTiltAngle()
+        if angle == 0:
+            return None
+        return track_sync_part_tilt(sync_part=sync_part, angle=angle)
+
+    elif node_type is ContinuousLinearFocusingTEAPOT:
+        if length <= 0:
+            return None
+        kq = node.getParam("kq")
+        if node.waveform:
+            kq *= node.waveform.getStrength()
+        return track_sync_part_cf(sync_part=sync_part, length=length, kq=kq)
+
+    elif node_type is DriftLINAC:
+        if length <= 0:
+            return None
+        return track_sync_part_drift(sync_part=sync_part, length=length)
+
+    elif node_type is QuadLINAC:
+        if length <= 0:
+            return None
+        brho = 3.335640952 * sync_part.momentum() / charge
+        kq = node.getParam("dB/dr") / brho
+        return track_sync_part_quad(sync_part=sync_part, length=length, kq=kq, charge=charge)
+
+    elif node_type is BendLINAC:
+        if length <= 0:
+            return None
+        theta = node.getParam("theta") / nparts
+        return track_sync_part_bend(sync_part=sync_part, length=length, theta=theta, charge=charge)
+
+    elif node_type is DCorrectorHLINAC:
+        length = node.getParam("effLength") / nparts
+        field = node.getParam("B")
+        delta_xp = -field * charge * length * 0.299792 / sync_part.momentum()
+        if delta_xp == 0:
+            return None
+        return track_sync_part_kick(sync_part=sync_part, kx=delta_xp, ky=0.0, kE=0.0)
+
+    elif node_type is DCorrectorVLINAC:
+        length = node.getParam("effLength") / nparts
+        field = node.getParam("B")
+        delta_yp = -field * charge * length * 0.299792 / sync_part.momentum()
+        if delta_yp == 0:
+            return None
+        return track_sync_part_kick(sync_part=sync_part, kx=0.0, ky=delta_yp, kE=0.0)
+
+    elif node_type is SolenoidLINAC:
+        if length <= 0:
+            return None
+        B = node.getParam("B")
+        return track_sync_part_solenoid(sync_part=sync_part, length=length, B=B, charge=charge)
+
+    elif node_type is TiltLINAC:
+        angle = node.getTiltAngle()
+        if angle == 0:
+            return None
+        return track_sync_part_tilt(sync_part=sync_part, angle=angle)
+
+    elif node_type is BaseRF_Gap:
+        E0TL = node.getParam("E0TL")
+        mode_phase = node.getParam("mode") * math.pi
+
+        cavity = node.getRF_Cavity()
+        frequency = cavity.getFrequency()
+        phase = cavity.getPhase() + mode_phase
+        amplitude = cavity.getAmp()
+
+        arrival_time = sync_part.time()
+        arrival_time_design = cavity.getDesignArrivalTime()
+
+        if node.isFirstRFGap():
+            if cavity.isDesignSetUp():
+                phase = math.fmod(frequency * (arrival_time - arrival_time_design) * 2.0 * math.pi + phase, 2.0 * math.pi)
+            else:
+                orbitFinalize("Run `trackDesign` first to initialize cavity phases.")
+        else:
+            phase = math.fmod(frequency * (arrival_time - arrival_time_design) * 2.0 * math.pi + phase,2.0 * math.pi)
+
+        node.setGapPhase(phase)
+
+        if amplitude == 0.0:
+            return None
+
+        return track_sync_part_rf_gap(
+            sync_part=sync_part,
+            frequency=frequency,
+            E0TL=(E0TL * amplitude),
+            phase=phase,
+            charge=charge,
+        )
+
+    raise NotImplementedError(str(node))
 
 
 class Envelope:
@@ -238,15 +441,17 @@ class EnvelopeTracker:
         self.space_charge = space_charge
 
     def track(self, envelope: Envelope) -> None:
+        sync_part = envelope.sync_part
         charge = envelope.charge()
+
         for node_index, node in enumerate(self.lattice.getNodes()):
             for child_node in node.getChildNodes(ENTRANCE):
-                matrix = child_node.matrix(sync_part=envelope.sync_part, charge=charge)
+                matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
                 envelope.transform(matrix)
 
             for part_index in range(node.getnParts()):
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
-                    matrix = child_node.matrix(sync_part=envelope.sync_part, charge=charge)
+                    matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
                     envelope.transform(matrix)
 
                 if self.space_charge:
@@ -259,16 +464,17 @@ class EnvelopeTracker:
                         raise ValueError(f"Invalid space charge model: {self.space_charge}")
                     envelope.transform(matrix)
 
-                matrix = node.matrix(sync_part=envelope.sync_part, charge=charge, index=part_index)
+                matrix = track_sync_part(node, sync_part=sync_part, charge=charge, index=part_index)
                 envelope.transform(matrix)
 
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
-                    matrix = child_node.matrix(sync_part=envelope.sync_part, charge=charge)
+                    matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
                     envelope.transform(matrix)
 
             for child_node in node.getChildNodes(EXIT):
-                matrix = child_node.matrix(sync_part=envelope.sync_part, charge=charge)
+                matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
                 envelope.transform(matrix)
+
 
     def track_history(self, envelope: Envelope) -> dict[str, list]:
         history = {}
@@ -278,6 +484,7 @@ class EnvelopeTracker:
         history["rms_z"] = []
         history["kin_energy"] = []
 
+        sync_part = envelope.sync_part
         charge = envelope.charge()
         node_positions = self.lattice.getNodePositionsDict()
 
@@ -289,12 +496,12 @@ class EnvelopeTracker:
 
         for node_index, node in enumerate(self.lattice.getNodes()):
             for child_node in node.getChildNodes(ENTRANCE):
-                matrix = child_node.matrix(sync_part=envelope.sync_part, charge=charge)
+                matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
                 envelope.transform(matrix)
 
             for part_index in range(node.getnParts()):
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
-                    matrix = child_node.matrix(sync_part=envelope.sync_part, charge=charge)
+                    matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
                     envelope.transform(matrix)
 
                 if self.space_charge:
@@ -307,7 +514,7 @@ class EnvelopeTracker:
                         raise ValueError(f"Invalid space charge model: {self.space_charge}")
                     envelope.transform(matrix)
 
-                matrix = node.matrix(sync_part=envelope.sync_part, charge=charge, index=part_index)
+                matrix = track_sync_part(node, sync_part=sync_part, charge=charge, index=part_index)
                 envelope.transform(matrix)
 
                 position_start, position_stop = node_positions[node]
@@ -320,11 +527,11 @@ class EnvelopeTracker:
                 history["kin_energy"].append(envelope.sync_part.kinEnergy())
 
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
-                    matrix = child_node.matrix(sync_part=envelope.sync_part, charge=charge)
+                    matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
                     envelope.transform(matrix)
 
             for child_node in node.getChildNodes(EXIT):
-                matrix = child_node.matrix(sync_part=envelope.sync_part, charge=charge)
+                matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
                 envelope.transform(matrix)
 
         return history

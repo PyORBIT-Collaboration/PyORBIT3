@@ -1,7 +1,3 @@
-"""Functions to compute transfer matrices.
-
-These functions track the synchronous particle!
-"""
 import math
 
 import numpy as np
@@ -52,7 +48,27 @@ def convert_matrix_zp_to_dE(matrix: np.ndarray, sync_part: SyncParticle) -> np.n
     return matrix
 
 
-def drift_matrix(length: float, sync_part: SyncParticle) -> np.ndarray:
+def track_sync_part_tilt(sync_part: SyncParticle, angle: float) -> np.ndarray:
+    cos_phi = math.cos(angle)
+    sin_phi = math.sin(angle)
+
+    M = np.identity(7)
+    M[0, 0] = M[1, 1] = +cos_phi
+    M[0, 2] = M[1, 3] = -sin_phi
+    M[2, 0] = M[3, 1] = +sin_phi
+    M[2, 2] = M[3, 3] = +cos_phi
+    return M
+
+
+def track_sync_part_kick(sync_part: SyncParticle, kx: float = 0.0, ky: float = 0.0, kE: float = 0.0) -> np.ndarray:
+    M = np.identity(7)
+    M[1, -1] = kx
+    M[3, -1] = ky
+    M[5, -1] = kE
+    return M
+
+
+def track_sync_part_drift(sync_part: SyncParticle, length: float) -> np.ndarray:
     M = np.identity(7)
     M[0, 1] = length
     M[2, 3] = length
@@ -63,9 +79,9 @@ def drift_matrix(length: float, sync_part: SyncParticle) -> np.ndarray:
     return M
 
 
-def quad_matrix(length: float, kq: float, sync_part: SyncParticle, charge: float) -> np.ndarray:
+def track_sync_part_quad(sync_part: SyncParticle, length: float, kq: float, charge: float) -> np.ndarray:
     if abs(kq) == 0 or charge == 0:
-        return drift_matrix(length=length, sync_part=sync_part)
+        return track_sync_part_drift(sync_part=sync_part, length=length)
 
     sqrt_abs_kq = math.sqrt(abs(kq))
 
@@ -104,7 +120,7 @@ def quad_matrix(length: float, kq: float, sync_part: SyncParticle, charge: float
     return M
 
 
-def bend_matrix(length: float, theta: float, sync_part: SyncParticle, charge: float) -> np.ndarray:
+def track_sync_part_bend(sync_part: SyncParticle, length: float, theta: float, charge: float) -> np.ndarray:
     if length <= 0:
         return np.identity(7)
 
@@ -129,34 +145,9 @@ def bend_matrix(length: float, theta: float, sync_part: SyncParticle, charge: fl
     return M
 
 
-def tilt_matrix(angle: float) -> np.ndarray:
-    M = np.identity(7)
-    M[0, 0] = M[1, 1] = +math.cos(angle)
-    M[0, 2] = M[1, 3] = -math.sin(angle)
-    M[2, 0] = M[3, 1] = +math.sin(angle)
-    M[2, 2] = M[3, 3] = +math.cos(angle)
-    return M
-
-
-def translation_matrix(x: float = 0.0, y: float = 0.0, z: float = 0.0) -> np.ndarray:
-    M = np.identity(7)
-    M[0, -1] = x
-    M[2, -1] = y
-    M[4, -1] = z
-    return M
-
-
-def kick_matrix(kx: float = 0.0, ky: float = 0.0, kE: float = 0.0) -> np.ndarray:
-    M = np.identity(7)
-    M[1, -1] = kx
-    M[3, -1] = ky
-    M[5, -1] = kE
-    return M
-
-
-def solenoid_matrix(length: float, B: float, sync_part: SyncParticle, charge: float) -> np.ndarray:
+def track_sync_part_solenoid(sync_part: SyncParticle, length: float, B: float, charge: float) -> np.ndarray:
     if B == 0:
-        return drift_matrix(length=length, sync_part=sync_part)
+        return track_sync_part_drift(sync_part=sync_part, length=length)
 
     phase = B * length
 
@@ -180,25 +171,18 @@ def solenoid_matrix(length: float, B: float, sync_part: SyncParticle, charge: fl
     M[3, 3] = math.cos(phase)
     M[4, 5] = length / (sync_part.gamma()**2)
 
-    M = np.linalg.multi_dot([np.linalg.inv(V), M, V])
+    M = np.linalg.inv(V) @ M @ V
     M[4, 5] *= get_dp_p_coeff(sync_part)  # convert_matrix_dp_p_to_dE(M, sync_part)
 
     sync_part.time(sync_part.time() + length / (sync_part.beta() * speed_of_light))
     return M
 
 
-def cf_matrix(length: float, kq: float, sync_part: SyncParticle) -> np.ndarray:
+def track_sync_part_cf(sync_part: SyncParticle, length: float, kq: float) -> np.ndarray:
     raise NotImplementedError()
 
 
-def rf_gap_matrix(frequency: float, E0TL: float, phase: float, sync_part: SyncParticle, charge: float) -> np.ndarray:
-    """Matrix for thin RF gap.
-
-    Args:
-        frequency: RF frequency [Hz]
-        E0TL: maximum energy gain in the gap [GeV].
-        phase: RF phase [rad]
-    """
+def track_sync_part_rf_gap(sync_part: SyncParticle, frequency: float, E0TL: float, phase: float, charge: float) -> np.ndarray:
     gamma = sync_part.gamma()
     beta = sync_part.beta()
     mass = sync_part.mass()
