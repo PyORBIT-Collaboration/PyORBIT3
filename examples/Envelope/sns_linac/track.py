@@ -1,5 +1,6 @@
 import argparse
 import math
+import os
 import random
 import time
 
@@ -28,8 +29,11 @@ from orbit.py_linac.lattice import LinacAccLattice
 from orbit.space_charge.sc3d import setSC3DAccNodes
 from orbit.space_charge.sc3d import setUniformEllipsesSCAccNodes
 from orbit.utils.consts import mass_proton
+from orbit.utils.consts import mass_electron
 from orbit.utils.consts import charge_electron
-from orbit.utils.consts import speed_of_light
+
+# local
+from diagnostics import BunchMonitor
 
 plt.style.use("style.mplstyle")
 
@@ -38,16 +42,41 @@ plt.style.use("style.mplstyle")
 # --------------------------------------------------------------------------------
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--seq", type=str, default="MEBT")
+parser.add_argument(
+    "--seq",
+    type=str,
+    default=None,
+    choices=[
+        "MEBT",
+        "DTL1",
+        "DTL2",
+        "DTL3",
+        "DTL4",
+        "DTL5",
+        "DTL6",
+        "CCL1",
+        "CCL2",
+        "CCL3",
+        "CCL4",
+        "SCLMed",
+        "SCLHigh",
+        "HEBT1",
+        "HEBT2",
+    ],
+)
 parser.add_argument("--sc", type=int, default=0)
 parser.add_argument("--sc-model", type=str, default="ellipsoid")
 parser.add_argument("--nparts", type=int, default=10_000)
 parser.add_argument("--current", type=float, default=0.038)
+parser.add_argument("--sc-path-length-min", type=float, default=0.01)
 args = parser.parse_args()
 
 
 # Setup
 # --------------------------------------------------------------------------------
+
+output_dir = "outputs"
+os.makedirs(output_dir, exist_ok=True)
 
 random.seed(100)
 
@@ -56,16 +85,19 @@ random.seed(100)
 # --------------------------------------------------------------------------------
 
 kin_energy = 0.0025  # [GeV]
-mass = mass_proton
-frequency = 402.5e+06
+mass = mass_proton + 2.0 * mass_electron
+frequency = 402.5e06
 charge = -1.0
 intensity = args.current / frequency / (math.fabs(charge) * charge_electron)
 
 bunch = Bunch()
 bunch.mass(mass)
-bunch.getSyncParticle().kinEnergy(kin_energy)
 bunch.macroSize(intensity / args.nparts)
 bunch.charge(charge)
+
+sync_part = bunch.getSyncParticle()
+sync_part.kinEnergy(kin_energy)
+sync_part.time(0.0)
 
 alpha_x, beta_x, eps_x = (-1.962, 0.183, 2.874e-06)
 alpha_y, beta_y, eps_y = (+1.768, 0.162, 2.874e-06)
@@ -136,9 +168,9 @@ for i in range(6):
     for j in range(6):
         cov_matrix[i, j] = cov_matrix[j, i] = twiss_calc.getCorrelation(i, j)
 
-envelope = Envelope(bunch=bunch, cov_matrix=cov_matrix)
+envelope = Envelope(bunch=bunch, cov_matrix=cov_matrix, intensity=intensity)
 
-envelope_tracker = EnvelopeTracker(lattice, space_charge=None)
+envelope_tracker = EnvelopeTracker(lattice, space_charge=("3d" if args.sc else None))
 
 histories = {}
 histories["envelope"] = envelope_tracker.track_history(envelope)
@@ -147,10 +179,8 @@ histories["envelope"] = envelope_tracker.track_history(envelope)
 # Track bunch
 # --------------------------------------------------------------------------------
 
-lattice.trackDesignBunch(bunch)
-
 if args.sc:
-    sc_path_length_min = 0.01
+    sc_path_length_min = args.sc_path_length_min
     if args.sc_model == "ellipsoid":
         n_ellipsoids = 1
         sc_calc = SpaceChargeCalcUnifEllipse(n_ellipsoids)
@@ -158,54 +188,6 @@ if args.sc:
     if args.sc_model == "3d":
         sc_calc = SpaceChargeCalc3D(64, 64, 64)
         sc_nodes = setSC3DAccNodes(lattice, sc_path_length_min, sc_calc)
-
-
-class BunchMonitor:
-    def __init__(self) -> None:
-        self.twiss_calc = BunchTwissAnalysis()
-        self.position_start = 0.0
-
-        self.history = {}
-        self.history["position"] = []
-        self.history["rms_x"] = []
-        self.history["rms_y"] = []
-        self.history["rms_z"] = []
-
-    def __call__(self, params_dict: dict) -> None:
-        bunch = params_dict["bunch"]
-        node = params_dict["node"]
-        position = params_dict["path_length"]
-
-        if params_dict["old_pos"] == position:
-            return
-        if params_dict["old_pos"] + params_dict["pos_step"] > position:
-            return
-        params_dict["old_pos"] = position
-        params_dict["count"] += 1
-
-        self.twiss_calc.analyzeBunch(bunch)
-
-        cov_matrix = np.zeros((6, 6))
-        for i in range(6):
-            for j in range(6):
-                cov_matrix[i, j] = cov_matrix[j, i] = self.twiss_calc.getCorrelation(i, j)
-
-        xrms = 1000.0 * np.sqrt(cov_matrix[0, 0])
-        yrms = 1000.0 * np.sqrt(cov_matrix[2, 2])
-        zrms = 1000.0 * np.sqrt(cov_matrix[4, 4])
-
-        message = ""
-        message += " s={:0.3f}".format(position + self.position_start)
-        message += " xrms={:0.3f}".format(xrms)
-        message += " yrms={:0.3f}".format(yrms)
-        message += " zrms={:0.3f}".format(zrms)
-        message += " node={}".format(node.getName())
-        print(message)
-
-        self.history["position"].append(position + self.position_start)
-        self.history["rms_x"].append(xrms)
-        self.history["rms_y"].append(yrms)
-        self.history["rms_z"].append(zrms)
 
 
 monitor = BunchMonitor()
@@ -225,31 +207,36 @@ histories["bunch"] = monitor.history
 # --------------------------------------------------------------------------------
 
 
-# History
+# History: rms
 for mode in histories:
     for key in histories[mode]:
         histories[mode][key] = np.array(histories[mode][key])
 
-fig, axs = plt.subplots(nrows=3, figsize=(5, 7), sharex=True, constrained_layout=True)
-for i, mode in enumerate(["bunch", "envelope"]):
-    history = histories[mode]
-    color = ["black", "red"][i]
-    ls = ["-", "--"][i]
-    for ax, key in zip(axs, ["rms_x", "rms_y", "rms_z"]):
-        ax.plot(history["position"], history[key], color=color, ls=ls, label=mode)
+plot_kws = {}
+plot_kws["bunch"] = {"color": "black", "ls": "-"}
+plot_kws["envelope"] = {"color": "red", "ls": "--"}
 
+fig, axs = plt.subplots(nrows=3, figsize=(5, 7), sharex=True, constrained_layout=True)
+for mode in ["bunch", "envelope"]:
+    history = histories[mode]
+    for ax, key in zip(axs, ["rms_x", "rms_y", "rms_z"]):
+        ax.plot(history["position"], history[key], **plot_kws[mode], label=mode)
 for ax in axs:
     ax.legend(loc="lower right")
 axs[0].set_ylabel("x rms [mm]")
 axs[1].set_ylabel("y rms [mm]")
 axs[2].set_ylabel("z rms [mm]")
 axs[2].set_xlabel("s [m]")
-plt.show()
+plt.savefig(os.path.join(output_dir, "fig_history_rms.png"))
+plt.close()
 
-
-# Final coordinates
-bunch_coords = collect_bunch(bunch)["coords"]
-bunch_cov_matrix = np.cov(bunch_coords.T)
-
-print(np.round(1000.0 * np.sqrt(np.diag(bunch_cov_matrix)), 2))
-print(np.round(1000.0 * np.sqrt(np.diag(envelope.cov_matrix)), 2))
+# History: energy
+fig, ax = plt.subplots(figsize=(5, 3))
+for mode in ["bunch", "envelope"]:
+    history = histories[mode]
+    ax.plot(history["position"], history["kin_energy"], **plot_kws[mode], label=mode)
+ax.legend(loc="lower right")
+ax.set_ylabel("energy [GeV]")
+ax.set_xlabel("s [m]")
+plt.savefig(os.path.join(output_dir, "fig_history_energy.png"))
+plt.close()
