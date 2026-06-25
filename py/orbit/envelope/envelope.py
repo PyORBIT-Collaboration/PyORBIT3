@@ -270,6 +270,7 @@ class EnvelopeTracker:
         history["rms_x"] = []
         history["rms_y"] = []
         history["rms_z"] = []
+        history["kin_energy"] = []
 
         charge = envelope.charge()
         node_positions = self.lattice.getNodePositionsDict()
@@ -278,7 +279,8 @@ class EnvelopeTracker:
         history["rms_x"].append(1000.0 * envelope.rms(0))
         history["rms_y"].append(1000.0 * envelope.rms(2))
         history["rms_z"].append(1000.0 * envelope.rms(4))
-        
+        history["kin_energy"].append(envelope.sync_part.kinEnergy())
+
         for node_index, node in enumerate(self.lattice.getNodes()):
             for child_node in node.getChildNodes(ENTRANCE):
                 matrix = child_node.matrix(sync_part=envelope.sync_part, charge=charge)
@@ -309,6 +311,7 @@ class EnvelopeTracker:
                 history["rms_x"].append(1000.0 * envelope.rms(0))
                 history["rms_y"].append(1000.0 * envelope.rms(2))
                 history["rms_z"].append(1000.0 * envelope.rms(4))
+                history["kin_energy"].append(envelope.sync_part.kinEnergy())
 
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
                     matrix = child_node.matrix(sync_part=envelope.sync_part, charge=charge)
