@@ -69,6 +69,7 @@ parser.add_argument("--sc-model", type=str, default="ellipsoid")
 parser.add_argument("--nparts", type=int, default=10_000)
 parser.add_argument("--current", type=float, default=0.038)
 parser.add_argument("--sc-path-length-min", type=float, default=0.01)
+parser.add_argument("--show", type=int, default=0)
 args = parser.parse_args()
 
 
@@ -213,8 +214,17 @@ for mode in histories:
         histories[mode][key] = np.array(histories[mode][key])
 
 plot_kws = {}
-plot_kws["bunch"] = {"color": "black", "ls": "-"}
-plot_kws["envelope"] = {"color": "red", "ls": "--"}
+plot_kws["bunch"] = dict(
+    color="black",
+    ls="-",
+)
+plot_kws["envelope"] = dict(
+    color="red",
+    # ls="--",
+    lw=0,
+    marker=".",
+    ms=1,
+)
 
 fig, axs = plt.subplots(nrows=3, figsize=(5, 7), sharex=True, constrained_layout=True)
 for mode in ["bunch", "envelope"]:
@@ -228,6 +238,8 @@ axs[1].set_ylabel("y rms [mm]")
 axs[2].set_ylabel("z rms [mm]")
 axs[2].set_xlabel("s [m]")
 plt.savefig(os.path.join(output_dir, "fig_history_rms.png"))
+if args.show:
+    plt.show()
 plt.close()
 
 # History: energy
