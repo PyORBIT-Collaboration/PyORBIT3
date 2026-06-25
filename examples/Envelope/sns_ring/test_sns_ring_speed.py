@@ -3,6 +3,7 @@ import argparse
 import time
 import cProfile
 import pstats
+import sys
 
 import numpy as np
 from tqdm import trange
@@ -17,6 +18,7 @@ from orbit.teapot import TEAPOT_Ring
 from orbit.teapot import TEAPOT_MATRIX_Lattice
 from orbit.utils.consts import mass_proton
 
+sys.path.append("..")
 from utils import gen_dist
 
 

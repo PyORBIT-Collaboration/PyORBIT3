@@ -139,7 +139,7 @@ if args.seq:
 
 sns_linac_factory = SNS_LinacLatticeFactory()
 sns_linac_factory.setMaxDriftLength(args.sc_path_length_min)
-lattice = sns_linac_factory.getLinacAccLattice(sequence_names, "sns_linac.xml")
+lattice = sns_linac_factory.getLinacAccLattice(sequence_names, "inputs/sns_linac.xml")
 
 for node in lattice.getNodes():
     try:

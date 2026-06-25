@@ -6,6 +6,7 @@ import math
 import os
 import pathlib
 import time
+import sys
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,6 +24,7 @@ from orbit.teapot import TEAPOT_Ring
 from orbit.teapot import TEAPOT_MATRIX_Lattice
 from orbit.utils.consts import mass_proton
 
+sys.path.append("..")
 from plot import plot_rms_ellipse
 from plot import plot_corner
 from utils import gen_dist
