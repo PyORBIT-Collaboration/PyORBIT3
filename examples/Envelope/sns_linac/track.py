@@ -13,6 +13,8 @@ from orbit.core.spacecharge import SpaceChargeCalcUnifEllipse
 from orbit.core.spacecharge import SpaceChargeCalc3D
 from orbit.bunch_generators import TwissContainer
 from orbit.bunch_generators import WaterBagDist3D
+from orbit.bunch_generators import GaussDist3D
+from orbit.bunch_generators import KVDist3D
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
 from orbit.envelope import EnvelopeTracker
@@ -101,6 +103,13 @@ if args.seq:
 sns_linac_factory = SNS_LinacLatticeFactory()
 sns_linac_factory.setMaxDriftLength(0.01)
 lattice = sns_linac_factory.getLinacAccLattice(sequence_names, "sns_linac.xml")
+
+for node in lattice.getNodes():
+    try:
+        node.setUsageFringeFieldIN(False)
+        node.setUsageFringeFieldOUT(False)
+    except:
+        pass
 
 rf_gaps = lattice.getRF_Gaps()
 for rf_gap in rf_gaps:
