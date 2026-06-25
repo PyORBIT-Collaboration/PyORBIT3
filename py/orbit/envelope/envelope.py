@@ -1,6 +1,7 @@
 import math
 
 import numpy as np
+import scipy.constants
 import scipy.special
 
 from orbit.core.bunch import Bunch
@@ -19,8 +20,6 @@ EXIT = AccNode.EXIT
 
 BEFORE = AccNode.BEFORE
 AFTER = AccNode.AFTER
-
-CLASSICAL_PROTON_RADIUS = 1.534697049469832e-18  # [m]
 
 
 def build_diag_matrix_from_xyz_eig(eigenvectors: np.ndarray) -> np.ndarray:
@@ -66,8 +65,11 @@ class Envelope:
         #   - tracking bunch particles as test particles
         empty_bunch = Bunch()
         bunch.copyEmptyBunchTo(empty_bunch)
+
         self.bunch = empty_bunch
         self.sync_part = empty_bunch.getSyncParticle()
+
+        self.classical_radius = self.bunch.classicalRadius()
 
         self.centroid = centroid
         if self.centroid is None:
@@ -80,12 +82,16 @@ class Envelope:
         self.intensity = 0.0
         self.set_intensity(intensity)
 
+
     def set_intensity(self, intensity: float) -> None:
         self.intensity = intensity
-        self.sc_factor = (
+
+    @property
+    def sc_factor(self) -> float:
+        return (
             2.0
-            * intensity
-            * CLASSICAL_PROTON_RADIUS
+            * self.intensity
+            * self.classical_radius
             / (self.beta() ** 2 * self.gamma() ** 3)
         )
 
