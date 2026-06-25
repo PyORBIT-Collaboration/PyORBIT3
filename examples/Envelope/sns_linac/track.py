@@ -4,6 +4,8 @@ import random
 import time
 
 import numpy as np
+import matplotlib.pyplot as plt
+
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.bunch import SyncParticle
@@ -28,6 +30,8 @@ from orbit.space_charge.sc3d import setUniformEllipsesSCAccNodes
 from orbit.utils.consts import mass_proton
 from orbit.utils.consts import charge_electron
 from orbit.utils.consts import speed_of_light
+
+plt.style.use("style.mplstyle")
 
 
 # Parse arguments
@@ -117,7 +121,7 @@ for rf_gap in rf_gaps:
 
 for index, node in enumerate(lattice.getNodes()):
     print(index, type(node), node.getName())
-    
+
 lattice.trackDesignBunch(bunch)
 
 
@@ -135,7 +139,9 @@ for i in range(6):
 envelope = Envelope(bunch=bunch, cov_matrix=cov_matrix)
 
 envelope_tracker = EnvelopeTracker(lattice, space_charge=None)
-envelope_tracker.track(envelope)
+
+histories = {}
+histories["envelope"] = envelope_tracker.track_history(envelope)
 
 
 # Track bunch
@@ -153,49 +159,97 @@ if args.sc:
         sc_calc = SpaceChargeCalc3D(64, 64, 64)
         sc_nodes = setSC3DAccNodes(lattice, sc_path_length_min, sc_calc)
 
-lattice.trackDesignBunch(bunch)
+
+class BunchMonitor:
+    def __init__(self) -> None:
+        self.twiss_calc = BunchTwissAnalysis()
+        self.position_start = 0.0
+
+        self.history = {}
+        self.history["position"] = []
+        self.history["rms_x"] = []
+        self.history["rms_y"] = []
+        self.history["rms_z"] = []
+
+    def __call__(self, params_dict: dict) -> None:
+        bunch = params_dict["bunch"]
+        node = params_dict["node"]
+        position = params_dict["path_length"]
+
+        if params_dict["old_pos"] == position:
+            return
+        if params_dict["old_pos"] + params_dict["pos_step"] > position:
+            return
+        params_dict["old_pos"] = position
+        params_dict["count"] += 1
+
+        self.twiss_calc.analyzeBunch(bunch)
+
+        cov_matrix = np.zeros((6, 6))
+        for i in range(6):
+            for j in range(6):
+                cov_matrix[i, j] = cov_matrix[j, i] = self.twiss_calc.getCorrelation(i, j)
+
+        xrms = 1000.0 * np.sqrt(cov_matrix[0, 0])
+        yrms = 1000.0 * np.sqrt(cov_matrix[2, 2])
+        zrms = 1000.0 * np.sqrt(cov_matrix[4, 4])
+
+        message = ""
+        message += " s={:0.3f}".format(position + self.position_start)
+        message += " xrms={:0.3f}".format(xrms)
+        message += " yrms={:0.3f}".format(yrms)
+        message += " zrms={:0.3f}".format(zrms)
+        message += " node={}".format(node.getName())
+        print(message)
+
+        self.history["position"].append(position + self.position_start)
+        self.history["rms_x"].append(xrms)
+        self.history["rms_y"].append(yrms)
+        self.history["rms_z"].append(zrms)
+
+
+monitor = BunchMonitor()
+
+action_container = AccActionsContainer()
+action_container.addAction(monitor, AccActionsContainer.ENTRANCE)
+action_container.addAction(monitor, AccActionsContainer.EXIT)
 
 params_dict = {"old_pos": -1.0, "count": 0, "pos_step": 0.1}
-action_container = AccActionsContainer()
 
-position_start = 0.0
-twiss_analysis = BunchTwissAnalysis()
-
-def action_entrance(params_dict: dict) -> None:
-    bunch = params_dict["bunch"]
-    node = params_dict["node"]
-    position = params_dict["path_length"]
-
-    if params_dict["old_pos"] == position:
-        return
-    if params_dict["old_pos"] + params_dict["pos_step"] > position:
-        return
-    params_dict["old_pos"] = position
-    params_dict["count"] += 1
-
-    twiss_analysis.analyzeBunch(bunch)
-    x_rms = 1000.0 * math.sqrt(twiss_analysis.getCorrelation(0, 0))
-    y_rms = 1000.0 * math.sqrt(twiss_analysis.getCorrelation(2, 2))
-    z_rms = 1000.0 * math.sqrt(twiss_analysis.getCorrelation(4, 4))
-
-    message = ""
-    message += " s={:0.3f}".format(position + position_start)
-    message += " xrms={:0.3f}".format(x_rms)
-    message += " yrms={:0.3f}".format(y_rms)
-    message += " zrms={:0.3f}".format(z_rms)
-    message += " node={}".format(node.getName())
-    print(message)
-
-action_container.addAction(action_entrance, AccActionsContainer.ENTRANCE)
 lattice.trackBunch(bunch, paramsDict=params_dict, actionContainer=action_container)
+
+histories["bunch"] = monitor.history
 
 
 # Analysis
 # --------------------------------------------------------------------------------
 
+
+# History
+for mode in histories:
+    for key in histories[mode]:
+        histories[mode][key] = np.array(histories[mode][key])
+
+fig, axs = plt.subplots(nrows=3, figsize=(5, 7), sharex=True, constrained_layout=True)
+for i, mode in enumerate(["bunch", "envelope"]):
+    history = histories[mode]
+    color = ["black", "red"][i]
+    ls = ["-", "--"][i]
+    for ax, key in zip(axs, ["rms_x", "rms_y", "rms_z"]):
+        ax.plot(history["position"], history[key], color=color, ls=ls, label=mode)
+
+for ax in axs:
+    ax.legend(loc="lower right")
+axs[0].set_ylabel("x rms [mm]")
+axs[1].set_ylabel("y rms [mm]")
+axs[2].set_ylabel("z rms [mm]")
+axs[2].set_xlabel("s [m]")
+plt.show()
+
+
+# Final coordinates
 bunch_coords = collect_bunch(bunch)["coords"]
 bunch_cov_matrix = np.cov(bunch_coords.T)
 
 print(np.round(1000.0 * np.sqrt(np.diag(bunch_cov_matrix)), 2))
 print(np.round(1000.0 * np.sqrt(np.diag(envelope.cov_matrix)), 2))
-

@@ -105,21 +105,19 @@ class Envelope:
         rms_arr = np.sqrt(np.diag(self.cov_matrix))
         return rms_arr[axis]
 
-    def apply_transfer_matrix(self, transfer_matrix: np.ndarray | None) -> None:
-        if transfer_matrix is not None:
-            M = transfer_matrix[:-1, :-1]
-            u = transfer_matrix[:-1, -1]
-            self.cov_matrix = M @ self.cov_matrix @ M.T
-            self.centroid = np.matmul(M, self.centroid) + u
+    def transform(self, matrix: np.ndarray | None) -> None:
+        if matrix is not None:
+            m = matrix[:-1, :-1]
+            u = matrix[:-1, -1]
+            self.cov_matrix = m @ self.cov_matrix @ m.T
+            self.centroid = np.matmul(m, self.centroid) + u
 
     def sample(self, size: int, dist: str = "kv") -> np.ndarray:
-        # Issue: covariance matrix is becoming non semi-positive definite,
-        # giving error in cholesky decomposition.
         particles = gen_dist(size=size, cov_matrix=self.cov_matrix, name=dist)
         particles = particles + self.centroid
         return particles
 
-    def sc_transfer_matrix_2d(self, length: float) -> np.ndarray:
+    def sc_matrix_2d(self, length: float) -> np.ndarray:
         centroid = self.centroid
         cov_matrix = self.cov_matrix
 
@@ -162,7 +160,7 @@ class Envelope:
         # Compute transfer matrix in lab frame.
         return T @ A @ M @ A_inv @ T_inv
 
-    def sc_transfer_matrix_3d(self, length: float) -> np.ndarray:
+    def sc_matrix_3d(self, length: float) -> np.ndarray:
         # Build Lorentz matrix: rest frame to lab frame.
         # x -> x
         # y -> y
@@ -238,30 +236,82 @@ class EnvelopeTracker:
         for node_index, node in enumerate(self.lattice.getNodes()):
             for child_node in node.getChildNodes(ENTRANCE):
                 matrix = child_node.matrix(sync_part=envelope.sync_part, charge=charge)
-                envelope.apply_transfer_matrix(matrix)
+                envelope.transform(matrix)
 
             for part_index in range(node.getnParts()):
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
                     matrix = child_node.matrix(sync_part=envelope.sync_part, charge=charge)
-                    envelope.apply_transfer_matrix(matrix)
+                    envelope.transform(matrix)
 
                 if self.space_charge:
                     length = node.getLength(part_index)
                     if self.space_charge == "2d":
-                        matrix = envelope.sc_transfer_matrix_2d(length)
+                        matrix = envelope.sc_matrix_2d(length)
                     elif self.space_charge == "3d":
-                        matrix = envelope.sc_transfer_matrix_3d(length)
+                        matrix = envelope.sc_matrix_3d(length)
                     else:
                         raise ValueError(f"Invalid space charge model: {self.space_charge}")
-                    envelope.apply_transfer_matrix(matrix)
+                    envelope.transform(matrix)
 
                 matrix = node.matrix(sync_part=envelope.sync_part, charge=charge, index=part_index)
-                envelope.apply_transfer_matrix(matrix)
+                envelope.transform(matrix)
 
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
                     matrix = child_node.matrix(sync_part=envelope.sync_part, charge=charge)
-                    envelope.apply_transfer_matrix(matrix)
+                    envelope.transform(matrix)
 
             for child_node in node.getChildNodes(EXIT):
                 matrix = child_node.matrix(sync_part=envelope.sync_part, charge=charge)
-                envelope.apply_transfer_matrix(matrix)
+                envelope.transform(matrix)
+
+    def track_history(self, envelope: Envelope) -> dict[str, list]:
+        history = {}
+        history["position"] = []
+        history["rms_x"] = []
+        history["rms_y"] = []
+        history["rms_z"] = []
+
+        charge = envelope.charge()
+
+        history["position"].append(0.0)
+        history["rms_x"].append(envelope.rms(0))
+        history["rms_y"].append(envelope.rms(2))
+        history["rms_z"].append(envelope.rms(4))
+        
+        for node_index, node in enumerate(self.lattice.getNodes()):
+            for child_node in node.getChildNodes(ENTRANCE):
+                matrix = child_node.matrix(sync_part=envelope.sync_part, charge=charge)
+                envelope.transform(matrix)
+
+            for part_index in range(node.getnParts()):
+                for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
+                    matrix = child_node.matrix(sync_part=envelope.sync_part, charge=charge)
+                    envelope.transform(matrix)
+
+                if self.space_charge:
+                    length = node.getLength(part_index)
+                    if self.space_charge == "2d":
+                        matrix = envelope.sc_matrix_2d(length)
+                    elif self.space_charge == "3d":
+                        matrix = envelope.sc_matrix_3d(length)
+                    else:
+                        raise ValueError(f"Invalid space charge model: {self.space_charge}")
+                    envelope.transform(matrix)
+
+                matrix = node.matrix(sync_part=envelope.sync_part, charge=charge, index=part_index)
+                envelope.transform(matrix)
+
+                history["position"].append(node.getPosition() + node.getLength(part_index))
+                history["rms_x"].append(1000.0 * envelope.rms(0))
+                history["rms_y"].append(1000.0 * envelope.rms(2))
+                history["rms_z"].append(1000.0 * envelope.rms(4))
+
+                for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
+                    matrix = child_node.matrix(sync_part=envelope.sync_part, charge=charge)
+                    envelope.transform(matrix)
+
+            for child_node in node.getChildNodes(EXIT):
+                matrix = child_node.matrix(sync_part=envelope.sync_part, charge=charge)
+                envelope.transform(matrix)
+
+        return history
