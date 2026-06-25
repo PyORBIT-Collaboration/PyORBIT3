@@ -67,7 +67,7 @@ class Envelope:
         empty_bunch = Bunch()
         bunch.copyEmptyBunchTo(empty_bunch)
         self.bunch = empty_bunch
-        self.sync_part = bunch.getSyncParticle()
+        self.sync_part = empty_bunch.getSyncParticle()
 
         self.centroid = centroid
         if self.centroid is None:
@@ -272,11 +272,12 @@ class EnvelopeTracker:
         history["rms_z"] = []
 
         charge = envelope.charge()
+        node_positions = self.lattice.getNodePositionsDict()
 
         history["position"].append(0.0)
-        history["rms_x"].append(envelope.rms(0))
-        history["rms_y"].append(envelope.rms(2))
-        history["rms_z"].append(envelope.rms(4))
+        history["rms_x"].append(1000.0 * envelope.rms(0))
+        history["rms_y"].append(1000.0 * envelope.rms(2))
+        history["rms_z"].append(1000.0 * envelope.rms(4))
         
         for node_index, node in enumerate(self.lattice.getNodes()):
             for child_node in node.getChildNodes(ENTRANCE):
@@ -301,7 +302,10 @@ class EnvelopeTracker:
                 matrix = node.matrix(sync_part=envelope.sync_part, charge=charge, index=part_index)
                 envelope.transform(matrix)
 
-                history["position"].append(node.getPosition() + node.getLength(part_index))
+                position_start, position_stop = node_positions[node]
+                position = position_start + node.getLength(part_index)
+
+                history["position"].append(position)
                 history["rms_x"].append(1000.0 * envelope.rms(0))
                 history["rms_y"].append(1000.0 * envelope.rms(2))
                 history["rms_z"].append(1000.0 * envelope.rms(4))
