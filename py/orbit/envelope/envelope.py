@@ -305,7 +305,7 @@ class EnvelopeTracker:
                 envelope.transform(matrix)
 
                 position_start, position_stop = node_positions[node]
-                position = position_start + node.getLength(part_index)
+                position = position_start + node.getLength(part_index) * (part_index + 1)
 
                 history["position"].append(position)
                 history["rms_x"].append(1000.0 * envelope.rms(0))
