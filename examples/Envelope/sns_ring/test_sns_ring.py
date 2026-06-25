@@ -43,7 +43,7 @@ def main(args: argparse.Namespace) -> None:
     output_dir = os.path.join("outputs", path.stem)
     os.makedirs(output_dir, exist_ok=True)
 
-    # Create lattice
+    # Lattice
     # ------------------------------------------------------------------------------
 
     lattice = TEAPOT_Lattice()
@@ -67,16 +67,14 @@ def main(args: argparse.Namespace) -> None:
         if node.getLength() > max_length:
             node.setnParts(1 + int(node.getLength() / max_length))
 
-    # Create envelope
+    # Bunch
     # ------------------------------------------------------------------------------
 
-    # Create bunch
     bunch = Bunch()
     bunch.mass(mass_proton)
     sync_part = bunch.getSyncParticle()
     sync_part.kinEnergy(args.kin_energy)
 
-    # Find periodic lattice parameters
     matrix_lattice = TEAPOT_MATRIX_Lattice(lattice, bunch)
     matrix_lattice_params = matrix_lattice.getRingParametersDict()
     alpha_x = matrix_lattice_params["alpha x"]
@@ -86,9 +84,6 @@ def main(args: argparse.Namespace) -> None:
     eps_x = 25.0e-06
     eps_y = eps_x
 
-    print(matrix_lattice_params)
-
-    # Generate covariance matrix
     cov_matrix = np.zeros((6, 6))
     cov_matrix[0, 0] = eps_x * beta_x
     cov_matrix[2, 2] = eps_y * beta_y
@@ -99,23 +94,41 @@ def main(args: argparse.Namespace) -> None:
     cov_matrix[4, 4] = (args.bunch_length / 4.0) ** 2
     cov_matrix[5, 5] = 0.0
 
-    # Tilt
     if args.tilt:
         rot_matrix = np.identity(6)
         rot_matrix[:4, :4] = build_rotation_matrix_xy(angle=(args.tilt * math.pi))
         cov_matrix = np.linalg.multi_dot([rot_matrix, cov_matrix, rot_matrix.T])
 
-    # Mismatch
-    cov_matrix[0, 0] *= (1.0 + args.mismatch_x) ** 2
-    cov_matrix[2, 2] *= (1.0 + args.mismatch_y) ** 2
-    cov_matrix_init = np.copy(cov_matrix)
+    if args.mismatch_x or args.mismatch_y:
+        cov_matrix[0, 0] *= (1.0 + args.mismatch_x) ** 2
+        cov_matrix[2, 2] *= (1.0 + args.mismatch_y) ** 2
 
-    # Offset
-    centroid_init = np.zeros(6)
-    centroid_init[0] += args.offset_x
-    centroid_init[2] += args.offset_y
+    centroid = np.zeros(6)
+    centroid[0] += args.offset_x
+    centroid[2] += args.offset_y
 
-    # Create envelope
+    rng = np.random.default_rng()
+    bunch_coords = np.zeros((args.nparts, 6))
+    bunch_coords[:, :4] = gen_dist(
+        size=args.nparts, cov_matrix=cov_matrix[0:4, 0:4], name=args.dist
+    )
+    bunch_coords[:, 4] = args.bunch_length * rng.uniform(-0.5, 0.5, size=args.nparts)
+    bunch_coords += centroid[None, :6]
+
+    for i in range(bunch_coords.shape[0]):
+        bunch.addParticle(*bunch_coords[i])
+
+    # Use covariance matrix from initial bunch, which is slightly
+    # different from the one used to generate the bunch due to
+    # finite statistics.
+    cov_matrix_init = np.cov(bunch_coords, rowvar=False)
+    centroid_init = np.mean(bunch_coords, axis=0)
+
+    # Track envelope
+    # ------------------------------------------------------------------------------
+
+    print("TRACK ENVELOPE")
+
     envelope = Envelope(
         bunch=bunch,
         cov_matrix=cov_matrix_init,
@@ -123,19 +136,14 @@ def main(args: argparse.Namespace) -> None:
         intensity=args.intensity,
     )
 
-    # Track envelope
-    # ------------------------------------------------------------------------------
-
-    print("TRACK ENVELOPE")
-
-    tracker = EnvelopeTracker(lattice, space_charge=("2d" if args.sc else None))
+    envelope_tracker = EnvelopeTracker(lattice, space_charge=("2d" if args.sc else None))
 
     history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
     start_time = time.time()
 
     for turn in range(args.turns + 1):
         if turn > 0:
-            tracker.track(envelope)
+            envelope_tracker.track(envelope)
 
         cov_matrix = envelope.cov_matrix
         centroid = envelope.centroid
@@ -166,18 +174,6 @@ def main(args: argparse.Namespace) -> None:
     # ------------------------------------------------------------------------------
 
     print("TRACK BUNCH")
-
-    rng = np.random.default_rng()
-
-    bunch_coords = np.zeros((args.nparts, 6))
-    bunch_coords[:, :4] = gen_dist(
-        size=args.nparts, cov_matrix=cov_matrix_init[0:4, 0:4], name=args.dist
-    )
-    bunch_coords[:, 4] = args.bunch_length * rng.uniform(-0.5, 0.5, size=args.nparts)
-    bunch_coords += centroid_init[None, :6]
-
-    for i in range(bunch_coords.shape[0]):
-        bunch.addParticle(*bunch_coords[i])
 
     if args.sc:
         sc_calc = SpaceChargeCalc2p5D(64, 64, 1)
