@@ -34,7 +34,7 @@ from orbit.utils.consts import speed_of_light
 # --------------------------------------------------------------------------------
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--seq", type=str, default=None)
+parser.add_argument("--seq", type=str, default="MEBT")
 parser.add_argument("--sc", type=int, default=0)
 parser.add_argument("--sc-model", type=str, default="ellipsoid")
 parser.add_argument("--nparts", type=int, default=10_000)
@@ -114,6 +114,9 @@ for node in lattice.getNodes():
 rf_gaps = lattice.getRF_Gaps()
 for rf_gap in rf_gaps:
     rf_gap.setCppGapModel(MatrixRfGap())
+
+for index, node in enumerate(lattice.getNodes()):
+    print(index, type(node), node.getName())
     
 lattice.trackDesignBunch(bunch)
 
