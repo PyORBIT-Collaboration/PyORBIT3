@@ -216,11 +216,12 @@ for mode in histories:
 plot_kws = {}
 plot_kws["bunch"] = dict(
     color="black",
-    ls="-",
+    lw=0,
+    marker=".",
+    ms=4,
 )
 plot_kws["envelope"] = dict(
     color="red",
-    # ls="--",
     lw=0,
     marker=".",
     ms=1,
