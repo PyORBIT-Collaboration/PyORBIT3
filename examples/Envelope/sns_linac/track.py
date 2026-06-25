@@ -138,7 +138,7 @@ if args.seq:
     sequence_names = sequence_names[:stop_index]
 
 sns_linac_factory = SNS_LinacLatticeFactory()
-sns_linac_factory.setMaxDriftLength(0.01)
+sns_linac_factory.setMaxDriftLength(args.sc_path_length_min)
 lattice = sns_linac_factory.getLinacAccLattice(sequence_names, "sns_linac.xml")
 
 for node in lattice.getNodes():
@@ -181,14 +181,13 @@ histories["envelope"] = envelope_tracker.track_history(envelope)
 # --------------------------------------------------------------------------------
 
 if args.sc:
-    sc_path_length_min = args.sc_path_length_min
     if args.sc_model == "ellipsoid":
         n_ellipsoids = 1
         sc_calc = SpaceChargeCalcUnifEllipse(n_ellipsoids)
-        sc_nodes = setUniformEllipsesSCAccNodes(lattice, sc_path_length_min, sc_calc)
+        sc_nodes = setUniformEllipsesSCAccNodes(lattice, args.sc_path_length_min, sc_calc)
     if args.sc_model == "3d":
         sc_calc = SpaceChargeCalc3D(64, 64, 64)
-        sc_nodes = setSC3DAccNodes(lattice, sc_path_length_min, sc_calc)
+        sc_nodes = setSC3DAccNodes(lattice, args.sc_path_length_min, sc_calc)
 
 
 monitor = BunchMonitor()
@@ -197,7 +196,7 @@ action_container = AccActionsContainer()
 action_container.addAction(monitor, AccActionsContainer.ENTRANCE)
 action_container.addAction(monitor, AccActionsContainer.EXIT)
 
-params_dict = {"old_pos": -1.0, "count": 0, "pos_step": 0.1}
+params_dict = {"old_pos": -1.0, "count": 0, "pos_step": args.sc_path_length_min}
 
 lattice.trackBunch(bunch, paramsDict=params_dict, actionContainer=action_container)
 
@@ -218,13 +217,13 @@ plot_kws["bunch"] = dict(
     color="black",
     lw=0,
     marker=".",
-    ms=4,
+    ms=1
 )
 plot_kws["envelope"] = dict(
     color="red",
     lw=0,
     marker=".",
-    ms=1,
+    ms=1
 )
 
 fig, axs = plt.subplots(nrows=3, figsize=(5, 7), sharex=True, constrained_layout=True)
