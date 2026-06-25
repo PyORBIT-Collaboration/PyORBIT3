@@ -215,7 +215,7 @@ def test_bend_teapot(
     length: float = 1.0,
     theta: float = 20.0,
     cov_matrix: np.ndarray = None,
-    nparts: int = 2,
+    nparts: int = 5,
 ) -> None:
     nodes = [BendTEAPOT(length=length, theta=np.radians(theta), nparts=nparts)]
     lattice = make_lattice(nodes)
@@ -229,7 +229,7 @@ def test_bend_linac(
     length: float = 1.0,
     theta: float = 20.0,
     cov_matrix: np.ndarray = None,
-    nparts: int = 2,
+    nparts: int = 5,
 ) -> None:
     node = Bend()
     node.setLength(length)
