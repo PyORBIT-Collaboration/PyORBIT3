@@ -22,7 +22,6 @@ from orbit.utils.consts import mass_proton
 sys.path.append("..")
 from utils import gen_dist
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument("--bunch-length", type=float, default=120.0)
 parser.add_argument("--kin-energy", type=float, default=1.300)
@@ -111,7 +110,9 @@ print("BUNCH")
 rng = np.random.default_rng()
 
 bunch_coords = np.zeros((args.nparts, 6))
-bunch_coords[:, :4] = gen_dist(size=args.nparts, cov_matrix=cov_matrix_init[0:4, 0:4], name="kv")
+bunch_coords[:, :4] = gen_dist(
+    size=args.nparts, cov_matrix=cov_matrix_init[0:4, 0:4], name="kv"
+)
 bunch_coords[:, 4] = args.bunch_length * rng.uniform(-0.5, 0.5, size=args.nparts)
 
 for i in range(bunch_coords.shape[0]):
