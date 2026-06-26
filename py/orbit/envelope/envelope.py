@@ -411,6 +411,9 @@ class Envelope:
         # Get covariance matrix in rest frame.
         cov_matrix = L_inv[:-1, :-1] @ self.cov_matrix @ L_inv[:-1, :-1].T
 
+        # Get kick length in rest frame
+        length_rest = length * gamma
+
         # Project covariance matrix onto x-y-z plane.
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2, 4))
 
@@ -431,9 +434,9 @@ class Envelope:
         kappa_z = factor * RDz
 
         M = np.identity(7)
-        M[1, 0] = kappa_x * length
-        M[3, 2] = kappa_y * length
-        M[5, 4] = kappa_z * length
+        M[1, 0] = kappa_x * length_rest
+        M[3, 2] = kappa_y * length_rest
+        M[5, 4] = kappa_z * length_rest
 
         # Build matrix to undo x-y-z diagonalization.
         A = build_diag_matrix_from_xyz_eig(cov_eig_vecs)
