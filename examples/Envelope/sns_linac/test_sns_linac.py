@@ -45,7 +45,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "--seq",
     type=str,
-    default=None,
+    default="DTL6",
     choices=[
         "MEBT",
         "DTL1",
@@ -180,6 +180,8 @@ histories["envelope"] = envelope_tracker.track_history(envelope)
 # Track bunch
 # --------------------------------------------------------------------------------
 
+lattice.trackDesignBunch(bunch)
+
 if args.sc:
     if args.sc_model == "ellipsoid":
         n_ellipsoids = 1
@@ -213,7 +215,7 @@ for mode in histories:
         histories[mode][key] = np.array(histories[mode][key])
 
 plot_kws = {}
-plot_kws["bunch"] = dict(color="black", lw=0, marker=".", ms=1)
+plot_kws["bunch"] = dict(color="black", lw=0, marker=".", ms=2)
 plot_kws["envelope"] = dict(color="red", lw=0, marker=".", ms=1)
 
 fig, axs = plt.subplots(nrows=3, figsize=(5, 7), sharex=True, constrained_layout=True)
