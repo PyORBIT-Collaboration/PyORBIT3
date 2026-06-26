@@ -392,9 +392,9 @@ class Envelope:
         # Build Lorentz matrix: rest frame to lab frame.
         # x -> x
         # y -> y
-        # z -> gamma * z
-        # x' = dx/ds -> x' / gamma
-        # y' = dy/ds -> y' / gamma
+        # z -> z / gamma
+        # x' = dx/ds -> x' * gamma
+        # y' = dy/ds -> y' * gamma
         # z' = dz/ds -> z'
         gamma = self.gamma()
         gamma_inv = 1.0 / gamma
@@ -426,9 +426,9 @@ class Envelope:
         RDz = scipy.special.elliprd(cov_xx, cov_yy, cov_zz)
 
         factor = 0.5 * self.sc_factor * ((1.0 / 5.0) ** 1.5)
-        kappa_x = factor * RDx  # [1 / m]
-        kappa_y = factor * RDy  # [1 / m]
-        kappa_z = factor * RDz  # [1 / m]
+        kappa_x = factor * RDx
+        kappa_y = factor * RDy
+        kappa_z = factor * RDz
 
         M = np.identity(7)
         M[1, 0] = kappa_x * length
