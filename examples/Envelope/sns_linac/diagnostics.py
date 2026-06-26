@@ -35,7 +35,9 @@ class BunchMonitor:
         cov_matrix = np.zeros((6, 6))
         for i in range(6):
             for j in range(6):
-                cov_matrix[i, j] = cov_matrix[j, i] = self.twiss_calc.getCorrelation(i, j)
+                cov_matrix[i, j] = cov_matrix[j, i] = self.twiss_calc.getCorrelation(
+                    i, j
+                )
 
         xrms = 1000.0 * np.sqrt(cov_matrix[0, 0])
         yrms = 1000.0 * np.sqrt(cov_matrix[2, 2])
