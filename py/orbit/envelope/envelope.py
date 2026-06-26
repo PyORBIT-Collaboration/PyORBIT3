@@ -123,7 +123,7 @@ def track_sync_part(
             return None
         B = node.getParam("B")
         if node.waveform:
-            B *= self.waveform.getStrength()
+            B *= node.waveform.getStrength()
         return track_sync_part_solenoid(sync_part=sync_part, length=length, B=B, charge=charge)
 
     elif node_type is MultipoleTEAPOT:
