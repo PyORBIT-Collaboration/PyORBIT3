@@ -486,16 +486,20 @@ class EnvelopeTracker:
                     if matrix is not None:
                         envelope.transform(matrix)
 
-                matrix = track_sync_part(node, sync_part=sync_part, charge=charge, index=part_index)
-                if matrix is not None:
-                    if self.space_charge:
-                        length = node.getLength(part_index)
+                matrix_sc = None
+                if self.space_charge:
+                    length = node.getLength(part_index)
+                    if length > 0:
                         if self.space_charge == "2d":
                             matrix_sc = envelope.sc_matrix_2d(length)
                         elif self.space_charge == "3d":
                             matrix_sc = envelope.sc_matrix_3d(length)
                         else:
-                            raise ValueError(f"Invalid space charge model: {self.space_charge}")
+                            raise ValueError
+
+                matrix = track_sync_part(node, sync_part=sync_part, charge=charge, index=part_index)
+                if matrix is not None:
+                    if matrix_sc is not None:
                         matrix = matrix @ matrix_sc
                     envelope.transform(matrix)
 
@@ -541,16 +545,20 @@ class EnvelopeTracker:
                     if matrix is not None:
                         envelope.transform(matrix)
 
-                matrix = track_sync_part(node, sync_part=sync_part, charge=charge, index=part_index)
-                if matrix is not None:
-                    if self.space_charge:
-                        length = node.getLength(part_index)
+                matrix_sc = None
+                if self.space_charge:
+                    length = node.getLength(part_index)
+                    if length > 0:
                         if self.space_charge == "2d":
                             matrix_sc = envelope.sc_matrix_2d(length)
                         elif self.space_charge == "3d":
                             matrix_sc = envelope.sc_matrix_3d(length)
                         else:
-                            raise ValueError(f"Invalid space charge model: {self.space_charge}")
+                            raise ValueError
+
+                matrix = track_sync_part(node, sync_part=sync_part, charge=charge, index=part_index)
+                if matrix is not None:
+                    if matrix_sc is not None:
                         matrix = matrix @ matrix_sc
                     envelope.transform(matrix)
 
