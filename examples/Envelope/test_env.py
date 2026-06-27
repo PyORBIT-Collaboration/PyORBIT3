@@ -12,6 +12,7 @@ from orbit.py_linac.lattice import Bend
 from orbit.py_linac.lattice import TiltElement
 from orbit.py_linac.lattice import Solenoid
 from orbit.teapot import BendTEAPOT
+from orbit.teapot import ContinuousLinearFocusingTEAPOT
 from orbit.teapot import DriftTEAPOT
 from orbit.teapot import KickTEAPOT
 from orbit.teapot import QuadTEAPOT
@@ -153,8 +154,8 @@ def test_drift_teapot(
     cov_matrix: np.ndarray = None,
     nparts: int = 6,
 ) -> None:
-    nodes = [DriftTEAPOT(length=length, nparts=nparts)]
-    lattice = make_lattice(nodes)
+    node = DriftTEAPOT(length=length, nparts=nparts)
+    lattice = make_lattice([node])
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
@@ -184,10 +185,22 @@ def test_quad_teapot(
     cov_matrix: np.ndarray = None,
     nparts: int = 10,
 ) -> None:
-    nodes = [QuadTEAPOT(length=length, kq=kq, nparts=nparts)]
-    lattice = make_lattice(nodes)
+    node = QuadTEAPOT(length=length, kq=kq, nparts=nparts)
+    lattice = make_lattice([node])
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+
+
+def test_cf_teapot(
+    kin_energy: float = 0.0025,
+    length: float = 10.0,
+    kq: float = 1.0,
+    nparts: int = 10,
+) -> None:
+    node = ContinuousLinearFocusingTEAPOT(length=length, kq=kq, nparts=nparts)
+    lattice = make_lattice([node])
+    cov_matrix = np.diag(np.square([1e-3, 0, 1e-3, 0.0, 0.0, 0.0]))
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
 
 
@@ -217,8 +230,8 @@ def test_bend_teapot(
     cov_matrix: np.ndarray = None,
     nparts: int = 5,
 ) -> None:
-    nodes = [BendTEAPOT(length=length, theta=np.radians(theta), nparts=nparts)]
-    lattice = make_lattice(nodes)
+    node = BendTEAPOT(length=length, theta=np.radians(theta), nparts=nparts)
+    lattice = make_lattice([node])
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
@@ -252,8 +265,8 @@ def test_kick_teapot(
     cov_matrix: np.ndarray = None,
     nparts: int = 4,
 ) -> None:
-    nodes = [KickTEAPOT(kx=kx, ky=ky, dE=dE, length=length, nparts=nparts)]
-    lattice = make_lattice(nodes)
+    node = KickTEAPOT(kx=kx, ky=ky, dE=dE, length=length, nparts=nparts)
+    lattice = make_lattice([node])
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
@@ -264,8 +277,8 @@ def test_tilt_teapot(
     angle: float = 0.25 * np.pi,
     cov_matrix: np.ndarray = None,
 ) -> None:
-    nodes = [TiltTEAPOT(angle=angle)]
-    lattice = make_lattice(nodes)
+    node = TiltTEAPOT(angle=angle)
+    lattice = make_lattice([node])
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
@@ -292,8 +305,8 @@ def test_solenoid_teapot(
     cov_matrix: np.ndarray = None,
     nparts: int = 10,
 ) -> None:
-    nodes = [SolenoidTEAPOT(length=length, B=B, nparts=nparts)]
-    lattice = make_lattice(nodes)
+    node = SolenoidTEAPOT(length=length, B=B, nparts=nparts)
+    lattice = make_lattice([node])
     if cov_matrix is None:
         cov_matrix = make_default_cov_matrix()
     track_and_compare_rms(lattice, kin_energy, cov_matrix)
@@ -371,13 +384,14 @@ def test_sc_3d_cold_expansion():
 
 
 if __name__ == "__main__":
-    for kin_energy in [0.0025, 1.0, 10.0]:
+    for kin_energy in [0.0025, 0.1, 1.0]:
         test_drift_teapot(kin_energy=kin_energy)
         test_quad_teapot(kin_energy=kin_energy)
         test_bend_teapot(kin_energy=kin_energy)
         test_tilt_teapot(kin_energy=kin_energy)
         test_solenoid_teapot(kin_energy=kin_energy)
         test_kick_teapot(kin_energy=kin_energy)
+        test_cf_teapot(kin_energy=kin_energy)
 
         test_drift_linac(kin_energy=kin_energy)
         test_quad_linac(kin_energy=kin_energy)
