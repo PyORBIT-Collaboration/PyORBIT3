@@ -106,6 +106,13 @@ def track_sync_part(
         7 x 7 transfer matrix or None. If None, the node can be ignored during
         envelope tracking.
     """
+
+    # [TO DO]
+    # - Add option to calculate transfer matrix by fitting routine for all
+    #   elements, or for specified elements.
+    # - Add option to pre-compute + store matrices for multi-turn tracking
+    #   in static lattice. If no space charge, multiply to get single matrix.
+
     node_type = type(node)
     if node_type in IGNORE_NODE_TYPES:
         return None
