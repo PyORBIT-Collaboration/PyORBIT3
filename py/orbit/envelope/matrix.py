@@ -179,7 +179,27 @@ def track_sync_part_solenoid(sync_part: SyncParticle, length: float, B: float, c
 
 
 def track_sync_part_cf(sync_part: SyncParticle, length: float, kq: float) -> np.ndarray:
-    raise NotImplementedError()
+    if length <= 0:
+        return
+
+    if kq == 0:
+        return track_sync_part_drift(sync_part=sync_part, length=length)
+
+    sqrt_abs_kq = math.sqrt(abs(kq))
+
+    cx = math.cos(sqrt_abs_kq * length)
+    sx = math.sin(sqrt_abs_kq * length)
+
+    M = np.identity(7)
+    M[0, 0] = M[2, 2] = cx
+    M[0, 1] = M[2, 3] = +sx / sqrt_abs_kq
+    M[1, 0] = M[3, 2] = -sx * sqrt_abs_kq
+    M[1, 1] = M[3, 3] = cx
+    M[4, 5] = length / (sync_part.gamma()**2)
+    M[4, 5] *= get_dp_p_coeff(sync_part)
+
+    sync_part.time(sync_part.time() + length / (sync_part.beta() * speed_of_light))
+    return M
 
 
 def track_sync_part_rf_gap(sync_part: SyncParticle, frequency: float, E0TL: float, phase: float, charge: float) -> np.ndarray:
