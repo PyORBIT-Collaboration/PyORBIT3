@@ -313,6 +313,14 @@ class Envelope:
 
         self.rms_bunch_length_factor = np.sqrt(12.0)
 
+    def copy(self):
+        return Envelope(
+            bunch=self.bunch,
+            cov_matrix=self.cov_matrix,
+            centroid=self.centroid,
+            intensity=self.intensity
+        )
+
     def set_intensity(self, intensity: float) -> None:
         self.intensity = intensity
 
