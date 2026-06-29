@@ -1,3 +1,8 @@
+"""Analytic transfer matrix definitions.
+
+The functions below calculate 7 x 7 transfer matrices for common elements such
+as quadrupoles, drifts, and bends.
+"""
 import math
 
 import numpy as np
