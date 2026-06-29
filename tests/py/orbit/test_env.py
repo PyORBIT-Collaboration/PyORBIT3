@@ -380,23 +380,4 @@ def test_sc_3d_cold_expansion():
     # (in rest frame). We can calculate the time to expand to
     # twice the initial size. (See examples from A. Shishlo or
     # from the ImpactX repo.)
-    raise NotImplementedError
-
-
-if __name__ == "__main__":
-    for kin_energy in [0.0025, 0.1, 1.0]:
-        test_drift_teapot(kin_energy=kin_energy)
-        test_quad_teapot(kin_energy=kin_energy)
-        test_bend_teapot(kin_energy=kin_energy)
-        test_tilt_teapot(kin_energy=kin_energy)
-        test_solenoid_teapot(kin_energy=kin_energy)
-        test_kick_teapot(kin_energy=kin_energy)
-        test_cf_teapot(kin_energy=kin_energy)
-
-        test_drift_linac(kin_energy=kin_energy)
-        test_quad_linac(kin_energy=kin_energy)
-        test_bend_linac(kin_energy=kin_energy)
-        test_tilt_linac(kin_energy=kin_energy)
-        test_solenoid_linac(kin_energy=kin_energy)
-
-        test_rf_gap_matrix(kin_energy=kin_energy)
+    pass
