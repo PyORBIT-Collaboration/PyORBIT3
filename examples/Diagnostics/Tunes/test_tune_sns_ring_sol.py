@@ -17,7 +17,6 @@ from orbit.teapot import TEAPOT_MATRIX_Lattice
 from orbit.teapot import teapot
 from orbit.utils.consts import mass_proton
 
-
 # Setup
 # ------------------------------------------------------------------------------------
 
@@ -49,40 +48,10 @@ bunch = Bunch()
 bunch.mass(mass_proton)
 bunch.getSyncParticle().kinEnergy(1.000)
 
-
 # Analyze transfer matrix
 # ------------------------------------------------------------------------------------
 
-def calc_eigtune(eigval: float) -> float:
-    return np.arccos(np.real(eigval)) / (2.0 * np.pi)
-
-def unit_symplectic_matrix(ndim: int) -> np.ndarray:
-    U = np.zeros((ndim, ndim))
-    for i in range(0, ndim, 2):
-        U[i : i + 2, i : i + 2] = [[0.0, 1.0], [-1.0, 0.0]]
-    return U
-
-def normalize_eigvec(v: np.ndarray) -> np.ndarray:
-    U = unit_symplectic_matrix(len(v))
-
-    def complex_amplitude(v):
-        return np.linalg.multi_dot([np.conj(v), U, v])
-
-    if np.imag(complex_amplitude(v)) > 0.0:
-        v = np.conj(v)
-
-    v *= np.sqrt(2.0 / np.abs(complex_amplitude(v)))
-    assert np.isclose(np.imag(complex_amplitude(v)), -2.0)
-    assert np.isclose(np.real(complex_amplitude(v)), +0.0)
-    return v
-
-def calc_norm_matrix_from_eigvecs(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
-    V = np.zeros((4, 4))
-    V[:, 0] = +np.real(v1)
-    V[:, 1] = -np.imag(v1)
-    V[:, 2] = +np.real(v2)
-    V[:, 3] = -np.imag(v2)
-    return np.linalg.inv(V)
+from orbit.diagnostics.eig import calc_eigtune, normalize_eigvec, calc_norm_matrix_from_eigvecs
 
 # Estimate transfer matrix
 matrix_lattice = TEAPOT_MATRIX_Lattice(lattice, bunch)
@@ -94,18 +63,18 @@ for i in range(4):
 
 # Calculate eigenvalues and eigenvectors
 eigvals, eigvecs = np.linalg.eig(M)
-eigvals = eigvals[[0, 2]]
-eigvecs = eigvecs[:, [0, 2]]
+eigvals = eigvals[::2]
+eigvecs = eigvecs[:, ::2].T
 
-v1 = normalize_eigvec(eigvecs[:, 0])
-v2 = normalize_eigvec(eigvecs[:, 1])
+for i in range(eigvecs.shape[0]):
+    eigvecs[i] = normalize_eigvec(eigvecs[i])
 
 # Calculate tunes from transfer matrix
 tune_1_true = calc_eigtune(eigvals[0])
 tune_2_true = calc_eigtune(eigvals[1])
 
 # Calculate normalization matrix from transfer matrix
-V_inv = calc_norm_matrix_from_eigvecs(v1, v2)
+V_inv = calc_norm_matrix_from_eigvecs(*eigvecs)
 V = np.linalg.inv(V_inv)
 
 # Print normalization matrix
@@ -142,7 +111,6 @@ particles[:, :4] = np.matmul(particles[:, :4], V.T)
 for index in range(n):
     bunch.addParticle(*particles[index])
 
-
 # Tracking
 # ------------------------------------------------------------------------------------
 
@@ -155,7 +123,6 @@ for turn in range(n_turns):
     xrms = math.sqrt(twiss_calc.getCorrelation(0, 0)) * 1000.0
     yrms = math.sqrt(twiss_calc.getCorrelation(2, 2)) * 1000.0
     print("turn={} xrms={:0.3f} yrms={:0.3f}".format(turn + 1, xrms, yrms))
-
 
 # Analysis
 # ------------------------------------------------------------------------------------

@@ -255,6 +255,12 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
         """
         self.tune_calc.setNormMatrixFromTwiss(betax, alphax, etax, etapx, betay, alphay)
 
+    def setNormMatrixFromTransferMatrix(self, matrix: np.ndarray) -> None:
+        """Set normalization matrix from periodic transfer matrix."""
+        norm_matrix = None
+
+        self.setNormMatrix(norm_matrix)
+
     def getData(self, bunch: Bunch, index: int = None) -> dict[str, float] | dict[str, list[float]]:
         """Return tune and action data.
         
