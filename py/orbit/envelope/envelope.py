@@ -474,8 +474,18 @@ class Envelope:
 
 class EnvelopeTracker:
     def __init__(self, lattice: AccLattice, space_charge: str | None = None) -> None:
+        """Constructor.
+
+        Args:
+            lattice: The accelerator lattice.
+            space_charge: Space charge model {"2d", "3d", None}.
+        """
         self.lattice = lattice
         self.space_charge = space_charge
+
+        # For pre-computing elements
+        self.elements = []
+        self.one_turn_matrix = None
 
         for node in self.lattice.getNodes():
             if type(node) in (BendTEAPOT, BendLINAC):
@@ -531,9 +541,8 @@ class EnvelopeTracker:
                 if matrix is not None:
                     envelope.transform(matrix)
 
-
     def track_history(self, envelope: Envelope) -> dict[str, list]:
-        """Same as track but returns parameters vs. position in lattice."""
+        """Track and return envelope parameters vs. position in lattice."""
         history = {}
         history["position"] = []
         history["rms_x"] = []
@@ -600,3 +609,79 @@ class EnvelopeTracker:
                     envelope.transform(matrix)
 
         return history
+
+    def precompute_matrices(self, envelope: Envelope) -> None:
+        """Pre-compute transfer matrices for each node.
+
+        For each node, return tuple (node, matrix). Mark space charge kicks as ("sc", length).
+        """
+        sync_part = envelope.sync_part
+        charge = envelope.charge()
+
+        self.elements = []
+        for node_index, node in enumerate(self.lattice.getNodes()):
+            for child_node in node.getChildNodes(ENTRANCE):
+                matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
+                if matrix is not None:
+                    self.elements.append((child_node, matrix))
+
+            for part_index in range(node.getnParts()):
+                for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
+                    matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
+                    if matrix is not None:
+                        self.elements.append((child_node, matrix))
+
+                if self.space_charge:
+                    length = node.getLength(part_index)
+                    if length > 0:
+                        self.elements.append(("sc", length))
+
+                matrix = track_sync_part(node, sync_part=sync_part, charge=charge, index=part_index)
+                if matrix is not None:
+                    self.elements.append((node, matrix))
+
+                for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
+                    matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
+                    if matrix is not None:
+                        self.elements.append((node, matrix))
+
+            for child_node in node.getChildNodes(EXIT):
+                matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
+                if matrix is not None:
+                    self.elements.append((node, matrix))
+
+    def track_ring(self, envelope: Envelope) -> None:
+        """Track using pre-computed transfer matrices.
+
+        The method assumes that all nodes are static and that there is no
+        change in the synchronous particle energy. In this case the matrices
+        can be computed once and reused on each turn. If there is no space charge,
+        we track using the one-turn matrix.
+        """
+
+        # Pre-compute transfer matrices on the first turn.
+        if not self.elements:
+            self.precompute_matrices(envelope)
+            self.one_turn_matrix = None
+
+        # If there is no space charge, apply the one-turn transfer matrix.
+        if not self.space_charge:
+            if self.one_turn_matrix is None:
+                self.one_turn_matrix = np.identity(7)
+                for (node, matrix) in self.elements:
+                    self.one_turn_matrix = np.matmul(self.one_turn_matrix, matrix)
+            return envelope.transform(self.one_turn_matrix)
+
+        # If there is space charge, apply the matrices one-by-one.
+        for element in self.elements:
+            if element[0] == "sc":
+                length = element[1]
+                if self.space_charge == "2d":
+                    envelope.transform(envelope.sc_matrix_2d(length))
+                elif self.space_charge == "3d":
+                    envelope.transform(envelope.sc_matrix_3d(length))
+                else:
+                    raise ValueError
+            else:
+                node, matrix = element
+                envelope.transform(matrix)

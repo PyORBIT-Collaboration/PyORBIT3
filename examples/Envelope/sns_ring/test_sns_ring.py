@@ -181,7 +181,7 @@ start_time = time.time()
 
 for turn in range(args.turns + 1):
     if turn > 0:
-        envelope_tracker.track(envelope)
+        envelope_tracker.track_ring(envelope)
 
     cov_matrix = envelope.cov_matrix
     centroid = envelope.centroid

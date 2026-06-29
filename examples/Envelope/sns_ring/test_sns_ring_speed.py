@@ -92,7 +92,7 @@ profiler = cProfile.Profile()
 profiler.enable()
 
 for turn in trange(args.turns):
-    envelope_tracker.track(envelope)
+    envelope_tracker.track_ring(envelope)
 
 time_per_turn = (time.time() - start_time) / args.turns
 
