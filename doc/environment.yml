@@ -1,0 +1,28 @@
+name: docs
+channels:
+  - conda-forge
+dependencies:
+  - doxygen
+  - exhale
+  - pydata-sphinx-theme
+  - python=3.13
+  - pip
+  - meson-python
+  - sphinx
+  - sphinx-copybutton
+  - sphinx-autodoc-typehints
+  - sphinx-automodapi
+  - myst-parser
+  - breathe
+  - standard-imghdr
+  - fftw
+  - numpy
+  - scipy
+  - matplotlib
+  - meson
+  - pkg-config
+  - ninja
+  - graphviz
+  - pip:
+      - setuptools
+      - setuptools_scm

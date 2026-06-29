@@ -15,8 +15,8 @@ from orbit.time_dep import waveform
 class TIME_DEP_Lattice(TEAPOT_Ring):
     """
     The subclass of the TEAPOT_Lattice.
-    TIME_DEP_Lattice has the ability to set time-dependent
-        parameters to the Lattice.
+
+    TIME_DEP_Lattice has the ability to set time-dependent parameters to the Lattice.
     Multi-turn track also available.
     """
 

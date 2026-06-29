@@ -15,12 +15,14 @@
 using namespace OrbitUtils;
 
 //macros for max and min
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 #ifndef max
 	#define max( a, b ) ( ((a) > (b)) ? (a) : (b) )
 #endif
 
 #ifndef min
 	#define min( a, b ) ( ((a) < (b)) ? (a) : (b) )
+#endif
 #endif
 
 /** Constructor. There is no parameters */

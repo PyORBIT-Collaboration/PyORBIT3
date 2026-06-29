@@ -26,7 +26,16 @@ class BunchTwissAnalysis: public OrbitUtils::CppPyWrapper
 		/** Performs the Twiss analysis of the bunch */
 		void analyzeBunch(Bunch* bunch);
 
-		/** Returns the centered correlation <(x-<x>)*(y-<y>)> = <x*y> - <x>*<y> */
+		/**
+		 * @brief Returns the centered correlation between two components.
+		 *
+		 * \f$\langle (x-\langle x\rangle)(y-\langle y\rangle)\rangle
+		 * = \langle x y\rangle - \langle x\rangle\langle y\rangle\f$
+		 *
+		 * @param ic Index of the first component (x).
+		 * @param jc Index of the second component (y).
+		 * @return The centered correlation value as a double.
+		 */
 		double getCorrelation(int ic, int jc);
 
 		/** Returns the average value for coordinate with index ic */
