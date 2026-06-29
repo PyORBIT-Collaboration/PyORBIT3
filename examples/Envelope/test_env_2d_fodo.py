@@ -90,7 +90,7 @@ def main(args: argparse.Namespace) -> None:
     cov_matrix[2, 3] = cov_matrix[3, 2] = -eps_y * alpha_y
     cov_matrix[1, 1] = eps_x * (1.0 + alpha_x**2) / beta_x
     cov_matrix[3, 3] = eps_y * (1.0 + alpha_y**2) / beta_y
-    cov_matrix[4, 4] = args.zrms**2
+    cov_matrix[4, 4] = args.bunch_length ** 2 / 12.0
     cov_matrix[5, 5] = 0.0
 
     # Tilt
@@ -127,7 +127,7 @@ def main(args: argparse.Namespace) -> None:
     history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
     for turn in range(args.turns):
         if turn > 0:
-            tracker.track(envelope)
+            tracker.track_ring(envelope)
 
         cov_matrix = envelope.cov_matrix
         centroid = envelope.centroid
@@ -158,7 +158,7 @@ def main(args: argparse.Namespace) -> None:
     bunch_coords[:, :4] = gen_dist(
         size=args.nparts, cov_matrix=cov_matrix_init[0:4, 0:4], name=args.dist
     )
-    bunch_coords[:, 4] = 2.0 * rng.uniform(-args.zrms, args.zrms, size=args.nparts)
+    bunch_coords[:, 4] = args.bunch_length * rng.uniform(-0.5, 0.5, size=args.nparts)
     bunch_coords += centroid_init[None, :6]
 
     for i in range(bunch_coords.shape[0]):
@@ -294,7 +294,7 @@ def main(args: argparse.Namespace) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--zrms", type=float, default=5.0)
+    parser.add_argument("--bunch-length", type=float, default=5.0)
     parser.add_argument("--kin-energy", type=float, default=0.0025)
     parser.add_argument("--intensity", type=float, default=5e9)
 

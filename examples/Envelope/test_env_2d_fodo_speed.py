@@ -24,7 +24,7 @@ from utils import gen_dist
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--bunch-length", type=float, default=120.0)
+parser.add_argument("--bunch-length", type=float, default=5.0)
 parser.add_argument("--kin-energy", type=float, default=1.300)
 parser.add_argument("--intensity", type=float, default=2e14)
 
@@ -74,7 +74,7 @@ cov_matrix[0, 1] = cov_matrix[1, 0] = -eps_x * alpha_x
 cov_matrix[2, 3] = cov_matrix[3, 2] = -eps_y * alpha_y
 cov_matrix[1, 1] = eps_x * (1.0 + alpha_x**2) / beta_x
 cov_matrix[3, 3] = eps_y * (1.0 + alpha_y**2) / beta_y
-cov_matrix[4, 4] = (args.bunch_length / 4.0) ** 2
+cov_matrix[4, 4] = args.bunch_length**2 / 12.0
 cov_matrix[5, 5] = 0.0
 
 cov_matrix_init = np.copy(cov_matrix)
@@ -95,7 +95,7 @@ profiler = cProfile.Profile()
 profiler.enable()
 
 for turn in trange(args.turns):
-    envelope_tracker.track(envelope)
+    envelope_tracker.track_ring(envelope)
 
 time_per_turn = (time.time() - start_time) / args.turns
 
