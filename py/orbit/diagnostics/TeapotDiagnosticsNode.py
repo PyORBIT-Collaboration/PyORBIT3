@@ -18,6 +18,11 @@ from .diagnostics import Moments
 from .diagnostics import MomentsSetMember
 from .diagnostics import BPMSignal
 
+from .eig import normalize_eigvec
+from .eig import calc_norm_matrix_from_eigvecs
+from .eig import calc_norm_matrix_from_cov
+from .eig import calc_norm_matrix_from_tmat
+
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTuneAnalysis
 
@@ -255,10 +260,14 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
         """
         self.tune_calc.setNormMatrixFromTwiss(betax, alphax, etax, etapx, betay, alphay)
 
-    def setNormMatrixFromTransferMatrix(self, matrix: np.ndarray) -> None:
+    def setNormMatrixFromTransferMatrix(self, transfer_matrix: np.ndarray) -> None:
         """Set normalization matrix from periodic transfer matrix."""
-        norm_matrix = None
+        norm_matrix = calc_norm_matrix_from_tmat(transfer_matrix)
+        self.setNormMatrix(norm_matrix)
 
+    def setNormMatrixFromCovMatrix(self, cov_matrix: np.ndarray) -> None:
+        """Set normalization matrix from matched/periodic covariance matrix."""
+        norm_matrix = calc_norm_matrix_from_cov(cov_matrix)
         self.setNormMatrix(norm_matrix)
 
     def getData(self, bunch: Bunch, index: int = None) -> dict[str, float] | dict[str, list[float]]:

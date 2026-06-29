@@ -28,7 +28,7 @@ def normalize_eigvec(v: np.ndarray) -> np.ndarray:
 
 
 def calc_norm_matrix_from_eigvecs(*eigvecs: list[np.ndarray]) -> np.ndarray:
-    ndim = eigvecs[0].shape[0]
+    ndim = len(eigvecs[0])
 
     V = np.zeros((ndim, ndim))
     for i, v in enumerate(eigvecs):
@@ -42,7 +42,7 @@ def calc_norm_matrix_from_tmat(tmat: np.ndarray) -> np.ndarray:
     eigvecs = eig_res.eigenvectors[:, ::2].T
     for i in range(eigvecs.shape[0]):
         eigvecs[i] = normalize_eigvec(eigvecs[i])
-    return calc_norm_matrix_from_eigvecs(eigvecs)
+    return calc_norm_matrix_from_eigvecs(*eigvecs)
 
 
 def calc_norm_matrix_from_cov(sigma: np.ndarray) -> np.ndarray:
@@ -53,4 +53,4 @@ def calc_norm_matrix_from_cov(sigma: np.ndarray) -> np.ndarray:
     eigvecs = eig_res.eigenvectors[:, ::2].T
     for i in range(eigvecs.shape[0]):
         eigvecs[i] = normalize_eigvec(eigvecs[i])
-    return calc_norm_matrix_from_eigvecs(eigvecs)
+    return calc_norm_matrix_from_eigvecs(*eigvecs)

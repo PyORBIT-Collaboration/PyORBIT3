@@ -46,9 +46,10 @@ bunch.getSyncParticle().kinEnergy(1.000)
 # Analyze transfer matrix
 # ------------------------------------------------------------------------------------
 
-from orbit.diagnostics.eig import calc_eigtune, normalize_eigvec, calc_norm_matrix_from_eigvecs
+from orbit.diagnostics.eig import calc_eigtune
+from orbit.diagnostics.eig import normalize_eigvec
+from orbit.diagnostics.eig import calc_norm_matrix_from_eigvecs
 
-# Estimate transfer matrix
 matrix_lattice = TEAPOT_MATRIX_Lattice(lattice, bunch)
 
 M = np.zeros((4, 4))
@@ -56,7 +57,6 @@ for i in range(4):
     for j in range(4):
         M[i, j] = matrix_lattice.getOneTurnMatrix().get(i, j)
 
-# Calculate eigenvalues and eigenvectors
 eigvals, eigvecs = np.linalg.eig(M)
 eigvals = eigvals[::2]
 eigvecs = eigvecs[:, ::2].T
@@ -64,24 +64,20 @@ eigvecs = eigvecs[:, ::2].T
 for i in range(eigvecs.shape[0]):
     eigvecs[i] = normalize_eigvec(eigvecs[i])
 
-# Calculate tunes from transfer matrix
 tune_1_true = calc_eigtune(eigvals[0])
 tune_2_true = calc_eigtune(eigvals[1])
 
-# Calculate normalization matrix from transfer matrix
 V_inv = calc_norm_matrix_from_eigvecs(*eigvecs)
 V = np.linalg.inv(V_inv)
 
-# Print normalization matrix
 print("Normalization matrix V^{-1}:")
 print(V_inv)
-
 
 # Add tune diagnostic node
 # ------------------------------------------------------------------------------------
 
 tune_node = TeapotTuneAnalysisNode()
-tune_node.setNormMatrix(V_inv)
+tune_node.setNormMatrixFromTransferMatrix(M)
 lattice.getNodes()[0].addChildNode(tune_node, 0)
 
 
