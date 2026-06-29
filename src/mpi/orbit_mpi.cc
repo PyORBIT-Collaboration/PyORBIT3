@@ -5,6 +5,7 @@
 #include <iostream>
 #include <ctime>
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 /** A C wrapper around MPI_Init. */
 int ORBIT_MPI_Init(){
   int res = 0;
@@ -620,3 +621,4 @@ int ORBIT_MPI_Get_count(MPI_Status *status, MPI_Datatype datatype, int *count){
 #endif
   return res;
 }
+#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
