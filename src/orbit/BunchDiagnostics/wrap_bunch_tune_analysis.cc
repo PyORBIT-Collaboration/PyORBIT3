@@ -82,7 +82,7 @@ static PyObject* BunchTuneAnalysis_getNormMatrixElement(PyObject *self, PyObject
 }
 
 /** Sets normalization matrix based on uncoupled Twiss parameters. */
-static PyObject* BunchTuneAnalysis_assignTwiss(PyObject *self, PyObject *args){
+static PyObject* BunchTuneAnalysis_setNormMatrixFromTwiss(PyObject *self, PyObject *args){
 	BunchTuneAnalysis* cpp_BunchTuneAnalysis = (BunchTuneAnalysis*)((pyORBIT_Object*) self)->cpp_obj;
 	double betax;
 	double alphax;
@@ -92,10 +92,10 @@ static PyObject* BunchTuneAnalysis_assignTwiss(PyObject *self, PyObject *args){
 	double alphay;
 	double etay;
 	double etapy;
-	if(!PyArg_ParseTuple(args,"dddddd:assignTwiss",&betax, &alphax, &etax, &etapx, &betay, &alphay)){
+	if(!PyArg_ParseTuple(args,"dddddd:setNormMatrixFromTwiss",&betax, &alphax, &etax, &etapx, &betay, &alphay)){
 		ORBIT_MPI_Finalize("BunchTuneAnalysis - getTwiss(double betax, double alphax, double etax, double etapx, double betay, double alphay) - parameter are needed.");
 	}
-	cpp_BunchTuneAnalysis->assignTwiss(betax, alphax, etax, etapx, betay, alphay);
+	cpp_BunchTuneAnalysis->setNormMatrixFromTwiss(betax, alphax, etax, etapx, betay, alphay);
 	Py_INCREF(Py_None);
 	return Py_None;
 }
@@ -113,7 +113,7 @@ static PyMethodDef BunchTuneAnalysisClassMethods[] = {
 	{ "analyzeBunch", BunchTuneAnalysis_analyzeBunch, METH_VARARGS,"Analyzes the bunch."},
 	{ "setNormMatrixElement", BunchTuneAnalysis_setNormMatrixElement, METH_VARARGS,"Sets normalization matrix element."},
 	{ "getNormMatrixElement", BunchTuneAnalysis_getNormMatrixElement, METH_VARARGS,"Gets normalization matrix element."},
-	{ "assignTwiss", BunchTuneAnalysis_assignTwiss, METH_VARARGS,"Sets normalization matrix based on uncoupled Twiss parameters."},
+	{ "setNormMatrixFromTwiss", BunchTuneAnalysis_setNormMatrixFromTwiss, METH_VARARGS,"Sets normalization matrix based on uncoupled Twiss parameters."},
 	{NULL}
 };
 

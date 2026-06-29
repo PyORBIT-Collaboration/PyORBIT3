@@ -194,7 +194,7 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
     """
     def __init__(self, name: str = "tuneanalysis no name") -> None:
         DriftTEAPOT.__init__(self, name)
-        self.bunchtune = BunchTuneAnalysis()
+        self.tune_calc = BunchTuneAnalysis()
         self.setType("tune calculator teapot")
         self.lattlength = 0.0
         self.setLength(0.0)
@@ -207,7 +207,7 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
         """Implementation of the AccNodeBunchTracker class track(probe) method."""
         if not self.active:
             return
-        self.bunchtune.analyzeBunch(paramsDict["bunch"])
+        self.tune_calc.analyzeBunch(paramsDict["bunch"])
 
     def setActive(self, active: bool) -> None:
         self.active = active
@@ -227,14 +227,14 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
         ndim = norm_matrix.shape[0]
         for i in range(ndim):
             for j in range(ndim):
-                self.bunchtune.setNormMatrixElement(i, j, norm_matrix[i, j])
+                self.tune_calc.setNormMatrixElement(i, j, norm_matrix[i, j])
 
     def getNormMatrix(self) -> np.ndarray:
         """Return normalization matrix of shape (6, 6)."""
         norm_matrix = np.zeros((6, 6))
         for i in range(6):
             for j in range(6):
-                norm_matrix[i][j] = self.bunchtune.getNormMatrixElement(i, j)
+                norm_matrix[i][j] = self.tune_calc.getNormMatrixElement(i, j)
         return norm_matrix
 
     def setNormMatrixFromTwiss(
@@ -253,7 +253,7 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
         etax: Dispersion in x plane.
         etapx: Disperion prime in x plane.
         """
-        self.bunchtune.assignTwiss(betax, alphax, etax, etapx, betay, alphay)
+        self.tune_calc.setNormMatrixFromTwiss(betax, alphax, etax, etapx, betay, alphay)
 
     def getData(self, bunch: Bunch, index: int = None) -> dict[str, float] | dict[str, list[float]]:
         """Return tune and action data.

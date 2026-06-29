@@ -30,7 +30,7 @@ double BunchTuneAnalysis::getNormMatrixElement(int i, int j) {
     return matrix[i][j];
 }
 
-void BunchTuneAnalysis::assignTwiss(double betax, double alphax, double etax, double etapx, double betay, double alphay) {
+void BunchTuneAnalysis::setNormMatrixFromTwiss(double betax, double alphax, double etax, double etapx, double betay, double alphay) {
 	// Set V_{-1} = I
 	for (int i = 0; i < 6; i++) {
 		for (int j = 0; j < 6; j++) {

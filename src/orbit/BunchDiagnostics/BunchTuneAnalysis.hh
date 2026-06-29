@@ -29,7 +29,7 @@ class BunchTuneAnalysis: public OrbitUtils::CppPyWrapper
 		double getNormMatrixElement(int i, int j);
 
 		/** Sets normalization matrix based on uncoupled Twiss parameters. */
-		void assignTwiss(double betax, double alphax, double etax, double etapx, double betay, double alphay);
+		void setNormMatrixFromTwiss(double betax, double alphax, double etax, double etapx, double betay, double alphay);
 
 	private:
 		// Normalization matrix V^{-1}
