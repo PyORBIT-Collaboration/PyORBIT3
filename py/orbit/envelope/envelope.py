@@ -486,6 +486,7 @@ class EnvelopeTracker:
         # For pre-computing elements
         self.elements = []
         self.one_turn_matrix = None
+        # [TO DO] option to return one-turn matrix including linear space charge
 
         for node in self.lattice.getNodes():
             if type(node) in (BendTEAPOT, BendLINAC):
