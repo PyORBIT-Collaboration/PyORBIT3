@@ -41,14 +41,14 @@ from .matrix import get_dp_p_coeff
 from .matrix import get_zp_coeff
 from .matrix import convert_matrix_dp_p_to_dE
 from .matrix import convert_matrix_zp_to_dE
-from .matrix import track_sync_part_tilt
-from .matrix import track_sync_part_kick
-from .matrix import track_sync_part_drift
-from .matrix import track_sync_part_quad
-from .matrix import track_sync_part_bend
-from .matrix import track_sync_part_solenoid
-from .matrix import track_sync_part_rf_gap
-from .matrix import track_sync_part_cf
+from .matrix import get_matrix_tilt
+from .matrix import get_matrix_kick
+from .matrix import get_matrix_drift
+from .matrix import get_matrix_quad
+from .matrix import get_matrix_bend
+from .matrix import get_matrix_solenoid
+from .matrix import get_matrix_rf_gap
+from .matrix import get_matrix_cf
 from .utils import gen_dist
 from .utils import proj_cov_matrix
 
@@ -82,7 +82,7 @@ def build_diag_matrix_from_xyz_eig(eigenvectors: np.ndarray) -> np.ndarray:
     return A
 
 
-def track_sync_part(
+def get_matrix(
     node: AccNode,
     sync_part: SyncParticle,
     charge: float,
@@ -123,7 +123,7 @@ def track_sync_part(
     if node_type is DriftTEAPOT:
         if length <= 0:
             return None
-        return track_sync_part_drift(sync_part=sync_part, length=length)
+        return get_matrix_drift(sync_part=sync_part, length=length)
 
     elif node_type is SolenoidTEAPOT:
         if length <= 0:
@@ -131,13 +131,13 @@ def track_sync_part(
         B = node.getParam("B")
         if node.waveform:
             B *= node.waveform.getStrength()
-        return track_sync_part_solenoid(sync_part=sync_part, length=length, B=B, charge=charge)
+        return get_matrix_solenoid(sync_part=sync_part, length=length, B=B, charge=charge)
 
     elif node_type is MultipoleTEAPOT:
         if length <= 0:
             return None
         if np.all(np.abs(node.getParam("kls")) == 0):
-            return track_sync_part_drift(sync_part=sync_part, length=length)
+            return get_matrix_drift(sync_part=sync_part, length=length)
 
     elif node_type is QuadTEAPOT:
         if length <= 0:
@@ -145,7 +145,7 @@ def track_sync_part(
         kq = node.getParam("kq")
         if node.waveform:
             kq *= node.waveform.getStrength()
-        return track_sync_part_quad(sync_part=sync_part, length=length, kq=kq, charge=charge)
+        return get_matrix_quad(sync_part=sync_part, length=length, kq=kq, charge=charge)
 
     elif node_type is BendTEAPOT:
         if length <= 0:
@@ -153,7 +153,7 @@ def track_sync_part(
         theta = node.getParam("theta") / (nparts - 1)
         if index == 0 or index == nparts - 1:
             theta *= 0.5
-        return track_sync_part_bend(sync_part=sync_part, length=length, theta=theta, charge=charge)
+        return get_matrix_bend(sync_part=sync_part, length=length, theta=theta, charge=charge)
 
     elif node_type is KickTEAPOT:
         scale = 1.0
@@ -167,17 +167,17 @@ def track_sync_part(
 
         if abs(kx) > 0 or abs(ky) > 0 or abs(kE) > 0:
             return np.matmul(
-                track_sync_part_kick(sync_part=sync_part, kx=kx, ky=ky, kE=kE),
-                track_sync_part_drift(sync_part=sync_part, length=length),
+                get_matrix_kick(sync_part=sync_part, kx=kx, ky=ky, kE=kE),
+                get_matrix_drift(sync_part=sync_part, length=length),
             )
         else:
-            return track_sync_part_drift(sync_part=sync_part, length=length)
+            return get_matrix_drift(sync_part=sync_part, length=length)
 
     elif node_type is TiltTEAPOT:
         angle = node.getTiltAngle()
         if angle == 0:
             return None
-        return track_sync_part_tilt(sync_part=sync_part, angle=angle)
+        return get_matrix_tilt(sync_part=sync_part, angle=angle)
 
     elif node_type is ContinuousLinearFocusingTEAPOT:
         if length <= 0:
@@ -185,19 +185,19 @@ def track_sync_part(
         kq = node.getParam("kq")
         if node.waveform:
             kq *= node.waveform.getStrength()
-        return track_sync_part_cf(sync_part=sync_part, length=length, kq=kq)
+        return get_matrix_cf(sync_part=sync_part, length=length, kq=kq)
 
     elif node_type is DriftLINAC:
         if length <= 0:
             return None
-        return track_sync_part_drift(sync_part=sync_part, length=length)
+        return get_matrix_drift(sync_part=sync_part, length=length)
 
     elif node_type is QuadLINAC:
         if length <= 0:
             return None
         brho = 3.335640952 * sync_part.momentum() / charge
         kq = node.getParam("dB/dr") / brho
-        return track_sync_part_quad(sync_part=sync_part, length=length, kq=kq, charge=charge)
+        return get_matrix_quad(sync_part=sync_part, length=length, kq=kq, charge=charge)
 
     elif node_type is BendLINAC:
         if length <= 0:
@@ -205,7 +205,7 @@ def track_sync_part(
         theta = node.getParam("theta") / (nparts - 1)
         if index == 0 or index == nparts - 1:
             theta *= 0.5
-        return track_sync_part_bend(sync_part=sync_part, length=length, theta=theta, charge=charge)
+        return get_matrix_bend(sync_part=sync_part, length=length, theta=theta, charge=charge)
 
     elif node_type is DCorrectorHLINAC:
         length = node.getParam("effLength") / nparts
@@ -213,7 +213,7 @@ def track_sync_part(
         delta_xp = -field * charge * length * 0.299792 / sync_part.momentum()
         if delta_xp == 0:
             return None
-        return track_sync_part_kick(sync_part=sync_part, kx=delta_xp, ky=0.0, kE=0.0)
+        return get_matrix_kick(sync_part=sync_part, kx=delta_xp, ky=0.0, kE=0.0)
 
     elif node_type is DCorrectorVLINAC:
         length = node.getParam("effLength") / nparts
@@ -221,19 +221,19 @@ def track_sync_part(
         delta_yp = -field * charge * length * 0.299792 / sync_part.momentum()
         if delta_yp == 0:
             return None
-        return track_sync_part_kick(sync_part=sync_part, kx=0.0, ky=delta_yp, kE=0.0)
+        return get_matrix_kick(sync_part=sync_part, kx=0.0, ky=delta_yp, kE=0.0)
 
     elif node_type is SolenoidLINAC:
         if length <= 0:
             return None
         B = node.getParam("B")
-        return track_sync_part_solenoid(sync_part=sync_part, length=length, B=B, charge=charge)
+        return get_matrix_solenoid(sync_part=sync_part, length=length, B=B, charge=charge)
 
     elif node_type is TiltLINAC:
         angle = node.getTiltAngle()
         if angle == 0:
             return None
-        return track_sync_part_tilt(sync_part=sync_part, angle=angle)
+        return get_matrix_tilt(sync_part=sync_part, angle=angle)
 
     elif node_type is BaseRF_Gap:
         E0TL = node.getParam("E0TL")
@@ -260,7 +260,7 @@ def track_sync_part(
         if amplitude == 0.0:
             return None
 
-        return track_sync_part_rf_gap(
+        return get_matrix_rf_gap(
             sync_part=sync_part,
             frequency=frequency,
             E0TL=(E0TL * amplitude),
@@ -505,13 +505,13 @@ class EnvelopeTracker:
 
         for node_index, node in enumerate(self.lattice.getNodes()):
             for child_node in node.getChildNodes(ENTRANCE):
-                matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
+                matrix = get_matrix(child_node, sync_part=sync_part, charge=charge)
                 if matrix is not None:
                     envelope.transform(matrix)
 
             for part_index in range(node.getnParts()):
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
-                    matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
+                    matrix = get_matrix(child_node, sync_part=sync_part, charge=charge)
                     if matrix is not None:
                         envelope.transform(matrix)
 
@@ -526,19 +526,19 @@ class EnvelopeTracker:
                         else:
                             raise ValueError
 
-                matrix = track_sync_part(node, sync_part=sync_part, charge=charge, index=part_index)
+                matrix = get_matrix(node, sync_part=sync_part, charge=charge, index=part_index)
                 if matrix is not None:
                     if matrix_sc is not None:
                         matrix = matrix @ matrix_sc
                     envelope.transform(matrix)
 
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
-                    matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
+                    matrix = get_matrix(child_node, sync_part=sync_part, charge=charge)
                     if matrix is not None:
                         envelope.transform(matrix)
 
             for child_node in node.getChildNodes(EXIT):
-                matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
+                matrix = get_matrix(child_node, sync_part=sync_part, charge=charge)
                 if matrix is not None:
                     envelope.transform(matrix)
 
@@ -563,13 +563,13 @@ class EnvelopeTracker:
 
         for node_index, node in enumerate(self.lattice.getNodes()):
             for child_node in node.getChildNodes(ENTRANCE):
-                matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
+                matrix = get_matrix(child_node, sync_part=sync_part, charge=charge)
                 if matrix is not None:
                     envelope.transform(matrix)
 
             for part_index in range(node.getnParts()):
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
-                    matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
+                    matrix = get_matrix(child_node, sync_part=sync_part, charge=charge)
                     if matrix is not None:
                         envelope.transform(matrix)
 
@@ -584,7 +584,7 @@ class EnvelopeTracker:
                         else:
                             raise ValueError
 
-                matrix = track_sync_part(node, sync_part=sync_part, charge=charge, index=part_index)
+                matrix = get_matrix(node, sync_part=sync_part, charge=charge, index=part_index)
                 if matrix is not None:
                     if matrix_sc is not None:
                         matrix = matrix @ matrix_sc
@@ -600,12 +600,12 @@ class EnvelopeTracker:
                 history["kin_energy"].append(envelope.sync_part.kinEnergy())
 
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
-                    matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
+                    matrix = get_matrix(child_node, sync_part=sync_part, charge=charge)
                     if matrix is not None:
                         envelope.transform(matrix)
 
             for child_node in node.getChildNodes(EXIT):
-                matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
+                matrix = get_matrix(child_node, sync_part=sync_part, charge=charge)
                 if matrix is not None:
                     envelope.transform(matrix)
 
@@ -622,13 +622,13 @@ class EnvelopeTracker:
         self.elements = []
         for node_index, node in enumerate(self.lattice.getNodes()):
             for child_node in node.getChildNodes(ENTRANCE):
-                matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
+                matrix = get_matrix(child_node, sync_part=sync_part, charge=charge)
                 if matrix is not None:
                     self.elements.append((child_node, matrix))
 
             for part_index in range(node.getnParts()):
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
-                    matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
+                    matrix = get_matrix(child_node, sync_part=sync_part, charge=charge)
                     if matrix is not None:
                         self.elements.append((child_node, matrix))
 
@@ -637,17 +637,17 @@ class EnvelopeTracker:
                     if length > 0:
                         self.elements.append(("sc", length))
 
-                matrix = track_sync_part(node, sync_part=sync_part, charge=charge, index=part_index)
+                matrix = get_matrix(node, sync_part=sync_part, charge=charge, index=part_index)
                 if matrix is not None:
                     self.elements.append((node, matrix))
 
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
-                    matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
+                    matrix = get_matrix(child_node, sync_part=sync_part, charge=charge)
                     if matrix is not None:
                         self.elements.append((node, matrix))
 
             for child_node in node.getChildNodes(EXIT):
-                matrix = track_sync_part(child_node, sync_part=sync_part, charge=charge)
+                matrix = get_matrix(child_node, sync_part=sync_part, charge=charge)
                 if matrix is not None:
                     self.elements.append((node, matrix))
 

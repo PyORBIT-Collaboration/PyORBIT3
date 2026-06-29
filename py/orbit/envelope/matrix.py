@@ -48,7 +48,7 @@ def convert_matrix_zp_to_dE(matrix: np.ndarray, sync_part: SyncParticle) -> np.n
     return matrix
 
 
-def track_sync_part_tilt(sync_part: SyncParticle, angle: float) -> np.ndarray:
+def get_matrix_tilt(sync_part: SyncParticle, angle: float) -> np.ndarray:
     cos_phi = math.cos(angle)
     sin_phi = math.sin(angle)
 
@@ -60,7 +60,7 @@ def track_sync_part_tilt(sync_part: SyncParticle, angle: float) -> np.ndarray:
     return M
 
 
-def track_sync_part_kick(sync_part: SyncParticle, kx: float = 0.0, ky: float = 0.0, kE: float = 0.0) -> np.ndarray:
+def get_matrix_kick(sync_part: SyncParticle, kx: float = 0.0, ky: float = 0.0, kE: float = 0.0) -> np.ndarray:
     M = np.identity(7)
     M[1, -1] = kx
     M[3, -1] = ky
@@ -68,7 +68,7 @@ def track_sync_part_kick(sync_part: SyncParticle, kx: float = 0.0, ky: float = 0
     return M
 
 
-def track_sync_part_drift(sync_part: SyncParticle, length: float) -> np.ndarray:
+def get_matrix_drift(sync_part: SyncParticle, length: float) -> np.ndarray:
     M = np.identity(7)
     M[0, 1] = length
     M[2, 3] = length
@@ -79,9 +79,9 @@ def track_sync_part_drift(sync_part: SyncParticle, length: float) -> np.ndarray:
     return M
 
 
-def track_sync_part_quad(sync_part: SyncParticle, length: float, kq: float, charge: float) -> np.ndarray:
+def get_matrix_quad(sync_part: SyncParticle, length: float, kq: float, charge: float) -> np.ndarray:
     if abs(kq) == 0 or charge == 0:
-        return track_sync_part_drift(sync_part=sync_part, length=length)
+        return get_matrix_drift(sync_part=sync_part, length=length)
 
     sqrt_abs_kq = math.sqrt(abs(kq))
 
@@ -120,7 +120,7 @@ def track_sync_part_quad(sync_part: SyncParticle, length: float, kq: float, char
     return M
 
 
-def track_sync_part_bend(sync_part: SyncParticle, length: float, theta: float, charge: float) -> np.ndarray:
+def get_matrix_bend(sync_part: SyncParticle, length: float, theta: float, charge: float) -> np.ndarray:
     if length <= 0:
         return np.identity(7)
 
@@ -145,9 +145,9 @@ def track_sync_part_bend(sync_part: SyncParticle, length: float, theta: float, c
     return M
 
 
-def track_sync_part_solenoid(sync_part: SyncParticle, length: float, B: float, charge: float) -> np.ndarray:
+def get_matrix_solenoid(sync_part: SyncParticle, length: float, B: float, charge: float) -> np.ndarray:
     if B == 0:
-        return track_sync_part_drift(sync_part=sync_part, length=length)
+        return get_matrix_drift(sync_part=sync_part, length=length)
 
     phase = B * length
 
@@ -178,12 +178,12 @@ def track_sync_part_solenoid(sync_part: SyncParticle, length: float, B: float, c
     return M
 
 
-def track_sync_part_cf(sync_part: SyncParticle, length: float, kq: float) -> np.ndarray:
+def get_matrix_cf(sync_part: SyncParticle, length: float, kq: float) -> np.ndarray:
     if length <= 0:
         return
 
     if kq == 0:
-        return track_sync_part_drift(sync_part=sync_part, length=length)
+        return get_matrix_drift(sync_part=sync_part, length=length)
 
     sqrt_abs_kq = math.sqrt(abs(kq))
 
@@ -202,7 +202,7 @@ def track_sync_part_cf(sync_part: SyncParticle, length: float, kq: float) -> np.
     return M
 
 
-def track_sync_part_rf_gap(sync_part: SyncParticle, frequency: float, E0TL: float, phase: float, charge: float) -> np.ndarray:
+def get_matrix_rf_gap(sync_part: SyncParticle, frequency: float, E0TL: float, phase: float, charge: float) -> np.ndarray:
     gamma = sync_part.gamma()
     beta = sync_part.beta()
     mass = sync_part.mass()
