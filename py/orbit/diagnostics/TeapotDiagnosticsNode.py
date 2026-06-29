@@ -1,5 +1,7 @@
 """TEAPOT-style bunch diagnostic nodes."""
 
+import numpy as np
+
 from ..utils import orbitFinalize
 from ..utils import NamedObject
 from ..utils import ParamsDictObject
@@ -180,47 +182,17 @@ class TeapotMomentsNodeSetMember(DriftTEAPOT):
 
 
 class TeapotTuneAnalysisNode(DriftTEAPOT):
-    """One-turn tune analysis node.
+    """Estimates tunes from coordinates on neighboring turns.
 
     This node computes the tunes and actions of each particle in the bunch.
-
     We use the Average Phase Advance (APA) method to estimate the tunes [1].
     We use only a single turn rather than the average of multiple turns.
 
-    The tune and action in each mode (1, 2 -> x, y) are estimated by first
-    normalizing the coordinates:
-
-    .. math::
-        \mathbf{u} = \mathbf{V}^{-1} \mathbf{x},
-
-    where :math:`\mathbf{x} = [x, x', y,  y', z, \delta_p]^T` and 
-    :math:`\mathbf{u} = [u_1, u_1', u_2, u_2', u_3, u_3']^T`. If the normalization
-    matrix :math:`\mathbf{V}^{-1}` is chosen correctly, the turn-by-turn coordinates 
-    in the :math:`u_k - u_k'` phase space will trace a circle of area :math:`2 \pi J_k`,
-    where :math:`J_k(u_k, u_k')` is defined as the *action*:
-    
-    .. math::
-        J_k(u_k, u_k') = (u_k^2 + u_k'^2) / 2.
-
-    The phase :math:`\theta_k` is defined by
-
-    .. math::
-        \tan{\theta_k} = u_1' / u_1.
-
-    The tune :math:`\nu_k` is estimated from the phases on turns $t$ and $t + 1$:
-
-    .. math::
-        \nu_k = - (\theta_k^{(t + 1)} - \theta_k^{(t)}).
-    
-
-    References
-    ----------
     [1] https://cds.cern.ch/record/292773/files/p147.pdf
     [2] https://arxiv.org/pdf/1207.5526
     [3] S. Y. Lee, *Accelerator Physics*
     """
     def __init__(self, name: str = "tuneanalysis no name") -> None:
-        """Constructor."""
         DriftTEAPOT.__init__(self, name)
         self.bunchtune = BunchTuneAnalysis()
         self.setType("tune calculator teapot")
@@ -235,10 +207,7 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
         """Implementation of the AccNodeBunchTracker class track(probe) method."""
         if not self.active:
             return
-
-        length = self.getLength(self.getActivePartIndex())
-        bunch = paramsDict["bunch"]
-        self.bunchtune.analyzeBunch(bunch)
+        self.bunchtune.analyzeBunch(paramsDict["bunch"])
 
     def setActive(self, active: bool) -> None:
         self.active = active
@@ -249,35 +218,26 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
     def setLatticeLength(self, lattlength):
         self.lattlength = lattlength
 
-    def setNormMatrix(self, norm_matrix: list[list[float]]) -> None:
+    def setNormMatrix(self, norm_matrix: np.ndarray) -> None:
         """Set the normalization matrix.
         
-        Args;
+        Args:
             norm_matrix: Normalization matrix of shape (4, 4) or (6, 6).
         """
-        ndim = len(norm_matrix)
-        norm_matrix_list = list(norm_matrix)
+        ndim = norm_matrix.shape[0]
         for i in range(ndim):
             for j in range(ndim):
-                value = float(norm_matrix_list[i][j])
-                self.bunchtune.setNormMatrixElement(i, j, value)
+                self.bunchtune.setNormMatrixElement(i, j, norm_matrix[i, j])
 
-    def getNormMatrix(self) -> list[list[float]]:
+    def getNormMatrix(self) -> np.ndarray:
         """Return normalization matrix of shape (6, 6)."""
-        norm_matrix = [
-            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        ]
+        norm_matrix = np.zeros((6, 6))
         for i in range(6):
             for j in range(6):
                 norm_matrix[i][j] = self.bunchtune.getNormMatrixElement(i, j)
         return norm_matrix
 
-    def assignTwiss(
+    def setNormMatrixFromTwiss(
         self, 
         betax: float, 
         alphax: float, 
@@ -286,7 +246,7 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
         betay: float, 
         alphay: float,
     ) -> None:
-        """Set the 2D twiss parameters for the coordinate normalization.
+        """Set normalization matrix from Twiss parameters (x, y) and dispersion.
         
         betax{y}: Beta parameter in x{y} plane.
         alphax{y}: Alpha parameter in x{y} plane.
