@@ -122,7 +122,7 @@ def main(args: argparse.Namespace) -> None:
 
     print("TRACK ENVELOPE")
 
-    tracker = EnvelopeTracker(lattice, space_charge=("2d" if args.sc else None))
+    tracker = EnvelopeTracker(lattice, sc=("2d" if args.sc else None))
 
     history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
     for turn in range(args.turns):

@@ -34,9 +34,7 @@ plt.style.use("style.mplstyle")
 
 
 def rotation_matrix_3d(angle_x: float, angle_y: float, angle_z: float) -> np.ndarray:
-    return scipy.spatial.transform.Rotation.from_euler(
-        "xyz", [angle_x, angle_y, angle_z]
-    ).as_matrix()
+    return scipy.spatial.transform.Rotation.from_euler("xyz", [angle_x, angle_y, angle_z]).as_matrix()
 
 
 def build_cov_matrix_xyz(rms_sizes: np.ndarray, rotation_matrix: np.ndarray = None) -> np.ndarray:
@@ -105,7 +103,7 @@ def main(args: argparse.Namespace) -> None:
     # ------------------------------------------------------------------------------
     print("TRACK ENVELOPE")
 
-    tracker = EnvelopeTracker(lattice, space_charge=("3d" if args.sc else None))
+    tracker = EnvelopeTracker(lattice, sc=("3d" if args.sc else None))
 
     history = {"xrms": [], "yrms": [], "zrms": []}
     for turn in range(args.turns):

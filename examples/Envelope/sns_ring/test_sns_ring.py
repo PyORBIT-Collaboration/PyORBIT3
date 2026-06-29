@@ -165,7 +165,7 @@ envelope = Envelope(
     centroid=centroid_init,
     intensity=args.intensity,
 )
-envelope_tracker = EnvelopeTracker(lattice, space_charge=("2d" if args.sc else None))
+tracker = EnvelopeTracker(lattice, sc=("2d" if args.sc else None))
 
 history_keys = [
     "rms_x",
@@ -181,7 +181,7 @@ start_time = time.time()
 
 for turn in range(args.turns + 1):
     if turn > 0:
-        envelope_tracker.track_ring(envelope)
+        tracker.track_ring(envelope)
 
     cov_matrix = envelope.cov_matrix
     centroid = envelope.centroid

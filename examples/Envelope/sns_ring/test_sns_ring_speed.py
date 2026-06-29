@@ -84,7 +84,7 @@ envelope = Envelope(
     cov_matrix=cov_matrix_init,
     intensity=args.intensity,
 )
-envelope_tracker = EnvelopeTracker(lattice, space_charge=("2d" if args.sc else None))
+tracker = EnvelopeTracker(lattice, sc=("2d" if args.sc else None))
 
 start_time = time.time()
 
@@ -92,7 +92,7 @@ profiler = cProfile.Profile()
 profiler.enable()
 
 for turn in trange(args.turns):
-    envelope_tracker.track_ring(envelope)
+    tracker.track_ring(envelope)
 
 time_per_turn = (time.time() - start_time) / args.turns
 

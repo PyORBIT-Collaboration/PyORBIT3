@@ -1,8 +1,16 @@
+"""SNS linac benchmark.
+
+Note that there is no analytic benchmark with 3D space charge since there
+is no 3D KV equilibrium distribution. For comparison to particle tracking,
+we use the `SpaceChargeCalcUnifEllipse` space charge calculator, which
+approximates the charge distribution as a uniform-density ellipsoid with
+the same x-y-z covariance matrix as the real charge distribution. (It
+currently assumes an upright ellipsoid.)
+"""
 import argparse
 import math
 import os
 import random
-import time
 import sys
 
 import numpy as np
@@ -164,10 +172,10 @@ for i in range(6):
 
 envelope = Envelope(bunch=bunch, cov_matrix=cov_matrix, intensity=intensity)
 
-envelope_tracker = EnvelopeTracker(lattice, space_charge=("3d" if args.sc else None))
+tracker = EnvelopeTracker(lattice, sc=("3d" if args.sc else None))
 
 histories = {}
-histories["envelope"] = envelope_tracker.track_history(envelope)
+histories["envelope"] = tracker.track_history(envelope)
 
 
 # Track bunch
