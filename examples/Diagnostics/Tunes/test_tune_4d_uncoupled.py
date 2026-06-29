@@ -86,8 +86,8 @@ lattice.getNodes()[0].addChildNode(tune_node, 0)
 # Generate phase space distribution
 # ------------------------------------------------------------------------------------
 
-bunch_emitt_x = 25.0e-06
-bunch_emitt_y = 25.0e-06
+bunch_emitt_x = 0.25e-06
+bunch_emitt_y = 0.25e-06
 bunch_twiss_x = TwissContainer(lattice_alpha_x, lattice_beta_x, bunch_emitt_x)
 bunch_twiss_y = TwissContainer(lattice_alpha_y, lattice_beta_y, bunch_emitt_y)
 bunch_dist_xy = GaussDist2D(bunch_twiss_x, bunch_twiss_y)

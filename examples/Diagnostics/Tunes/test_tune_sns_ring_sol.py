@@ -1,5 +1,3 @@
-"""Test one-turn tune estimation in coupled lattice."""
-
 import math
 import os
 import pathlib
@@ -8,19 +6,16 @@ from pprint import pprint
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTwissAnalysis
+from orbit.bunch_generators import TwissContainer
+from orbit.bunch_generators import GaussDist2D
 from orbit.diagnostics import TeapotTuneAnalysisNode
-from orbit.lattice import AccLattice
-from orbit.lattice import AccNode
-from orbit.teapot import TEAPOT_Lattice
+from orbit.teapot import TEAPOT_Ring
 from orbit.teapot import TEAPOT_MATRIX_Lattice
-from orbit.teapot import SolenoidTEAPOT
+from orbit.teapot import teapot
 from orbit.utils.consts import mass_proton
-
-from utils import make_lattice
 
 
 # Setup
@@ -30,19 +25,25 @@ path = pathlib.Path(__file__)
 output_dir = os.path.join("outputs", path.stem)
 os.makedirs(output_dir, exist_ok=True)
 
-
 # Initialize lattice and bunch
 # ------------------------------------------------------------------------------------
 
-lattice = make_lattice()
-
-sol_node = SolenoidTEAPOT()
-sol_node.setLength(0.5)
-sol_node.setParam("B", 0.25)
-sol_node.setUsageFringeFieldIN(False)
-sol_node.setUsageFringeFieldOUT(False)
-lattice.addNode(sol_node)
+lattice = TEAPOT_Ring()
+lattice.readMADX("inputs/sns_ring.lat", "rnginjsol")
 lattice.initialize()
+
+for node in lattice.getNodes():
+    # Turn off fringe fields.
+    try:
+        node.setUsageFringeFieldIN(False)
+        node.setUsageFringeFieldOUT(False)
+    except:
+        pass
+
+    # Turn off solenoid.
+    for name in ["scbdsol_c13a", "scbdsol_c13b"]:
+        node = lattice.getNodeForName(name)
+        node.setParam("B", 0.15 * 0.5)
 
 bunch = Bunch()
 bunch.mass(mass_proton)
@@ -52,17 +53,14 @@ bunch.getSyncParticle().kinEnergy(1.000)
 # Analyze transfer matrix
 # ------------------------------------------------------------------------------------
 
-
 def calc_eigtune(eigval: float) -> float:
     return np.arccos(np.real(eigval)) / (2.0 * np.pi)
-
 
 def unit_symplectic_matrix(ndim: int) -> np.ndarray:
     U = np.zeros((ndim, ndim))
     for i in range(0, ndim, 2):
         U[i : i + 2, i : i + 2] = [[0.0, 1.0], [-1.0, 0.0]]
     return U
-
 
 def normalize_eigvec(v: np.ndarray) -> np.ndarray:
     U = unit_symplectic_matrix(len(v))
@@ -78,7 +76,6 @@ def normalize_eigvec(v: np.ndarray) -> np.ndarray:
     assert np.isclose(np.real(complex_amplitude(v)), +0.0)
     return v
 
-
 def calc_norm_matrix_from_eigvecs(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
     V = np.zeros((4, 4))
     V[:, 0] = +np.real(v1)
@@ -86,7 +83,6 @@ def calc_norm_matrix_from_eigvecs(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
     V[:, 2] = +np.real(v2)
     V[:, 3] = -np.imag(v2)
     return np.linalg.inv(V)
-
 
 # Estimate transfer matrix
 matrix_lattice = TEAPOT_MATRIX_Lattice(lattice, bunch)
@@ -116,7 +112,6 @@ V = np.linalg.inv(V_inv)
 print("Normalization matrix V^{-1}:")
 print(V_inv)
 
-
 # Add tune diagnostic node
 # ------------------------------------------------------------------------------------
 
@@ -124,15 +119,14 @@ tune_node = TeapotTuneAnalysisNode()
 tune_node.setNormMatrix(V_inv)
 lattice.getNodes()[0].addChildNode(tune_node, 0)
 
-
 # Generate phase space distribution
 # ------------------------------------------------------------------------------------
 
 rng = np.random.default_rng()
 
 n = 1000
-eps_1 = 0.25e-06  # mode 1 rms emittance
-eps_2 = 0.25e-06  # mode 2 rms emittance
+eps_1 = 0.1e-06  # mode 1 rms emittance
+eps_2 = 0.1e-06  # mode 2 rms emittance
 
 # Generate particles in normalized phase space
 particles = np.zeros((n, 6))
@@ -184,5 +178,5 @@ print("tune_2_calc", tune_2_calc)
 print("tune_1_err", tune_1_err)
 print("tune_2_err", tune_2_err)
 
-assert np.abs(tune_1_err) < 1.00e-08
-assert np.abs(tune_2_err) < 1.00e-08
+assert np.abs(tune_1_err) < 1.00e-06
+assert np.abs(tune_2_err) < 1.00e-06

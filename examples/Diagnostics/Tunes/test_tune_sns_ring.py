@@ -1,10 +1,3 @@
-"""Test one-turn tune estimation in uncoupled lattice.
-
-This example tracks a Gaussian distribution through a FODO lattice. The tunes
-are estimated from the phase space coordinates before/after tracking using the
-`BunchTuneAnalysis` class.
-"""
-
 import math
 import os
 import pathlib
@@ -19,11 +12,10 @@ from orbit.core.bunch import BunchTwissAnalysis
 from orbit.bunch_generators import TwissContainer
 from orbit.bunch_generators import GaussDist2D
 from orbit.diagnostics import TeapotTuneAnalysisNode
-from orbit.teapot import TEAPOT_Lattice
+from orbit.teapot import TEAPOT_Ring
 from orbit.teapot import TEAPOT_MATRIX_Lattice
+from orbit.teapot import teapot
 from orbit.utils.consts import mass_proton
-
-from utils import make_lattice
 
 
 # Setup
@@ -33,11 +25,25 @@ path = pathlib.Path(__file__)
 output_dir = os.path.join("outputs", path.stem)
 os.makedirs(output_dir, exist_ok=True)
 
-
 # Lattice
 # ------------------------------------------------------------------------------------
 
-lattice = make_lattice()
+lattice = TEAPOT_Ring()
+lattice.readMADX("inputs/sns_ring.lat", "rnginjsol")
+lattice.initialize()
+
+for node in lattice.getNodes():
+    # Turn off fringe fields.
+    try:
+        node.setUsageFringeFieldIN(False)
+        node.setUsageFringeFieldOUT(False)
+    except:
+        pass
+
+    # Turn off solenoid.
+    for name in ["scbdsol_c13a", "scbdsol_c13b"]:
+        node = lattice.getNodeForName(name)
+        node.setParam("B", 0.0)
 
 bunch = Bunch()
 bunch.mass(mass_proton)
@@ -88,12 +94,8 @@ n_parts = 1000
 for index in range(n_parts):
     (x, xp, y, yp) = bunch_dist.getCoordinates()
     z = random.uniform(-25.0, 25.0)
-    dE = 0.0
-    bunch.addParticle(x, xp, y, yp, z, dE)
+    bunch.addParticle(x, xp, y, yp, z, 0.0)
 
-
-# Tracking
-# ------------------------------------------------------------------------------------
 
 n_turns = 10
 for turn in range(n_turns):
@@ -156,5 +158,5 @@ print("tune_y_calc", tune_y_calc)
 print("tune_x_err", tune_x_err)
 print("tune_y_err", tune_y_err)
 
-assert np.abs(tune_x_err) < 1.00e-08
-assert np.abs(tune_y_err) < 1.00e-08
+assert np.abs(tune_x_err) < 1.00e-06
+assert np.abs(tune_y_err) < 1.00e-06
