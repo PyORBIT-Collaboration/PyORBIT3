@@ -4,6 +4,8 @@ from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.linac import MatrixRfGap
 from orbit.bunch_utils import collect_bunch
+from orbit.envelope import Envelope
+from orbit.envelope import EnvelopeTracker
 from orbit.lattice import AccNode
 from orbit.lattice import AccLattice
 from orbit.py_linac.lattice import Drift
@@ -20,8 +22,6 @@ from orbit.teapot import SolenoidTEAPOT
 from orbit.teapot import TiltTEAPOT
 from orbit.teapot import TEAPOT_Lattice
 from orbit.utils.consts import mass_proton
-from orbit.envelope import Envelope
-from orbit.envelope import EnvelopeTracker
 
 
 def get_lorentz_factors(kin_energy: float, mass: float) -> tuple[float, float]:
@@ -357,17 +357,17 @@ def test_rf_gap_matrix(
 
     coords_out_1 = collect_bunch(bunch_out_1)["coords"]
 
-    from orbit.envelope.matrix import track_sync_part_rf_gap
+    from orbit.envelope.matrix import get_matrix_rf_gap
 
     bunch_out_2 = Bunch()
     bunch_in.copyBunchTo(bunch_out_2)
 
-    matrix = track_sync_part_rf_gap(
-        sync_part=bunch_in.getSyncParticle(),
+    envelope = Envelope(bunch=bunch_in)
+    matrix = get_matrix_rf_gap(
+        envelope=envelope,
         frequency=frequency,
         E0TL=E0TL,
         phase=phase,
-        charge=bunch_in.charge(),
     )
     coords_in = np.column_stack([coords_in, np.ones(coords_in.shape[0])])
     coords_out_2 = np.matmul(coords_in, matrix.T)
