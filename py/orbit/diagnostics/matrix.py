@@ -57,9 +57,24 @@ def build_norm_matrix_from_tmat(matrix: np.ndarray) -> np.ndarray:
     return build_norm_matrix_from_eigvecs(*eigvecs)
 
 
-def build_norm_matrix_from_cov(cov_matrix: np.ndarray) -> np.ndarray:
+def build_norm_matrix_from_cov_uncoupled(cov_matrix: np.ndarray) -> np.ndarray:
     S = cov_matrix
     U = build_poisson_matrix(S.shape[0])
+
+    V_inv = np.zeros_like(S)
+    for i in range(0, S.shape[0], 2):
+        eigvals, eigvecs = symplectic_eig(S[i:i+2, i:i+2] @ U[i:i+2, i:i+2])
+        V_inv[i:i+2, i:i+2] = build_norm_matrix_from_eigvecs(*eigvecs)
+    return V_inv
+
+
+def build_norm_matrix_from_cov(cov_matrix: np.ndarray) -> np.ndarray:
+    if not is_coupled(cov_matrix):
+        return build_norm_matrix_from_cov_uncoupled(cov_matrix)
+
+    S = cov_matrix
+    U = build_poisson_matrix(S.shape[0])
+
     eigvals, eigvecs = symplectic_eig(S @ U)
 
     emittances = np.abs(np.imag(eigvals))
@@ -71,6 +86,16 @@ def build_norm_matrix_from_cov(cov_matrix: np.ndarray) -> np.ndarray:
     eigvals = eigvals[order]
     eigvecs = eigvecs[order]
     return build_norm_matrix_from_eigvecs(*eigvecs)
+
+
+def is_coupled(matrix: np.ndarray) -> bool:
+    assert matrix.ndim == 2
+    assert matrix.shape[0] == matrix.shape[1]
+    assert matrix.shape[0] % 2 == 0
+    matrix = np.copy(matrix)
+    for i in range(0, matrix.shape[0], 2):
+        matrix[i:i+2, i:i+2] = 0.0
+    return not np.all(np.isclose(matrix, 0.0))
 
 
 class TransferMatrixAnalysis:
@@ -89,6 +114,8 @@ class TransferMatrixAnalysis:
 
         self.V_inv = build_norm_matrix_from_eigvecs(*self.eigvecs)
         self.V = np.linalg.inv(self.V_inv)
+
+        self.is_coupled = is_coupled(M)
 
     def cov_matrix(self, *emittances: float) -> np.ndarray:
         S = np.eye(self.ndim)

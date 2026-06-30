@@ -19,13 +19,19 @@ from orbit.core.bunch import BunchTwissAnalysis
 from orbit.bunch_generators import TwissContainer
 from orbit.bunch_generators import GaussDist2D
 from orbit.diagnostics import TeapotTuneAnalysisNode
+from orbit.diagnostics.matrix import TransferMatrixAnalysis
 from orbit.teapot import TEAPOT_Lattice
 from orbit.teapot import TEAPOT_MATRIX_Lattice
 from orbit.utils.consts import mass_proton
 
-from utils import make_lattice_fodo
 from utils import make_lattice_sns
+from utils import get_tmat
 
+
+# Arguments
+parser = argparse.ArgumentParser()
+parser.add_argument("--norm-from", type=str, default="tmat", choices=["tmat", "cov", "twiss"])
+args = parser.parse_args()
 
 # Setup
 path = pathlib.Path(__file__)
@@ -54,14 +60,27 @@ lattice_etap_x = lattice_params["dispersion prime x"]
 
 # Add tune diagnostic node
 tune_node = TeapotTuneAnalysisNode()
-tune_node.setNormMatrixFromTwiss(
-    betax=lattice_beta_x,
-    alphax=lattice_alpha_x,
-    etax=lattice_eta_x,
-    etapx=lattice_etap_x,
-    betay=lattice_beta_y,
-    alphay=lattice_alpha_y,
-)
+
+if args.norm_from == "twiss":
+    tune_node.setNormMatrixFromTwiss(
+        betax=lattice_beta_x,
+        alphax=lattice_alpha_x,
+        etax=lattice_eta_x,
+        etapx=lattice_etap_x,
+        betay=lattice_beta_y,
+        alphay=lattice_alpha_y,
+    )
+elif args.norm_from == "tmat":
+    tmat = get_tmat(lattice, bunch)
+    tune_node.setNormMatrixFromTransferMatrix(tmat)
+elif args.norm_from == "cov":
+    tmat = get_tmat(lattice, bunch)
+    tmat_analysis = TransferMatrixAnalysis(tmat)
+    cov_matrix = tmat_analysis.cov_matrix(1e-7, 1e-7)
+    tune_node.setNormMatrixFromCovMatrix(cov_matrix)
+else:
+    raise ValueError("Invalid norm_from argument")
+
 lattice.getNodes()[0].addChildNode(tune_node, 0)
 
 # Generate particles

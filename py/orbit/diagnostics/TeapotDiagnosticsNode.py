@@ -212,6 +212,11 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
         # smallest eigenemittance is mode 1, the next is mode 2, and so on.
         # So if you compare this method to `setNormMatrixFromTransferMatrix`,
         # you may get {nu1, nu2} -> {nu2, nu1}.
+        #
+        # This is only a problem in coupled lattices with 4D normalization.
+        # With 2D normalization there is no ambiguity. This function will
+        # check if there are off-block-diagonal terms in the covariance
+        # matrix to determine whether to use 2D or 4D normalization.
         norm_matrix = build_norm_matrix_from_cov(cov_matrix)
         self.setNormMatrix(norm_matrix)
 
