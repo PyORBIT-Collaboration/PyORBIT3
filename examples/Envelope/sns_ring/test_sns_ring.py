@@ -42,9 +42,7 @@ parser.add_argument("--bunch-length", type=float, default=120.0)
 parser.add_argument("--kin-energy", type=float, default=1.300)
 parser.add_argument("--intensity", type=float, default=2e14)
 
-parser.add_argument(
-    "--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"]
-)
+parser.add_argument("--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"])
 parser.add_argument("--eps-x", type=float, default=25.0)
 parser.add_argument("--eps-y", type=float, default=25.0)
 parser.add_argument("--mismatch-x", type=float, default=0.0)
@@ -59,9 +57,7 @@ parser.add_argument("--sol", type=int, default=0)
 parser.add_argument("--sc", type=int, default=0)
 parser.add_argument("--sc-grid", type=int, default=64)
 
-parser.add_argument(
-    "--handle-unknown", type=str, default=None, choices=["drift", "fit"]
-)
+parser.add_argument("--handle-unknown", type=str, default=None, choices=["drift", "fit"])
 args = parser.parse_args()
 
 # Setup
@@ -138,9 +134,7 @@ centroid[2] += args.offset_y
 
 rng = np.random.default_rng()
 bunch_coords = np.zeros((args.nparts, 6))
-bunch_coords[:, :4] = gen_dist(
-    size=args.nparts, cov_matrix=cov_matrix[0:4, 0:4], name=args.dist
-)
+bunch_coords[:, :4] = gen_dist(size=args.nparts, cov_matrix=cov_matrix[0:4, 0:4], name=args.dist)
 bunch_coords[:, 4] = args.bunch_length * rng.uniform(-0.5, 0.5, size=args.nparts)
 bunch_coords[:, 5] *= 0.0
 bunch_coords += centroid[None, :6]

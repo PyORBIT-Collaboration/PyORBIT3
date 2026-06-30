@@ -22,7 +22,6 @@ from orbit.utils.consts import mass_proton
 
 from utils import gen_dist
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument("--bunch-length", type=float, default=5.0)
 parser.add_argument("--kin-energy", type=float, default=1.300)

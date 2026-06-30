@@ -3,9 +3,10 @@ import scipy.constants
 import scipy.special
 
 from orbit.core.bunch import Bunch
+from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.bunch import SyncParticle
 
-from .matrix import convert_matrix_zp_to_dE
+from .utils import convert_matrix_zp_to_dE
 from .utils import gen_dist
 from .utils import proj_cov_matrix
 
@@ -18,6 +19,15 @@ def build_diag_matrix_from_xyz_eig(eigenvectors: np.ndarray) -> np.ndarray:
             col = j * 2
             A[row, col] = A[row + 1, col + 1] = eigenvectors[i, j]
     return A
+
+
+def get_classical_radius(charge: float, mass: float):
+    from orbit.utils.consts import charge_electron
+    from scipy.constants import epsilon_0
+    import math
+    q = charge * charge_electron  # [C]
+    rest_energy = mass * 1e9 * charge_electron  # [J]
+    return q**2 / (4.0 * math.pi * epsilon_0 * rest_energy)
 
 
 class Envelope:
@@ -38,28 +48,43 @@ class Envelope:
         intensity: float = 0.0,
     ) -> None:
 
-        # [TO DO]
-        #   - setting covariance matrix from bunch particles
-        #   - tracking bunch particles as test particles
         empty_bunch = Bunch()
         bunch.copyEmptyBunchTo(empty_bunch)
 
         self.bunch = empty_bunch
-        self.sync_part = empty_bunch.getSyncParticle()
-
-        self.classical_radius = self.bunch.classicalRadius()
+        self.sync_part = self.bunch.getSyncParticle()
 
         self.centroid = centroid
         if self.centroid is None:
-            self.centroid = np.zeros(6)
+            if bunch.getSize():
+                twiss_calc = BunchTwissAnalysis()
+                twiss_calc.analyzeBunch(bunch)
+                self.centroid = np.zeros(6)
+                for i in range(6):
+                    self.centroid[i] = twiss_calc.getAverage(i)
+            else:
+                self.centroid = np.zeros(6)
 
         self.cov_matrix = cov_matrix
         if self.cov_matrix is None:
-            self.cov_matrix = np.eye(6)
+            if bunch.getSize():
+                twiss_calc = BunchTwissAnalysis()
+                twiss_calc.analyzeBunch(bunch)
+                self.cov_matrix = np.zeros((6, 6))
+                for i in range(6):
+                    for j in range(6):
+                        self.cov_matrix[i, j] = twiss_calc.getCorrelation(i, j)
+                        self.cov_matrix[j, i] = self.cov_matrix[i, j]
+            else:
+                self.cov_matrix = np.eye(6)
 
-        self.intensity = 0.0
-        self.set_intensity(intensity)
+        self.intensity = intensity
+        self.classical_radius = get_classical_radius(self.charge, self.mass)
+        self.charge_sign = self.charge / abs(self.charge)
 
+        # For a uniform one-dimensional distribution over length L, the standard
+        # deviation is L * sqrt(12). This quantity is used to calculate the line
+        # density for two-dimensional space charge kicks.
         self.rms_bunch_length_factor = np.sqrt(12.0)
 
     def copy(self):
@@ -70,29 +95,29 @@ class Envelope:
             intensity=self.intensity
         )
 
-    def set_intensity(self, intensity: float) -> None:
-        self.intensity = intensity
-
     @property
-    def sc_factor(self) -> float:
-        return (
-            2.0
-            * self.intensity
-            * self.classical_radius
-            / (self.beta() ** 2 * self.gamma() ** 3)
-        )
-
     def gamma(self) -> float:
         return self.sync_part.gamma()
 
+    @property
     def beta(self) -> float:
         return self.sync_part.beta()
 
+    @property
     def mass(self) -> float:
         return self.sync_part.mass()
 
+    @property
     def charge(self) -> float:
         return self.bunch.charge()
+
+    @property
+    def momentum(self) -> float:
+        return self.sync_part.momentum()
+
+    @property
+    def sc_factor(self) -> float:
+        return 2.0 * self.intensity * self.classical_radius / (self.beta ** 2 * self.gamma ** 3)
 
     def rms(self, axis: int = None) -> float | np.ndarray:
         rms_arr = np.sqrt(np.diag(self.cov_matrix))
@@ -160,7 +185,7 @@ class Envelope:
         # x' = dx/ds -> x' * gamma
         # y' = dy/ds -> y' * gamma
         # z' = dz/ds -> z'
-        gamma = self.gamma()
+        gamma = self.gamma
         gamma_inv = 1.0 / gamma
 
         L = np.identity(7)
@@ -174,9 +199,6 @@ class Envelope:
 
         # Get covariance matrix in rest frame.
         cov_matrix = L_inv[:-1, :-1] @ self.cov_matrix @ L_inv[:-1, :-1].T
-
-        # Get kick length in rest frame
-        length_rest = length * gamma
 
         # Project covariance matrix onto x-y-z plane.
         cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2, 4))
@@ -198,9 +220,9 @@ class Envelope:
         kappa_z = factor * RDz
 
         M = np.identity(7)
-        M[1, 0] = kappa_x * length_rest
-        M[3, 2] = kappa_y * length_rest
-        M[5, 4] = kappa_z * length_rest
+        M[1, 0] = kappa_x * length
+        M[3, 2] = kappa_y * length
+        M[5, 4] = kappa_z * length
 
         # Build matrix to undo x-y-z diagonalization.
         A = build_diag_matrix_from_xyz_eig(cov_eig_vecs)

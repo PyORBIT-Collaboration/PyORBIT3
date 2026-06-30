@@ -7,6 +7,7 @@ approximates the charge distribution as a uniform-density ellipsoid with
 the same x-y-z covariance matrix as the real charge distribution. (It
 currently assumes an upright ellipsoid.)
 """
+
 import argparse
 import math
 import os
@@ -187,9 +188,7 @@ if args.sc:
     if args.sc_model == "ellipsoid":
         n_ellipsoids = 1
         sc_calc = SpaceChargeCalcUnifEllipse(n_ellipsoids)
-        sc_nodes = setUniformEllipsesSCAccNodes(
-            lattice, args.sc_path_length_min, sc_calc
-        )
+        sc_nodes = setUniformEllipsesSCAccNodes(lattice, args.sc_path_length_min, sc_calc)
     if args.sc_model == "3d":
         sc_calc = SpaceChargeCalc3D(64, 64, 64)
         sc_nodes = setSC3DAccNodes(lattice, args.sc_path_length_min, sc_calc)

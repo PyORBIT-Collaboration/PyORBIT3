@@ -1,5 +1,48 @@
 import numpy as np
 
+from orbit.core.bunch import SyncParticle
+
+
+def get_dp_p_coeff(sync_part: SyncParticle) -> float:
+    # dE/E = (beta^2) * dp/p
+    # dE = (beta^2 * E) * dp/p
+    # dE = (beta^2 * gamma * m * c^2) * dp/p
+    beta = sync_part.beta()
+    gamma = sync_part.gamma()
+    rest_energy = sync_part.mass()  # GeV
+    return 1.0 / (beta**2 * gamma * rest_energy)
+
+
+def get_zp_coeff(sync_part: SyncParticle) -> float:
+    # dE/E = (beta^2) * dp/p = (beta^2) * (gamma^2) z'
+    # dE = (beta^2 * gamma^2 * E) * z'
+    # dE = (beta^2 * gamma^3 * m * c^2) * z'
+    beta = sync_part.beta()
+    gamma = sync_part.gamma()
+    rest_energy = sync_part.mass()
+    return 1.0 / (beta**2 * gamma**3 * rest_energy)
+
+
+def convert_matrix_dp_p_to_dE(matrix: np.ndarray, sync_part: SyncParticle) -> np.ndarray:
+    # v = [x, x', y, y', z, dp/p]
+    # w = [x, x', y, y', z, dE]
+    # v = A w
+    # v -> M v
+    # w -> A M A^-1
+    dp_p_coeff = get_dp_p_coeff(sync_part)
+    matrix[:5, 5] *= dp_p_coeff
+    matrix[5, :5] /= dp_p_coeff
+    matrix[5, 6] /= dp_p_coeff  # driving term
+    return matrix
+
+
+def convert_matrix_zp_to_dE(matrix: np.ndarray, sync_part: SyncParticle) -> np.ndarray:
+    zp_coeff = get_zp_coeff(sync_part)
+    matrix[:5, 5] *= zp_coeff
+    matrix[5, :5] /= zp_coeff
+    matrix[5, 6] /= zp_coeff  # driving term
+    return matrix
+
 
 def gen_dist_gauss(size: int, cov_matrix: np.ndarray) -> np.ndarray:
     return np.random.multivariate_normal(
