@@ -18,6 +18,9 @@ from .teapot import SolenoidTEAPOT
 from .teapot import TiltTEAPOT
 from .teapot import NodeTEAPOT
 from .teapot import ContinuousLinearFocusingTEAPOT
+from .teapot import ApertureTEAPOT
+from .teapot import MonitorTEAPOT
+from .teapot import TurnCounterTEAPOT
 
 from .teapot import TPB
 
@@ -41,3 +44,6 @@ __all__.append("NodeTEAPOT")
 __all__.append("ContinuousLinearFocusingTEAPOT")
 __all__.append("TPB")
 __all__.append("TEAPOT_MATRIX_Lattice")
+__all__.append("ApertureTEAPOT")
+__all__.append("MonitorTEAPOT")
+__all__.append("TurnCounterTEAPOT")
