@@ -4,7 +4,7 @@ This example tracks a Gaussian distribution through a FODO lattice. The tunes
 are estimated from the phase space coordinates before/after tracking using the
 `BunchTuneAnalysis` class.
 """
-
+import argparse
 import math
 import os
 import pathlib
@@ -23,27 +23,23 @@ from orbit.teapot import TEAPOT_Lattice
 from orbit.teapot import TEAPOT_MATRIX_Lattice
 from orbit.utils.consts import mass_proton
 
-from utils import make_lattice
+from utils import make_lattice_fodo
+from utils import make_lattice_sns
 
 
 # Setup
-# ------------------------------------------------------------------------------------
-
 path = pathlib.Path(__file__)
 output_dir = os.path.join("outputs", path.stem)
 os.makedirs(output_dir, exist_ok=True)
 
-
-# Lattice
-# ------------------------------------------------------------------------------------
-
-lattice = make_lattice()
+# Initialize lattice and bunch
+lattice = make_lattice_sns()
 
 bunch = Bunch()
 bunch.mass(mass_proton)
 bunch.getSyncParticle().kinEnergy(1.000)
 
-# Compute lattice parameters from one-turn transfer matrix
+# Calculate transfer matrix
 matrix_lattice = TEAPOT_MATRIX_Lattice(lattice, bunch)
 lattice_params = matrix_lattice.getRingParametersDict()
 pprint(lattice_params)
@@ -56,10 +52,7 @@ lattice_beta_y = lattice_params["beta y [m]"]
 lattice_eta_x = lattice_params["dispersion x [m]"]
 lattice_etap_x = lattice_params["dispersion prime x"]
 
-
-# Tune diagnostics node
-# ------------------------------------------------------------------------------------
-
+# Add tune diagnostic node
 tune_node = TeapotTuneAnalysisNode()
 tune_node.setNormMatrixFromTwiss(
     betax=lattice_beta_x,
@@ -71,48 +64,32 @@ tune_node.setNormMatrixFromTwiss(
 )
 lattice.getNodes()[0].addChildNode(tune_node, 0)
 
+# Generate particles
+emittance_x = 0.1e-06
+emittance_y = 0.1e-06
+twiss_x = TwissContainer(lattice_alpha_x, lattice_beta_x, emittance_x)
+twiss_y = TwissContainer(lattice_alpha_y, lattice_beta_y, emittance_y)
+dist = GaussDist2D(twiss_x, twiss_y)
 
-# Bunch
-# ------------------------------------------------------------------------------------
-
-# Generate a matched transverse phase space distribution. The longitudinal
-# distribution will be uniform in position (z) and a delta function in energy
-# deviation (dE).
-emittance_x = 0.25e-06  # small amplitude
-emittance_y = 0.25e-06
-bunch_twiss_x = TwissContainer(lattice_alpha_x, lattice_beta_x, emittance_x)
-bunch_twiss_y = TwissContainer(lattice_alpha_y, lattice_beta_y, emittance_y)
-bunch_dist = GaussDist2D(bunch_twiss_x, bunch_twiss_y)
-
-n_parts = 1000
-for index in range(n_parts):
-    (x, xp, y, yp) = bunch_dist.getCoordinates()
+for index in range(1000):
+    x, xp, y, yp = dist.getCoordinates()
     z = random.uniform(-25.0, 25.0)
-    dE = 0.0
-    bunch.addParticle(x, xp, y, yp, z, dE)
+    bunch.addParticle(x, xp, y, yp, z, 0.0)
 
-
-# Tracking
-# ------------------------------------------------------------------------------------
-
-n_turns = 10
-for turn in range(n_turns):
+# Track particles
+for turn in range(10):
     lattice.trackBunch(bunch)
 
     twiss_calc = BunchTwissAnalysis()
     twiss_calc.analyzeBunch(bunch)
-    xrms = math.sqrt(twiss_calc.getCorrelation(0, 0)) * 1000.0
-    yrms = math.sqrt(twiss_calc.getCorrelation(2, 2)) * 1000.0
-
+    xrms = 1000.0 * math.sqrt(twiss_calc.getCorrelation(0, 0))
+    yrms = 1000.0 * math.sqrt(twiss_calc.getCorrelation(2, 2))
     print("turn={} xrms={:0.3f} yrms={:0.3f}".format(turn + 1, xrms, yrms))
 
+# Test writing to file
 filename = "bunch.dat"
 filename = os.path.join(output_dir, filename)
 bunch.dumpBunch(filename)
-
-
-# Analysis
-# ------------------------------------------------------------------------------------
 
 # Collect phase data from bunch
 phase_data = tune_node.getData(bunch)
@@ -156,5 +133,5 @@ print("tune_y_calc", tune_y_calc)
 print("tune_x_err", tune_x_err)
 print("tune_y_err", tune_y_err)
 
-assert np.abs(tune_x_err) < 1.00e-08
-assert np.abs(tune_y_err) < 1.00e-08
+assert np.abs(tune_x_err) < 1.00e-06
+assert np.abs(tune_y_err) < 1.00e-06

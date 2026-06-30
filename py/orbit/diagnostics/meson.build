@@ -7,7 +7,7 @@ py_sources = files([
 	'diagnosticsLatticeModifications.py',
 	'__init__.py',
 	'profiles.py',
-	'eig.py'
+	'matrix.py'
 ])
 
 python.install_sources(
