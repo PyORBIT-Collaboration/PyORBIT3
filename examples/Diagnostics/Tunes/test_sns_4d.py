@@ -45,20 +45,25 @@ tmat_analysis = TransferMatrixAnalysis(M)
 tune_1_true = tmat_analysis.eigtunes[0]
 tune_2_true = tmat_analysis.eigtunes[1]
 
+# Calculate matched covariance matrix
+eps_1 = 0.1e-06  # mode 1 rms emittance
+eps_2 = 0.1e-06  # mode 2 rms emittance
+S_matched = tmat_analysis.cov_matrix(eps_1, eps_2)
+
 # Add tune diagnostic node
 tune_node = TeapotTuneAnalysisNode()
-tune_node.setNormMatrixFromTransferMatrix(M)
+if args.norm_from == "tmat":
+    tune_node.setNormMatrixFromTransferMatrix(M)
+else:
+    tune_node.setNormMatrixFromCovMatrix(S_matched)
 lattice.getNodes()[0].addChildNode(tune_node, 0)
 
 # Generate particles
-eps_1 = 0.1e-06  # mode 1 rms emittance
-eps_2 = 0.1e-06  # mode 2 rms emittance
-S = tmat_analysis.cov_matrix(eps_1, eps_2)
 
 rng = np.random.default_rng(123)
 particles = np.zeros((1000, 6))
 particles[:, :4] = rng.multivariate_normal(
-    mean=np.zeros(4), cov=S, size=particles.shape[0]
+    mean=np.zeros(4), cov=S_matched, size=particles.shape[0]
 )
 particles[:, 4] = rng.uniform(-25.0, 25.0, size=particles.shape[0])
 particles[:, 5] = 0.0
