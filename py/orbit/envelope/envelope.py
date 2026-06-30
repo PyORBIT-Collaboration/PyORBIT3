@@ -8,6 +8,7 @@ from orbit.core.bunch import SyncParticle
 
 from .utils import convert_matrix_zp_to_dE
 from .utils import gen_dist
+from .utils import get_classical_radius
 from .utils import proj_cov_matrix
 
 
@@ -19,15 +20,6 @@ def build_diag_matrix_from_xyz_eig(eigenvectors: np.ndarray) -> np.ndarray:
             col = j * 2
             A[row, col] = A[row + 1, col + 1] = eigenvectors[i, j]
     return A
-
-
-def get_classical_radius(charge: float, mass: float):
-    from orbit.utils.consts import charge_electron
-    from scipy.constants import epsilon_0
-    import math
-    q = charge * charge_electron  # [C]
-    rest_energy = mass * 1e9 * charge_electron  # [J]
-    return q**2 / (4.0 * math.pi * epsilon_0 * rest_energy)
 
 
 class Envelope:

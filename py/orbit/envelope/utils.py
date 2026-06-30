@@ -1,6 +1,15 @@
+import math
 import numpy as np
+from scipy.constants import epsilon_0
 
 from orbit.core.bunch import SyncParticle
+from orbit.utils.consts import charge_electron
+
+
+def get_classical_radius(charge: float, mass: float) -> float:
+    q = charge * charge_electron  # [C]
+    rest_energy = mass * 1e9 * charge_electron  # [J]
+    return q**2 / (4.0 * math.pi * epsilon_0 * rest_energy)
 
 
 def get_dp_p_coeff(sync_part: SyncParticle) -> float:
