@@ -4,6 +4,7 @@ from typing import IO
 import numpy as np
 
 from orbit.core.bunch import Bunch
+from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.bunch import BunchTuneAnalysis
 from orbit.teapot import DriftTEAPOT
 
@@ -197,28 +198,65 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
         self.tune_calc.setNormMatrixFromTwiss(betax, alphax, etax, etapx, betay, alphay)
 
     def setNormMatrixFromTransferMatrix(self, transfer_matrix: np.ndarray) -> None:
+        """Set normalization matrix from transfer matrix.
+
+        Assumes transfer matrix is periodic and stable.
+
+        Args:
+            transfer_matrix: 4x4 or 6x6 transfer matrix.
+        """
+        assert transfer_matrix.shape[0] == transfer_matrix.shape[1]
+        assert transfer_matrix.shape[0] in (4, 6)
         norm_matrix = build_norm_matrix_from_tmat(transfer_matrix)
         self.setNormMatrix(norm_matrix)
 
     def setNormMatrixFromCovMatrix(self, cov_matrix: np.ndarray) -> None:
-        # Assume that S = M S M^T, where S is the covariance matrix
-        # and M is the transfer matrix. Then M and SU (U is the Poisson matrix)
-        # have different eigenvalues but the same eigenvectors So we can compute
-        # the normalization matrix directly from SU, without knowing M.
-        #
-        # However, I'm not sure how to order the eigenvectors of SU. there is
-        # no guaranteed ordering from np.linalg.eig. By default, we sort the
-        # eigenvectors of SU by their eigenvalues (eigenemittances), so the
-        # smallest eigenemittance is mode 1, the next is mode 2, and so on.
-        # So if you compare this method to `setNormMatrixFromTransferMatrix`,
-        # you may get {nu1, nu2} -> {nu2, nu1}.
-        #
-        # This is only a problem in coupled lattices with 4D normalization.
-        # With 2D normalization there is no ambiguity. This function will
-        # check if there are off-block-diagonal terms in the covariance
-        # matrix to determine whether to use 2D or 4D normalization.
+        """Set normalization matrix from covariance matrix.
+
+        Assume that S = M S M^T, where S is the covariance matrix
+        and M is the transfer matrix. Then M and SU (U is the Poisson matrix)
+        have different eigenvalues but the same eigenvectors So we can compute
+        the normalization matrix directly from SU, without knowing M.
+
+        I'm not sure how to order the eigenvectors of SU as there is no
+        guaranteed ordering from np.linalg.eig. By default, we sort the
+        eigenvectors of SU by their eigenvalues (eigenemittances), so the
+        smallest eigenemittance is mode 1, the next is mode 2, and so on.
+        So if you compare this method to `setNormMatrixFromTransferMatrix`,
+        you may get {nu1, nu2} -> {nu2, nu1}.
+
+        This is only a problem in coupled lattices with 4D normalization.
+        With 2D normalization there is no ambiguity. This function will
+        check if there are off-block-diagonal terms in the covariance
+        matrix to determine whether to use 2D or 4D normalization.
         norm_matrix = build_norm_matrix_from_cov(cov_matrix)
         self.setNormMatrix(norm_matrix)
+
+        Args:
+            cov_matrix: 4x4 or 6x6 covariance matrix.
+        """
+        assert cov_matrix.shape[0] == cov_matrix.shape[1]
+        assert cov_matrix.shape[0] in (4, 6)
+        norm_matrix = build_norm_matrix_from_cov(cov_matrix)
+        self.setNormMatrix(norm_matrix)
+
+    def setNormMatrixFromBunch(self, bunch: Bunch, dim: int = 4) -> None:
+        """Set normalization matrix from bunch covariance matrix.
+
+        The bunch covariance matrix is calculated from the macroparticles.
+
+        Args:
+            bunch: Bunch object with at least one macroparticle.
+        """
+        assert dim in (4, 6)
+        assert bunch.getSizeGlobal() > 0
+        twiss_calc = BunchTwissAnalysis()
+        twiss_calc.analyzeBunch(bunch)
+        cov_matrix = np.zeros((dim, dim))
+        for i in range(dim):
+            for j in range(dim):
+                cov_matrix[i, j] = cov_matrix[j, i] = twiss_calc.getCorrelation(i, j)
+        self.setNormMatrixFromCovMatrix(cov_matrix)
 
     def getData(self, bunch: Bunch, index: int = None) -> dict[str, float] | dict[str, np.ndarray]:
         """Return tune and action data.
