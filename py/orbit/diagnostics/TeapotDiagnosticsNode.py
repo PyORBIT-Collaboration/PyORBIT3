@@ -201,6 +201,17 @@ class TeapotTuneAnalysisNode(DriftTEAPOT):
         self.setNormMatrix(norm_matrix)
 
     def setNormMatrixFromCovMatrix(self, cov_matrix: np.ndarray) -> None:
+        # Assume that S = M S M^T, where S is the covariance matrix
+        # and M is the transfer matrix. Then M and SU (U is the Poisson matrix)
+        # have different eigenvalues but the same eigenvectors So we can compute
+        # the normalization matrix directly from SU, without knowing M.
+        #
+        # However, I'm not sure how to order the eigenvectors of SU. there is
+        # no guaranteed ordering from np.linalg.eig. By default, we sort the
+        # eigenvectors of SU by their eigenvalues (eigenemittances), so the
+        # smallest eigenemittance is mode 1, the next is mode 2, and so on.
+        # So if you compare this method to `setNormMatrixFromTransferMatrix`,
+        # you may get {nu1, nu2} -> {nu2, nu1}.
         norm_matrix = build_norm_matrix_from_cov(cov_matrix)
         self.setNormMatrix(norm_matrix)
 

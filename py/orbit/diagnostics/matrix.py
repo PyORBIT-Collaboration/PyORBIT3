@@ -13,15 +13,17 @@ def build_poisson_matrix(ndim: int) -> np.ndarray:
 
 
 def normalize_eigvec(v: np.ndarray) -> np.ndarray:
+    v = np.copy(v)
     U = build_poisson_matrix(len(v))
 
     def complex_amplitude(v):
-        return np.linalg.multi_dot([np.conj(v), U, v])
+        return np.conj(v).T @ U @ v
 
     if np.imag(complex_amplitude(v)) > 0.0:
         v = np.conj(v)
 
     v *= np.sqrt(2.0 / np.abs(complex_amplitude(v)))
+
     assert np.isclose(np.imag(complex_amplitude(v)), -2.0)
     assert np.isclose(np.real(complex_amplitude(v)), +0.0)
     return v
@@ -37,22 +39,37 @@ def build_norm_matrix_from_eigvecs(*eigvecs: list[np.ndarray]) -> np.ndarray:
     return np.linalg.inv(V)
 
 
-def build_norm_matrix_from_tmat(matrix: np.ndarray) -> np.ndarray:
-    eig_res = np.linalg.eig(matrix)
-    eigvecs = eig_res.eigenvectors[:, ::2].T
+def symplectic_eig(matrix: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    eigvals, eigvecs = np.linalg.eig(matrix)
+    eigvecs = eigvecs.T
+
+    eigvals = eigvals[::2]
+    eigvecs = eigvecs[::2]
+
     for i in range(eigvecs.shape[0]):
         eigvecs[i] = normalize_eigvec(eigvecs[i])
+
+    return eigvals, eigvecs
+
+
+def build_norm_matrix_from_tmat(matrix: np.ndarray) -> np.ndarray:
+    eigvals, eigvecs = symplectic_eig(matrix)
     return build_norm_matrix_from_eigvecs(*eigvecs)
 
 
 def build_norm_matrix_from_cov(cov_matrix: np.ndarray) -> np.ndarray:
     S = cov_matrix
     U = build_poisson_matrix(S.shape[0])
+    eigvals, eigvecs = symplectic_eig(S @ U)
 
-    eig_res = np.linalg.eig(S @ U)
-    eigvecs = eig_res.eigenvectors[:, ::2].T
-    for i in range(eigvecs.shape[0]):
-        eigvecs[i] = normalize_eigvec(eigvecs[i])
+    emittances = np.abs(np.imag(eigvals))
+    if np.all(np.abs(emittances - emittances[0]) < 1e-15):
+        raise ValueError("Eigenemittances are equal eigenvectors are degenerate and V will not be correct.")
+
+    # Order by emittances
+    order = np.argsort(emittances)
+    eigvals = eigvals[order]
+    eigvecs = eigvecs[order]
     return build_norm_matrix_from_eigvecs(*eigvecs)
 
 

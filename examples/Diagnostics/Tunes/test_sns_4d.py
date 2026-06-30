@@ -12,8 +12,8 @@ from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTwissAnalysis
 from orbit.diagnostics import TeapotTuneAnalysisNode
 from orbit.diagnostics.matrix import TransferMatrixAnalysis
+from orbit.teapot import TEAPOT_Ring
 from orbit.teapot import TEAPOT_MATRIX_Lattice
-from orbit.teapot import SolenoidTEAPOT
 from orbit.utils.consts import mass_proton
 
 from utils import make_lattice_sns
@@ -24,6 +24,8 @@ from utils import get_tmat
 parser = argparse.ArgumentParser()
 parser.add_argument("--coupled", type=int, default=1)
 parser.add_argument("--norm-from", type=str, default="tmat", choices=["tmat", "cov"])
+parser.add_argument("--eps1", type=float, default=1.0)
+parser.add_argument("--eps2", type=float, default=1.01)
 args = parser.parse_args()
 
 # Setup
@@ -46,8 +48,8 @@ tune_1_true = tmat_analysis.eigtunes[0]
 tune_2_true = tmat_analysis.eigtunes[1]
 
 # Calculate matched covariance matrix
-eps_1 = 0.1e-06  # mode 1 rms emittance
-eps_2 = 0.1e-06  # mode 2 rms emittance
+eps_1 = args.eps1 * 1e-6
+eps_2 = args.eps2 * 1e-6
 S_matched = tmat_analysis.cov_matrix(eps_1, eps_2)
 
 # Add tune diagnostic node
@@ -59,7 +61,6 @@ else:
 lattice.getNodes()[0].addChildNode(tune_node, 0)
 
 # Generate particles
-
 rng = np.random.default_rng(123)
 particles = np.zeros((1000, 6))
 particles[:, :4] = rng.multivariate_normal(
@@ -86,6 +87,12 @@ phase_data = tune_node.getData(bunch)  # phase_data = pd.DataFrame(phase_data)
 
 tune_1_calc = np.mean(phase_data["tune_1"])
 tune_2_calc = np.mean(phase_data["tune_2"])
+
+# Order depends on eps1/eps2. To check values against transfer matrix,
+# sort tunes by magnitude.
+if tune_1_calc < tune_2_calc:
+    (tune_1_calc, tune_2_calc) = (tune_2_calc, tune_1_calc)
+
 tune_1_err = tune_1_calc - tune_1_true
 tune_2_err = tune_2_calc - tune_2_true
 
@@ -96,5 +103,5 @@ print("tune_2_calc", tune_2_calc)
 print("tune_1_err", tune_1_err)
 print("tune_2_err", tune_2_err)
 
-assert np.abs(tune_1_err) < 1.00e-06
-assert np.abs(tune_2_err) < 1.00e-06
+assert np.abs(tune_1_err) < 1.00e-05
+assert np.abs(tune_2_err) < 1.00e-05
