@@ -17,20 +17,24 @@ BunchTuneAnalysis::BunchTuneAnalysis(): CppPyWrapper(NULL) {
         {0.0, 0.0, 0.0, 0.0, 1.0, 0.0},
         {0.0, 0.0, 0.0, 0.0, 0.0, 1.0}
     };
+    int erase = 1;
 }
 
 
 BunchTuneAnalysis::~BunchTuneAnalysis() {}
 
-void BunchTuneAnalysis::setNormMatrixElement(int i, int j, double value) {
-    matrix[i][j] = value;
-}
-
 double BunchTuneAnalysis::getNormMatrixElement(int i, int j) {
     return matrix[i][j];
 }
 
+void BunchTuneAnalysis::setNormMatrixElement(int i, int j, double value) {
+    matrix[i][j] = value;
+    erase = 1;
+}
+
 void BunchTuneAnalysis::setNormMatrixFromTwiss(double betax, double alphax, double etax, double etapx, double betay, double alphay) {
+	erase = 1;
+
 	// Set V_{-1} = I
 	for (int i = 0; i < 6; i++) {
 		for (int j = 0; j < 6; j++) {
@@ -73,7 +77,7 @@ void BunchTuneAnalysis::analyzeBunch(Bunch* bunch){
 	double** part_coord_arr = bunch->coordArr();
 
 	if(!bunch->hasParticleAttributes("ParticlePhaseAttributes")){
-		cerr<<"adding particle phase information attribute\n";
+		cerr<<"BunchTuneAnalysis: Adding particle phase information attribute.\n";
 		std::map<std::string, double> tunemap;
 		tunemap.insert(std::make_pair("phase_1", 0));
 		tunemap.insert(std::make_pair("phase_2", 0));
@@ -84,9 +88,20 @@ void BunchTuneAnalysis::analyzeBunch(Bunch* bunch){
 		bunch->addParticleAttributes("ParticlePhaseAttributes", tunemap);
 	}
 
-	if (bunch->hasParticleAttributes("ParticlePhaseAttributes")){
-		for (int i=0; i < bunch->getSize(); i++)
-		{
+    if (bunch->hasParticleAttributes("ParticlePhaseAttributes") && erase == 1) {
+		cerr<<"BunchTuneAnalysis: Normalization matrix has been updated. Setting particle phases to zero. Tunes will be accurate after the next `analyzeBunch` call.\n";
+        for (int i=0; i < bunch->getSize(); i++) {
+            bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 0) = 0.0;
+            bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 1) = 0.0;
+            bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 2) = 0.0;
+            bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 3) = 0.0;
+            bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 4) = 0.0;
+            bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 5) = 0.0;
+        }
+	}
+
+	if (bunch->hasParticleAttributes("ParticlePhaseAttributes")) {
+		for (int i=0; i < bunch->getSize(); i++) {
 			// Extract phase space coordinates
 			double x  = part_coord_arr[i][0];
 			double xp = part_coord_arr[i][1];
@@ -140,6 +155,7 @@ void BunchTuneAnalysis::analyzeBunch(Bunch* bunch){
 			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 4) = action1;
 			bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 5) = action2;
 		}
+		erase = 0;
 	}
 
 }

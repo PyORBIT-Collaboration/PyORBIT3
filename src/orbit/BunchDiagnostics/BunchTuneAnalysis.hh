@@ -34,6 +34,9 @@ class BunchTuneAnalysis: public OrbitUtils::CppPyWrapper
 	private:
 		// Normalization matrix V^{-1}
 		double matrix[6][6];
+
+		// Flag to erase stored phase/amplitude info.
+		int erase;
 };
 
 
