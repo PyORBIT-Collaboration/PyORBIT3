@@ -83,7 +83,6 @@ for turn in range(10):
 
 # Analysis
 phase_data = tune_node.getData(bunch)  # phase_data = pd.DataFrame(phase_data)
-print(phase_data)
 
 tune_1_calc = np.mean(phase_data["tune_1"])
 tune_2_calc = np.mean(phase_data["tune_2"])

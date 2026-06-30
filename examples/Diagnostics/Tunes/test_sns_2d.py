@@ -94,7 +94,6 @@ bunch.dumpBunch(filename)
 # Collect phase data from bunch
 phase_data = tune_node.getData(bunch)
 phase_data = pd.DataFrame(phase_data)
-print(phase_data)
 
 # Read phase data from file
 particles = np.loadtxt(filename, comments="%")
