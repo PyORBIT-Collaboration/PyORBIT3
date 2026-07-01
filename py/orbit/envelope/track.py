@@ -214,7 +214,7 @@ class EnvelopeTracker:
             if self.one_turn_matrix is None:
                 self.one_turn_matrix = np.identity(7)
                 for (node, matrix) in self.elements:
-                    self.one_turn_matrix = np.matmul(self.one_turn_matrix, matrix)
+                    self.one_turn_matrix = matrix @ self.one_turn_matrix
             return envelope.transform(self.one_turn_matrix)
 
         # If there is space charge, apply the matrices one-by-one.
@@ -230,3 +230,31 @@ class EnvelopeTracker:
             else:
                 node, matrix = element
                 envelope.transform(matrix)
+
+    def get_effective_matrix(self, envelope: Envelope) -> np.ndarray:
+        if not self.elements:
+            self.precompute_matrices(envelope)
+
+        if not self.sc:
+            one_turn_matrix = np.identity(7)
+            for (node, matrix) in self.elements:
+                one_turn_matrix = matrix @ one_turn_matrix
+            return one_turn_matrix
+
+        one_turn_matrix = np.identity(7)
+        for element in self.elements:
+            if element[0] == "sc":
+                length = element[1]
+                if self.sc == "2d":
+                    matrix = envelope.sc_matrix_2d(length)
+                elif self.sc == "3d":
+                    matrix = envelope.sc_matrix_3d(length)
+                else:
+                    raise ValueError
+                envelope.transform(matrix)
+                one_turn_matrix = matrix @ one_turn_matrix
+            else:
+                node, matrix = element
+                envelope.transform(matrix)
+                one_turn_matrix = matrix @ one_turn_matrix
+        return one_turn_matrix
