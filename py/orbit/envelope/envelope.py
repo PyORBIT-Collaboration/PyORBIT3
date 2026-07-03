@@ -88,6 +88,10 @@ class Envelope:
         )
 
     @property
+    def kin_energy(self) -> float:
+        return self.sync_part.kinEnergy()
+
+    @property
     def gamma(self) -> float:
         return self.sync_part.gamma()
 

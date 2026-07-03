@@ -52,7 +52,6 @@ from utils import project_cov_matrix
 
 plt.style.use("style.mplstyle")
 
-
 # Parse arguments
 # --------------------------------------------------------------------------------
 
@@ -67,7 +66,6 @@ parser.add_argument("--show", type=int, default=0)
 parser.add_argument("--seq-stop", type=str, default="CCL2")
 args = parser.parse_args()
 
-
 # Setup
 # --------------------------------------------------------------------------------
 
@@ -75,7 +73,6 @@ output_dir = "outputs"
 os.makedirs(output_dir, exist_ok=True)
 
 random.seed(23)
-
 
 # Bunch
 # --------------------------------------------------------------------------------
@@ -159,7 +156,6 @@ for index, node in enumerate(lattice.getNodes()):
 
 lattice.trackDesignBunch(bunch)
 
-
 # Track envelope
 # --------------------------------------------------------------------------------
 
@@ -210,7 +206,6 @@ histories["bunch"] = monitor.history
 # Analysis
 # --------------------------------------------------------------------------------
 
-
 # History: rms
 for mode in histories:
     for key in histories[mode]:
@@ -224,7 +219,7 @@ fig, axs = plt.subplots(nrows=3, figsize=(10, 5), sharex=True, constrained_layou
 for mode in ["bunch", "envelope"]:
     history = histories[mode]
     for ax, key in zip(axs, ["rms_x", "rms_y", "rms_z"]):
-        ax.plot(history["position"], history[key], **plot_kws[mode], label=mode)
+        ax.plot(history["s"], history[key], **plot_kws[mode], label=mode)
 for ax in axs:
     ax.legend(loc="lower right")
 axs[0].set_ylabel("x rms [mm]")
@@ -240,7 +235,7 @@ plt.close()
 fig, ax = plt.subplots(figsize=(5, 3))
 for mode in ["bunch", "envelope"]:
     history = histories[mode]
-    ax.plot(history["position"], history["kin_energy"], **plot_kws[mode], label=mode)
+    ax.plot(history["s"], history["kin_energy"], **plot_kws[mode], label=mode)
 ax.legend(loc="lower right")
 ax.set_ylabel("energy [GeV]")
 ax.set_xlabel("s [m]")

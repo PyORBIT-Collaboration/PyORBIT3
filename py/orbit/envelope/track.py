@@ -93,20 +93,41 @@ class EnvelopeTracker:
 
     def track_history(self, envelope: Envelope) -> dict[str, list]:
         """Track and return envelope parameters vs. position in lattice."""
-        history = {}
-        history["position"] = []
-        history["rms_x"] = []
-        history["rms_y"] = []
-        history["rms_z"] = []
-        history["kin_energy"] = []
+        history_keys = [
+            "s",
+            "kin_energy",
+            "gamma",
+            "beta",
+            "mean",
+            "cov",
+            "rms_x",
+            "rms_y",
+            "rms_z",
+            "eps_x",
+            "eps_y",
+        ]
+        history = {key: [] for key in history_keys}
 
-        node_positions = self.lattice.getNodePositionsDict()
+        def observe(envelope: Envelope) -> None:
+            parameters = {}
+            parameters["gamma"] = envelope.gamma
+            parameters["beta"] = envelope.beta
+            parameters["kin_energy"] = envelope.kin_energy
+            parameters["mean"] = envelope.centroid.copy()
+            parameters["cov"] = envelope.cov_matrix.copy()
+            parameters["rms_x"] = np.sqrt(parameters["cov"][0, 0])
+            parameters["rms_y"] = np.sqrt(parameters["cov"][2, 2])
+            parameters["rms_z"] = np.sqrt(parameters["cov"][4, 4])
+            return parameters
 
-        history["position"].append(0.0)
-        history["rms_x"].append(1000.0 * envelope.rms(0))
-        history["rms_y"].append(1000.0 * envelope.rms(2))
-        history["rms_z"].append(1000.0 * envelope.rms(4))
-        history["kin_energy"].append(envelope.sync_part.kinEnergy())
+        def update_history(envelope: Envelope, position: float) -> None:
+            history["s"].append(position)
+            parameters = observe(envelope)
+            for key in parameters:
+                history[key].append(parameters[key])
+
+        path_length = 0.0
+        update_history(envelope, path_length)
 
         for node_index, node in enumerate(self.lattice.getNodes()):
             for child_node in node.getChildNodes(ENTRANCE):
@@ -137,14 +158,8 @@ class EnvelopeTracker:
                         matrix = matrix @ matrix_sc
                     envelope.transform(matrix)
 
-                position_start, position_stop = node_positions[node]
-                position = position_start + node.getLength(part_index) * (part_index + 1)
-
-                history["position"].append(position)
-                history["rms_x"].append(1000.0 * envelope.rms(0))
-                history["rms_y"].append(1000.0 * envelope.rms(2))
-                history["rms_z"].append(1000.0 * envelope.rms(4))
-                history["kin_energy"].append(envelope.sync_part.kinEnergy())
+                path_length += node.getLength(part_index)
+                update_history(envelope, path_length)
 
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
                     matrix = get_matrix(child_node, envelope=envelope)
