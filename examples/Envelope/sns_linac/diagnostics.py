@@ -10,7 +10,7 @@ class BunchMonitor:
         self.position_start = 0.0
 
         self.history = {}
-        self.history["position"] = []
+        self.history["s"] = []
         self.history["rms_x"] = []
         self.history["rms_y"] = []
         self.history["rms_z"] = []
@@ -37,19 +37,19 @@ class BunchMonitor:
             for j in range(6):
                 cov_matrix[i, j] = cov_matrix[j, i] = self.twiss_calc.getCorrelation(i, j)
 
-        xrms = 1000.0 * np.sqrt(cov_matrix[0, 0])
-        yrms = 1000.0 * np.sqrt(cov_matrix[2, 2])
-        zrms = 1000.0 * np.sqrt(cov_matrix[4, 4])
+        xrms = np.sqrt(cov_matrix[0, 0])
+        yrms = np.sqrt(cov_matrix[2, 2])
+        zrms = np.sqrt(cov_matrix[4, 4])
 
         message = ""
         message += " s={:0.3f}".format(position + self.position_start)
-        message += " xrms={:0.3f}".format(xrms)
-        message += " yrms={:0.3f}".format(yrms)
-        message += " zrms={:0.3f}".format(zrms)
+        message += " xrms={:0.3f}".format(1000.0 * xrms)
+        message += " yrms={:0.3f}".format(1000.0 * yrms)
+        message += " zrms={:0.3f}".format(1000.0 * zrms)
         message += " node={}".format(node.getName())
         print(message)
 
-        self.history["position"].append(position + self.position_start)
+        self.history["s"].append(position + self.position_start)
         self.history["rms_x"].append(xrms)
         self.history["rms_y"].append(yrms)
         self.history["rms_z"].append(zrms)
