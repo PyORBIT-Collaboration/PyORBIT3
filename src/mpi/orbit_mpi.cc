@@ -578,7 +578,7 @@ int ORBIT_MPI_Allreduce(void* ar1, void* ar2, int n, MPI_Datatype data, MPI_Op o
 #if USE_MPI > 0
   return MPI_Allreduce(ar1, ar2, n, data, op, comm);
 #else
-  if (ar1 == MPI_IN_PLACE || ar1 == ar2) return MPI_SUCCESS;
+  if (ar1 == ORBIT_MPI_IN_PLACE || ar1 == ar2) return MPI_SUCCESS;
 
   std::size_t nbytes = (std::size_t)n * ORBIT_MPI_Type_size(data);
   if (nbytes > 0) {

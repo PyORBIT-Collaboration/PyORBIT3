@@ -8,7 +8,8 @@
 #endif
 
 #if USE_MPI > 0
- #include "mpi.h"
+  #include "mpi.h"
+  #define ORBIT_MPI_IN_PLACE MPI_IN_PLACE
 #else
 //---------------------------------------------------------------
 //START the case when USE_MPI is not defined.
@@ -94,8 +95,7 @@
  #define MPI_ANY_TAG            (-1)
 
  /* MPI in-place operations */
- #include <cstdint>
- #define MPI_IN_PLACE ((void*)(intptr_t)-1)
+ #define ORBIT_MPI_IN_PLACE ((void*)1)
 
 #endif
 //-------------------------------------------------------------

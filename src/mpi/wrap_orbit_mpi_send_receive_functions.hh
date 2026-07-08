@@ -33,7 +33,7 @@ static PyObject* allreduce_scalar_int(PyObject* obj, pyORBIT_MPI_Op* pyOp, pyORB
   if (PyErr_Occurred()) return NULL;
 
   int val = (int)v;
-  ORBIT_MPI_Allreduce(MPI_IN_PLACE, &val, 1, MPI_INT, pyOp->op, pyComm->comm);
+  ORBIT_MPI_Allreduce(ORBIT_MPI_IN_PLACE, &val, 1, MPI_INT, pyOp->op, pyComm->comm);
   return Py_BuildValue("i", val);
 }
 
@@ -41,7 +41,7 @@ static PyObject* allreduce_scalar_double(PyObject* obj, pyORBIT_MPI_Op* pyOp, py
   double val = PyFloat_AsDouble(obj);
   if (PyErr_Occurred()) return NULL;
 
-  ORBIT_MPI_Allreduce(MPI_IN_PLACE, &val, 1, MPI_DOUBLE, pyOp->op, pyComm->comm);
+  ORBIT_MPI_Allreduce(ORBIT_MPI_IN_PLACE, &val, 1, MPI_DOUBLE, pyOp->op, pyComm->comm);
   return Py_BuildValue("d", val);
 }
 
@@ -71,7 +71,7 @@ static PyObject* allreduce_sequence_int(PyObject* obj, pyORBIT_MPI_Op* pyOp, pyO
 	buf[i] = (int)v;
   }
 
-  ORBIT_MPI_Allreduce(MPI_IN_PLACE, buf, (int)size, MPI_INT, pyOp->op, pyComm->comm);
+  ORBIT_MPI_Allreduce(ORBIT_MPI_IN_PLACE, buf, (int)size, MPI_INT, pyOp->op, pyComm->comm);
 
   for (Py_ssize_t i = 0; i < size; ++i) {
 	PyObject *item = Py_BuildValue("i", buf[i]);
@@ -115,7 +115,7 @@ static PyObject* allreduce_sequence_double(PyObject* obj, pyORBIT_MPI_Op* pyOp, 
 	buf[i] = v;
   }
 
-  ORBIT_MPI_Allreduce(MPI_IN_PLACE, buf, (int)size, MPI_DOUBLE, pyOp->op, pyComm->comm);
+  ORBIT_MPI_Allreduce(ORBIT_MPI_IN_PLACE, buf, (int)size, MPI_DOUBLE, pyOp->op, pyComm->comm);
 
   for (Py_ssize_t i = 0; i < size; ++i) {
 	PyObject *item = Py_BuildValue("d", buf[i]);
