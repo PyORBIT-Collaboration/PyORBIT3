@@ -56,14 +56,14 @@ void BunchTwissAnalysis::computeBunchMomentsImpl(Bunch* bunch, bool normalize, b
   auto* comm = bunch->getMPI_Comm_Local()->comm;
 
   if constexpr (HasMacrosizeAttr) {
-    ORBIT_MPI_Allreduce(MPI_IN_PLACE, &total_macrosize_, 1, MPI_DOUBLE, MPI_SUM, comm);
+    ORBIT_MPI_Allreduce(ORBIT_MPI_IN_PLACE, &total_macrosize_, 1, MPI_DOUBLE, MPI_SUM, comm);
   }
   else {
     total_macrosize_ = bunch->getSizeGlobal();
   }
 
-  ORBIT_MPI_Allreduce(MPI_IN_PLACE, avg_arr.data(), N, MPI_DOUBLE, MPI_SUM, comm);
-  ORBIT_MPI_Allreduce(MPI_IN_PLACE, cov_arr.data(), NN, MPI_DOUBLE, MPI_SUM, comm);
+  ORBIT_MPI_Allreduce(ORBIT_MPI_IN_PLACE, avg_arr.data(), N, MPI_DOUBLE, MPI_SUM, comm);
+  ORBIT_MPI_Allreduce(ORBIT_MPI_IN_PLACE, cov_arr.data(), NN, MPI_DOUBLE, MPI_SUM, comm);
 
   // <u - uhat><v - vhat> = <u><v> - uhat*vhat
   for (int i = 0; i < N; ++i) {
@@ -136,7 +136,7 @@ void BunchTwissAnalysis::computeBunchMomentsImpl(Bunch* bunch, bool normalize, b
   }
 
   ORBIT_MPI_Allreduce(
-    MPI_IN_PLACE,
+    ORBIT_MPI_IN_PLACE,
     momentXY_.data(),
     nMoments * nMoments,
     MPI_DOUBLE,
