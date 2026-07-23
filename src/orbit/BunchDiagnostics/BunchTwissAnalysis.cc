@@ -53,7 +53,7 @@ void BunchTwissAnalysis::computeBunchMomentsImpl(Bunch* bunch, bool normalize, b
     }
   }
 
-  auto* comm = bunch->getMPI_Comm_Local()->comm;
+  auto comm = bunch->getMPI_Comm_Local()->comm;
 
   if constexpr (HasMacrosizeAttr) {
     ORBIT_MPI_Allreduce(ORBIT_MPI_IN_PLACE, &total_macrosize_, 1, MPI_DOUBLE, MPI_SUM, comm);
