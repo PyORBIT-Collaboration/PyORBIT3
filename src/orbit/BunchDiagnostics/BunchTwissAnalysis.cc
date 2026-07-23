@@ -78,7 +78,7 @@ void BunchTwissAnalysis::computeBunchMomentsImpl(Bunch* bunch, bool normalize, b
   double inv_xbt = 1.0;
   double inv_ybt = 1.0;
 
-  if (normalize) {
+  if (normalize || emitnormflag) {
     inv_xbt /= std::sqrt(getBeta(0) * (emitnormflag ? getEmittance(0) : 1.0));
     inv_ybt /= std::sqrt(getBeta(1) * (emitnormflag ? getEmittance(1) : 1.0));
   }
