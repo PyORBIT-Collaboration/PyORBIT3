@@ -14,10 +14,11 @@
 //    according to their positions relative to the emittance phase space center
 //
 ///////////////////////////////////////////////////////////////////////////
+#include "utils/bunch/TwissFilteringFunctions.hh"
 
-#include "BunchTwissAnalysis.hh"
-
-#include "orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/BunchDiagnostics/BunchTwissAnalysis.hh"
 
 namespace OrbitUtils{
 

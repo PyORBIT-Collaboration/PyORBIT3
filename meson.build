@@ -4,7 +4,7 @@ project('PyORBIT',
   default_options: [
     'buildtype=release',
     'b_lto=true',
-    'cpp_std=c++11',
+    'cpp_std=c++17',
     'warning_level=3',
   ],
 )

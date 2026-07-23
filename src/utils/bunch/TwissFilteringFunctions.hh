@@ -18,10 +18,7 @@
 #ifndef BUNCH_TWISS_FILTERING_FUNCTIONS_H
 #define BUNCH_TWISS_FILTERING_FUNCTIONS_H
 
-#include <cmath>
-
-//ORBIT bunch
-#include "Bunch.hh"
+class Bunch;
 
 namespace OrbitUtils{
 
