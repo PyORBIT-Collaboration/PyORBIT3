@@ -381,3 +381,23 @@ def test_sc_3d_cold_expansion():
     # twice the initial size. (See examples from A. Shishlo or
     # from the ImpactX repo.)
     pass
+
+
+def test_track_sublattice_no_error():
+    bunch = Bunch()
+    bunch.mass(mass_proton)
+    bunch.getSyncParticle().kinEnergy(0.001)
+
+    cov_matrix = np.diag(np.square([1e-3, 0, 1e-3, 0.0, 1e-3, 0.0]))
+    envelope = Envelope(bunch, cov_matrix=cov_matrix)
+
+    lattice = TEAPOT_Lattice()
+
+    n = 5
+    for _ in range(n):
+        lattice.addNode(DriftTEAPOT(length=0.1))
+
+    tracker = EnvelopeTracker(lattice)
+    for i in range(n):
+        tracker.track(envelope, index_start=i)
+        tracker.track(envelope, index_stop=-i)

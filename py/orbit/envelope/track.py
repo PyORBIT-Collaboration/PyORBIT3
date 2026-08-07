@@ -3,6 +3,7 @@ import warnings
 
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import SyncParticle
+
 from orbit.lattice import AccNode
 from orbit.lattice import AccLattice
 from orbit.teapot import BendTEAPOT
@@ -47,12 +48,15 @@ class EnvelopeTracker:
                     node.setParam("ea1", 0.0)
                     node.setParam("ea2", 0.0)
 
-    def track(self, envelope: Envelope) -> None:
+    def track(self, envelope: Envelope, index_start: int = 0, index_stop: int = None) -> None:
         """Track envelope through lattice.
 
         This is not recursive, so grandchild nodes are not tracked.
         """
-        for node_index, node in enumerate(self.lattice.getNodes()):
+        nodes = self.lattice.getNodes()
+        nodes = nodes[index_start : index_stop]
+
+        for node_index, node in enumerate(nodes):
             for child_node in node.getChildNodes(ENTRANCE):
                 matrix = get_matrix(child_node, envelope=envelope)
                 if matrix is not None:
@@ -91,7 +95,7 @@ class EnvelopeTracker:
                 if matrix is not None:
                     envelope.transform(matrix)
 
-    def track_history(self, envelope: Envelope) -> dict[str, list]:
+    def track_history(self, envelope: Envelope, index_start: int = 0, index_stop: int = None) -> dict[str, list]:
         """Track and return envelope parameters vs. position in lattice."""
         history_keys = [
             "s",
@@ -129,7 +133,10 @@ class EnvelopeTracker:
         path_length = 0.0
         update_history(envelope, path_length)
 
-        for node_index, node in enumerate(self.lattice.getNodes()):
+        nodes = self.lattice.getNodes()
+        nodes = nodes[index_start : index_stop]
+
+        for node_index, node in enumerate(nodes):
             for child_node in node.getChildNodes(ENTRANCE):
                 matrix = get_matrix(child_node, envelope=envelope)
                 if matrix is not None:
