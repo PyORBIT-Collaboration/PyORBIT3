@@ -33,13 +33,38 @@ from utils import project_cov_matrix
 plt.style.use("style.mplstyle")
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--kin-energy", type=float, default=0.0025)
+    parser.add_argument("--intensity", type=float, default=3e10)
+
+    parser.add_argument("--rms-x", type=float, default=0.010)
+    parser.add_argument("--rms-y", type=float, default=0.010)
+    parser.add_argument("--rms-z", type=float, default=0.010)
+
+    parser.add_argument("--rot-x", type=float, default=0.0)
+    parser.add_argument("--rot-y", type=float, default=0.0)
+    parser.add_argument("--rot-z", type=float, default=0.0)
+
+    parser.add_argument("--nslice", type=int, default=10)
+    parser.add_argument("--length", type=float, default=0.1)
+    parser.add_argument("--turns", type=int, default=20)
+    parser.add_argument("--sc-grid", type=int, default=64)
+
+    parser.add_argument("--nparts", type=int, default=100_000)
+    parser.add_argument("--sc", type=int, default=0)
+    return parser.parse_args()
+
+
 def rotation_matrix_3d(angle_x: float, angle_y: float, angle_z: float) -> np.ndarray:
     return scipy.spatial.transform.Rotation.from_euler(
         "xyz", [angle_x, angle_y, angle_z]
     ).as_matrix()
 
 
-def build_cov_matrix_xyz(rms_sizes: np.ndarray, rotation_matrix: np.ndarray = None) -> np.ndarray:
+def build_cov_matrix_xyz(
+    rms_sizes: np.ndarray, rotation_matrix: np.ndarray = None
+) -> np.ndarray:
     cov_matrix = np.diag(np.square(rms_sizes))
     if rotation_matrix is None:
         return cov_matrix
@@ -48,14 +73,13 @@ def build_cov_matrix_xyz(rms_sizes: np.ndarray, rotation_matrix: np.ndarray = No
 
 def main(args: argparse.Namespace) -> None:
 
-    # Setup
-    # ------------------------------------------------------------------------------
     path = pathlib.Path(__file__)
     output_dir = os.path.join("outputs", path.stem)
     os.makedirs(output_dir, exist_ok=True)
 
     # Create lattice
     # ------------------------------------------------------------------------------
+
     node = DriftTEAPOT(length=args.length)
     node.setLength(args.length)
     node.setnParts(args.nslice)
@@ -66,6 +90,7 @@ def main(args: argparse.Namespace) -> None:
 
     # Create envelope
     # ------------------------------------------------------------------------------
+
     bunch = Bunch()
     bunch.mass(mass_proton)
     sync_part = bunch.getSyncParticle()
@@ -103,6 +128,7 @@ def main(args: argparse.Namespace) -> None:
 
     # Track envelope
     # ------------------------------------------------------------------------------
+
     print("TRACK ENVELOPE")
 
     tracker = EnvelopeTracker(lattice, sc=("3d" if args.sc else None))
@@ -129,6 +155,7 @@ def main(args: argparse.Namespace) -> None:
 
     # Track bunch
     # ------------------------------------------------------------------------------
+
     print("TRACK BUNCH")
 
     bunch_coords = np.zeros((args.nparts, 6))
@@ -175,6 +202,7 @@ def main(args: argparse.Namespace) -> None:
 
     # Analysis
     # ------------------------------------------------------------------------------
+
     for history in histories.values():
         for key in history:
             history[key] = np.array(history[key])
@@ -251,25 +279,4 @@ def main(args: argparse.Namespace) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--kin-energy", type=float, default=0.0025)
-    parser.add_argument("--intensity", type=float, default=3e10)
-
-    parser.add_argument("--rms-x", type=float, default=0.010)
-    parser.add_argument("--rms-y", type=float, default=0.010)
-    parser.add_argument("--rms-z", type=float, default=0.010)
-
-    parser.add_argument("--rot-x", type=float, default=0.0)
-    parser.add_argument("--rot-y", type=float, default=0.0)
-    parser.add_argument("--rot-z", type=float, default=0.0)
-
-    parser.add_argument("--nslice", type=int, default=10)
-    parser.add_argument("--length", type=float, default=0.1)
-    parser.add_argument("--turns", type=int, default=20)
-    parser.add_argument("--sc-grid", type=int, default=64)
-
-    parser.add_argument("--nparts", type=int, default=100_000)
-    parser.add_argument("--sc", type=int, default=0)
-    args = parser.parse_args()
-
-    main(args)
+    main(parse_args())

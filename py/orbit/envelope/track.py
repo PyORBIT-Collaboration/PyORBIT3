@@ -35,7 +35,6 @@ class EnvelopeTracker:
         # For pre-computing elements
         self.elements = []
         self.one_turn_matrix = None
-        # [TO DO] option to return one-turn matrix including linear space charge
 
         for node in self.lattice.getNodes():
             if type(node) in (BendTEAPOT, BendLINAC):
@@ -253,18 +252,25 @@ class EnvelopeTracker:
                 node, matrix = element
                 envelope.transform(matrix)
 
-    def get_effective_matrix(self, envelope: Envelope) -> np.ndarray:
+    def get_transfer_matrix(self, envelope: Envelope, index_start: int = 0, index_stop: int = None) -> np.ndarray:
+        """Return total transfer matrix (including linear space charge)."""
         if not self.elements:
             self.precompute_matrices(envelope)
 
-        if not self.sc:
-            one_turn_matrix = np.identity(7)
-            for (node, matrix) in self.elements:
-                one_turn_matrix = matrix @ one_turn_matrix
-            return one_turn_matrix
+        if index_stop is None:
+            index_stop = len(self.elements)
 
-        one_turn_matrix = np.identity(7)
-        for element in self.elements:
+        elements = self.elements[index_start : index_stop]
+
+        if not self.sc:
+            total_matrix = np.identity(7)
+            for (node, matrix) in elements:
+                envelope.transform(matrix)
+                total_matrix = matrix @ total_matrix
+            return total_matrix
+
+        total_matrix = np.identity(7)
+        for element in elements:
             if element[0] == "sc":
                 length = element[1]
                 if self.sc == "2d":
@@ -274,9 +280,9 @@ class EnvelopeTracker:
                 else:
                     raise ValueError
                 envelope.transform(matrix)
-                one_turn_matrix = matrix @ one_turn_matrix
+                total_matrix = matrix @ total_matrix
             else:
                 node, matrix = element
                 envelope.transform(matrix)
-                one_turn_matrix = matrix @ one_turn_matrix
-        return one_turn_matrix
+                total_matrix = matrix @ total_matrix
+        return total_matrix
