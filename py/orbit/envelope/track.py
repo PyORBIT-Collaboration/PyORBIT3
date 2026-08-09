@@ -179,13 +179,16 @@ class EnvelopeTracker:
 
         return history
 
-    def precompute_matrices(self, envelope: Envelope) -> None:
+    def precompute_matrices(self, envelope: Envelope, index_start: int = 0, index_stop: int = None) -> None:
         """Pre-compute transfer matrices for each node.
 
         For each node, return tuple (node, matrix). Mark space charge kicks as ("sc", length).
         """
+        nodes = self.lattice.getNodes()
+        nodes = nodes[index_start : index_stop]
+
         self.elements = []
-        for node_index, node in enumerate(self.lattice.getNodes()):
+        for node_index, node in enumerate(nodes):
             for child_node in node.getChildNodes(ENTRANCE):
                 matrix = get_matrix(child_node, envelope=envelope)
                 if matrix is not None:
@@ -254,8 +257,7 @@ class EnvelopeTracker:
 
     def get_transfer_matrix(self, envelope: Envelope, index_start: int = 0, index_stop: int = None) -> np.ndarray:
         """Return total transfer matrix (including linear space charge)."""
-        if not self.elements:
-            self.precompute_matrices(envelope)
+        self.precompute_matrices(envelope, index_start, index_stop)
 
         if index_stop is None:
             index_stop = len(self.elements)
@@ -264,13 +266,13 @@ class EnvelopeTracker:
 
         if not self.sc:
             total_matrix = np.identity(7)
-            for (node, matrix) in elements:
+            for (node, matrix) in self.elements:
                 envelope.transform(matrix)
                 total_matrix = matrix @ total_matrix
             return total_matrix
 
         total_matrix = np.identity(7)
-        for element in elements:
+        for element in self.elements:
             if element[0] == "sc":
                 length = element[1]
                 if self.sc == "2d":
