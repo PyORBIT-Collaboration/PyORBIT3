@@ -265,6 +265,7 @@ class EnvelopeTracker:
         if not self.sc:
             total_matrix = np.identity(7)
             for (node, matrix) in elements:
+                envelope.transform(matrix)
                 total_matrix = matrix @ total_matrix
             return total_matrix
 

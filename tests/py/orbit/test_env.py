@@ -402,33 +402,23 @@ def test_track_sublattice_no_error():
         tracker.track(envelope, index_start=i)
         tracker.track(envelope, index_stop=-i)
 
+def test_get_total_matrix() -> None:
+    node = DriftTEAPOT(length=2.0, nparts=50)
+    lattice = make_lattice([node])
 
-def test_get_total_matrix():
     bunch = Bunch()
     bunch.mass(mass_proton)
     bunch.getSyncParticle().kinEnergy(0.001)
 
-    cov_matrix = np.diag(np.square([1e-3, 0, 1e-3, 0.0, 1e-3, 0.0]))
-    envelope = Envelope(bunch, cov_matrix=cov_matrix)
-
-    nodes = [
-        DriftTEAPOT(length=0.5, nparts=5),
-        QuadTEAPOT(length=0.1, nparts=5),
-        DriftTEAPOT(length=0.5, nparts=5),
-        QuadTEAPOT(length=0.1, nparts=5),
-    ]
-    lattice = TEAPOT_Lattice()
-    for node in nodes:
-        lattice.addNode(node)
-    lattice.initialize()
+    cov_matrix = make_default_cov_matrix()
+    envelope = Envelope(bunch, cov_matrix=cov_matrix, intensity=1e7)
 
     tracker = EnvelopeTracker(lattice, sc="2d")
 
     envelope_out_a = envelope.copy()
     tracker.track(envelope_out_a)
 
+    matrix = tracker.get_transfer_matrix(envelope.copy())
     envelope_out_b = envelope.copy()
-    matrix = tracker.get_transfer_matrix(envelope_out_b)
     envelope_out_b.transform(matrix)
-
     assert np.all(np.isclose(envelope_out_a.cov_matrix, envelope_out_b.cov_matrix))
