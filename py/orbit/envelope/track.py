@@ -259,6 +259,11 @@ class EnvelopeTracker:
         """Return total transfer matrix (including linear space charge)."""
         self.precompute_matrices(envelope, index_start, index_stop)
 
+        if index_stop is None:
+            index_stop = len(self.elements)
+
+        elements = self.elements[index_start : index_stop]
+
         if not self.sc:
             total_matrix = np.identity(7)
             for (node, matrix) in self.elements:
