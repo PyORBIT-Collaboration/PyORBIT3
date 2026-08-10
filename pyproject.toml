@@ -18,4 +18,9 @@ authors = [
 
 [tool.setuptools_scm]
 
+[project.optional-dependencies]
+numpy = [
+    "numpy",
+]
+
 
