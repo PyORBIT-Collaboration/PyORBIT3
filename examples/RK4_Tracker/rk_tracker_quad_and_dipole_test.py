@@ -40,7 +40,7 @@ eKin = 1.3  # in [GeV]
 bunch_init.getSyncParticle().kinEnergy(eKin)
 
 #---- Add particle to the bunch
-(x, xp, y, yp, z, dE) = (0.002 , 0. , 0.003 , 0. , 0. , 0. )
+(x, xp, y, yp, z, dE) = (0.002 , -0.01 , -0.003 , 0.004 , 10. , 0.010 )
 bunch_init.addParticle(x, xp, y, yp, z, dE)
 
 #-----------------------------------------------
@@ -88,6 +88,7 @@ lattice.trackBunch(bunch)
 print ("==========================================================")
 print ("TEAPOT tracking final (x,xp) = %+9.5f , %+9.5f ) [mm,mrad]"%(bunch.x(0)*1000,bunch.xp(0)*1000))
 print ("TEAPOT tracking final (y,yp) = %+9.5f , %+9.5f ) [mm,mrad]"%(bunch.y(0)*1000,bunch.yp(0)*1000))
+print ("TEAPOT tracking final (z,yp) = %+9.3f , %+9.3f ) [m,MeV]"%(bunch.z(0),bunch.dE(0)*1000))
 print ("==========================================================")
 
 #----------------------------------------------------------
@@ -174,5 +175,6 @@ y  = bunch.y(0) + synch_part_rvector[1]
 yp = bunch.yp(0) + synch_part_pvector[1]/synch_part_pvector[2]
 print ("(x,xp) = %+9.5f , %+9.5f ) [mm,mrad]"%(x*1000,xp*1000))
 print ("(y,yp) = %+9.5f , %+9.5f ) [mm,mrad]"%(y*1000,yp*1000))
+print ("(z,yp) = %+9.3f , %+9.3f ) [m,MeV]"%(bunch.z(0),bunch.dE(0)*1000))
 print ("==========================================================")
 print ("Stop.")
