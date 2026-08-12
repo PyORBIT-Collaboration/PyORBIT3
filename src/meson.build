@@ -246,6 +246,7 @@ sources = files([
 ])
 
 inc = include_directories([
+  '.',
   'main',
   'orbit/SynchPartRedefinition',
   'trackerrk4',
