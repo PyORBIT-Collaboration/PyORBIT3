@@ -80,9 +80,6 @@ class BaseLinacNode(AccNodeBunchTracker):
         Sets the seqence.
         """
         self.__linacSeqence = seq
-        #---- set up Sequence for all children
-        for child_node in self.getAllChildren():
-            child_node.setSequence(seq)
 
     def setPosition(self, pos):
         """
