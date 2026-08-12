@@ -4,6 +4,7 @@
 #include "orbit/ParticlesAttributes/ParticleMacroSize.hh"
 #include "orbit/SyncPart.hh"
 
+#include <atomic>
 #include <cmath>
 #include <limits>
 
