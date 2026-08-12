@@ -1,4 +1,4 @@
-#include "orbit/Bunchdiagnostics/wrap_bunch_twiss_analysis.hh"
+#include "orbit/BunchDiagnostics/wrap_bunch_twiss_analysis.hh"
 
 #include "main/pyORBIT_Object.hh"
 #include "mpi/orbit_mpi.hh"
