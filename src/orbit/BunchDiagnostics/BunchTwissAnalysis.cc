@@ -4,18 +4,19 @@
 #include "orbit/ParticlesAttributes/ParticleMacroSize.hh"
 #include "orbit/SyncPart.hh"
 
-#include <atomic>
 #include <cmath>
 #include <limits>
+
+namespace {
+  constexpr std::size_t momentIdx(std::size_t i, std::size_t j, std::size_t maxOrder)
+  {
+    return i * maxOrder - (i * (i - 1)) / 2 + j;
+  }
+}
 
 /** Performs the Twiss analysis of the bunch */
 void BunchTwissAnalysis::analyzeBunch(Bunch* bunch)
 {
-  static std::atomic_flag warned = ATOMIC_FLAG_INIT;
-  if (!warned.test_and_set(std::memory_order_relaxed)) {
-    std::cerr << "[WARNING] BunchTwissAnalysis::analyzeBunch is deprecated. Use "
-                 "computeBunchMoments() instead.\n";
-  }
   computeBunchMoments(bunch);
 }
 
@@ -25,10 +26,10 @@ void BunchTwissAnalysis::analyzeBunch(Bunch* bunch)
 /// Computes low order (order <= 2) moments in the first loop over the bunch followed by an early
 /// return. If higher order moments (order >= 3) are requested, then a second loop over the bunch
 /// will be triggered to compute the remaining moments.
-template <bool HasMacrosizeAttr, bool Dispersion>
+template <bool HasMacrosizeAttr, bool IncludeXDispersion>
 void BunchTwissAnalysis::computeBunchMomentsImpl(Bunch* bunch, bool normalize, bool emitnormflag)
 {
-  const auto size = bunch->getSize();
+  const auto size = static_cast<std::size_t>(bunch->getSize());
 
   if (size == 0) {
     return;
@@ -39,17 +40,17 @@ void BunchTwissAnalysis::computeBunchMomentsImpl(Bunch* bunch, bool normalize, b
                      : nullptr;
   auto** coords = bunch->coordArr();
 
-  for (int ip = 0; ip < size; ++ip) {
+  for (std::size_t ip = 0; ip < size; ++ip) {
     const double w = HasMacrosizeAttr ? macrosize_attr->macrosize(ip) : 1.0;
 
     if constexpr (HasMacrosizeAttr) {
       total_macrosize_ += w;
     }
 
-    for (int i = 0; i < N; ++i) {
-      avg_arr[i] += w * coords[ip][i];
-      for (int j = 0; j <= i; ++j) {
-        cov_arr[covIdx(i, j)] += w * coords[ip][i] * coords[ip][j];
+    for (std::size_t i = 0; i < N; ++i) {
+      averages_[i] += w * coords[ip][i];
+      for (std::size_t j = 0; j <= i; ++j) {
+        moments_[i][j] += w * coords[ip][i] * coords[ip][j];
       }
     }
   }
@@ -63,16 +64,19 @@ void BunchTwissAnalysis::computeBunchMomentsImpl(Bunch* bunch, bool normalize, b
     total_macrosize_ = bunch->getSizeGlobal();
   }
 
-  ORBIT_MPI_Allreduce(ORBIT_MPI_IN_PLACE, avg_arr.data(), N, MPI_DOUBLE, MPI_SUM, comm);
-  ORBIT_MPI_Allreduce(ORBIT_MPI_IN_PLACE, cov_arr.data(), NN, MPI_DOUBLE, MPI_SUM, comm);
+  ORBIT_MPI_Allreduce(ORBIT_MPI_IN_PLACE, averages_.data(), N, MPI_DOUBLE, MPI_SUM, comm);
+  ORBIT_MPI_Allreduce(ORBIT_MPI_IN_PLACE, &moments_[0][0], NN, MPI_DOUBLE, MPI_SUM, comm);
+
+  if (total_macrosize_ <= 0.) {
+    return;
+  }
 
   // <u - uhat><v - vhat> = <u><v> - uhat*vhat
-  for (int i = 0; i < N; ++i) {
-    avg_arr[i] /= total_macrosize_;
-    for (int j = 0; j < i + 1; ++j) {
-      const int idx = covIdx(i, j);
-      cov_arr[idx] = cov_arr[idx] / total_macrosize_ - avg_arr[i] * avg_arr[j];
-      cov_arr[covIdx(j, i)] = cov_arr[covIdx(i, j)]; // covariance matrix is symmetric.
+  for (std::size_t i = 0; i < N; ++i) {
+    averages_[i] /= total_macrosize_;
+    for (std::size_t j = 0; j < i + 1; ++j) {
+      moments_[i][j] = moments_[i][j] / total_macrosize_ - averages_[i] * averages_[j];
+      moments_[j][i] = moments_[i][j];
     }
   }
 
@@ -80,42 +84,48 @@ void BunchTwissAnalysis::computeBunchMomentsImpl(Bunch* bunch, bool normalize, b
   double inv_ybt = 1.0;
 
   if (normalize || emitnormflag) {
-    inv_xbt /= std::sqrt(getBeta(0) * (emitnormflag ? getEmittance(0) : 1.0));
-    inv_ybt /= std::sqrt(getBeta(1) * (emitnormflag ? getEmittance(1) : 1.0));
+    double bx = getBeta(0) * (emitnormflag ? getEmittance(0) : 1.0);
+    double by = getBeta(1) * (emitnormflag ? getEmittance(1) : 1.0);
+    if (bx > 0.) {
+      inv_xbt /= std::sqrt(bx);
+    }
+    if (by > 0.) {
+      inv_ybt /= std::sqrt(by);
+    }
   }
 
   const double disp_scale =
-    Dispersion ? getDispersion(0) / (bunch_kinenergy_ + bunch_mass_) / (bunch_beta_ * bunch_beta_)
+    IncludeXDispersion ? getDispersion(0) / (bunch_kinenergy_ + bunch_mass_) / (bunch_beta_ * bunch_beta_)
                : 0.0;
-  const double xAvg = avg_arr[0] - disp_scale * avg_arr[5];
-  const double yAvg = avg_arr[2];
+  const double xAvg = averages_[0] - disp_scale * averages_[5];
+  const double yAvg = averages_[2];
 
   const int nMoments = order_ + 1;
-  momentXY_[momentIdx(0, 0, nMoments)] = 1.0;
-  momentXY_[momentIdx(1, 0, nMoments)] = xAvg;
-  momentXY_[momentIdx(0, 1, nMoments)] = yAvg;
+  momentsXY_[momentIdx(0, 0, nMoments)] = 1.0;
+  momentsXY_[momentIdx(1, 0, nMoments)] = xAvg;
+  momentsXY_[momentIdx(0, 1, nMoments)] = yAvg;
 
   if (order_ < 2) {
     return;
   }
 
-  const double x2 = cov_arr[covIdx(0, 0)] - 2.0 * disp_scale * cov_arr[covIdx(0, 5)] +
-                    disp_scale * disp_scale * cov_arr[covIdx(5, 5)];
-  const double xy = cov_arr[covIdx(0, 2)] - disp_scale * cov_arr[covIdx(2, 5)];
-  const double y2 = cov_arr[covIdx(2, 2)];
-  momentXY_[momentIdx(2, 0, nMoments)] = x2 * inv_xbt * inv_xbt;
-  momentXY_[momentIdx(1, 1, nMoments)] = xy * inv_xbt * inv_ybt;
-  momentXY_[momentIdx(0, 2, nMoments)] = y2 * inv_ybt * inv_ybt;
+  const double x2 = moments_[0][0] - 2.0 * disp_scale * moments_[0][5] + disp_scale * disp_scale * moments_[5][5];
+  const double xy = moments_[0][2] - disp_scale * moments_[2][5];
+  const double y2 = moments_[2][2];
+
+  momentsXY_[momentIdx(2, 0, nMoments)] = x2 * inv_xbt * inv_xbt;
+  momentsXY_[momentIdx(1, 1, nMoments)] = xy * inv_xbt * inv_ybt;
+  momentsXY_[momentIdx(0, 2, nMoments)] = y2 * inv_ybt * inv_ybt;
 
   if (order_ == 2) {
     return;
   }
 
-  for (int ip = 0; ip < size; ++ip) {
+  for (std::size_t ip = 0; ip < size; ++ip) {
     const double w = HasMacrosizeAttr ? macrosize_attr->macrosize(ip) : 1.0;
 
     const double dx =
-      Dispersion ? coords[ip][0] - xAvg - disp_scale * coords[ip][5] : coords[ip][0] - xAvg;
+      IncludeXDispersion ? coords[ip][0] - xAvg - disp_scale * coords[ip][5] : coords[ip][0] - xAvg;
     const double dy = coords[ip][2] - yAvg;
 
     const double normX = dx * inv_xbt;
@@ -129,7 +139,7 @@ void BunchTwissAnalysis::computeBunchMomentsImpl(Bunch* bunch, bool normalize, b
         nx *= normX;
       }
       for (int i = i_start; i < nMoments - j; ++i) {
-        momentXY_[momentIdx(i, j, nMoments)] += w * nx * ny;
+        momentsXY_[momentIdx(i, j, nMoments)] += w * nx * ny;
         nx *= normX;
       }
       ny *= normY;
@@ -138,7 +148,7 @@ void BunchTwissAnalysis::computeBunchMomentsImpl(Bunch* bunch, bool normalize, b
 
   ORBIT_MPI_Allreduce(
     ORBIT_MPI_IN_PLACE,
-    momentXY_.data(),
+    momentsXY_.data(),
     nMoments * nMoments,
     MPI_DOUBLE,
     MPI_SUM,
@@ -150,7 +160,7 @@ void BunchTwissAnalysis::computeBunchMomentsImpl(Bunch* bunch, bool normalize, b
       if (i + j <= 2) {
         continue;
       }
-      momentXY_[momentIdx(i, j, nMoments)] /= total_macrosize_;
+      momentsXY_[momentIdx(i, j, nMoments)] /= total_macrosize_;
     }
   }
 }
@@ -163,16 +173,24 @@ void BunchTwissAnalysis::computeBunchMoments(
   bool dispersionflag
 )
 {
-  avg_arr.fill(0.0);
-  cov_arr.fill(0.0);
+  averages_.fill(0.0);
+
+  double* first = &moments_[0][0];
+  std::fill(first, first + NN, 0.0);
+
   total_macrosize_ = 0.0;
 
   // the number of unique pairs i, j for moments up to a max order, n:
   // (n+1)(n+2)/2
-  momentXY_.assign((order + 1)*(order + 2)/2, 0.0);
+  auto required = static_cast<std::vector<double>::size_type>((order + 1) * (order + 2) / 2);
+  if (momentsXY_.size() != required) {
+    momentsXY_.assign(required, 0.0);
+  } else {
+    std::fill(momentsXY_.begin(), momentsXY_.end(), 0.0);
+  }
 
   bunch->compress();
-  count_ = bunch->getSizeGlobal();
+  count_ = static_cast<std::size_t>(bunch->getSizeGlobal());
   order_ = order;
 
   SyncPart* syncPart = bunch->getSyncPart();
@@ -200,20 +218,32 @@ void BunchTwissAnalysis::computeBunchMoments(
   }
 }
 
-double BunchTwissAnalysis::getCorrelation(int ic, int jc) const
+double BunchTwissAnalysis::getCovariance(std::size_t i, std::size_t j) const
 {
-  if (ic < 0 || ic > 5 || jc < 0 || jc > 5) {
+  if (i > 5 || j > 5) {
     return 0.;
   }
-  return cov_arr[covIdx(ic, jc)];
+  return moments_[i][j];
+}
+
+double BunchTwissAnalysis::getCorrelation(std::size_t i, std::size_t j) const
+{
+  if (i > 5 || j > 5) {
+    return 0.;
+  }
+  double denom2 = moments_[i][i] * moments_[j][j];
+  if (denom2 <= 0.) {
+    return 0.;
+  }
+  return moments_[i][j] / std::sqrt(denom2);
 }
 
 double BunchTwissAnalysis::getBunchMoment(int i, int j) const
 {
-  if (i < 0 || i > order_ || j < 0 || j > order_) {
+  if (i < 0 || j < 0 || i + j > order_) {
     return 0.;
   }
-  return momentXY_[momentIdx(i, j, order_ + 1)];
+  return momentsXY_[momentIdx(i, j, order_ + 1)];
 }
 
 double BunchTwissAnalysis::getAverage(int ic) const
@@ -221,10 +251,10 @@ double BunchTwissAnalysis::getAverage(int ic) const
   if (ic < 0 || ic > 5) {
     return 0.;
   }
-  return avg_arr[ic];
+  return averages_[ic];
 }
 
-int BunchTwissAnalysis::getGlobalCount() const
+std::size_t BunchTwissAnalysis::getGlobalCount() const
 {
   return count_;
 }

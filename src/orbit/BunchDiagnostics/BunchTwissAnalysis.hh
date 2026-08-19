@@ -24,7 +24,6 @@ public:
   BunchTwissAnalysis(BunchTwissAnalysis&&) = delete;
   BunchTwissAnalysis& operator=(BunchTwissAnalysis&&) = delete;
 
-  [[deprecated("Use computeBunchMoments instead.")]]
   void analyzeBunch(Bunch* bunch);
 
   /**
@@ -53,13 +52,23 @@ public:
    * @param ic Integer corresponding to the first coordinate, \f$u\f$.
    * @param jc Integer corresponding to the second coordinate, \f$u\f$.
    **/
-  double getCorrelation(int ic, int jc) const;
+  double getCovariance(std::size_t i, std::size_t j) const;
+
+  /**
+   * @brief Returns the first-order correlation for a pair of coordinates.
+   *
+   * \f$\frac{\langle (u-\langle u\rangle)(v-\langle v\rangle)\rangle}{\sigma_u\sigma_v}\f$
+   *
+   * @param ic Integer corresponding to the first coordinate, \f$u\f$.
+   * @param jc Integer corresponding to the second coordinate, \f$u\f$.
+   **/
+  double getCorrelation(std::size_t i, std::size_t j) const;
 
   /** Returns the average value for coordinate with index ic. */
   double getAverage(int ic) const;
 
   /** Returns the total number of analysed macroparticles. */
-  int getGlobalCount() const;
+  std::size_t getGlobalCount() const;
 
   /** Returns the total macrosize. */
   double getGlobalMacrosize() const;
@@ -101,29 +110,21 @@ public:
   double getEffectiveGamma(int ic) const;
 
 private:
-  template <bool HasMacrosizeAttr, bool Dispersion>
-  void computeBunchMomentsImpl(Bunch* bunch, bool normalize, bool emitnormflag);
-
-  static constexpr int momentIdx(int i, int j, int maxOrder)
-  {
-    return i * maxOrder - (i * (i - 1)) / 2 + j;
-  }
-
-  static constexpr int covIdx(int i, int j)
-  {
-    return i * N + j;
-  }
-
   static constexpr int N = 6;      // {x, x', y, y', z, dE}
   static constexpr int NN = N * N; // 36
 
-  int count_{};
+  using Array2D = std::array<std::array<double, N>, N>;
+
+  template <bool HasMacrosizeAttr, bool IncludeXDispersion>
+  void computeBunchMomentsImpl(Bunch* bunch, bool normalize, bool emitnormflag);
+
+  std::size_t count_{};
   double total_macrosize_{};
 
-  std::array<double, N> avg_arr{};
-  std::array<double, NN> cov_arr{};
+  std::array<double, N> averages_{};
+  Array2D moments_{};
 
-  std::vector<double> momentXY_;
+  std::vector<double> momentsXY_;
 
   int order_{};
 
