@@ -47,20 +47,25 @@ public:
   /**
    * @brief Returns the centered covariance for a pair of coordinates.
    *
-   * \f$\langle \left(u - \langle u \rangle \right) \left( v - \langle v \rangle \right) \rangle \f$
+   * Computes \f$\langle (u - \langle u \rangle)(v - \langle v \rangle) \rangle\f$ where
+   * \f$u\f$ is coordinate \p i and \f$v\f$ is coordinate \p j.
    *
-   * @param ic Integer corresponding to the first coordinate, \f$u\f$.
-   * @param jc Integer corresponding to the second coordinate, \f$u\f$.
+   * @param i Coordinate index (0-5): 0=x, 1=x', 2=y, 3=y', 4=z, 5=dE.
+   * @param j Coordinate index (0-5): 0=x, 1=x', 2=y, 3=y', 4=z, 5=dE.
+   * @return The covariance, or 0.0 if \p i or \p j is out of range.
    **/
   double getCovariance(std::size_t i, std::size_t j) const;
 
   /**
-   * @brief Returns the first-order correlation for a pair of coordinates.
+   * @brief Returns the Pearson correlation coefficient for a pair of coordinates.
    *
-   * \f$\frac{\langle (u-\langle u\rangle)(v-\langle v\rangle)\rangle}{\sigma_u\sigma_v}\f$
+   * Computes \f$\frac{\langle (u - \langle u \rangle)(v - \langle v \rangle) \rangle}
+   * {\sigma_u \sigma_v}\f$ where \f$u\f$ is coordinate \p i and \f$v\f$ is coordinate \p j.
    *
-   * @param ic Integer corresponding to the first coordinate, \f$u\f$.
-   * @param jc Integer corresponding to the second coordinate, \f$u\f$.
+   * @param i Coordinate index (0-5): 0=x, 1=x', 2=y, 3=y', 4=z, 5=dE.
+   * @param j Coordinate index (0-5): 0=x, 1=x', 2=y, 3=y', 4=z, 5=dE.
+   * @return The correlation in [-1, 1], or 0.0 if \p i or \p j is out of range, or if
+   *         either variance is non-positive.
    **/
   double getCorrelation(std::size_t i, std::size_t j) const;
 
