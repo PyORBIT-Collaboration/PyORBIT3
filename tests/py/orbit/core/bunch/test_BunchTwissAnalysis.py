@@ -31,7 +31,8 @@ def test_computeBunchMoments(gaus_bunch, gaus_dist, twiss_analysis):
     for i in range(6):
         assert twiss_analysis.getAverage(i) == pytest.approx(mean[i])
         for j in range(6):
-            assert twiss_analysis.getCorrelation(i, j) == pytest.approx(cov[i, j])
+            assert twiss_analysis.getCovariance(i, j) == pytest.approx(cov[i, j])
+            assert twiss_analysis.getCorrelation(i, j) == pytest.approx(cov[i, j] / np.sqrt(cov[i, i]*cov[j, j]))
 
 def test_computeBunchMoments_FirstOrder(gaus_bunch, gaus_dist, twiss_analysis):
     twiss_analysis.computeBunchMoments(gaus_bunch, 3)
