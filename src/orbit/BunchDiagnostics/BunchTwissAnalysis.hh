@@ -24,17 +24,38 @@ public:
   BunchTwissAnalysis(BunchTwissAnalysis&&) = delete;
   BunchTwissAnalysis& operator=(BunchTwissAnalysis&&) = delete;
 
+  /**
+   * @brief Performs a default Twiss analysis of the bunch.
+   *
+   * Equivalent to calling computeBunchMoments() with default parameters (order=2, no
+   * normalization, no dispersion correction).
+   *
+   * After this call the Twiss parameters (emittance, alpha, beta, gamma, dispersion) are
+   * available from the corresponding getters.
+   *
+   * @param bunch The bunch to analyze (compressed before use).
+   */
   void analyzeBunch(Bunch* bunch);
 
   /**
    * @brief Computes central moments of the bunch up to the given order.
    *
+   * This is the full-featured entry point. For a simple default analysis, prefer
+   * analyzeBunch() instead.
+   *
+   * The 6D coordinate system is \f$(x, x', y, y', z, \delta E)\f$. Higher-order XY
+   * moments \f$\langle \tilde{x}^i \tilde{y}^j \rangle\f$ with
+   * \f$i+j \le \mathrm{order}\f$ are available via getBunchMoment(), where
+   * \f$\tilde{x}\f$ and \f$\tilde{y}\f$ are the (optionally normalized) dispersive
+   * and transverse displacements.
+   *
    * @param bunch          The bunch to analyze (compressed before use).
    * @param order          Maximum moment order (default 2).
    * @param normalize      Whether to normalize the moments to \f$\sqrt{\beta_{x,y}}\f$.
    * @param emitnormflag   If true, moments are normalized to \f$\sqrt{\beta_{x,y}
-   * \varepsilon{x,y}}\f$. Implies normalize=true. (default false).
-   * @param dispersionflag If true, x-coordinates are corrected for dispersion (default false).
+   * \varepsilon_{x,y}}\f$. Implies normalize=true (default false).
+   * @param dispersionflag If true, x-coordinates are corrected for dispersion
+   *                       (default false).
    */
   void computeBunchMoments(
     Bunch* bunch,
