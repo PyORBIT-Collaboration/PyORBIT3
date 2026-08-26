@@ -1,3 +1,6 @@
+import subprocess
+import sys
+
 import pytest
 from orbit.core.orbit_mpi import (
     mpi_comm,
@@ -15,6 +18,19 @@ _OPS = [
     pytest.param(mpi_op.MPI_MIN, "min", id="MPI_MIN"),
     pytest.param(mpi_op.MPI_PROD, "prod", id="MPI_PROD"),
 ]
+
+
+def test_mpi_cleanup_preserves_interpreter_exit_status():
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "from orbit.core import orbit_mpi; raise SystemExit(7)",
+        ],
+        check=False,
+    )
+
+    assert result.returncode == 7
 
 
 def _expected(val, op_name, size):
