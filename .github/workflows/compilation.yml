@@ -157,11 +157,13 @@ jobs:
       matrix:
         include:
           - mpi: none
-            mpi_package: ""
+            mpi_packages: ""
           - mpi: mpich
-            mpi_package: mpich
+            mpi_packages: >-
+              mpich
+              libfabric-devel
           - mpi: ompi
-            mpi_package: openmpi
+            mpi_packages: openmpi
 
     steps:
       - uses: actions/checkout@v4
@@ -181,7 +183,7 @@ jobs:
             pkg-config
             setuptools
             setuptools-scm
-            ${{ matrix.mpi_package }}
+            ${{ matrix.mpi_packages }}
           cache-downloads: true
 
       - name: Configure
@@ -189,6 +191,7 @@ jobs:
         run: |
           meson setup build-${{ matrix.mpi }} \
             --prefix="$CONDA_PREFIX" \
+            --libdir=lib \
             --buildtype=release \
             -DUSE_MPI=${{ matrix.mpi }} \
             -DPyORBIT_EXPERIMENTAL_WITH_NUMPY=true
@@ -212,6 +215,7 @@ jobs:
       - name: Run Python tests
         shell: bash -el {0}
         run: |
+          export LD_LIBRARY_PATH="$CONDA_PREFIX/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           python -m pytest tests/py/ -v
 
   build-docs:
