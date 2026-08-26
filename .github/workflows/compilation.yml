@@ -147,5 +147,72 @@ jobs:
            run: |
              .github/workflows/pip-versions.sh
 
+  python-tests:
+    name: Python tests (${{ matrix.mpi }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - mpi: none
+            mpi_package: ""
+          - mpi: mpich
+            mpi_package: mpich
+          - mpi: ompi
+            mpi_package: openmpi
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: mamba-org/setup-micromamba@v3
+        with:
+          environment-name: pyorbit-test
+          create-args: >-
+            python=3.13
+            numpy
+            pytest
+            fftw
+            meson
+            ninja
+            pkg-config
+            setuptools
+            setuptools-scm
+            ${{ matrix.mpi_package }}
+          cache-downloads: true
+
+      - name: Configure
+        shell: bash -el {0}
+        run: |
+          meson setup build-${{ matrix.mpi }} \
+            --prefix="$CONDA_PREFIX" \
+            --buildtype=release \
+            -DUSE_MPI=${{ matrix.mpi }} \
+            -DPyORBIT_EXPERIMENTAL_WITH_NUMPY=true
+
+      - name: Compile
+        shell: bash -el {0}
+        run: |
+          meson compile -C build-${{ matrix.mpi }}
+
+      - name: Install
+        shell: bash -el {0}
+        run: |
+          meson install --no-rebuild -C build-${{ matrix.mpi }}
+
+      - name: Show MPI configuration
+        if: matrix.mpi != 'none'
+        shell: bash -el {0}
+        run: |
+          mpirun --version
+
+      - name: Run Python tests
+        shell: bash -el {0}
+        run: |
+          python -m pytest tests/py/ -v
+
   build-docs:
     uses: ./.github/workflows/docs-build.yml
