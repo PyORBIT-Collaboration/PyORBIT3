@@ -1,4 +1,5 @@
 import os
+import shlex
 import shutil
 import subprocess
 import sys
@@ -31,6 +32,25 @@ def _process_failure(result):
         {result.stderr}
         """
     )
+
+
+def _mpi_test_env():
+    env = os.environ.copy()
+    env.setdefault("OMPI_ALLOW_RUN_AS_ROOT", "1")
+    env.setdefault("OMPI_ALLOW_RUN_AS_ROOT_CONFIRM", "1")
+    return env
+
+
+def _mpi_test_command(mpirun, nprocs, script_path):
+    preflags = shlex.split(os.environ.get("PYORBIT_MPIEXEC_PREFLAGS", ""))
+    return [
+        mpirun,
+        *preflags,
+        "-np",
+        str(nprocs),
+        sys.executable,
+        str(script_path),
+    ]
 
 
 def _assert_missing_numpy_raises_import_error(extension_name):
@@ -134,16 +154,13 @@ class TestBunchNumpyInterop:
             )
         )
 
-        env = os.environ.copy()
-        env.setdefault("OMPI_ALLOW_RUN_AS_ROOT", "1")
-        env.setdefault("OMPI_ALLOW_RUN_AS_ROOT_CONFIRM", "1")
         result = subprocess.run(
-            [mpirun, "-np", "2", sys.executable, str(script_path)],
+            _mpi_test_command(mpirun, 2, script_path),
             capture_output=True,
             text=True,
             timeout=60,
             check=False,
-            env=env,
+            env=_mpi_test_env(),
         )
 
         if "PYORBIT_MPI_DISABLED" in result.stdout:
@@ -235,16 +252,13 @@ class TestBunchNumpyInterop:
             )
         )
 
-        env = os.environ.copy()
-        env.setdefault("OMPI_ALLOW_RUN_AS_ROOT", "1")
-        env.setdefault("OMPI_ALLOW_RUN_AS_ROOT_CONFIRM", "1")
         result = subprocess.run(
-            [mpirun, "-np", "3", sys.executable, str(script_path)],
+            _mpi_test_command(mpirun, 3, script_path),
             capture_output=True,
             text=True,
             timeout=60,
             check=False,
-            env=env,
+            env=_mpi_test_env(),
         )
 
         if "PYORBIT_MPI_DISABLED" in result.stdout:

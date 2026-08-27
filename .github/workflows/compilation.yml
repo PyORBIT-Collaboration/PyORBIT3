@@ -158,12 +158,15 @@ jobs:
         include:
           - mpi: none
             mpi_packages: ""
+            mpiexec_preflags: ""
           - mpi: mpich
             mpi_packages: >-
               mpich
               libfabric-devel
+            mpiexec_preflags: ""
           - mpi: ompi
             mpi_packages: openmpi
+            mpiexec_preflags: --oversubscribe
 
     steps:
       - uses: actions/checkout@v4
@@ -214,6 +217,8 @@ jobs:
 
       - name: Run Python tests
         shell: bash -el {0}
+        env:
+          PYORBIT_MPIEXEC_PREFLAGS: ${{ matrix.mpiexec_preflags }}
         run: |
           export LD_LIBRARY_PATH="$CONDA_PREFIX/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           python -m pytest tests/py/ -v
