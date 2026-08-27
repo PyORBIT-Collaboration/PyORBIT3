@@ -77,7 +77,7 @@ namespace wrap_orbit_bunch{
   //----------------------------------------------------------------
 
   //returns the SyncPart python class wrapper instance
-    static PyObject* Bunch_getSyncParticle(PyObject *self, PyObject *args){
+    static PyObject* Bunch_getSyncParticle(PyObject *self, PyObject *Py_UNUSED(ignored)){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
         PyObject* pySyncPart = cpp_bunch->getSyncPart()->getPyWrapper();
         Py_INCREF(pySyncPart);
@@ -91,7 +91,7 @@ namespace wrap_orbit_bunch{
   //----------------------------------------------------------------
 
     //returns the local MPI Comm for this bunch
-    static PyObject* Bunch_getMPIComm(PyObject *self, PyObject *args){
+    static PyObject* Bunch_getMPIComm(PyObject *self, PyObject *Py_UNUSED(ignored)){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
         PyObject* pyMPIComm = (PyObject*) cpp_bunch->getMPI_Comm_Local();
         Py_INCREF(pyMPIComm);
@@ -99,19 +99,9 @@ namespace wrap_orbit_bunch{
   }
 
     //sets a new local MPI Comm for this bunch
-    static PyObject* Bunch_setMPIComm(PyObject *self, PyObject *args){
+    static PyObject* Bunch_setMPIComm(PyObject *self, PyObject *arg){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
-        int nVars = PyTuple_Size(args);
-        PyObject* pyMPIComm;
-        if(nVars == 1){
-            if(!PyArg_ParseTuple(args,"O:setMPIComm",&pyMPIComm)){
-                error("The Bunch method setMPIComm(mpi_comm) - mpi_comm is needed.");
-            }
-            cpp_bunch->setMPI_Comm_Local( (pyORBIT_MPI_Comm*) pyMPIComm);
-        }
-        else{
-            error("The Bunch method should be setMPIComm(mpi_comm).");
-        }
+        cpp_bunch->setMPI_Comm_Local( (pyORBIT_MPI_Comm*) arg);
         Py_INCREF(Py_None);
     return Py_None;
   }
@@ -142,13 +132,13 @@ namespace wrap_orbit_bunch{
   //removes a particle to the Bunch object
   //returns the number of particles in the bunch
   //this is implementation of the deleteParticle(int index)  method
-  static PyObject* Bunch_deleteParticle(PyObject *self, PyObject *args){
+  static PyObject* Bunch_deleteParticle(PyObject *self, PyObject *arg){
     Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     int ind;
 
-    //NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
-    if(!PyArg_ParseTuple(args,"i:deleteParticle",&ind)){
-      error("PyBunch - deleteParticle - needs index of particle for deleting");
+    //NO NEW OBJECT CREATED BY PyArg_Parse! NO NEED OF Py_DECREF()
+    if(!PyArg_Parse(arg,"i:deleteParticle",&ind)){
+      return NULL;
     }
 
     cpp_bunch->deleteParticle(ind);
@@ -160,25 +150,25 @@ namespace wrap_orbit_bunch{
   //removes a particle to the Bunch object
   //returns the index of removed macro-particle
   //this is implementation of the deleteParticleFast(int index)  method
-  static PyObject* Bunch_deleteParticleFast(PyObject *self, PyObject *args){
+  static PyObject* Bunch_deleteParticleFast(PyObject *self, PyObject *arg){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     int ind;
 
-    //NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
-    if(!PyArg_ParseTuple(args,"i:deleteParticleFast",&ind)){
-      error("PyBunch - deleteParticleFast - needs index of particle for deleting");
+    //NO NEW OBJECT CREATED BY PyArg_Parse! NO NEED OF Py_DECREF()
+    if(!PyArg_Parse(arg,"i:deleteParticleFast",&ind)){
+      return NULL;
     }
 
     cpp_bunch->deleteParticleFast(ind);
     return Py_BuildValue("i",ind);
   }
 
-  static PyObject* Bunch_recoverParticle(PyObject *self, PyObject *args){
+  static PyObject* Bunch_recoverParticle(PyObject *self, PyObject *arg){
     Bunch *cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     int ind;
 
-    if(!PyArg_ParseTuple(args,"i:recoverParticle",&ind)){
-      error("PyBunch - recoverParticle - needs index of particle for recovering");
+    if(!PyArg_Parse(arg,"i:recoverParticle",&ind)){
+      return NULL;
     }
 
     cpp_bunch->recoverParticle(ind);
@@ -188,7 +178,7 @@ namespace wrap_orbit_bunch{
 
   //removes all particles from the Bunch object
   //this is implementation of the deleteAllParticles()  method
-  static PyObject* Bunch_deleteAllParticles(PyObject *self, PyObject *args){
+  static PyObject* Bunch_deleteAllParticles(PyObject *self, PyObject *Py_UNUSED(ignored)){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     cpp_bunch->deleteAllParticles();
     Py_INCREF(Py_None);
@@ -198,7 +188,7 @@ namespace wrap_orbit_bunch{
   //compress the bunch. This method should be called after deleting one
   //  or more macro-particles
   //this is implementation of the compress()  method
-  static PyObject* Bunch_compress(PyObject *self, PyObject *args){
+  static PyObject* Bunch_compress(PyObject *self, PyObject *Py_UNUSED(ignored)){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     cpp_bunch->compress();
     Py_INCREF(Py_None);
@@ -450,35 +440,25 @@ namespace wrap_orbit_bunch{
   //  the action is depended on the number of arguments
   //  (index) - returns flag
   //this is implementation of the flag(int index)  method
-  static PyObject* Bunch_flag(PyObject *self, PyObject *args){
+  static PyObject* Bunch_flag(PyObject *self, PyObject *arg){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
-    //if nVars == 1 get flag
-    int nVars = PyTuple_Size(args);
     int index = 0;
-    int flag = 0;
-    if(nVars == 1){
-            if(!PyArg_ParseTuple(args,"i:flag",&index)){
-                error("PyBunch - flag(index) - index is needed");
-            }
-            flag = cpp_bunch->flag(index);
-            return Py_BuildValue("i",flag);
+    if(!PyArg_Parse(arg,"i:flag",&index)){
+      return NULL;
     }
-    else{
-      error("PyBunch. You should call bunch.flag(index)");
-    }
-    Py_INCREF(Py_None);
-    return Py_None;
+    int flag = cpp_bunch->flag(index);
+    return Py_BuildValue("i",flag);
   }
 
     //Wraps long. coords in the bunch
     //ringwrap(ring_length)
-  static PyObject* Bunch_ringwrap(PyObject *self, PyObject *args) {
+  static PyObject* Bunch_ringwrap(PyObject *self, PyObject *arg) {
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     double ring_length = 0.;
 
-        //NO NEW OBJECT CREATED BY PyArg_ParseTuple! //NO NEED OF Py_DECREF()
-        if(!PyArg_ParseTuple(args,"d:py",&ring_length)){
-            error("PyBunch - ringwrap(ring_length) - pyBunch object needed");
+        //NO NEW OBJECT CREATED BY PyArg_Parse! //NO NEED OF Py_DECREF()
+        if(!PyArg_Parse(arg,"d:ringwrap",&ring_length)){
+            return NULL;
         }
 
         cpp_bunch->ringwrap(ring_length);
@@ -527,14 +507,14 @@ namespace wrap_orbit_bunch{
   }
 
   //Returns classicalRadius of the particle in meters
-  static PyObject* Bunch_classicalRadius(PyObject *self, PyObject *args){
+  static PyObject* Bunch_classicalRadius(PyObject *self, PyObject *Py_UNUSED(ignored)){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
         double val = cpp_bunch->getClassicalRadius();
         return Py_BuildValue("d",val);
   }
 
   //Returns B_Rho of the particle in [Tesla*meter]. Parameter is used in TEAPOT
-  static PyObject* Bunch_B_Rho(PyObject *self, PyObject *args){
+  static PyObject* Bunch_B_Rho(PyObject *self, PyObject *Py_UNUSED(ignored)){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
         double val = cpp_bunch->getB_Rho();
         return Py_BuildValue("d",val);
@@ -615,12 +595,12 @@ namespace wrap_orbit_bunch{
   //----------------------------------------------------------------
 
   //initilizes bunch attributes from the bunch file
-  static PyObject* Bunch_initBunchAttr(PyObject *self, PyObject *args){
+  static PyObject* Bunch_initBunchAttr(PyObject *self, PyObject *arg){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     const char* file_name = NULL;
-    //NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
-    if(!PyArg_ParseTuple(args,"s:initBunchAttr",&file_name)){
-      error("PyBunch - initBunchAttr(fileName) - the file name are needed");
+    //NO NEW OBJECT CREATED BY PyArg_Parse! NO NEED OF Py_DECREF()
+    if(!PyArg_Parse(arg,"s:initBunchAttr",&file_name)){
+      return NULL;
     }
     cpp_bunch->initBunchAttributes(file_name);
     Py_INCREF(Py_None);
@@ -718,7 +698,7 @@ namespace wrap_orbit_bunch{
   }
 
   //Returns a list (tuple) of  ther double bunch attribute names
-  static PyObject* Bunch_bunchAttrDoubleNames(PyObject *self, PyObject *args){
+  static PyObject* Bunch_bunchAttrDoubleNames(PyObject *self, PyObject *Py_UNUSED(ignored)){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     std::vector<std::string> names;
     cpp_bunch->getDoubleBunchAttributeNames(names);
@@ -734,7 +714,7 @@ namespace wrap_orbit_bunch{
   }
 
   //Returns a list (tuple) of  ther integer bunch attribute names
-  static PyObject* Bunch_bunchAttrIntNames(PyObject *self, PyObject *args){
+  static PyObject* Bunch_bunchAttrIntNames(PyObject *self, PyObject *Py_UNUSED(ignored)){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     std::vector<std::string> names;
     cpp_bunch->getIntBunchAttributeNames(names);
@@ -750,12 +730,12 @@ namespace wrap_orbit_bunch{
   }
 
   //Returns 0 or 1. The result is 1 if the bunch has an attribute with a particular name
-  static PyObject* Bunch_hasBunchAttrDouble(PyObject *self, PyObject *args){
+  static PyObject* Bunch_hasBunchAttrDouble(PyObject *self, PyObject *arg){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     const char* attr_name = NULL;
-    //NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
-    if(!PyArg_ParseTuple(args,"s:hasBunchAttrDouble",&attr_name)){
-      error("PyBunch - hasBunchAttrDouble(name) - a bunch attr. name are needed");
+    //NO NEW OBJECT CREATED BY PyArg_Parse! NO NEED OF Py_DECREF()
+    if(!PyArg_Parse(arg,"s:hasBunchAttrDouble",&attr_name)){
+      return NULL;
     }
     std::string attr_name_str(attr_name);
     int res = cpp_bunch->getBunchAttributes()->hasDoubleAttribute(attr_name_str);
@@ -763,12 +743,12 @@ namespace wrap_orbit_bunch{
   }
 
   //Returns 0 or 1. The result is 1 if the bunch has an attribute with a particular name
-  static PyObject* Bunch_hasBunchAttrInt(PyObject *self, PyObject *args){
+  static PyObject* Bunch_hasBunchAttrInt(PyObject *self, PyObject *arg){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     const char* attr_name = NULL;
-    //NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
-    if(!PyArg_ParseTuple(args,"s:hasBunchAttrInt",&attr_name)){
-      error("PyBunch - hasBunchAttrInt(name) - a bunch attr. name are needed");
+    //NO NEW OBJECT CREATED BY PyArg_Parse! NO NEED OF Py_DECREF()
+    if(!PyArg_Parse(arg,"s:hasBunchAttrInt",&attr_name)){
+      return NULL;
     }
     std::string attr_name_str(attr_name);
     int res = cpp_bunch->getBunchAttributes()->hasIntAttribute(attr_name_str);
@@ -813,12 +793,12 @@ namespace wrap_orbit_bunch{
   }
 
   //Removes a particles' attributes with a particular name from the bunch
-  static PyObject* Bunch_removePartAttr(PyObject *self, PyObject *args){
+  static PyObject* Bunch_removePartAttr(PyObject *self, PyObject *arg){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     const char* attr_name = NULL;
-    //NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
-    if(!PyArg_ParseTuple(args,"s:removePartAttr",&attr_name)){
-      error("PyBunch - removePartAttr(name) - pyBunch object and a particle attr. name are needed");
+    //NO NEW OBJECT CREATED BY PyArg_Parse! NO NEED OF Py_DECREF()
+    if(!PyArg_Parse(arg,"s:removePartAttr",&attr_name)){
+      return NULL;
     }
     std::string attr_name_str(attr_name);
     cpp_bunch->removeParticleAttributes(attr_name_str);
@@ -827,7 +807,7 @@ namespace wrap_orbit_bunch{
   }
 
   //Removes all particles' attributes from the bunch
-  static PyObject* Bunch_removeAllPartAttr(PyObject *self, PyObject *args){
+  static PyObject* Bunch_removeAllPartAttr(PyObject *self, PyObject *Py_UNUSED(ignored)){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     cpp_bunch->removeAllParticleAttributes();
     Py_INCREF(Py_None);
@@ -835,7 +815,7 @@ namespace wrap_orbit_bunch{
   }
 
   //Returns a list (tuple) of  the particles' attributes names
-  static PyObject* Bunch_getPartAttrNames(PyObject *self, PyObject *args){
+  static PyObject* Bunch_getPartAttrNames(PyObject *self, PyObject *Py_UNUSED(ignored)){
     Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     std::vector<std::string> names;
     cpp_bunch->getParticleAttributesNames(names);
@@ -851,7 +831,7 @@ namespace wrap_orbit_bunch{
   }
 
     //Returns a dict{"part. attribute name":dict{"key":val}}
-  static PyObject* Bunch_getPartAttrDicts(PyObject *self, PyObject *args){
+  static PyObject* Bunch_getPartAttrDicts(PyObject *self, PyObject *Py_UNUSED(ignored)){
     Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     std::vector<std::string> names;
     cpp_bunch->getParticleAttributesNames(names);
@@ -872,7 +852,7 @@ namespace wrap_orbit_bunch{
   }
 
   //Returns a list (tuple) of the possible particles' attributes names
-     static PyObject* Bunch_getPossiblePartAttrNames(PyObject *self, PyObject *args){
+     static PyObject* Bunch_getPossiblePartAttrNames(PyObject *self, PyObject *Py_UNUSED(ignored)){
          std::vector<std::string> names;
          ParticleAttributesFactory::getParticleAttributesNames(names);
          //create tuple with names
@@ -887,7 +867,7 @@ namespace wrap_orbit_bunch{
      }
 
   //temporary removes and memorizes all particles' attributes names
-  static PyObject* Bunch_clearAllPartAttrAndMemorize(PyObject *self, PyObject *args){
+  static PyObject* Bunch_clearAllPartAttrAndMemorize(PyObject *self, PyObject *Py_UNUSED(ignored)){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     cpp_bunch->clearAllParticleAttributesAndMemorize();
     Py_INCREF(Py_None);
@@ -895,7 +875,7 @@ namespace wrap_orbit_bunch{
   }
 
   //restores all particles' attributes names from memory
-  static PyObject* Bunch_restoreAllPartAttrFromMemory(PyObject *self, PyObject *args){
+  static PyObject* Bunch_restoreAllPartAttrFromMemory(PyObject *self, PyObject *Py_UNUSED(ignored)){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     cpp_bunch->restoreAllParticleAttributesFromMemory();
     Py_INCREF(Py_None);
@@ -903,12 +883,12 @@ namespace wrap_orbit_bunch{
   }
 
   //Returns 0 or 1. The result is 1 if the bunch has a particles' attributes with a particular name
-  static PyObject* Bunch_hasPartAttr(PyObject *self, PyObject *args){
+  static PyObject* Bunch_hasPartAttr(PyObject *self, PyObject *arg){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     const char* attr_name = NULL;
-    //NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
-    if(!PyArg_ParseTuple(args,"s:hasPartAttr",&attr_name)){
-      error("PyBunch - hasPartAttr(name) - a particles' attr. name are needed");
+    //NO NEW OBJECT CREATED BY PyArg_Parse! NO NEED OF Py_DECREF()
+    if(!PyArg_Parse(arg,"s:hasPartAttr",&attr_name)){
+      return NULL;
     }
     std::string attr_name_str(attr_name);
     int res = cpp_bunch->hasParticleAttributes(attr_name_str);
@@ -916,14 +896,14 @@ namespace wrap_orbit_bunch{
   }
 
   //Returns a list (tuple) of  their bunch particles attribute names specified in the bunch file
-  static PyObject* Bunch_readPartAttrNames(PyObject *self, PyObject *args){
+  static PyObject* Bunch_readPartAttrNames(PyObject *self, PyObject *arg){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     const char* file_name = NULL;
     std::vector<std::string> names;
         std::map<std::string,std::map<std::string,double> > part_attr_dicts;
-    //NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
-    if(!PyArg_ParseTuple(args,"s:readPartAttrNames",&file_name)){
-      error("PyBunch - readPartAttrNames(fileName) - a file name are needed");
+    //NO NEW OBJECT CREATED BY PyArg_Parse! NO NEED OF Py_DECREF()
+    if(!PyArg_Parse(arg,"s:readPartAttrNames",&file_name)){
+      return NULL;
     }
     cpp_bunch->readParticleAttributesNames(file_name,names,part_attr_dicts);
         //create tuple with names
@@ -939,13 +919,13 @@ namespace wrap_orbit_bunch{
 
   //Returns a dictionary with the bunch particles attribute names as keys and
     //dictionaries with parameter:value for each attribute
-  static PyObject* Bunch_readPartAttrDicts(PyObject *self, PyObject *args){
+  static PyObject* Bunch_readPartAttrDicts(PyObject *self, PyObject *arg){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     const char* file_name = NULL;
     std::vector<std::string> names;
         std::map<std::string,std::map<std::string,double> > part_attr_dicts;
-    if(!PyArg_ParseTuple(args,"s:readPartAttrDicts",&file_name)){
-      error("PyBunch - readPartAttrDicts(fileName) - a file name are needed");
+    if(!PyArg_Parse(arg,"s:readPartAttrDicts",&file_name)){
+      return NULL;
     }
     cpp_bunch->readParticleAttributesNames(file_name,names,part_attr_dicts);
         PyObject* resDict = PyDict_New();
@@ -966,12 +946,12 @@ namespace wrap_orbit_bunch{
   }
 
   //initilizes particles' attributes from the bunch file
-  static PyObject* Bunch_readPartAttr(PyObject *self, PyObject *args){
+  static PyObject* Bunch_readPartAttr(PyObject *self, PyObject *arg){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     const char* file_name = NULL;
-    //NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
-    if(!PyArg_ParseTuple(args,"s:readPartAttr",&file_name)){
-      error("PyBunch - readPartAttr(fileName) - pyBunch object and file name are needed");
+    //NO NEW OBJECT CREATED BY PyArg_Parse! NO NEED OF Py_DECREF()
+    if(!PyArg_Parse(arg,"s:readPartAttr",&file_name)){
+      return NULL;
     }
     cpp_bunch->readParticleAttributes(file_name);
     Py_INCREF(Py_None);
@@ -979,12 +959,12 @@ namespace wrap_orbit_bunch{
   }
 
   //Returns the number of variables in the particles' attributes with a particular name
-  static PyObject* Bunch_getPartAttrSize(PyObject *self, PyObject *args){
+  static PyObject* Bunch_getPartAttrSize(PyObject *self, PyObject *arg){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     const char* attr_name = NULL;
-    //NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
-    if(!PyArg_ParseTuple(args,"s:getPartAttrSize",&attr_name)){
-      error("PyBunch - getPartAttrSize(name) - a particles' attr. name are needed");
+    //NO NEW OBJECT CREATED BY PyArg_Parse! NO NEED OF Py_DECREF()
+    if(!PyArg_Parse(arg,"s:getPartAttrSize",&attr_name)){
+      return NULL;
     }
     std::string attr_name_str(attr_name);
     int size = cpp_bunch->getParticleAttributes(attr_name_str)->getAttSize();
@@ -1044,14 +1024,14 @@ namespace wrap_orbit_bunch{
 
   //returns the number of macro-particles in the bunch
   //this is implementation of the "getSize()" method
-  static PyObject* Bunch_getSize(PyObject *self, PyObject *args){
+  static PyObject* Bunch_getSize(PyObject *self, PyObject *Py_UNUSED(ignored)){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     return Py_BuildValue("i",cpp_bunch->getSize());
   }
 
   //returns the number of macro-particles in the bunch in all CPUs
   //this is implementation of the "getSizeGlobal()" method
-  static PyObject* Bunch_getSizeGlobal(PyObject *self, PyObject *args){
+  static PyObject* Bunch_getSizeGlobal(PyObject *self, PyObject *Py_UNUSED(ignored)){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     return Py_BuildValue("i",cpp_bunch->getSizeGlobal());
   }
@@ -1059,21 +1039,21 @@ namespace wrap_orbit_bunch{
   //returns the number of macro-particles in the bunch in all CPUs
   //    that was calculated in the previous call of getSizeGlobal()
   //this is implementation of the "getSizeGlobalFromMemory()" method
-  static PyObject* Bunch_getSizeGlobalFromMemory(PyObject *self, PyObject *args){
+  static PyObject* Bunch_getSizeGlobalFromMemory(PyObject *self, PyObject *Py_UNUSED(ignored)){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     return Py_BuildValue("i",cpp_bunch->getSizeGlobalFromMemory());
   }
 
   //returns the number of all macro-particles - alive, dead, new
   //this is implementation of the "getTotalCount()" method
-  static PyObject* Bunch_getTotalCount(PyObject *self, PyObject *args){
+  static PyObject* Bunch_getTotalCount(PyObject *self, PyObject *Py_UNUSED(ignored)){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     return Py_BuildValue("i",cpp_bunch->getTotalCount());
   }
 
   //returns the capacity of the bunch-container. It could be changed.
   //this is implementation of the "getCapacity()" method
-  static PyObject* Bunch_getCapacity(PyObject *self, PyObject *args){
+  static PyObject* Bunch_getCapacity(PyObject *self, PyObject *Py_UNUSED(ignored)){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
     return Py_BuildValue("i",cpp_bunch->getCapacity());
   }
@@ -1147,13 +1127,9 @@ namespace wrap_orbit_bunch{
   }
 
   //Copy bunch attrubutes and structure to another bunch
-  static PyObject* Bunch_copyEmptyBunchTo(PyObject *self, PyObject *args){
+  static PyObject* Bunch_copyEmptyBunchTo(PyObject *self, PyObject *arg){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
-    PyObject* pyBunch_Target;
-        //NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
-        if(!PyArg_ParseTuple(args,"O:copyEmptyBunchTo",&pyBunch_Target)){
-            error("PyBunch - copyEmptyBunchTo(pyBunch) - target pyBunch object is needed");
-        }
+    PyObject* pyBunch_Target = arg;
         Bunch* cpp_target_bunch = (Bunch*) ((pyORBIT_Object *) pyBunch_Target)->cpp_obj;
         cpp_bunch->copyEmptyBunchTo(cpp_target_bunch);
     Py_INCREF(Py_None);
@@ -1161,13 +1137,9 @@ namespace wrap_orbit_bunch{
   }
 
   //Copy bunch all info including particles coordinates and attributes to another bunch
-  static PyObject* Bunch_copyBunchTo(PyObject *self, PyObject *args){
+  static PyObject* Bunch_copyBunchTo(PyObject *self, PyObject *arg){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
-    PyObject* pyBunch_Target;
-        //NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
-        if(!PyArg_ParseTuple(args,"O:copyBunchTo",&pyBunch_Target)){
-            error("PyBunch - copyBunchTo(pyBunch) - target pyBunch object is needed");
-        }
+    PyObject* pyBunch_Target = arg;
         Bunch* cpp_target_bunch = (Bunch*) ((pyORBIT_Object *) pyBunch_Target)->cpp_obj;
         cpp_bunch->copyBunchTo(cpp_target_bunch);
         Py_INCREF(Py_None);
@@ -1175,14 +1147,9 @@ namespace wrap_orbit_bunch{
   }
 
   //Copy particles coordinates from one bunch to another
-  static PyObject* Bunch_addParticlesTo(PyObject *self, PyObject *args){
+  static PyObject* Bunch_addParticlesTo(PyObject *self, PyObject *arg){
         Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
-    PyObject* pyBunch_Target;
-
-        //NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
-        if(!PyArg_ParseTuple(args,"O:addParticlesTo",&pyBunch_Target)){
-            error("PyBunch - addParticlesTo(pyBunch) - target pyBunch object is needed");
-        }
+    PyObject* pyBunch_Target = arg;
         Bunch* cpp_target_bunch =(Bunch*) ((pyORBIT_Object *) pyBunch_Target)->cpp_obj ;
         cpp_bunch->addParticlesTo(cpp_target_bunch);
         Py_INCREF(Py_None);
@@ -1511,15 +1478,15 @@ static PyObject *Bunch_from_numpy(PyObject *cls, PyObject *arg) {
     //--------------------------------------------------------
     // class Bunch wrapper                        START
     //--------------------------------------------------------
-    { "getMPIComm",                     Bunch_getMPIComm                    ,METH_VARARGS,"Returns MPI Comm of this bunch"},
-    { "setMPIComm",                     Bunch_setMPIComm                    ,METH_VARARGS,"Sets a new MPI Comm for this bunch"},
-    { "getSyncParticle",                Bunch_getSyncParticle               ,METH_VARARGS,"Returns syncParticle class instance"},
+    { "getMPIComm",                     Bunch_getMPIComm                    ,METH_NOARGS,"Returns MPI Comm of this bunch"},
+    { "setMPIComm",                     Bunch_setMPIComm                    ,METH_O,"Sets a new MPI Comm for this bunch"},
+    { "getSyncParticle",                Bunch_getSyncParticle               ,METH_NOARGS,"Returns syncParticle class instance"},
     { "addParticle",                    Bunch_addParticle                   ,METH_VARARGS,"Adds a macro-particle to the bunch"},
-    { "deleteParticle",                 Bunch_deleteParticle                ,METH_VARARGS,"Removes macro-particle from the bunch and call compress inside"},
-    { "deleteParticleFast",             Bunch_deleteParticleFast            ,METH_VARARGS,"Removes macro-particle from the bunch very fast"},
-    { "recoverParticle",                Bunch_recoverParticle               ,METH_VARARGS,"Recovers a particle marked for removal"},
-    { "deleteAllParticles",             Bunch_deleteAllParticles            ,METH_VARARGS,"Removes all macro-particles from the bunch"},
-    { "compress",                       Bunch_compress                      ,METH_VARARGS,"Compress the bunch"},
+    { "deleteParticle",                 Bunch_deleteParticle                ,METH_O,"Removes macro-particle from the bunch and call compress inside"},
+    { "deleteParticleFast",             Bunch_deleteParticleFast            ,METH_O,"Removes macro-particle from the bunch very fast"},
+    { "recoverParticle",                Bunch_recoverParticle               ,METH_O,"Recovers a particle marked for removal"},
+    { "deleteAllParticles",             Bunch_deleteAllParticles            ,METH_NOARGS,"Removes all macro-particles from the bunch"},
+    { "compress",                       Bunch_compress                      ,METH_NOARGS,"Compress the bunch"},
     { "x",                              Bunch_x                             ,METH_VARARGS,"Set x(index,value) or get x(index) coordinate"},
     { "y",                              Bunch_y                             ,METH_VARARGS,"Set y(index,value) or get y(index) coordinate"},
     { "z",                              Bunch_z                             ,METH_VARARGS,"Set z(index,value) or get z(index) coordinate"},
@@ -1529,44 +1496,44 @@ static PyObject *Bunch_from_numpy(PyObject *cls, PyObject *arg) {
     { "dE",                             Bunch_pz                            ,METH_VARARGS,"Set dE(index,value) or get dE(index) coordinate"},
     { "xp",                             Bunch_px                            ,METH_VARARGS,"Set xp(index,value) or get xp(index) coordinate"},
     { "yp",                             Bunch_py                            ,METH_VARARGS,"Set yp(index,value) or get yp(index) coordinate"},
-    { "flag",                           Bunch_flag                          ,METH_VARARGS,"Returns flag(index) for particle with index"},
-    { "ringwrap",                       Bunch_ringwrap                      ,METH_VARARGS,"Perform the ring wrap. Usage: ringwrap(ring_length)"},
+    { "flag",                           Bunch_flag                          ,METH_O,"Returns flag(index) for particle with index"},
+    { "ringwrap",                       Bunch_ringwrap                      ,METH_O,"Perform the ring wrap. Usage: ringwrap(ring_length)"},
     { "mass",                           Bunch_mass                          ,METH_VARARGS,"Set mass(value) or get mass() the mass of particle in MeV"},
-    { "classicalRadius",                Bunch_classicalRadius               ,METH_VARARGS,"Returns a classical radius of particle in [m]"},
-    { "B_Rho",                          Bunch_B_Rho                         ,METH_VARARGS,"Returns B*Rho parameter of particle in [T*m]"},
+    { "classicalRadius",                Bunch_classicalRadius               ,METH_NOARGS,"Returns a classical radius of particle in [m]"},
+    { "B_Rho",                          Bunch_B_Rho                         ,METH_NOARGS,"Returns B*Rho parameter of particle in [T*m]"},
     { "charge",                         Bunch_charge                        ,METH_VARARGS,"Set charge(value) or get charge() the charge of particle in e-charge"},
     { "macroSize",                      Bunch_macroSize                     ,METH_VARARGS,"Set macroSize(value) or get macroSize() the charge of particle in e-charge"},
-    { "initBunchAttr",                  Bunch_initBunchAttr                 ,METH_VARARGS,"Reads and initilizes bunch attributes from a bunch file"},
+    { "initBunchAttr",                  Bunch_initBunchAttr                 ,METH_O,"Reads and initilizes bunch attributes from a bunch file"},
     { "bunchAttrDouble",                Bunch_bunchAttrDouble               ,METH_VARARGS,"Returns and sets a double bunch attribute"},
     { "bunchAttrInt",                   Bunch_bunchAttrInt                  ,METH_VARARGS,"Returns and sets an integer bunch attribute"},
-    { "bunchAttrDoubleNames",           Bunch_bunchAttrDoubleNames          ,METH_VARARGS,"Returns a list of double bunch attribute names"},
-    { "bunchAttrIntNames",              Bunch_bunchAttrIntNames             ,METH_VARARGS,"Returns a list of integer bunch attribute names"},
-    { "hasBunchAttrDouble",             Bunch_hasBunchAttrDouble            ,METH_VARARGS,"Returns 1 if there is a double bunch attr. with this name, 0 - otherwise"},
-    { "hasBunchAttrInt",                Bunch_hasBunchAttrInt               ,METH_VARARGS,"Returns 1 if there is a int bunch attr. with this name, 0 - otherwise"},
+    { "bunchAttrDoubleNames",           Bunch_bunchAttrDoubleNames          ,METH_NOARGS,"Returns a list of double bunch attribute names"},
+    { "bunchAttrIntNames",              Bunch_bunchAttrIntNames             ,METH_NOARGS,"Returns a list of integer bunch attribute names"},
+    { "hasBunchAttrDouble",             Bunch_hasBunchAttrDouble            ,METH_O,"Returns 1 if there is a double bunch attr. with this name, 0 - otherwise"},
+    { "hasBunchAttrInt",                Bunch_hasBunchAttrInt               ,METH_O,"Returns 1 if there is a int bunch attr. with this name, 0 - otherwise"},
     { "addPartAttr",                    Bunch_addPartAttr                   ,METH_VARARGS,"Adds a particles' attributes to the bunch"},
-    { "removePartAttr",                 Bunch_removePartAttr                ,METH_VARARGS,"Removes a particles' attributes from the bunch"},
-    { "removeAllPartAttr",              Bunch_removeAllPartAttr             ,METH_VARARGS,"Removes all particles' attributes from the bunch"},
-    { "getPartAttrNames",               Bunch_getPartAttrNames              ,METH_VARARGS,"Returns all particles' attributes names in the bunch at this moment"},
-    { "getPartAttrDicts",               Bunch_getPartAttrDicts              ,METH_VARARGS,"Returns dict{part. attribute name:dict{key:val}}"},
-    { "getPossiblePartAttrNames",       Bunch_getPossiblePartAttrNames      ,METH_VARARGS,"Returns all possible particles' attributes names"},
-    { "clearAllPartAttrAndMemorize",    Bunch_clearAllPartAttrAndMemorize   ,METH_VARARGS,"Temporary removes and memorizes all particles' attributes names"},
-    { "restoreAllPartAttrFromMemory",   Bunch_restoreAllPartAttrFromMemory  ,METH_VARARGS,"Restores all particles' attributes names from memory"},
-    { "hasPartAttr",                    Bunch_hasPartAttr                   ,METH_VARARGS,"Returns 1 if there is a particles' attr. with this name, 0 - otherwis"},
-    { "readPartAttrNames",              Bunch_readPartAttrNames             ,METH_VARARGS,"Returns a tuple with particles' attr. names in the bunch file"},
-    { "readPartAttrDicts",              Bunch_readPartAttrDicts             ,METH_VARARGS,"Returns a dict{attr_name:dicts{param_name:val}} in the bunch file"},
-    { "readPartAttr",                   Bunch_readPartAttr                  ,METH_VARARGS,"Initializes the particles' attr. from the bunch file"},
-    { "getPartAttrSize",                Bunch_getPartAttrSize               ,METH_VARARGS,"Returns the number of variables in the particles' attributes with a particular name"},
+    { "removePartAttr",                 Bunch_removePartAttr                ,METH_O,"Removes a particles' attributes from the bunch"},
+    { "removeAllPartAttr",              Bunch_removeAllPartAttr             ,METH_NOARGS,"Removes all particles' attributes from the bunch"},
+    { "getPartAttrNames",               Bunch_getPartAttrNames              ,METH_NOARGS,"Returns all particles' attributes names in the bunch at this moment"},
+    { "getPartAttrDicts",               Bunch_getPartAttrDicts              ,METH_NOARGS,"Returns dict{part. attribute name:dict{key:val}}"},
+    { "getPossiblePartAttrNames",       Bunch_getPossiblePartAttrNames      ,METH_NOARGS,"Returns all possible particles' attributes names"},
+    { "clearAllPartAttrAndMemorize",    Bunch_clearAllPartAttrAndMemorize   ,METH_NOARGS,"Temporary removes and memorizes all particles' attributes names"},
+    { "restoreAllPartAttrFromMemory",   Bunch_restoreAllPartAttrFromMemory  ,METH_NOARGS,"Restores all particles' attributes names from memory"},
+    { "hasPartAttr",                    Bunch_hasPartAttr                   ,METH_O,"Returns 1 if there is a particles' attr. with this name, 0 - otherwis"},
+    { "readPartAttrNames",              Bunch_readPartAttrNames             ,METH_O,"Returns a tuple with particles' attr. names in the bunch file"},
+    { "readPartAttrDicts",              Bunch_readPartAttrDicts             ,METH_O,"Returns a dict{attr_name:dicts{param_name:val}} in the bunch file"},
+    { "readPartAttr",                   Bunch_readPartAttr                  ,METH_O,"Initializes the particles' attr. from the bunch file"},
+    { "getPartAttrSize",                Bunch_getPartAttrSize               ,METH_O,"Returns the number of variables in the particles' attributes with a particular name"},
     { "partAttrValue",                  Bunch_partAttrValue                 ,METH_VARARGS,"Sets or returns a particles' attribute value"},
-    { "getSize",                        Bunch_getSize                       ,METH_VARARGS,"Returns number of macro-particles"},
-    { "getSizeGlobal",                  Bunch_getSizeGlobal                 ,METH_VARARGS,"Returns number of macro-particles in all CPUs"},
-    { "getSizeGlobalFromMemory",        Bunch_getSizeGlobalFromMemory       ,METH_VARARGS,"Returns number of macro-particles in all CPUs from memory"},
-    { "getTotalCount",                  Bunch_getTotalCount                 ,METH_VARARGS,"Returns number of all particles - alive,dead,new"},
-    { "getCapacity",                    Bunch_getCapacity                   ,METH_VARARGS,"Returns the capacity of the bunch-contaiter"},
+    { "getSize",                        Bunch_getSize                       ,METH_NOARGS,"Returns number of macro-particles"},
+    { "getSizeGlobal",                  Bunch_getSizeGlobal                 ,METH_NOARGS,"Returns number of macro-particles in all CPUs"},
+    { "getSizeGlobalFromMemory",        Bunch_getSizeGlobalFromMemory       ,METH_NOARGS,"Returns number of macro-particles in all CPUs from memory"},
+    { "getTotalCount",                  Bunch_getTotalCount                 ,METH_NOARGS,"Returns number of all particles - alive,dead,new"},
+    { "getCapacity",                    Bunch_getCapacity                   ,METH_NOARGS,"Returns the capacity of the bunch-contaiter"},
     { "dumpBunch",                      Bunch_dumpBunch                     ,METH_VARARGS,"Prints the bunch info into a standart output stream or file"},
     { "readBunch",                      Bunch_readBunch                     ,METH_VARARGS,"Reads the bunch info from a file"},
-    { "copyEmptyBunchTo",               Bunch_copyEmptyBunchTo              ,METH_VARARGS,"Copy bunch attrubutes and structure to another bunch"},
-    { "copyBunchTo",                    Bunch_copyBunchTo                   ,METH_VARARGS,"Copy bunch all info including particles coordinates and attributes to another bunch"},
-    { "addParticlesTo",                 Bunch_addParticlesTo                ,METH_VARARGS,"Copy particles coordinates from one bunch to another"},
+    { "copyEmptyBunchTo",               Bunch_copyEmptyBunchTo              ,METH_O,"Copy bunch attrubutes and structure to another bunch"},
+    { "copyBunchTo",                    Bunch_copyBunchTo                   ,METH_O,"Copy bunch all info including particles coordinates and attributes to another bunch"},
+    { "addParticlesTo",                 Bunch_addParticlesTo                ,METH_O,"Copy particles coordinates from one bunch to another"},
 #ifdef PyORBIT_EXPERIMENTAL_WITH_NUMPY
     { "to_numpy",                       _PyCFunction_CAST(Bunch_to_numpy)                      ,METH_VARARGS | METH_KEYWORDS, Bunch_to_numpy_doc },
     { "update_from_numpy",              Bunch_update_from_numpy             ,METH_O, Bunch_update_from_numpy_doc },
