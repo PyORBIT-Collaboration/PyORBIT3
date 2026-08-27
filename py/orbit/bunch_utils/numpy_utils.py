@@ -7,7 +7,7 @@ import numpy as np
 def bunch_from_shared_numpy(global_coords: np.ndarray) -> Bunch:
     """Construct a bunch from the local partition of a shared NumPy array.
 
-    The global particle coordinate array is divided into contiguous, approximately 
+    The global particle coordinate array is divided into contiguous, approximately
     equal partitions using the rank and size of ``MPI_COMM_WORLD``. Each rank reads
     its partition directly from ``global_coords``; no particle data is
     transferred through MPI. Consequently, every rank must be able to access
