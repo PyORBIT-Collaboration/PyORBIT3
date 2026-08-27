@@ -478,32 +478,19 @@ namespace wrap_orbit_bunch{
   //  mass(value) - sets the new value
   //this is implementation of the getMass() and setMass  methods of the Bunch class
   static PyObject* Bunch_mass(PyObject *self, PyObject *args){
-        Bunch* cpp_bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
-    //if nVars == 0 get mass
-    //if nVars == 1 set mass
-    int nVars = PyTuple_Size(args);
+        Bunch* bunch = (Bunch*) ((pyORBIT_Object *) self)->cpp_obj;
 
-    double val = 0.;
-
-    if(nVars == 0 ||  nVars == 1){
-      if(nVars == 0){
-        val = cpp_bunch->getMass();
-      }
-      else{
-        //NO NEW OBJECT CREATED BY PyArg_ParseTuple! NO NEED OF Py_DECREF()
-        if(!PyArg_ParseTuple(args,"d:mass",&val)){
-          error("PyBunch - mass(value) - value is needed");
+        if(0 == PyTuple_GET_SIZE(args)) { 
+            return PyFloat_FromDouble(bunch->getMass());
         }
-        cpp_bunch->setMass(val);
-      }
-            return Py_BuildValue("d",val);
-    }
-    else{
-      error("PyBunch. You should call mass() or mass(value)");
-    }
 
-    Py_INCREF(Py_None);
-    return Py_None;
+        double value;
+        if (!PyArg_ParseTuple(args, "d:mass", &value)) {
+            return NULL;
+        }
+
+        bunch->setMass(value);
+        return PyFloat_FromDouble(value);
   }
 
   //Returns classicalRadius of the particle in meters
