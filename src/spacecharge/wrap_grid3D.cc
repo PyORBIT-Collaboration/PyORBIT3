@@ -349,20 +349,18 @@ static void Grid3D_del(pyORBIT_Object *self) {
 }
 
 #ifdef PyORBIT_EXPERIMENTAL_WITH_NUMPY
-static PyObject *Grid3D_to_numpy(PyObject *self, PyObject *args) {
-  pyORBIT_Object *pyGrid3D = (pyORBIT_Object *)self;
-  Grid3D *cpp_Grid3D = (Grid3D *)pyGrid3D->cpp_obj;
+static PyObject *Grid3D_to_numpy(PyObject *self,
+                                 PyObject *Py_UNUSED(ignored)) {
+  Grid3D *cpp_Grid3D = (Grid3D *)((pyORBIT_Object *)self)->cpp_obj;
 
-  if (!PyArg_ParseTuple(args, ":to_numpy")) {
-    ORBIT_MPI_Finalize("PyGrid3D - to_numpy() - no parameters are needed.");
-  }
-
-  const npy_intp nz = (npy_intp)cpp_Grid3D->getSizeZ();
   const npy_intp nx = (npy_intp)cpp_Grid3D->getSizeX();
   const npy_intp ny = (npy_intp)cpp_Grid3D->getSizeY();
+  const npy_intp nz = (npy_intp)cpp_Grid3D->getSizeZ();
 
-  npy_intp dims[3] = {nz, nx, ny};
+  npy_intp dims[3] = {nx, ny, nz};
+
   PyObject *arr_obj = PyArray_SimpleNew(3, dims, NPY_FLOAT64);
+
   if (NULL == arr_obj) {
     return NULL;
   }
@@ -371,10 +369,10 @@ static PyObject *Grid3D_to_numpy(PyObject *self, PyObject *args) {
   double *out_buffer = (double *)PyArray_DATA(arr);
   double ***src = cpp_Grid3D->getArr3D();
 
-  for (npy_intp iz = 0; iz < nz; ++iz) {
-    for (npy_intp ix = 0; ix < ny; ++ix) {
-      for (npy_intp iy = 0; iy < nx; ++iy) {
-        out_buffer[iy + ix * ny + iz * nx * ny] = src[iz][ix][iy];
+  for (npy_intp ix = 0; ix < nx; ++ix) {
+    for (npy_intp iy = 0; iy < ny; ++iy) {
+      for (npy_intp iz = 0; iz < nz; ++iz) {
+        out_buffer[(ix * ny + iy) * nz + iz] = src[iz][ix][iy];
       }
     }
   }
@@ -382,18 +380,10 @@ static PyObject *Grid3D_to_numpy(PyObject *self, PyObject *args) {
   return arr_obj;
 }
 
-static PyObject *Grid3D_from_numpy(PyObject *self, PyObject *args) {
-  pyORBIT_Object *pyGrid3D = (pyORBIT_Object *)self;
-  Grid3D *cpp_Grid3D = (Grid3D *)pyGrid3D->cpp_obj;
+static PyObject *Grid3D_from_numpy(PyObject *self, PyObject *arg) {
+  Grid3D *cpp_Grid3D = (Grid3D *)((pyORBIT_Object *)self)->cpp_obj;
 
-  PyObject *arr_in = NULL;
-  const char* order = "zxy";
-
-  if (!PyArg_ParseTuple(args, "O|s:from_numpy", &arr_in, &order)) {
-    ORBIT_MPI_Finalize("PyGrid3D - from_numpy() - ndarray is needed.");
-  }
-
-  PyArrayObject *arr = (PyArrayObject *)PyArray_FROM_OTF(arr_in, NPY_FLOAT64,
+  PyArrayObject *arr = (PyArrayObject *)PyArray_FROM_OTF(arg, NPY_FLOAT64,
                                                          NPY_ARRAY_IN_ARRAY);
   if (NULL == arr) {
     return NULL;
@@ -403,23 +393,23 @@ static PyObject *Grid3D_from_numpy(PyObject *self, PyObject *args) {
     Py_DECREF(arr);
     PyErr_SetString(
         PyExc_ValueError,
-        "from_numpy: array must be 3-dimensional with shape (nz,nx,ny)");
+        "from_numpy: array must be 3-dimensional with shape (nx,ny,nz)");
     return NULL;
   }
 
-  const npy_intp nz_in = PyArray_DIM(arr, 0);
-  const npy_intp nx_in = PyArray_DIM(arr, 1);
-  const npy_intp ny_in = PyArray_DIM(arr, 2);
+  const npy_intp nx_in = PyArray_DIM(arr, 0);
+  const npy_intp ny_in = PyArray_DIM(arr, 1);
+  const npy_intp nz_in = PyArray_DIM(arr, 2);
 
-  const npy_intp nz_grid = (npy_intp)cpp_Grid3D->getSizeZ();
   const npy_intp nx_grid = (npy_intp)cpp_Grid3D->getSizeX();
   const npy_intp ny_grid = (npy_intp)cpp_Grid3D->getSizeY();
+  const npy_intp nz_grid = (npy_intp)cpp_Grid3D->getSizeZ();
 
-  if (nz_in != nz_grid || nx_in != nx_grid || ny_in != ny_grid) {
+  if (nx_in != nx_grid || ny_in != ny_grid || nz_in != nz_grid) {
     Py_DECREF(arr);
     PyErr_SetString(
         PyExc_ValueError,
-        "from_numpy: shape mismatch; expected (zSize, xSize, ySize)");
+        "from_numpy: shape mismatch; expected (xSize, ySize, zSize)");
     return NULL;
   }
 
@@ -429,7 +419,8 @@ static PyObject *Grid3D_from_numpy(PyObject *self, PyObject *args) {
   for (npy_intp iz = 0; iz < nz_grid; ++iz) {
     for (npy_intp ix = 0; ix < nx_grid; ++ix) {
       for (npy_intp iy = 0; iy < ny_grid; ++iy) {
-        dst[iz][ix][iy] = in_buffer[iy + ix * ny_grid + iz * nx_grid * ny_grid];
+        dst[iz][ix][iy] =
+            in_buffer[(ix * ny_grid + iy) * nz_grid + iz];
       }
     }
   }
@@ -467,8 +458,8 @@ static PyMethodDef Grid3DClassMethods[] = {
     {"longWrapping",   Grid3D_longWrapping,   METH_VARARGS, "set/get isWrapping variable defining long. wrapping policy"},
     {"synchronizeMPI", Grid3D_synchronizeMPI, METH_VARARGS, "synchronize through the MPI communicator"},
 #ifdef PyORBIT_EXPERIMENTAL_WITH_NUMPY
-    {"to_numpy",       Grid3D_to_numpy,       METH_VARARGS, "converts the 3D grid to a numpy array"},
-    {"from_numpy",     Grid3D_from_numpy,     METH_VARARGS, "converts the numpy array to a 3D grid"},
+    {"to_numpy",       Grid3D_to_numpy,       METH_NOARGS, "converts the 3D grid to a numpy array in (x,y,z) order"},
+    {"from_numpy",     Grid3D_from_numpy,     METH_O, "converts a numpy array in (x,y,z) order to a 3D grid"},
 #endif // PyORBIT_EXPERIMENTAL_WITH_NUMPY
     {NULL}};
 
@@ -521,16 +512,22 @@ static PyTypeObject pyORBIT_Grid3D_Type = {
 // Initialization function of the pyGrid3D class
 // It will be called from SpaceCharge wrapper initialization
 //--------------------------------------------------
-void initGrid3D(PyObject *module) {
+int initGrid3D(PyObject *module) {
 #ifdef PyORBIT_EXPERIMENTAL_WITH_NUMPY
   if (ensure_numpy() != 0) {
-    throw std::runtime_error("NumPy C-API init failed");
+    return -1;
   }
 #endif // PyORBIT_EXPERIMENTAL_WITH_NUMPY
-  if (PyType_Ready(&pyORBIT_Grid3D_Type) < 0)
-    return;
+  if (PyType_Ready(&pyORBIT_Grid3D_Type) < 0) {
+    return -1;
+  }
   Py_INCREF(&pyORBIT_Grid3D_Type);
-  PyModule_AddObject(module, "Grid3D", (PyObject *)&pyORBIT_Grid3D_Type);
+  if (PyModule_AddObject(module, "Grid3D",
+                         (PyObject *)&pyORBIT_Grid3D_Type) < 0) {
+    Py_DECREF(&pyORBIT_Grid3D_Type);
+    return -1;
+  }
+  return 0;
 }
 
 #ifdef __cplusplus
