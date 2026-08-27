@@ -3,7 +3,7 @@
 
 
 
-#include "Python.h"
+#include <Python.h>
 
 #include "ExternalEffects.hh"
 #include <vector>

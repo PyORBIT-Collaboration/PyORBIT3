@@ -1,7 +1,7 @@
 #ifndef WRAP_SPACE_CHARGE_CALC_2P5D_RB_H
 #define WRAP_SPACE_CHARGE_CALC_2P5D_RB_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

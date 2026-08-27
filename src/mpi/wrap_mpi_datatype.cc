@@ -6,7 +6,7 @@
 #include "orbit_mpi.hh"
 
 //this header is from Python package
-#include "structmember.h"
+#include <structmember.h>
 
 //c++ header for cerr and cout
 #include <iostream>

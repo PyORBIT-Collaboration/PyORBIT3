@@ -1,7 +1,7 @@
 #ifndef WRAP_LINAC_TRACKING_H
 #define WRAP_LINAC_TRACKING_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C"

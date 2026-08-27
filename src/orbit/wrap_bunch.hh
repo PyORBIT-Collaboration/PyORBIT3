@@ -16,7 +16,7 @@
 // INCLUDE FILES
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,7 +25,7 @@ extern "C" {
   namespace wrap_orbit_bunch{
     /* The name of the function was changed to avoid collision with PyImport magic naming */
     PyMODINIT_FUNC initbunch(void);
-		PyObject* getBunchType(const char* name);
+	PyObject* getBunchType(const char* name);
   }
 
 #ifdef __cplusplus

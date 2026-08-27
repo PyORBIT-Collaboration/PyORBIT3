@@ -5,7 +5,6 @@
 
 //MPI Function Wrappers
 #include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
 
 #include <cstdlib>
 #include <cmath>
@@ -93,7 +92,7 @@ public:
   	int getSizeY();
 
 	/** synchronizeMPI */
-	void synchronizeMPI(pyORBIT_MPI_Comm* comm);
+	void synchronizeMPI(MPI_Comm comm);
 
   	/** Returns 1 if (x,y) is inside the grid region, and 0 otherwise */
   	int isInside(double x,double y);

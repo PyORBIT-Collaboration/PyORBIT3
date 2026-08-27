@@ -1,4 +1,4 @@
-#include "Python.h"
+#include <Python.h>
 
 #ifndef ORBIT_MPI_INCLUDE
 #define ORBIT_MPI_INCLUDE

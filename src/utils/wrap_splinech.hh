@@ -2,7 +2,7 @@
 #define WRAP_ORBIT_UTILS_SPLINE_CH_HH_
 
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

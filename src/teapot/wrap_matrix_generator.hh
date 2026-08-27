@@ -1,7 +1,7 @@
 #ifndef WRAP_MATRIX_GENERATOR_H
 #define WRAP_MATRIX_GENERATOR_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C"

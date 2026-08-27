@@ -18,7 +18,7 @@
 #ifndef FIELDSOURCECONTAINER_HH_
 #define FIELDSOURCECONTAINER_HH_
 
-#include "Python.h"
+#include <Python.h>
 
 #include "BaseFieldSource.hh"
 #include <vector>

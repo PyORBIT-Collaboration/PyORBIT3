@@ -172,7 +172,7 @@ extern "C" {
 			if((!PyObject_IsInstance(pyMPIComm,py_mpi_comm_type))){
 				error("StatMoments2D.synchronizeMPI(MPI_Comm) - input parameter is not MPI_Comm");
 			}
-			cpp_StatMoments2D->synchronizeMPI((pyORBIT_MPI_Comm*) pyMPIComm);
+			cpp_StatMoments2D->synchronizeMPI(((pyORBIT_MPI_Comm*) pyMPIComm)->comm);
 		}
 	 	Py_INCREF(Py_None);
 		return Py_None;

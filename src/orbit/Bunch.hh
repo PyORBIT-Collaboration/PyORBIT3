@@ -21,15 +21,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 #include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
 
 #include <iostream>
-#include <fstream>
 #include <cstdlib>
-#include <cmath>
 
 #include <string>
-#include <set>
 #include <map>
 #include <vector>
 
@@ -39,8 +35,6 @@
 //from utils
 #include "AttributesBucket.hh"
 #include "CppPyWrapper.hh"
-
-using namespace std;
 
 #ifndef BUNCH_H
 #define BUNCH_H
@@ -191,8 +185,8 @@ public:
 	void addParticlesTo(Bunch* bunch);
 
 	//Parallel case
-	pyORBIT_MPI_Comm* getMPI_Comm_Local();
-	void setMPI_Comm_Local(pyORBIT_MPI_Comm* pyComm_Local);
+	MPI_Comm getMPI_Comm_Local() const noexcept;
+	void setMPI_Comm_Local(MPI_Comm comm);
 	int getMPI_Size();
 	int getMPI_Rank();
 
@@ -285,10 +279,7 @@ protected:
   int rank_MPI;
   int size_MPI;
 
-	pyORBIT_MPI_Comm* pyComm_Local;
-
-	//reference to the python wrapping class instance
-	PyObject* py_wrapper;
+  MPI_Comm comm_;
 
 };
 

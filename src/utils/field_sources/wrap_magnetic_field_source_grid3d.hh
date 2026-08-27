@@ -1,7 +1,7 @@
 #ifndef WRAP_MAGNET_FIELD_SOURCE_GRID3D_H
 #define WRAP_MAGNET_FIELD_SOURCE_GRID3D_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

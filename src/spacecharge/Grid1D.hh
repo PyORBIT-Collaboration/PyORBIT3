@@ -3,7 +3,6 @@
 
 // MPI Function Wrappers
 #include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
 
 #include <cstdlib>
 #include <cmath>
@@ -135,7 +134,7 @@ public:
   void calcGradientSmoothed(double z, double& ez);
 
   /** synchronizeMPI */
-  void synchronizeMPI(pyORBIT_MPI_Comm* comm);
+  void synchronizeMPI(MPI_Comm comm);
 
 private:
 

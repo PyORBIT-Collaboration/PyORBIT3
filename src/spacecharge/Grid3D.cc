@@ -809,7 +809,7 @@ double Grid3D::calcSheetGradient(int iZ,int iX,int iY,
 }
 
 /**synchronize MPI */
-void Grid3D::synchronizeMPI(pyORBIT_MPI_Comm* pyComm){
+void Grid3D::synchronizeMPI(MPI_Comm pyComm){
   // ====== MPI  start ========
 	int size_MPI = nX_ * nY_*nZ_;
 	int buff_index0 = 0;
@@ -827,10 +827,10 @@ void Grid3D::synchronizeMPI(pyORBIT_MPI_Comm* pyComm){
 		}
 	}
 
-	if(pyComm == NULL) {
+	if(pyComm == MPI_COMM_NULL) {
 		ORBIT_MPI_Allreduce(inArr,outArr,size_MPI,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
 	} else {
-		ORBIT_MPI_Allreduce(inArr,outArr,size_MPI,MPI_DOUBLE,MPI_SUM,pyComm->comm);
+		ORBIT_MPI_Allreduce(inArr,outArr,size_MPI,MPI_DOUBLE,MPI_SUM,pyComm);
 	}
 
 	count = 0;

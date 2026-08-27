@@ -1,7 +1,7 @@
 #ifndef WRAP_IMPEDANCES_H
 #define WRAP_IMPEDANCES_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C"

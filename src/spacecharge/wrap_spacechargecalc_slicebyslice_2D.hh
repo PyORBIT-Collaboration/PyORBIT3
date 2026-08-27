@@ -1,7 +1,7 @@
 #ifndef WRAP_SPACE_CHARGE_CALC_SLICE_BY_SLICE_2D_H
 #define WRAP_SPACE_CHARGE_CALC_SLICE_BY_SLICE_2D_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

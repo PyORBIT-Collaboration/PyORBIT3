@@ -11,7 +11,7 @@
 // INCLUDE FILES
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

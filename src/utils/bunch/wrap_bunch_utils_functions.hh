@@ -1,7 +1,7 @@
 #ifndef WRAP_UTILS_BUNCH_FUNCTIONS_H
 #define WRAP_UTILS_BUNCH_FUNCTIONS_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -9,7 +9,6 @@
 
 //MPI Function Wrappers
 #include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
 
 #include <cstdlib>
 #include <cmath>

@@ -1,7 +1,7 @@
 #ifndef WRAP_UTILS_MATRIX_H
 #define WRAP_UTILS_MATRIX_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

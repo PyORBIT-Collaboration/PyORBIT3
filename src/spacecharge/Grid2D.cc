@@ -440,7 +440,7 @@ int Grid2D::isInside(double x,double y){
 }
 
 /**synchronizeMPI */
-void Grid2D::synchronizeMPI(pyORBIT_MPI_Comm* pyComm){
+void Grid2D::synchronizeMPI(MPI_Comm comm){
   // ====== MPI  start ========
 	int size_MPI = xSize_ * ySize_;
 	int buff_index0 = 0;
@@ -456,10 +456,10 @@ void Grid2D::synchronizeMPI(pyORBIT_MPI_Comm* pyComm){
 		}
 	}
 
-	if(pyComm == NULL) {
+	if(comm == MPI_COMM_NULL) {
 		ORBIT_MPI_Allreduce(inArr,outArr,size_MPI,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
 	} else {
-		ORBIT_MPI_Allreduce(inArr,outArr,size_MPI,MPI_DOUBLE,MPI_SUM,pyComm->comm);
+		ORBIT_MPI_Allreduce(inArr,outArr,size_MPI,MPI_DOUBLE,MPI_SUM,comm);
 	}
 
 	count = 0;

@@ -1,7 +1,7 @@
 #ifndef WRAP_DIPOLE_FIELD_SOURCE_H
 #define WRAP_DIPOLE_FIELD_SOURCE_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {
