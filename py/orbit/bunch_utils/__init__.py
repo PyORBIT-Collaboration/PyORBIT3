@@ -10,6 +10,7 @@ from .particleidnumber import ParticleIdNumber
 # This guards against missing numpy.
 # Should be imporved with some meaningful (and MPI friendly?) warning printed out.
 try:
+    from .numpy_utils import bunch_from_shared_numpy
     from .serialize import collect_bunch, save_bunch, load_bunch
     from .serialize import BunchDict, SyncPartDict
     from .serialize import FileHandler, NumPyHandler
@@ -19,6 +20,7 @@ except ImportError:
 __all__ = []
 # __all__.append("addParticleIdNumbers")  # doesn't exist
 __all__.append("ParticleIdNumber")
+__all__.append("bunch_from_shared_numpy")
 __all__.append("collect_bunch")
 __all__.append("save_bunch")
 __all__.append("load_bunch")

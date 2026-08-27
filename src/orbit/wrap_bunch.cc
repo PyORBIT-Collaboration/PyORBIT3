@@ -9,6 +9,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 #include "wrap_bunch.hh"
+// #include "modsupport.h"
+// #include "pyerrors.h"
 #include "wrap_syncpart.hh"
 #include "wrap_bunch_twiss_analysis.hh"
 #include "wrap_bunch_tune_analysis.hh"
@@ -1198,109 +1200,309 @@ namespace wrap_orbit_bunch{
   }
 
 #ifdef PyORBIT_EXPERIMENTAL_WITH_NUMPY
-static PyObject *Bunch_to_numpy(PyObject *self, PyObject *args) {
-  pyORBIT_Object *pyBunch = (pyORBIT_Object*)self;
-  Bunch *cpp_Bunch = (Bunch*)pyBunch->cpp_obj;
+static PyArrayObject *parse_bunch_array(PyObject *input) {
+    PyArrayObject *array = (PyArrayObject *)PyArray_FROM_OTF(
+            input,
+            NPY_FLOAT64,
+            NPY_ARRAY_IN_ARRAY
+    );
 
-  if (!PyArg_ParseTuple(args, ":to_numpy")) {
-    ORBIT_MPI_Finalize("PyBunch - to_numpy() - no parameters are needed.");
+    if (array == NULL) {
+        return NULL;
+    }
+
+    if (PyArray_NDIM(array) != 2) {
+        PyErr_SetString(PyExc_ValueError,
+                        "array must be 2-dimensional with shape (nparts, 6)"
+        );
+        Py_DECREF(array);
+        return NULL;
+    }
+
+    if (PyArray_DIM(array, 1) != 6) {
+        PyErr_SetString(PyExc_ValueError,
+                        "expected shape (nparts, 6) for (x, xp, y, yp, z, dE)"
+        );
+        Py_DECREF(array);
+        return NULL;
+    }
+
+    return array; // new ref; caller MUST Py_DECREF().
+}
+
+static void append_bunch_with_PyArray(Bunch *bunch, PyArrayObject *array) {
+    const npy_intp nparts = PyArray_DIM(array, 0);
+    const double *data = (const double *)PyArray_DATA(array);
+
+    for (npy_intp i = 0; i < nparts; ++i) {
+        const double *coords = data + i*6;
+
+        bunch->addParticle(coords[0], coords[1], coords[2], coords[3], coords[4], coords[5]);
+    }
+}
+
+PyDoc_STRVAR(
+    Bunch_to_numpy_doc,
+    "to_numpy($self, /, gather=False, root=0)\n"
+    "--\n"
+    "\n"
+    "Return the particle coordinates as a NumPy array.\n"
+    "\n"
+    "Parameters\n"
+    "----------\n"
+    "gather : bool, optional\n"
+    "    Collect particles from all MPI ranks. The default is False.\n"
+    "root : int, optional\n"
+    "    Rank that receives the collected array. The default is 0.\n"
+    "\n"
+    "Returns\n"
+    "-------\n"
+    "numpy.ndarray or None\n"
+    "    Array with shape ``(n_particles, 6)`` and dtype ``float64``.\n"
+    "    When gathering, non-root ranks return None.\n"
+    "\n"
+    "Raises\n"
+    "------\n"
+    "ValueError\n"
+    "    If root is not a valid MPI rank.\n"
+    "OverflowError\n"
+    "    If the bunch is too large for the MPI gather operation.\n"
+);
+
+static PyObject *Bunch_to_numpy(PyObject *self, PyObject *args, PyObject *kwargs) {
+  static const char* kwlist[] = {"gather", "root", NULL};
+
+  int gather = 0;
+  int root = 0;
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|pi:to_numpy", kwlist, &gather, &root)) {
+      return NULL;
   }
 
-  const npy_intp nparts = (npy_intp)cpp_Bunch->getSize();
+  Bunch *bunch = (Bunch *)((pyORBIT_Object *)self)->cpp_obj;
+
+  const int rank = bunch->getMPI_Rank();
+  const int size = bunch->getMPI_Size();
+  const npy_intp nparts = (npy_intp)bunch->getSize();
   const npy_intp ncoords = 6;
+
+  if (gather && (root < 0 || root >= size)) {
+      PyErr_Format(PyExc_ValueError, "root must be between 0 and %d, got %d", size - 1, rank);
+      return NULL;
+  }
 
   npy_intp dims[2] = { nparts, ncoords };
 
-  PyObject *py_array = PyArray_SimpleNew(2, dims, NPY_FLOAT64);
-  PyArrayObject *arr_obj = (PyArrayObject*)py_array;
-  double *data_buffer = (double*)PyArray_DATA(arr_obj);
-  double **src = cpp_Bunch->coordArr();
+  PyObject *local_array = PyArray_SimpleNew(2, dims, NPY_FLOAT64);
+
+  // In the unlikely event that we try to gather a bunch with size larger than INT_MAX
+  // or if we try to allocate a buffer to hold the bunch data and it fails on one rank
+  // then propagate that result to the other ranks and raise.
+  if (gather && size > 1) {
+      int local_counts_ok = nparts <= INT_MAX / ncoords;
+      int all_counts_ok = 0;
+
+      ORBIT_MPI_Allreduce(&local_counts_ok, &all_counts_ok, 1, MPI_INT, MPI_MIN, bunch->getMPI_Comm_Local()->comm);
+
+      if(!all_counts_ok) {
+          PyErr_SetString(PyExc_OverflowError, "local bunch is too large for MPI_Gatherv");
+          return NULL;
+      }
+
+      int local_alloc_ok = local_array != NULL;
+      int all_alloc_ok = 0;
+
+      ORBIT_MPI_Allreduce(&local_alloc_ok, &all_alloc_ok, 1, MPI_INT, MPI_MIN, bunch->getMPI_Comm_Local()->comm);
+
+      if(!all_alloc_ok) {
+          Py_XDECREF(local_array);
+
+          if(!PyErr_Occurred()) {
+             PyErr_NoMemory();
+          }
+
+          return NULL;
+      }
+  } else {
+      if (local_array == NULL) {
+          return NULL;
+      }
+  }
+
+  PyArrayObject *arr_obj = (PyArrayObject*)local_array;
+  double *local_data = (double*)PyArray_DATA(arr_obj);
+  double **src = bunch->coordArr();
 
   for (npy_intp i = 0; i < nparts; ++i) {
     for (npy_intp j = 0; j < ncoords; ++j) {
-      data_buffer[j + i*ncoords] = src[i][j];
+      local_data[j + i*ncoords] = src[i][j];
     }
   }
 
-  return py_array;
-}
-
-  static int bunch_fill_from_numpy_args(Bunch *cpp_Bunch, PyObject *args) {
-    PyObject *arr_in = NULL;
-
-    if (!PyArg_ParseTuple(args, "O:from_numpy", &arr_in)) {
-        return -1;
-    }
-
-    PyArrayObject *arr =
-        (PyArrayObject*)PyArray_FROM_OTF(arr_in, NPY_FLOAT64, NPY_ARRAY_IN_ARRAY);
-    if (!arr) return -1;
-
-    if (PyArray_NDIM(arr) != 2) {
-        Py_DECREF(arr);
-        PyErr_SetString(PyExc_ValueError,
-                        "from_numpy: array must be 2-dimensional with shape (nparts, 6)");
-        return -1;
-    }
-
-    const npy_intp nparts  = PyArray_DIM(arr, 0);
-    const npy_intp ncoords = PyArray_DIM(arr, 1);
-
-    if (ncoords != 6) {
-        Py_DECREF(arr);
-        PyErr_SetString(PyExc_ValueError,
-                        "from_numpy: expected coordinate dimension with shape 6 (x, px, y, py, z, dE)");
-        return -1;
-    }
-
-    const double *data = (const double*)PyArray_DATA(arr);
-
-    for (npy_intp i = 0; i < nparts; ++i) {
-        const npy_intp stride = i * ncoords;
-        cpp_Bunch->addParticle(
-            data[stride+0], data[stride+1], data[stride+2],
-            data[stride+3], data[stride+4], data[stride+5]
-        );
-    }
-
-    Py_DECREF(arr);
-    return 0;
-}
-
-static PyObject *Bunch_update_from_numpy(PyObject *self, PyObject *args) {
-  pyORBIT_Object *pyBunch = (pyORBIT_Object*)self;
-  Bunch *cpp_Bunch = (Bunch*)pyBunch->cpp_obj;
-
-  if (cpp_Bunch->getSizeGlobal() > 0) {
-    for (int i = 0; i < cpp_Bunch->getSizeGlobal(); ++i) {
-      cpp_Bunch->deleteParticleFast(i);
-    }
-    cpp_Bunch->compress();
+  if (!gather || size == 1) {
+    return local_array;
   }
 
-  if (bunch_fill_from_numpy_args(cpp_Bunch, args) < 0) return NULL;
+#if USE_MPI > 0
+  MPI_Comm comm = bunch->getMPI_Comm_Local()->comm;
 
+  std::vector<int> global_nparts(size);
+  std::vector<int> displacements(size);
+  std::vector<int> recv_counts(size);
+
+  const int local_nparts = (int)nparts;
+
+  if (MPI_SUCCESS != MPI_Gather(&local_nparts, 1, MPI_INT, global_nparts.data(), 1, MPI_INT, root, comm)) {
+      Py_DECREF(local_array);
+      PyErr_SetString(PyExc_RuntimeError, "MPI_Gather failed to collect the bunch sizes across ranks");
+      return NULL;
+  }
+
+  int total = 0;
+  int layout_ok = 1;
+
+  if (rank == root) {
+      for (int mpi_rank = 0; mpi_rank < size; ++mpi_rank) {
+          const int rank_nvalues = global_nparts[mpi_rank] * ncoords;
+
+          if (total + rank_nvalues > INT_MAX) {
+              layout_ok = 0;
+              break;
+          }
+
+          displacements[mpi_rank] = total;
+          recv_counts[mpi_rank] = rank_nvalues;
+          total += rank_nvalues;
+      }
+  }
+
+  ORBIT_MPI_Bcast(&layout_ok, 1, MPI_INT, root, comm);
+
+  if(!layout_ok) {
+      Py_DECREF(local_array);
+      PyErr_SetString(PyExc_OverflowError, "global bunch is too large to collect");
+      return NULL;
+  }
+
+  PyObject *global_array = NULL;
+
+  if (rank == root) {
+      npy_intp global_dims[2] = {(npy_intp)(total / ncoords), ncoords};
+      global_array = PyArray_SimpleNew(2, global_dims, NPY_FLOAT64);
+  }
+
+  int global_alloc_ok = rank != root || global_array != NULL;
+
+  ORBIT_MPI_Bcast(&global_alloc_ok, 1, MPI_INT, root, comm);
+
+  if(!global_alloc_ok) {
+      Py_DECREF(local_array);
+
+      if(!PyErr_Occurred()) {
+          PyErr_NoMemory();
+      }
+
+      return NULL;
+  }
+
+  double* global_data = rank == root ? (double *)PyArray_DATA((PyArrayObject*)global_array) : NULL;
+
+  if(MPI_SUCCESS != MPI_Gatherv(local_data, nparts*ncoords, MPI_DOUBLE, global_data, recv_counts.data(), displacements.data(), MPI_DOUBLE, root, comm)) {
+      Py_XDECREF(global_array);
+      PyErr_SetString(PyExc_RuntimeError, "MPI_Gatherv failed to collect bunch.");
+      return NULL;
+  }
+
+  if (rank == root) {
+      return global_array;
+  }
+
+#endif // USE_MPI > 0
   Py_RETURN_NONE;
 }
 
-static PyObject *Bunch_from_numpy(PyObject *cls, PyObject *args) {
+PyDoc_STRVAR(
+    Bunch_update_from_numpy_doc,
+    "update_from_numpy($self, array, /)\n"
+    "--\n"
+    "\n"
+    "Replace the local particle coordinates from an array.\n"
+    "\n"
+    "Parameters\n"
+    "----------\n"
+    "array : array_like\n"
+    "    Particle coordinates with shape ``(n_particles, 6)`` ordered as\n"
+    "    ``(x, xp, y, yp, z, dE)``. Values are converted to ``float64``.\n"
+    "\n"
+    "Returns\n"
+    "-------\n"
+    "None\n"
+    "\n"
+    "Raises\n"
+    "------\n"
+    "ValueError\n"
+    "    If the array does not have shape ``(n_particles, 6)``.\n"
+);
+
+static PyObject *Bunch_update_from_numpy(PyObject *self, PyObject *arg) {
+  Bunch *bunch = (Bunch *)((pyORBIT_Object *)self)->cpp_obj;
+
+  PyArrayObject *array = parse_bunch_array(arg);
+
+  if (array == NULL) {
+      return NULL;
+  }
+
+  bunch->deleteAllParticles();
+  append_bunch_with_PyArray(bunch, array);
+
+  Py_DECREF(array);
+  Py_RETURN_NONE;
+}
+
+PyDoc_STRVAR(
+    Bunch_from_numpy_doc,
+    "from_numpy($type, array, /)\n"
+    "--\n"
+    "\n"
+    "Construct a bunch from particle coordinates.\n"
+    "\n"
+    "Parameters\n"
+    "----------\n"
+    "array : array_like\n"
+    "    Particle coordinates with shape ``(n_particles, 6)`` ordered as\n"
+    "    ``(x, xp, y, yp, z, dE)``. Values are converted to ``float64``.\n"
+    "\n"
+    "Returns\n"
+    "-------\n"
+    "Bunch\n"
+    "    A new bunch containing the supplied particles.\n"
+    "\n"
+    "Raises\n"
+    "------\n"
+    "ValueError\n"
+    "    If the array does not have shape ``(n_particles, 6)``.\n"
+);
+
+static PyObject *Bunch_from_numpy(PyObject *cls, PyObject *arg) {
+  PyArrayObject *array = parse_bunch_array(arg);
+
+  if (array == NULL) {
+    return NULL;
+  }
+
   PyObject *py_bunch_obj = PyObject_CallNoArgs(cls);
-  if (!py_bunch_obj) return NULL;
 
-  pyORBIT_Object *pyBunch = (pyORBIT_Object*)py_bunch_obj;
-  Bunch *cpp_Bunch = (Bunch*)pyBunch->cpp_obj;
-
-  if (!cpp_Bunch) {
-    Py_DECREF(py_bunch_obj);
-    PyErr_SetString(PyExc_RuntimeError, "from_numpy: Constructed bunch has NULL cpp_obj");
-    return NULL;
+  if (py_bunch_obj == NULL) {
+      Py_DECREF(array);
+      return NULL;
   }
 
-  if (bunch_fill_from_numpy_args(cpp_Bunch, args) < 0) {
-    Py_DECREF(py_bunch_obj);
-    return NULL;
-  }
+  Bunch *bunch = (Bunch*)((pyORBIT_Object*)py_bunch_obj)->cpp_obj;
 
+  append_bunch_with_PyArray(bunch, array);
+
+  Py_DECREF(array);
   return py_bunch_obj;
 }
 #endif // PyORBIT_EXPERIMENTAL_WITH_NUMPY
@@ -1366,9 +1568,9 @@ static PyObject *Bunch_from_numpy(PyObject *cls, PyObject *args) {
     { "copyBunchTo",                    Bunch_copyBunchTo                   ,METH_VARARGS,"Copy bunch all info including particles coordinates and attributes to another bunch"},
     { "addParticlesTo",                 Bunch_addParticlesTo                ,METH_VARARGS,"Copy particles coordinates from one bunch to another"},
 #ifdef PyORBIT_EXPERIMENTAL_WITH_NUMPY
-    { "to_numpy",                       Bunch_to_numpy                      ,METH_VARARGS, "Convert bunch coordinates to a numpy array" },
-    { "update_from_numpy",              Bunch_update_from_numpy             ,METH_VARARGS, "Update bunch coordinates from a numpy array" },
-    { "from_numpy",                     Bunch_from_numpy                    ,METH_VARARGS | METH_CLASS, "Construct a new Bunch from a numpy array" },
+    { "to_numpy",                       _PyCFunction_CAST(Bunch_to_numpy)                      ,METH_VARARGS | METH_KEYWORDS, Bunch_to_numpy_doc },
+    { "update_from_numpy",              Bunch_update_from_numpy             ,METH_O, Bunch_update_from_numpy_doc },
+    { "from_numpy",                     Bunch_from_numpy                    ,METH_O | METH_CLASS, Bunch_from_numpy_doc },
 #endif
     {NULL,NULL}
     //--------------------------------------------------------
@@ -1443,7 +1645,7 @@ extern "C" {
   PyMODINIT_FUNC initbunch(void) {
   #ifdef PyORBIT_EXPERIMENTAL_WITH_NUMPY
     if (ensure_numpy() != 0) {
-      throw std::runtime_error("NumPy C-API init failed");
+      return NULL;
     }
   #endif // PyORBIT_EXPERIMENTAL_WITH_NUMPY
       //check that the Bunch wrapper is ready
