@@ -4,8 +4,6 @@ import numpy as np
 import scipy.constants
 import scipy.special
 
-from orbit.core.bunch import Bunch
-from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.bunch import SyncParticle
 from orbit.utils.matrix import convert_matrix_zp_to_dE
 
@@ -36,7 +34,7 @@ class Envelope:
 
     def __init__(
         self,
-        sync_part: SynchParticle,
+        sync_part: SyncParticle,
         cov_matrix: np.ndarray = None,
         centroid: np.ndarray = None,
         intensity: float = 0.0,

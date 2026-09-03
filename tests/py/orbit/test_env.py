@@ -88,7 +88,9 @@ def track_and_compare_rms(
     # Initialize bunch
     bunch = Bunch()
     bunch.mass(mass_proton)
-    bunch.getSyncParticle().kinEnergy(kin_energy)
+
+    sync_part = bunch.getSyncParticle()
+    sync_part.kinEnergy(kin_energy)
 
     # Track bunch
     particles = np.random.multivariate_normal(np.zeros(6), cov_matrix, size=nparts)
@@ -103,7 +105,7 @@ def track_and_compare_rms(
     data["bunch"]["cov"]["out"] = cov_scale * calc_bunch_cov(bunch)
 
     # Track envelope
-    envelope = Envelope(bunch=bunch, cov_matrix=cov_matrix)
+    envelope = Envelope(sync_part=sync_part, cov_matrix=cov_matrix)
     envelope_tracker = EnvelopeTracker(lattice=lattice)
 
     data["env"]["cov"]["in"] = cov_scale * envelope.cov_matrix
@@ -386,10 +388,12 @@ def test_sc_3d_cold_expansion():
 def test_track_sublattice_no_error():
     bunch = Bunch()
     bunch.mass(mass_proton)
-    bunch.getSyncParticle().kinEnergy(0.001)
+
+    sync_part = bunch.getSyncParticle()
+    sync_part.kinEnergy(0.001)
 
     cov_matrix = np.diag(np.square([1e-3, 0, 1e-3, 0.0, 1e-3, 0.0]))
-    envelope = Envelope(bunch, cov_matrix=cov_matrix)
+    envelope = Envelope(sync_part=sync_part, cov_matrix=cov_matrix)
 
     lattice = TEAPOT_Lattice()
 
@@ -408,10 +412,12 @@ def test_get_total_matrix() -> None:
 
     bunch = Bunch()
     bunch.mass(mass_proton)
-    bunch.getSyncParticle().kinEnergy(0.001)
+
+    sync_part = bunch.getSyncParticle()
+    sync_part.kinEnergy(0.001)
 
     cov_matrix = make_default_cov_matrix()
-    envelope = Envelope(bunch, cov_matrix=cov_matrix, intensity=1e7)
+    envelope = Envelope(sync_part=sync_part, cov_matrix=cov_matrix, intensity=1e7)
 
     tracker = EnvelopeTracker(lattice, sc="2d")
 

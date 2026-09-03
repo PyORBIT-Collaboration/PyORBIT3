@@ -82,7 +82,7 @@ cov_matrix_init = np.copy(cov_matrix)
 print("ENVELOPE")
 
 envelope = Envelope(
-    bunch=bunch,
+    sync_part=sync_part,
     cov_matrix=cov_matrix_init,
     intensity=args.intensity,
 )

@@ -166,7 +166,7 @@ def main(args: argparse.Namespace) -> None:
         for j in range(6):
             cov_matrix[i, j] = cov_matrix[j, i] = twiss_calc.getCorrelation(i, j)
 
-    envelope = Envelope(bunch=bunch, cov_matrix=cov_matrix, intensity=intensity)
+    envelope = Envelope(sync_part=sync_part, cov_matrix=cov_matrix, intensity=intensity)
 
     tracker = EnvelopeTracker(lattice, sc=("3d" if args.sc else None))
 

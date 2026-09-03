@@ -157,7 +157,7 @@ def main(args: argparse.Namespace) -> None:
     print("TRACK ENVELOPE")
 
     envelope = Envelope(
-        bunch=bunch,
+        sync_part=sync_part,
         cov_matrix=cov_matrix_init,
         centroid=centroid_init,
         intensity=args.intensity,
