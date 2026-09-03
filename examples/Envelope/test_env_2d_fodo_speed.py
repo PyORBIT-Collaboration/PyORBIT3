@@ -30,7 +30,7 @@ parser.add_argument("--nslice", type=int, default=10)
 parser.add_argument("--kq", type=float, default=0.25)
 
 parser.add_argument("--nparts", type=int, default=10_000)
-parser.add_argument("--turns", type=int, default=5000)
+parser.add_argument("--turns", type=int, default=500)
 parser.add_argument("--sc", type=int, default=0)
 parser.add_argument("--sc-grid", type=int, default=64)
 args = parser.parse_args()
