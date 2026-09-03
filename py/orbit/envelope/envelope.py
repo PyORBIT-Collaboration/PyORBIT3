@@ -5,12 +5,34 @@ import scipy.constants
 import scipy.special
 
 from orbit.core.bunch import Bunch
+from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.bunch import SyncParticle
 from orbit.utils.matrix import convert_matrix_zp_to_dE
 
 from .utils import gen_dist
 from .utils import get_classical_radius
 from .utils import proj_cov_matrix
+
+
+def get_bunch_cov_matrix(bunch: Bunch) -> Bunch:
+    twiss_calc = BunchTwissAnalysis()
+    twiss_calc.analyzeBunch(bunch)
+
+    cov_matrix = np.zeros((6, 6))
+    for i in range(6):
+        for j in range(6):
+            cov_matrix[i, j] = cov_matrix[j, i] = twiss_calc.getCorrelation(i, j)
+    return cov_matrix
+
+
+def get_bunch_centroid(bunch: Bunch) -> Bunch:
+    twiss_calc = BunchTwissAnalysis()
+    twiss_calc.analyzeBunch(bunch)
+
+    centroid = np.zeros(6)
+    for i in range(6):
+        centroid[i] = twiss_calc.getAverage(i)
+    return centroid
 
 
 def build_diag_matrix_from_xyz_eig(eigenvectors: np.ndarray) -> np.ndarray:
@@ -35,11 +57,27 @@ class Envelope:
 
     def __init__(
         self,
-        sync_part: SyncParticle,
+        sync_part: SyncParticle = None,
         cov_matrix: np.ndarray = None,
         centroid: np.ndarray = None,
         intensity: float = 0.0,
+        bunch: Bunch = None,
     ) -> None:
+        """Constructor.
+
+        Args:
+            sync_part: Synchronous particle.
+            cov_matrix: 6 x 6 covariance matrix.
+            centroid: 6 x 1 centroid vector.
+            intensity: Total number of particles.
+            bunch: If provided, the parameters above are calculated from the bunch particles.
+        """
+
+        if bunch is not None:
+            sync_part = bunch.getSyncParticle()
+            cov_matrix = get_bunch_cov_matrix(bunch)
+            centroid = get_bunch_centroid(bunch)
+            intensity = bunch.getSize() * bunch.macroSize()
 
         self.sync_part = sync_part
 
@@ -53,7 +91,6 @@ class Envelope:
 
         self.intensity = intensity
         self.classical_radius = get_classical_radius(self.charge, self.mass)
-        self.charge_sign = self.charge / abs(self.charge)
 
         # For a uniform one-dimensional distribution over length L, the standard
         # deviation is L * sqrt(12). This quantity is used to calculate the line
@@ -110,6 +147,18 @@ class Envelope:
         particles = gen_dist(size=size, cov_matrix=self.cov_matrix, name=dist)
         particles = particles + self.centroid
         return particles
+
+    def to_bunch(self, size: int, dist: str = "gauss") -> Bunch:
+        bunch = Bunch()
+        bunch.mass(self.mass)
+        bunch.charge(self.charge)
+        bunch.getSyncParticle().kinEnergy(self.kin_energy)
+        bunch.macroSize(self.intensity / size)
+
+        particles = self.sample(size=size, dist=dist)
+        for i in range(particles.shape[0]):
+            bunch.addParticle(*particles[i])
+        return bunch
 
     def sc_matrix_2d(self, length: float) -> np.ndarray:
         centroid = self.centroid
