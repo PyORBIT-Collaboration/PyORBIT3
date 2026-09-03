@@ -11,8 +11,10 @@ currently assumes an upright ellipsoid.)
 import argparse
 import math
 import os
+import pathlib
 import random
 import sys
+import time
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -30,7 +32,6 @@ from orbit.bunch_generators import GaussDist3D
 from orbit.bunch_generators import KVDist3D
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
-from orbit.envelope import EnvelopeTracker
 from orbit.lattice import AccLattice
 from orbit.lattice import AccNode
 from orbit.lattice import AccActionsContainer
@@ -66,54 +67,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def main(args: argparse.Namespace) -> None:
-
-    output_dir = "outputs"
-    os.makedirs(output_dir, exist_ok=True)
-
-    random.seed(23)
-
-    # Bunch
-    # --------------------------------------------------------------------------------
-
-    kin_energy = 0.0025  # [GeV]
-    mass = mass_proton + 2.0 * mass_electron
-    frequency = 402.5e06
-    charge = -1.0
-    intensity = args.current / frequency / (math.fabs(charge) * charge_electron)
-
-    bunch = Bunch()
-    bunch.mass(mass)
-    bunch.macroSize(intensity / args.nparts)
-    bunch.charge(charge)
-
-    sync_part = bunch.getSyncParticle()
-    sync_part.kinEnergy(kin_energy)
-    sync_part.time(0.0)
-
-    alpha_x, beta_x, eps_x = (-1.962, 0.183, 2.874e-06)
-    alpha_y, beta_y, eps_y = (+1.768, 0.162, 2.874e-06)
-    alpha_z, beta_z, eps_z = (-0.0196, 116.414, 1.651e-08)
-
-    twiss_x = TwissContainer(alpha_x, beta_x, eps_x)
-    twiss_y = TwissContainer(alpha_y, beta_y, eps_y)
-    twiss_z = TwissContainer(alpha_z, beta_z, eps_z)
-
-    if args.dist == "waterbag":
-        dist = WaterBagDist3D(twiss_x, twiss_y, twiss_z)
-    elif args.dist == "kv":
-        dist = KVDist3D(twiss_x, twiss_y, twiss_z)
-    elif args.dist == "gauss":
-        dist = GaussDist3D(twiss_x, twiss_y, twiss_z)
-    else:
-        raise ValueError("Unknown distribution '{}'".format(args.dist))
-
-    for _ in range(args.nparts):
-        bunch.addParticle(*dist.getCoordinates())
-
-    # Lattice
-    # --------------------------------------------------------------------------------
-
+def make_lattice(args: argparse.Namespace) -> LinacAccLattice:
     seq_names = [
         "MEBT",
         "DTL1",
@@ -150,14 +104,48 @@ def main(args: argparse.Namespace) -> None:
     for rf_gap in rf_gaps:
         rf_gap.setCppGapModel(MatrixRfGap())
 
-    for index, node in enumerate(lattice.getNodes()):
-        print(index, type(node), node.getName())
+    return lattice
 
-    lattice.trackDesignBunch(bunch)
 
-    # Track envelope
-    # --------------------------------------------------------------------------------
+def make_bunch(args: argparse.Namespace) -> Bunch:
+    kin_energy = 0.0025  # [GeV]
+    mass = mass_proton + 2.0 * mass_electron
+    frequency = 402.5e06
+    charge = -1.0
+    intensity = args.current / frequency / (math.fabs(charge) * charge_electron)
 
+    bunch = Bunch()
+    bunch.mass(mass)
+    bunch.macroSize(intensity / args.nparts)
+    bunch.charge(charge)
+
+    sync_part = bunch.getSyncParticle()
+    sync_part.kinEnergy(kin_energy)
+    sync_part.time(0.0)
+
+    alpha_x, beta_x, eps_x = (-1.962, 0.183, 2.874e-06)
+    alpha_y, beta_y, eps_y = (+1.768, 0.162, 2.874e-06)
+    alpha_z, beta_z, eps_z = (-0.0196, 116.414, 1.651e-08)
+
+    twiss_x = TwissContainer(alpha_x, beta_x, eps_x)
+    twiss_y = TwissContainer(alpha_y, beta_y, eps_y)
+    twiss_z = TwissContainer(alpha_z, beta_z, eps_z)
+
+    if args.dist == "waterbag":
+        dist = WaterBagDist3D(twiss_x, twiss_y, twiss_z)
+    elif args.dist == "kv":
+        dist = KVDist3D(twiss_x, twiss_y, twiss_z)
+    elif args.dist == "gauss":
+        dist = GaussDist3D(twiss_x, twiss_y, twiss_z)
+    else:
+        raise ValueError("Unknown distribution '{}'".format(args.dist))
+
+    for _ in range(args.nparts):
+        bunch.addParticle(*dist.getCoordinates())
+    return bunch
+
+
+def get_bunch_cov_matrix(bunch: Bunch) -> Bunch:
     twiss_calc = BunchTwissAnalysis()
     twiss_calc.analyzeBunch(bunch)
 
@@ -165,17 +153,53 @@ def main(args: argparse.Namespace) -> None:
     for i in range(6):
         for j in range(6):
             cov_matrix[i, j] = cov_matrix[j, i] = twiss_calc.getCorrelation(i, j)
+    return cov_matrix
 
-    envelope = Envelope(sync_part=sync_part, cov_matrix=cov_matrix, intensity=intensity)
 
-    tracker = EnvelopeTracker(lattice, sc=("3d" if args.sc else None))
+def get_bunch_centroid(bunch: Bunch) -> Bunch:
+    twiss_calc = BunchTwissAnalysis()
+    twiss_calc.analyzeBunch(bunch)
+
+    centroid = np.zeros(6)
+    for i in range(6):
+        centroid[i] = twiss_calc.getAverage(i)
+    return centroid
+
+
+def make_envelope(bunch: Bunch) -> Envelope:
+    sync_part = bunch.getSyncParticle()
+    cov_matrix = get_bunch_cov_matrix(bunch)
+    centroid = get_bunch_centroid(bunch)
+    intensity = bunch.getSize()
+    return Envelope(
+        sync_part,
+        cov_matrix=cov_matrix,
+        centroid=centroid,
+        intensity=intensity
+    )
+
+
+def main(args: argparse.Namespace) -> None:
+
+    path = pathlib.Path(__file__)
+    output_dir = os.path.join("outputs", path.stem, time.strftime("%Y%m%d_%H%M%S"))
+    os.makedirs(output_dir, exist_ok=True)
+
+    random.seed(23)
+
+    # Track envelope
+    bunch = make_bunch(args)
+    envelope = make_envelope(bunch)
+
+    lattice = make_lattice(args)
+    lattice.trackDesignBunch(bunch)
 
     histories = {}
-    histories["envelope"] = tracker.track_history(envelope)
+    histories["envelope"] = lattice.trackEnvelopeHistory(envelope)
 
     # Track bunch
-    # --------------------------------------------------------------------------------
-
+    bunch = make_bunch(args)
+    lattice = make_lattice(args)
     lattice.trackDesignBunch(bunch)
 
     if args.sc:

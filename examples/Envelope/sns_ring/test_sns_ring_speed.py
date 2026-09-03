@@ -12,11 +12,11 @@ from tqdm import trange
 from orbit.core.bunch import Bunch
 from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.envelope import Envelope
-from orbit.envelope import EnvelopeTracker
 from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.space_charge.sc2p5d import setSC2p5DAccNodes
 from orbit.teapot import TEAPOT_Ring
 from orbit.teapot import TEAPOT_MATRIX_Lattice
+from orbit.teapot import BendTEAPOT
 from orbit.utils.consts import mass_proton
 
 sys.path.append("..")
@@ -44,6 +44,11 @@ for node in lattice.getNodes():
         node.setUsageFringeFieldOUT(False)
     except:
         pass
+
+for node in lattice.getNodes():
+    if type(node) is BendTEAPOT:
+        node.setParam("ea1", 0.0)
+        node.setParam("ea2", 0.0)
 
 for node in lattice.getNodes():
     max_length = 1.0
@@ -84,7 +89,7 @@ envelope = Envelope(
     cov_matrix=cov_matrix_init,
     intensity=args.intensity,
 )
-tracker = EnvelopeTracker(lattice, sc=("2d" if args.sc else None))
+envelope_sc = "2d" if args.sc else None
 
 start_time = time.time()
 
@@ -92,7 +97,7 @@ profiler = cProfile.Profile()
 profiler.enable()
 
 for turn in trange(args.turns):
-    tracker.track_ring(envelope)
+    lattice.trackEnvelopeRing(envelope, sc=envelope_sc)
 
 time_per_turn = (time.time() - start_time) / args.turns
 

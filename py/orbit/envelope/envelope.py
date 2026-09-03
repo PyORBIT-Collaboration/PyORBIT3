@@ -4,6 +4,7 @@ import numpy as np
 import scipy.constants
 import scipy.special
 
+from orbit.core.bunch import Bunch
 from orbit.core.bunch import SyncParticle
 from orbit.utils.matrix import convert_matrix_zp_to_dE
 

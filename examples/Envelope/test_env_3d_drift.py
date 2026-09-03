@@ -9,6 +9,7 @@ import copy
 import math
 import os
 import pathlib
+import time
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,7 +20,6 @@ from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.spacecharge import SpaceChargeCalc3D
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
-from orbit.envelope import EnvelopeTracker
 from orbit.space_charge.sc3d import setSC3DAccNodes
 from orbit.teapot import DriftTEAPOT
 from orbit.teapot import TEAPOT_Lattice
@@ -42,9 +42,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--rms-y", type=float, default=0.010)
     parser.add_argument("--rms-z", type=float, default=0.010)
 
-    parser.add_argument("--rot-x", type=float, default=0.0)
-    parser.add_argument("--rot-y", type=float, default=0.0)
-    parser.add_argument("--rot-z", type=float, default=0.0)
+    parser.add_argument("--tilt-x", type=float, default=0.0)
+    parser.add_argument("--tilt-y", type=float, default=0.0)
+    parser.add_argument("--tilt-z", type=float, default=0.0)
 
     parser.add_argument("--nslice", type=int, default=10)
     parser.add_argument("--length", type=float, default=0.1)
@@ -74,7 +74,7 @@ def build_cov_matrix_xyz(
 def main(args: argparse.Namespace) -> None:
 
     path = pathlib.Path(__file__)
-    output_dir = os.path.join("outputs", path.stem)
+    output_dir = os.path.join("outputs", path.stem, time.strftime("%Y%m%d_%H%M%S"))
     os.makedirs(output_dir, exist_ok=True)
 
     # Create lattice
@@ -99,7 +99,7 @@ def main(args: argparse.Namespace) -> None:
     cov_matrix_init = np.zeros((6, 6))
 
     rotation_matrix = rotation_matrix_3d(
-        math.radians(args.rot_x), math.radians(args.rot_y), math.radians(args.rot_z)
+        math.radians(args.tilt_x), math.radians(args.tilt_y), math.radians(args.tilt_z)
     )
     print(rotation_matrix)
 
@@ -131,12 +131,12 @@ def main(args: argparse.Namespace) -> None:
 
     print("TRACK ENVELOPE")
 
-    tracker = EnvelopeTracker(lattice, sc=("3d" if args.sc else None))
+    envelope_sc = "3d" if args.sc else None
 
     history = {"xrms": [], "yrms": [], "zrms": []}
     for turn in range(args.turns):
         if turn > 0:
-            tracker.track(envelope)
+            lattice.trackEnvelope(envelope, sc=envelope_sc)
 
         cov_matrix = envelope.cov_matrix
 

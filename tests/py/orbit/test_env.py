@@ -5,7 +5,6 @@ from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.linac import MatrixRfGap
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
-from orbit.envelope import EnvelopeTracker
 from orbit.lattice import AccNode
 from orbit.lattice import AccLattice
 from orbit.py_linac.lattice import Drift
@@ -82,7 +81,7 @@ def track_and_compare_rms(
         data[k1] = {}
         for k2 in ["rms", "cov"]:
             data[k1][k2] = {}
-            for k3 in ["env", "bunch"]:
+            for k3 in ["in", "out"]:
                 data[k1][k2][k3] = {}
 
     # Initialize bunch
@@ -106,10 +105,9 @@ def track_and_compare_rms(
 
     # Track envelope
     envelope = Envelope(sync_part=sync_part, cov_matrix=cov_matrix)
-    envelope_tracker = EnvelopeTracker(lattice=lattice)
 
     data["env"]["cov"]["in"] = cov_scale * envelope.cov_matrix
-    envelope_tracker.track(envelope)
+    lattice.trackEnvelope(envelope)
     data["env"]["cov"]["out"] = cov_scale * envelope.cov_matrix
 
     # Compare
@@ -401,10 +399,9 @@ def test_track_sublattice_no_error():
     for _ in range(n):
         lattice.addNode(DriftTEAPOT(length=0.1))
 
-    tracker = EnvelopeTracker(lattice)
     for i in range(n):
-        tracker.track(envelope, index_start=i)
-        tracker.track(envelope, index_stop=-i)
+        lattice.trackEnvelope(envelope, index_start=i)
+        lattice.trackEnvelope(envelope, index_stop=-i)
 
 def test_get_total_matrix() -> None:
     node = DriftTEAPOT(length=2.0, nparts=50)
@@ -419,12 +416,12 @@ def test_get_total_matrix() -> None:
     cov_matrix = make_default_cov_matrix()
     envelope = Envelope(sync_part=sync_part, cov_matrix=cov_matrix, intensity=1e7)
 
-    tracker = EnvelopeTracker(lattice, sc="2d")
+    sc = "2d"
 
     envelope_out_a = envelope.copy()
-    tracker.track(envelope_out_a)
+    lattice.trackEnvelope(envelope_out_a, sc=sc)
 
-    matrix = tracker.get_transfer_matrix(envelope.copy())
+    matrix = lattice.getEnvelopeTransferMatrix(envelope.copy(), sc=sc)
     envelope_out_b = envelope.copy()
     envelope_out_b.transform(matrix)
     assert np.all(np.isclose(envelope_out_a.cov_matrix, envelope_out_b.cov_matrix))
