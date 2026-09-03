@@ -482,12 +482,12 @@ class AccLattice(NamedObject, TypedObject):
                 for child_node in node.getChildNodes(AccNode.BODY, part_index, place_in_part=AccNode.AFTER):
                     matrix = child_node.getMatrix(sync_part)
                     if matrix is not None:
-                        self.__envelopeElements.append((node, matrix))
+                        self.__envelopeElements.append((child_node, matrix))
 
             for child_node in node.getChildNodes(AccNode.EXIT):
                 matrix = child_node.getMatrix(sync_part)
                 if matrix is not None:
-                    self.__envelopeElements.append((node, matrix))
+                    self.__envelopeElements.append((child_node, matrix))
 
         return self.__envelopeElements
 
