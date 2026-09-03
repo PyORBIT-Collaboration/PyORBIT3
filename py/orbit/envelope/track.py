@@ -8,7 +8,6 @@ from orbit.lattice import AccNode
 from orbit.lattice import AccLattice
 from orbit.teapot import BendTEAPOT
 from orbit.py_linac.lattice import Bend as BendLINAC
-from orbit.utils.matrix import get_matrix
 
 from .envelope import Envelope
 
@@ -59,13 +58,13 @@ class EnvelopeTracker:
 
         for node_index, node in enumerate(nodes):
             for child_node in node.getChildNodes(ENTRANCE):
-                matrix = get_matrix(child_node, sync_part)
+                matrix = child_node.getMatrix(sync_part)
                 if matrix is not None:
                     envelope.transform(matrix)
 
             for part_index in range(node.getnParts()):
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
-                    matrix = get_matrix(child_node, sync_part)
+                    matrix = child_node.getMatrix(sync_part)
                     if matrix is not None:
                         envelope.transform(matrix)
 
@@ -80,19 +79,19 @@ class EnvelopeTracker:
                         else:
                             raise ValueError
 
-                matrix = get_matrix(node, sync_part, part_index=part_index)
+                matrix = node.getMatrix(sync_part, part_index=part_index)
                 if matrix is not None:
                     if matrix_sc is not None:
                         matrix = matrix @ matrix_sc
                     envelope.transform(matrix)
 
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
-                    matrix = get_matrix(child_node, sync_part)
+                    matrix = child_node.getMatrix(sync_part)
                     if matrix is not None:
                         envelope.transform(matrix)
 
             for child_node in node.getChildNodes(EXIT):
-                matrix = get_matrix(child_node, sync_part)
+                matrix = child_node.getMatrix(sync_part)
                 if matrix is not None:
                     envelope.transform(matrix)
 
@@ -141,13 +140,13 @@ class EnvelopeTracker:
 
         for node_index, node in enumerate(nodes):
             for child_node in node.getChildNodes(ENTRANCE):
-                matrix = get_matrix(child_node, sync_part)
+                matrix = child_node.getMatrix(sync_part)
                 if matrix is not None:
                     envelope.transform(matrix)
 
             for part_index in range(node.getnParts()):
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
-                    matrix = get_matrix(child_node, sync_part)
+                    matrix = child_node.getMatrix(sync_part)
                     if matrix is not None:
                         envelope.transform(matrix)
 
@@ -162,7 +161,7 @@ class EnvelopeTracker:
                         else:
                             raise ValueError
 
-                matrix = get_matrix(node, sync_part, part_index=part_index)
+                matrix = node.getMatrix(sync_part, part_index=part_index)
                 if matrix is not None:
                     if matrix_sc is not None:
                         matrix = matrix @ matrix_sc
@@ -172,12 +171,12 @@ class EnvelopeTracker:
                 update_history(envelope, path_length)
 
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
-                    matrix = get_matrix(child_node, sync_part)
+                    matrix = child_node.getMatrix(sync_part)
                     if matrix is not None:
                         envelope.transform(matrix)
 
             for child_node in node.getChildNodes(EXIT):
-                matrix = get_matrix(child_node, sync_part)
+                matrix = child_node.getMatrix(sync_part)
                 if matrix is not None:
                     envelope.transform(matrix)
 
@@ -196,13 +195,13 @@ class EnvelopeTracker:
         self.elements = []
         for node_index, node in enumerate(nodes):
             for child_node in node.getChildNodes(ENTRANCE):
-                matrix = get_matrix(child_node, sync_part)
+                matrix = child_node.getMatrix(sync_part)
                 if matrix is not None:
                     self.elements.append((child_node, matrix))
 
             for part_index in range(node.getnParts()):
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=BEFORE):
-                    matrix = get_matrix(child_node, sync_part)
+                    matrix = child_node.getMatrix(sync_part)
                     if matrix is not None:
                         self.elements.append((child_node, matrix))
 
@@ -211,17 +210,17 @@ class EnvelopeTracker:
                     if length > 0:
                         self.elements.append(("sc", length))
 
-                matrix = get_matrix(node, sync_part, part_index=part_index)
+                matrix = node.getMatrix(sync_part, part_index=part_index)
                 if matrix is not None:
                     self.elements.append((node, matrix))
 
                 for child_node in node.getChildNodes(BODY, part_index, place_in_part=AFTER):
-                    matrix = get_matrix(child_node, sync_part)
+                    matrix = child_node.getMatrix(sync_part)
                     if matrix is not None:
                         self.elements.append((node, matrix))
 
             for child_node in node.getChildNodes(EXIT):
-                matrix = get_matrix(child_node, sync_part)
+                matrix = child_node.getMatrix(sync_part)
                 if matrix is not None:
                     self.elements.append((node, matrix))
 
