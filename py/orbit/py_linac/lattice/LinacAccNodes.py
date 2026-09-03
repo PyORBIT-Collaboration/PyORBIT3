@@ -742,7 +742,6 @@ class Bend(LinacMagnetNode):
         theta = self.getParam("theta") / (nparts - 1)
         if part_index == 0 or part_index == nparts - 1:
             theta *= 0.5
-        theta *= np.sign(sync_part.charge())
 
         return get_matrix_bend(sync_part, length=length, theta=theta)
 
