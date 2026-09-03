@@ -1,8 +1,6 @@
 py_sources = files([
     '__init__.py',
     'envelope.py',
-    'matrix.py',
-    'track.py',
     'utils.py'
 ])
 

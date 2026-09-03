@@ -5,6 +5,7 @@ The RF Cavities and gaps in them are different from the ring RF.
 
 import os
 import math
+import numpy as np
 
 # ---- MPI module function and classes
 from orbit.core.orbit_mpi import mpi_comm, mpi_datatype, MPI_Comm_rank, MPI_Bcast
@@ -26,6 +27,8 @@ from orbit.core.linac import BaseRfGap, MatrixRfGap, RfGapTTF, RfGapThreePointTT
 # The abstract RF gap import
 from orbit.py_linac.lattice.LinacAccNodes import AbstractRF_Gap
 
+from orbit.utils.matrix import get_matrix_rf_gap
+
 # import teapot base functions from wrapper around C++ functions
 
 # Import the linac specific tracking from linac_tracking. This module has
@@ -35,6 +38,7 @@ from orbit.py_linac.lattice.LinacAccNodes import AbstractRF_Gap
 # quad2 - linac quad non-linear part of tracking
 
 from orbit.core.bunch import Bunch
+from orbit.core.bunch import SyncParticle
 
 
 class BaseRF_Gap(AbstractRF_Gap):
@@ -250,6 +254,44 @@ class BaseRF_Gap(AbstractRF_Gap):
             self.ttf_track_bunch__(bunch, frequency, E0L * rf_ampl, phase)
         # print "debug delta_time in deg=",frequency*(arrival_time - designArrivalTime)*380.
         # print "debug RF =",self.getName()," E0TL=",E0TL," phase=",(phase*180./math.pi - 180.)," eKin[MeV]=",bunch.getSyncParticle().kinEnergy()*1.0e+3
+
+    def getMatrix(self, sync_part: SyncParticle, part_index: int = -1) -> np.ndarray | None:
+        E0TL = self.getParam("E0TL")
+        mode_phase = self.getParam("mode") * math.pi
+
+        cavity = self.getRF_Cavity()
+        frequency = cavity.getFrequency()
+        phase = cavity.getPhase() + mode_phase
+        amplitude = cavity.getAmp()
+
+        arrival_time = sync_part.time()
+        arrival_time_design = cavity.getDesignArrivalTime()
+
+        if self.isFirstRFGap():
+            if cavity.isDesignSetUp():
+                phase = math.fmod(
+                    frequency * (arrival_time - arrival_time_design) * 2.0 * math.pi + phase,
+                    2.0 * math.pi,
+                )
+            else:
+                raise ValueError("Run `trackDesign` first to initialize cavity phases.")
+        else:
+            phase = math.fmod(
+                frequency * (arrival_time - arrival_time_design) * 2.0 * math.pi + phase,
+                2.0 * math.pi,
+            )
+
+        self.setGapPhase(phase)
+
+        if amplitude == 0.0:
+            return None
+
+        return get_matrix_rf_gap(
+            sync_part=sync_part,
+            frequency=frequency,
+            E0TL=(E0TL * amplitude),
+            phase=phase,
+        )
 
     def trackDesign(self, paramsDict):
         """

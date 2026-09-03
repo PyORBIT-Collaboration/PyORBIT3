@@ -1,11 +1,11 @@
 import numpy as np
+import pytest
 
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.linac import MatrixRfGap
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
-from orbit.envelope import EnvelopeTracker
 from orbit.lattice import AccNode
 from orbit.lattice import AccLattice
 from orbit.py_linac.lattice import Drift
@@ -64,6 +64,7 @@ def track_and_compare_rms(
     kin_energy: float,
     cov_matrix: np.ndarray,
     nparts: int = 100_000,
+    charge: float = 1.0,
     verbose: int = 1,
 ) -> dict:
     """Track bunch/envelope and compare rms beam sizes.
@@ -82,13 +83,16 @@ def track_and_compare_rms(
         data[k1] = {}
         for k2 in ["rms", "cov"]:
             data[k1][k2] = {}
-            for k3 in ["env", "bunch"]:
+            for k3 in ["in", "out"]:
                 data[k1][k2][k3] = {}
 
     # Initialize bunch
     bunch = Bunch()
     bunch.mass(mass_proton)
-    bunch.getSyncParticle().kinEnergy(kin_energy)
+    bunch.charge(charge)
+
+    sync_part = bunch.getSyncParticle()
+    sync_part.kinEnergy(kin_energy)
 
     # Track bunch
     particles = np.random.multivariate_normal(np.zeros(6), cov_matrix, size=nparts)
@@ -103,11 +107,10 @@ def track_and_compare_rms(
     data["bunch"]["cov"]["out"] = cov_scale * calc_bunch_cov(bunch)
 
     # Track envelope
-    envelope = Envelope(bunch=bunch, cov_matrix=cov_matrix)
-    envelope_tracker = EnvelopeTracker(lattice=lattice)
+    envelope = Envelope(sync_part=sync_part, cov_matrix=cov_matrix)
 
     data["env"]["cov"]["in"] = cov_scale * envelope.cov_matrix
-    envelope_tracker.track(envelope)
+    lattice.trackEnvelope(envelope)
     data["env"]["cov"]["out"] = cov_scale * envelope.cov_matrix
 
     # Compare
@@ -148,196 +151,125 @@ def make_default_cov_matrix(
     return np.diag(np.square([rms_x, rms_xp, rms_y, rms_yp, rms_z, rms_dE]))
 
 
-def test_drift_teapot(
-    kin_energy: float = 0.0025,
-    length: float = 1.0,
-    cov_matrix: np.ndarray = None,
-    nparts: int = 6,
-) -> None:
-    node = DriftTEAPOT(length=length, nparts=nparts)
+def test_drift_teapot():
+    node = DriftTEAPOT(length=1.0, nparts=6)
     lattice = make_lattice([node])
-    if cov_matrix is None:
-        cov_matrix = make_default_cov_matrix()
-    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+    cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy=0.0025, cov_matrix=cov_matrix)
 
 
-def test_drift_linac(
-    kin_energy: float = 0.0025,
-    length: float = 1.0,
-    cov_matrix: np.ndarray = None,
-    nparts: int = 6,
-) -> None:
+def test_drift_linac():
     node = Drift()
-    node.setLength(length)
-    node.setnParts(nparts)
+    node.setLength(1.0)
+    node.setnParts(6)
     nodes = [node]
 
     lattice = make_lattice(nodes)
-    if cov_matrix is None:
-        cov_matrix = make_default_cov_matrix()
-    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+    cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy=0.0025, cov_matrix=cov_matrix)
 
 
-def test_quad_teapot(
-    kin_energy: float = 0.0025,
-    length: float = 1.0,
-    kq: float = 1.0,
-    cov_matrix: np.ndarray = None,
-    nparts: int = 10,
-) -> None:
-    node = QuadTEAPOT(length=length, kq=kq, nparts=nparts)
+@pytest.mark.parametrize("charge", [1.0, -1.0])
+def test_quad_teapot(charge: float):
+    node = QuadTEAPOT(length=1.0, kq=1.0, nparts=10)
     lattice = make_lattice([node])
-    if cov_matrix is None:
-        cov_matrix = make_default_cov_matrix()
-    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+    cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy=0.0025, cov_matrix=cov_matrix, charge=charge)
 
 
-def test_cf_teapot(
-    kin_energy: float = 0.0025,
-    length: float = 10.0,
-    kq: float = 1.0,
-    nparts: int = 10,
-) -> None:
-    node = ContinuousLinearFocusingTEAPOT(length=length, kq=kq, nparts=nparts)
+@pytest.mark.parametrize("charge", [1.0, -1.0])
+def test_cf_teapot(charge: float):
+    node = ContinuousLinearFocusingTEAPOT(length=10.0, kq=1.0, nparts=10)
     lattice = make_lattice([node])
-    cov_matrix = np.diag(np.square([1e-3, 0, 1e-3, 0.0, 0.0, 0.0]))
-    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+    cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy=0.0025, cov_matrix=cov_matrix, charge=charge)
 
 
-def test_quad_linac(
-    kin_energy: float = 0.0025,
-    length: float = 1.0,
-    field_grad: float = 0.23,
-    cov_matrix: np.ndarray = None,
-    nparts: int = 10,
-) -> None:
+@pytest.mark.parametrize("charge", [1.0, -1.0])
+def test_quad_linac(charge: float):
     node = Quad()
-    node.setLength(length)
-    node.setnParts(nparts)
-    node.setParam("dB/dr", field_grad)
+    node.setLength(1.0)
+    node.setnParts(10)
+    node.setParam("dB/dr", 0.23)
     nodes = [node]
 
     lattice = make_lattice(nodes)
-    if cov_matrix is None:
-        cov_matrix = make_default_cov_matrix()
-    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+    cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy=0.0025, cov_matrix=cov_matrix, charge=charge)
 
 
-def test_bend_teapot(
-    kin_energy: float = 0.0025,
-    length: float = 1.0,
-    theta: float = 20.0,
-    cov_matrix: np.ndarray = None,
-    nparts: int = 5,
-) -> None:
-    node = BendTEAPOT(length=length, theta=np.radians(theta), nparts=nparts)
+@pytest.mark.parametrize("charge", [1.0, -1.0])
+def test_bend_teapot(charge: float):
+    node = BendTEAPOT(length=1.0, theta=np.radians(20.0), nparts=5)
     lattice = make_lattice([node])
-    if cov_matrix is None:
-        cov_matrix = make_default_cov_matrix()
-    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+    cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy=0.0025, cov_matrix=cov_matrix, charge=charge)
 
 
-def test_bend_linac(
-    kin_energy: float = 0.0025,
-    length: float = 1.0,
-    theta: float = 20.0,
-    cov_matrix: np.ndarray = None,
-    nparts: int = 5,
-) -> None:
+@pytest.mark.parametrize("charge", [1.0, -1.0])
+def test_bend_linac(charge: float):
     node = Bend()
-    node.setLength(length)
-    node.setnParts(nparts)
-    node.setParam("theta", np.radians(theta))
+    node.setLength(1.0)
+    node.setnParts(5)
+    node.setParam("theta", np.radians(20.0))
     nodes = [node]
 
     lattice = make_lattice(nodes)
-    if cov_matrix is None:
-        cov_matrix = make_default_cov_matrix()
-    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+    cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy=0.0025, cov_matrix=cov_matrix, charge=charge)
 
 
-def test_kick_teapot(
-    kin_energy: float = 0.0025,
-    length: float = 0.1,
-    kx: float = 0.001,
-    ky: float = 0.001,
-    dE: float = 0.00001,
-    cov_matrix: np.ndarray = None,
-    nparts: int = 4,
-) -> None:
-    node = KickTEAPOT(kx=kx, ky=ky, dE=dE, length=length, nparts=nparts)
+@pytest.mark.parametrize("charge", [1.0, -1.0])
+def test_kick_teapot(charge: float):
+    node = KickTEAPOT(kx=0.001, ky=0.001, dE=0.00001, length=0.1, nparts=4)
     lattice = make_lattice([node])
-    if cov_matrix is None:
-        cov_matrix = make_default_cov_matrix()
-    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+    cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy=0.0025, cov_matrix=cov_matrix, charge=charge)
 
 
-def test_tilt_teapot(
-    kin_energy: float = 0.0025,
-    angle: float = 0.25 * np.pi,
-    cov_matrix: np.ndarray = None,
-) -> None:
-    node = TiltTEAPOT(angle=angle)
+def test_tilt_teapot():
+    node = TiltTEAPOT(angle=(0.25 * np.pi))
     lattice = make_lattice([node])
-    if cov_matrix is None:
-        cov_matrix = make_default_cov_matrix()
-    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+    cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy=0.0025, cov_matrix=cov_matrix)
 
 
-def test_tilt_linac(
-    kin_energy: float = 0.0025,
-    angle: float = 0.25 * np.pi,
-    cov_matrix: np.ndarray = None,
-) -> None:
+def test_tilt_linac():
     node = TiltElement()
-    node.setTiltAngle(angle)
-    nodes = [node]
-    lattice = make_lattice(nodes)
-    if cov_matrix is None:
-        cov_matrix = make_default_cov_matrix()
-    track_and_compare_rms(lattice, kin_energy, cov_matrix)
-
-
-def test_solenoid_teapot(
-    kin_energy: float = 0.0025,
-    length: float = 2.0,
-    B: float = 1.0,
-    cov_matrix: np.ndarray = None,
-    nparts: int = 10,
-) -> None:
-    node = SolenoidTEAPOT(length=length, B=B, nparts=nparts)
+    node.setTiltAngle(0.25 * np.pi)
     lattice = make_lattice([node])
-    if cov_matrix is None:
-        cov_matrix = make_default_cov_matrix()
-    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+    cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy=0.0025, cov_matrix=cov_matrix)
 
 
-def test_solenoid_linac(
-    kin_energy: float = 0.0025,
-    length: float = 2.0,
-    B: float = 1.0,
-    cov_matrix: np.ndarray = None,
-    nparts: int = 10,
-) -> None:
+@pytest.mark.parametrize("charge", [1.0, -1.0])
+def test_solenoid_teapot(charge: float):
+    node = SolenoidTEAPOT(length=2.0, B=1.0, nparts=10)
+    lattice = make_lattice([node])
+    cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy=0.0025, cov_matrix=cov_matrix, charge=charge)
+
+
+@pytest.mark.parametrize("charge", [1.0, -1.0])
+def test_solenoid_linac(charge: float):
     node = Solenoid()
-    node.setLength(length)
-    node.setnParts(nparts)
-    node.setParam("B", B)
+    node.setLength(2.0)
+    node.setnParts(10)
+    node.setParam("B", 1.0)
     nodes = [node]
 
     lattice = make_lattice(nodes)
-    if cov_matrix is None:
-        cov_matrix = make_default_cov_matrix()
-    track_and_compare_rms(lattice, kin_energy, cov_matrix)
+    cov_matrix = make_default_cov_matrix()
+    track_and_compare_rms(lattice, kin_energy=0.0025, cov_matrix=cov_matrix, charge=charge)
 
 
-def test_rf_gap_matrix(
-    kin_energy: float = 0.0025,
-    frequency: float = 402.5e06,
-    E0TL: float = 0.001,
-    phase: float = 0.0,
-    charge: float = -1.0,
-) -> None:
+@pytest.mark.parametrize("charge", [1.0, -1.0])
+def test_rf_gap_matrix(charge: float):
+    kin_energy = 0.0025
+    frequency = 402.5e06
+    E0TL = 0.001
+    phase = 0.0
+
     cov_matrix = make_default_cov_matrix()
 
     bunch_in = Bunch()
@@ -357,14 +289,14 @@ def test_rf_gap_matrix(
 
     coords_out_1 = collect_bunch(bunch_out_1)["coords"]
 
-    from orbit.envelope.matrix import get_matrix_rf_gap
+    from orbit.utils.matrix import get_matrix_rf_gap
 
     bunch_out_2 = Bunch()
     bunch_in.copyBunchTo(bunch_out_2)
 
-    envelope = Envelope(bunch=bunch_in)
+    sync_part = bunch_in.getSyncParticle()
     matrix = get_matrix_rf_gap(
-        envelope=envelope,
+        sync_part,
         frequency=frequency,
         E0TL=E0TL,
         phase=phase,
@@ -386,10 +318,12 @@ def test_sc_3d_cold_expansion():
 def test_track_sublattice_no_error():
     bunch = Bunch()
     bunch.mass(mass_proton)
-    bunch.getSyncParticle().kinEnergy(0.001)
+
+    sync_part = bunch.getSyncParticle()
+    sync_part.kinEnergy(0.001)
 
     cov_matrix = np.diag(np.square([1e-3, 0, 1e-3, 0.0, 1e-3, 0.0]))
-    envelope = Envelope(bunch, cov_matrix=cov_matrix)
+    envelope = Envelope(sync_part=sync_part, cov_matrix=cov_matrix)
 
     lattice = TEAPOT_Lattice()
 
@@ -397,28 +331,30 @@ def test_track_sublattice_no_error():
     for _ in range(n):
         lattice.addNode(DriftTEAPOT(length=0.1))
 
-    tracker = EnvelopeTracker(lattice)
     for i in range(n):
-        tracker.track(envelope, index_start=i)
-        tracker.track(envelope, index_stop=-i)
+        lattice.trackEnvelope(envelope, index_start=i)
+        lattice.trackEnvelope(envelope, index_stop=-i)
 
-def test_get_total_matrix() -> None:
+
+@pytest.mark.parametrize("charge", [1.0, -1.0])
+def test_get_total_matrix(charge: float) -> None:
     node = DriftTEAPOT(length=2.0, nparts=50)
     lattice = make_lattice([node])
 
     bunch = Bunch()
     bunch.mass(mass_proton)
-    bunch.getSyncParticle().kinEnergy(0.001)
+    bunch.charge(charge)
+
+    sync_part = bunch.getSyncParticle()
+    sync_part.kinEnergy(0.001)
 
     cov_matrix = make_default_cov_matrix()
-    envelope = Envelope(bunch, cov_matrix=cov_matrix, intensity=1e7)
-
-    tracker = EnvelopeTracker(lattice, sc="2d")
+    envelope = Envelope(sync_part=sync_part, cov_matrix=cov_matrix, intensity=1e7)
 
     envelope_out_a = envelope.copy()
-    tracker.track(envelope_out_a)
+    lattice.trackEnvelope(envelope_out_a, sc="2d")
 
-    matrix = tracker.get_transfer_matrix(envelope.copy())
+    matrix = lattice.getEnvelopeTransferMatrix(envelope.copy(), sc="2d")
     envelope_out_b = envelope.copy()
     envelope_out_b.transform(matrix)
     assert np.all(np.isclose(envelope_out_a.cov_matrix, envelope_out_b.cov_matrix))

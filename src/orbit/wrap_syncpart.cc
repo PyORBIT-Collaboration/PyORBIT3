@@ -129,6 +129,20 @@ extern "C" {
 		return Py_BuildValue("d",val);
   }
 
+  //  charge() - returns charge in elementary charge units
+  static PyObject* SyncPart_charge(PyObject *self, PyObject *args){
+    pyORBIT_Object* pySyncPart = (pyORBIT_Object*) self;
+    int nVars = PyTuple_Size(args);
+		if(nVars > 0){
+			error("PySyncPart - charge() - you should use bunch.charge(charge_value) instead!");
+		}
+    double val = 0.;
+		SyncPart* cpp_SyncPart = (SyncPart*) pySyncPart->cpp_obj;
+		val = cpp_SyncPart->getCharge();
+		return Py_BuildValue("d",val);
+  }
+
+
  //Sets or returns the momentum for the SyncPart object
   //  the action is depended on the number of arguments
   //  momentum() - returns momentum
@@ -543,37 +557,38 @@ extern "C" {
 		return Py_BuildValue("d",val);
   }
 
-	// defenition of the methods of the python SyncPart wrapper class
-	// they will be vailable from python level
+  // Definition of the methods of the python SyncPart wrapper class.
+  // They will be available from the Python level.
   static PyMethodDef SyncPartClassMethods[] = {
-    { "mass",       SyncPart_mass      ,METH_VARARGS,"Returns mass in GeV"},
-    { "momentum",   SyncPart_momentum  ,METH_VARARGS,"Returns or sets momentum in GeV/c."},
-    { "beta",       SyncPart_beta      ,METH_VARARGS,"Returns beta=v/c"},
-		{ "gamma",      SyncPart_gamma     ,METH_VARARGS,"Returns gamma=1/sqrt(1-(v/c)**2)"},
-		{ "kinEnergy",  SyncPart_kinEnergy ,METH_VARARGS,"Returns or sets kinetic energy of the synchronous particle in MeV"},
-		{ "time",		    SyncPart_time      ,METH_VARARGS,"Sets or returns time in sec"},
-		{ "x",		      SyncPart_x         ,METH_VARARGS,"Sets or returns the x-coordinate"},
-		{ "y",		      SyncPart_y         ,METH_VARARGS,"Sets or returns the y-coordinate"},
-		{ "z",		      SyncPart_z         ,METH_VARARGS,"Sets or returns the z-coordinate"},
-		{ "px",		      SyncPart_px        ,METH_VARARGS,"Sets or returns the x-momentum"},
-		{ "py",		      SyncPart_py        ,METH_VARARGS,"Sets or returns the y-momentum"},
-		{ "pz",		      SyncPart_pz        ,METH_VARARGS,"Sets or returns the z-momentum"},
-		{ "pVector",    SyncPart_pVector   ,METH_VARARGS,"Sets or returns the momentum vector as a tuple"},
-		{ "rVector",    SyncPart_rVector   ,METH_VARARGS,"Sets or returns the position vector as a tuple"},
-		{ "nxVector",		SyncPart_nxVector  ,METH_VARARGS,"Sets or returns the x-axis vector as a tuple"},
-		{ "nyVector",		SyncPart_nyVector  ,METH_VARARGS,"Returns the y-axis vector as a tuple"},
-		{ "energyToMomentum",  SyncPart_eToP  ,METH_VARARGS,"Transforms the kinetic energy to momentum"},
-		{ "momentumToEnergy",  SyncPart_pToE  ,METH_VARARGS,"Transforms the momentum to kinetic energy"},
+    { "mass", SyncPart_mass, METH_VARARGS,"Returns mass in GeV"},
+    { "charge", SyncPart_charge, METH_VARARGS,"Returns charge in elementary charge units"},
+    { "momentum", SyncPart_momentum, METH_VARARGS,"Returns or sets momentum in GeV/c."},
+    { "beta", SyncPart_beta, METH_VARARGS,"Returns beta=v/c"},
+    { "gamma", SyncPart_gamma, METH_VARARGS,"Returns gamma=1/sqrt(1-(v/c)**2)"},
+    { "kinEnergy", SyncPart_kinEnergy, METH_VARARGS,"Returns or sets kinetic energy of the synchronous particle in MeV"},
+    { "time", SyncPart_time, METH_VARARGS,"Sets or returns time in sec"},
+    { "x", SyncPart_x, METH_VARARGS,"Sets or returns the x-coordinate"},
+    { "y", SyncPart_y, METH_VARARGS,"Sets or returns the y-coordinate"},
+    { "z", SyncPart_z, METH_VARARGS,"Sets or returns the z-coordinate"},
+    { "px", SyncPart_px, METH_VARARGS,"Sets or returns the x-momentum"},
+    { "py", SyncPart_py, METH_VARARGS,"Sets or returns the y-momentum"},
+    { "pz",	SyncPart_pz, METH_VARARGS,"Sets or returns the z-momentum"},
+    { "pVector", SyncPart_pVector, METH_VARARGS,"Sets or returns the momentum vector as a tuple"},
+    { "rVector", SyncPart_rVector, METH_VARARGS,"Sets or returns the position vector as a tuple"},
+    { "nxVector", SyncPart_nxVector, METH_VARARGS,"Sets or returns the x-axis vector as a tuple"},
+    { "nyVector", SyncPart_nyVector, METH_VARARGS,"Returns the y-axis vector as a tuple"},
+    { "energyToMomentum", SyncPart_eToP, METH_VARARGS,"Transforms the kinetic energy to momentum"},
+    { "momentumToEnergy", SyncPart_pToE, METH_VARARGS,"Transforms the momentum to kinetic energy"},
     {NULL}
   };
 
-	// defenition of the memebers of the python SyncPart wrapper class
-	// they will be vailable from python level
+	// Definition of the members of the python SyncPart wrapper class.
+	// They will be available from python level.
 	static PyMemberDef SyncPartClassMembers [] = {
 		{NULL}
 	};
 
-	//new python SyncPart wrapper type definition
+	// New Python SyncPart wrapper type definition.
 	static PyTypeObject pyORBIT_SyncPart_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
 		"SyncParticle", /*tp_name*/
