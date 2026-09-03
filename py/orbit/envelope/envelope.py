@@ -5,8 +5,8 @@ import scipy.special
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.bunch import SyncParticle
+from orbit.utils.matrix import convert_matrix_zp_to_dE
 
-from .utils import convert_matrix_zp_to_dE
 from .utils import gen_dist
 from .utils import get_classical_radius
 from .utils import proj_cov_matrix

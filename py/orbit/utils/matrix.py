@@ -1,9 +1,13 @@
+"""Transfer matrix definitions."""
 import math
 
 import numpy as np
 
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import SyncParticle
+from orbit.core.orbit_utils import Matrix
+from orbit.core.teapot_base import MatrixGenerator
+from orbit.lattice import AccLattice
 from orbit.lattice import AccNode
 from orbit.teapot import ApertureTEAPOT
 from orbit.teapot import DriftTEAPOT
@@ -29,11 +33,7 @@ from orbit.py_linac.lattice import Solenoid as SolenoidLINAC
 from orbit.py_linac.lattice import TiltElement as TiltLINAC
 from orbit.py_linac.lattice import FringeField as FringeFieldLINAC
 from orbit.py_linac.lattice import BaseRF_Gap as BaseRF_Gap
-from orbit.py_linac.lattice import LinacApertureNode as ApertureLINAC
 from orbit.utils.consts import speed_of_light
-
-from .envelope import Envelope
-from .utils import get_dp_p_coeff
 
 
 IGNORE_NODE_TYPES = [
@@ -46,6 +46,47 @@ IGNORE_NODE_TYPES = [
     MarkerLINAC,
     FringeFieldLINAC,
 ]
+
+
+def get_dp_p_coeff(sync_part: SyncParticle) -> float:
+    # dE/E = (beta^2) * dp/p
+    # dE = (beta^2 * E) * dp/p
+    # dE = (beta^2 * gamma * m * c^2) * dp/p
+    beta = sync_part.beta()
+    gamma = sync_part.gamma()
+    rest_energy = sync_part.mass()  # GeV
+    return 1.0 / (beta**2 * gamma * rest_energy)
+
+
+def get_zp_coeff(sync_part: SyncParticle) -> float:
+    # dE/E = (beta^2) * dp/p = (beta^2) * (gamma^2) z'
+    # dE = (beta^2 * gamma^2 * E) * z'
+    # dE = (beta^2 * gamma^3 * m * c^2) * z'
+    beta = sync_part.beta()
+    gamma = sync_part.gamma()
+    rest_energy = sync_part.mass()
+    return 1.0 / (beta**2 * gamma**3 * rest_energy)
+
+
+def convert_matrix_dp_p_to_dE(matrix: np.ndarray, sync_part: SyncParticle) -> np.ndarray:
+    # v = [x, x', y, y', z, dp/p]
+    # w = [x, x', y, y', z, dE]
+    # v = A w
+    # v -> M v
+    # w -> A M A^-1
+    dp_p_coeff = get_dp_p_coeff(sync_part)
+    matrix[:5, 5] *= dp_p_coeff
+    matrix[5, :5] /= dp_p_coeff
+    matrix[5, 6] /= dp_p_coeff  # driving term
+    return matrix
+
+
+def convert_matrix_zp_to_dE(matrix: np.ndarray, sync_part: SyncParticle) -> np.ndarray:
+    zp_coeff = get_zp_coeff(sync_part)
+    matrix[:5, 5] *= zp_coeff
+    matrix[5, :5] /= zp_coeff
+    matrix[5, 6] /= zp_coeff  # driving term
+    return matrix
 
 
 def get_matrix_tilt(angle: float) -> np.ndarray:
@@ -68,9 +109,7 @@ def get_matrix_kick(kx: float = 0.0, ky: float = 0.0, kE: float = 0.0) -> np.nda
     return M
 
 
-def get_matrix_drift(envelope: Envelope, length: float) -> np.ndarray:
-    sync_part = envelope.sync_part
-
+def get_matrix_drift(sync_part: SyncParticle, length: float) -> np.ndarray:
     M = np.identity(7)
     M[0, 1] = length
     M[2, 3] = length
@@ -81,11 +120,9 @@ def get_matrix_drift(envelope: Envelope, length: float) -> np.ndarray:
     return M
 
 
-def get_matrix_quad(envelope: Envelope, length: float, kq: float) -> np.ndarray:
+def get_matrix_quad(sync_part: SyncParticle, length: float, kq: float) -> np.ndarray:
     if abs(kq) == 0:
-        return get_matrix_drift(envelope=envelope, length=length)
-
-    sync_part = envelope.sync_part
+        return get_matrix_drift(sync_part, length)
 
     sqrt_abs_kq = math.sqrt(abs(kq))
 
@@ -124,9 +161,7 @@ def get_matrix_quad(envelope: Envelope, length: float, kq: float) -> np.ndarray:
     return M
 
 
-def get_matrix_bend(envelope: Envelope, length: float, theta: float) -> np.ndarray:
-    sync_part = envelope.sync_part
-
+def get_matrix_bend(sync_part: SyncParticle, length: float, theta: float) -> np.ndarray:
     rho = length / theta
     cx = math.cos(theta)
     sx = math.sin(theta)
@@ -148,11 +183,9 @@ def get_matrix_bend(envelope: Envelope, length: float, theta: float) -> np.ndarr
     return M
 
 
-def get_matrix_solenoid(envelope: Envelope, length: float, B: float) -> np.ndarray:
+def get_matrix_solenoid(sync_part: SyncParticle, length: float, B: float) -> np.ndarray:
     if B == 0:
-        return get_matrix_drift(envelope=envelope, length=length)
-
-    sync_part = envelope.sync_part
+        return get_matrix_drift(sync_part, length)
 
     phase = B * length
 
@@ -183,11 +216,9 @@ def get_matrix_solenoid(envelope: Envelope, length: float, B: float) -> np.ndarr
     return M
 
 
-def get_matrix_cf(envelope: Envelope, length: float, kq: float) -> np.ndarray:
+def get_matrix_cf(sync_part: SyncParticle, length: float, kq: float) -> np.ndarray:
     if kq == 0:
-        return get_matrix_drift(envelope=envelope, length=length)
-
-    sync_part = envelope.sync_part
+        return get_matrix_drift(sync_part, length)
 
     sqrt_abs_kq = math.sqrt(abs(kq))
 
@@ -206,13 +237,11 @@ def get_matrix_cf(envelope: Envelope, length: float, kq: float) -> np.ndarray:
     return M
 
 
-def get_matrix_rf_gap(envelope: Envelope, frequency: float, E0TL: float, phase: float) -> np.ndarray:
-    sync_part = envelope.sync_part
-
+def get_matrix_rf_gap(sync_part: SyncParticle, frequency: float, E0TL: float, phase: float) -> np.ndarray:
     gamma = sync_part.gamma()
     beta = sync_part.beta()
     mass = sync_part.mass()
-    charge = envelope.charge
+    charge = sync_part.charge()
 
     kin_energy_in = sync_part.kinEnergy()
     charge_E0TL_sin = charge * E0TL * math.sin(phase)
@@ -250,23 +279,33 @@ def get_matrix_rf_gap(envelope: Envelope, frequency: float, E0TL: float, phase: 
     return M
 
 
-def get_matrix(node: AccNode, envelope: Envelope, part_index: int = -1) -> np.ndarray | None:
+def orbit_matrix_to_numpy(matrix: Matrix) -> np.ndarray:
+    matrix_out = np.zeros(matrix.size())
+    for i in range(matrix_out.shape[0]):
+        for j in range(matrix_out.shape[1]):
+            matrix_out[i, j] = matrix.get(i, j)
+    return matrix_out
+
+
+def get_matrix(node: AccNode, sync_part: SyncParticle, part_index: int = -1, fit: bool = False) -> np.ndarray | None:
     """Calculate transfer matrix and update synchronous particle.
 
-    This function maps various accelerator nodes to 7 x 7 transfer matrices
-    for envelope tracking. For non-accelerating, finite-length nodes, the
-    synchronous particle time is updated as in a drift. Accelerating nodes
-    such as RF gaps will update the synchronous particle energy.
+    This function maps various accelerator nodes to 7 x 7 transfer matrices.
+    For non-accelerating, finite-length nodes, the synchronous particle time
+    is updated as in a drift. Accelerating nodes such as RF gaps will update
+    the synchronous particle energy.
 
     Args:
         node: The accelerator node.
-        envelope: The beam envelope.
+        sync_part: Synchronous particle
         part_index: Index of the part within the node. An index of -1 returns
             the transfer matrix for the entire node.
+        fit: Whether to fit matrix to tracking data.
     Returns:
-        7 x 7 transfer matrix or None. If None, the node can be ignored during
-        envelope tracking.
+        7 x 7 transfer matrix or None.
     """
+    if fit:
+        raise NotImplementedError
 
     node_type = type(node)
     if node_type in IGNORE_NODE_TYPES:
@@ -278,7 +317,7 @@ def get_matrix(node: AccNode, envelope: Envelope, part_index: int = -1) -> np.nd
     if node_type is DriftTEAPOT:
         if length <= 0:
             return None
-        return get_matrix_drift(envelope=envelope, length=length)
+        return get_matrix_drift(sync_part, length)
 
     elif node_type is SolenoidTEAPOT:
         if length <= 0:
@@ -287,16 +326,16 @@ def get_matrix(node: AccNode, envelope: Envelope, part_index: int = -1) -> np.nd
         B = node.getParam("B")
         if node.waveform:
             B *= node.waveform.getStrength()
-        B *= envelope.charge_sign
+        B *= np.sign(sync_part.charge())
 
-        return get_matrix_solenoid(envelope=envelope, length=length, B=B)
+        return get_matrix_solenoid(sync_part, length=length, B=B)
 
     elif node_type is MultipoleTEAPOT:
         if length <= 0:
             return None
 
         if np.all(np.abs(node.getParam("kls")) == 0):
-            return get_matrix_drift(envelope=envelope, length=length)
+            return get_matrix_drift(sync_part, length)
 
     elif node_type is QuadTEAPOT:
         if length <= 0:
@@ -305,9 +344,9 @@ def get_matrix(node: AccNode, envelope: Envelope, part_index: int = -1) -> np.nd
         kq = node.getParam("kq")
         if node.waveform:
             kq *= node.waveform.getStrength()
-        kq *= envelope.charge_sign
+        kq *= np.sign(sync_part.charge())
 
-        return get_matrix_quad(envelope=envelope, length=length, kq=kq)
+        return get_matrix_quad(sync_part, length=length, kq=kq)
 
     elif node_type is BendTEAPOT:
         if length <= 0:
@@ -316,9 +355,9 @@ def get_matrix(node: AccNode, envelope: Envelope, part_index: int = -1) -> np.nd
         theta = node.getParam("theta") / (nparts - 1)
         if part_index == 0 or part_index == nparts - 1:
             theta *= 0.5
-        theta *= envelope.charge_sign
+        theta *= np.sign(sync_part.charge())
 
-        return get_matrix_bend(envelope=envelope, length=length, theta=theta)
+        return get_matrix_bend(sync_part, length=length, theta=theta)
 
     elif node_type is KickTEAPOT:
         scale = 1.0
@@ -333,10 +372,10 @@ def get_matrix(node: AccNode, envelope: Envelope, part_index: int = -1) -> np.nd
         if abs(kx) > 0 or abs(ky) > 0 or abs(kE) > 0:
             return np.matmul(
                 get_matrix_kick(kx=kx, ky=ky, kE=kE),
-                get_matrix_drift(envelope=envelope, length=length),
+                get_matrix_drift(sync_part, length),
             )
         else:
-            return get_matrix_drift(envelope=envelope, length=length)
+            return get_matrix_drift(sync_part, length)
 
     elif node_type is TiltTEAPOT:
         angle = node.getTiltAngle()
@@ -349,24 +388,24 @@ def get_matrix(node: AccNode, envelope: Envelope, part_index: int = -1) -> np.nd
             return None
 
         kq = node.getParam("kq")
-        kq *= envelope.charge_sign
+        kq *= np.sign(sync_part.charge())
         if node.waveform:
             kq *= node.waveform.getStrength()
 
-        return get_matrix_cf(envelope=envelope, length=length, kq=kq)
+        return get_matrix_cf(sync_part, length=length, kq=kq)
 
     elif node_type is DriftLINAC:
         if length <= 0:
             return None
-        return get_matrix_drift(envelope=envelope, length=length)
+        return get_matrix_drift(sync_part, length)
 
     elif node_type is QuadLINAC:
         if length <= 0:
             return None
 
-        brho = 3.335640952 * envelope.momentum / envelope.charge
+        brho = 3.335640952 * sync_part.momentum() / sync_part.charge()
         kq = node.getParam("dB/dr") / brho
-        return get_matrix_quad(envelope=envelope, length=length, kq=kq)
+        return get_matrix_quad(sync_part, length=length, kq=kq)
 
     elif node_type is BendLINAC:
         if length <= 0:
@@ -375,14 +414,14 @@ def get_matrix(node: AccNode, envelope: Envelope, part_index: int = -1) -> np.nd
         theta = node.getParam("theta") / (nparts - 1)
         if part_index == 0 or part_index == nparts - 1:
             theta *= 0.5
-        theta *= envelope.charge_sign
+        theta *= np.sign(sync_part.charge())
 
-        return get_matrix_bend(envelope=envelope, length=length, theta=theta)
+        return get_matrix_bend(sync_part, length=length, theta=theta)
 
     elif node_type is DCorrectorHLINAC:
         length = node.getParam("effLength") / nparts
         field = node.getParam("B")
-        delta_xp = -field * envelope.charge * length * 0.299792 / envelope.momentum
+        delta_xp = -field * sync_part.charge() * length * 0.299792 / sync_part.momentum()
         if delta_xp == 0:
             return None
         return get_matrix_kick(kx=delta_xp, ky=0.0, kE=0.0)
@@ -390,7 +429,7 @@ def get_matrix(node: AccNode, envelope: Envelope, part_index: int = -1) -> np.nd
     elif node_type is DCorrectorVLINAC:
         length = node.getParam("effLength") / nparts
         field = node.getParam("B")
-        delta_yp = -field * envelope.charge * length * 0.299792 / envelope.momentum
+        delta_yp = -field * sync_part.charge() * length * 0.299792 / sync_part.momentum()
         if delta_yp == 0:
             return None
         return get_matrix_kick(kx=0.0, ky=delta_yp, kE=0.0)
@@ -398,8 +437,8 @@ def get_matrix(node: AccNode, envelope: Envelope, part_index: int = -1) -> np.nd
     elif node_type is SolenoidLINAC:
         if length <= 0:
             return None
-        B = node.getParam("B") * envelope.charge_sign
-        return get_matrix_solenoid(envelope=envelope, length=length, B=B)
+        B = node.getParam("B") * np.sign(sync_part.charge())
+        return get_matrix_solenoid(sync_part, length=length, B=B)
 
     elif node_type is TiltLINAC:
         angle = node.getTiltAngle()
@@ -416,7 +455,6 @@ def get_matrix(node: AccNode, envelope: Envelope, part_index: int = -1) -> np.nd
         phase = cavity.getPhase() + mode_phase
         amplitude = cavity.getAmp()
 
-        sync_part = envelope.sync_part
         arrival_time = sync_part.time()
         arrival_time_design = cavity.getDesignArrivalTime()
 
@@ -424,7 +462,7 @@ def get_matrix(node: AccNode, envelope: Envelope, part_index: int = -1) -> np.nd
             if cavity.isDesignSetUp():
                 phase = math.fmod(frequency * (arrival_time - arrival_time_design) * 2.0 * math.pi + phase, 2.0 * math.pi)
             else:
-                orbitFinalize("Run `trackDesign` first to initialize cavity phases.")
+                raise ValueError("Run `trackDesign` first to initialize cavity phases.")
         else:
             phase = math.fmod(frequency * (arrival_time - arrival_time_design) * 2.0 * math.pi + phase,2.0 * math.pi)
 
@@ -434,7 +472,7 @@ def get_matrix(node: AccNode, envelope: Envelope, part_index: int = -1) -> np.nd
             return None
 
         return get_matrix_rf_gap(
-            envelope=envelope,
+            sync_part=sync_part,
             frequency=frequency,
             E0TL=(E0TL * amplitude),
             phase=phase,

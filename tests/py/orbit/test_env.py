@@ -357,14 +357,14 @@ def test_rf_gap_matrix(
 
     coords_out_1 = collect_bunch(bunch_out_1)["coords"]
 
-    from orbit.envelope.matrix import get_matrix_rf_gap
+    from orbit.utils.matrix import get_matrix_rf_gap
 
     bunch_out_2 = Bunch()
     bunch_in.copyBunchTo(bunch_out_2)
 
-    envelope = Envelope(bunch=bunch_in)
+    sync_part = bunch_in.getSyncParticle()
     matrix = get_matrix_rf_gap(
-        envelope=envelope,
+        sync_part,
         frequency=frequency,
         E0TL=E0TL,
         phase=phase,
