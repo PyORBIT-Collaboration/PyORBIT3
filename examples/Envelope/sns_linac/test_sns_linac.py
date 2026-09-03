@@ -145,40 +145,6 @@ def make_bunch(args: argparse.Namespace) -> Bunch:
     return bunch
 
 
-def get_bunch_cov_matrix(bunch: Bunch) -> Bunch:
-    twiss_calc = BunchTwissAnalysis()
-    twiss_calc.analyzeBunch(bunch)
-
-    cov_matrix = np.zeros((6, 6))
-    for i in range(6):
-        for j in range(6):
-            cov_matrix[i, j] = cov_matrix[j, i] = twiss_calc.getCorrelation(i, j)
-    return cov_matrix
-
-
-def get_bunch_centroid(bunch: Bunch) -> Bunch:
-    twiss_calc = BunchTwissAnalysis()
-    twiss_calc.analyzeBunch(bunch)
-
-    centroid = np.zeros(6)
-    for i in range(6):
-        centroid[i] = twiss_calc.getAverage(i)
-    return centroid
-
-
-def make_envelope(bunch: Bunch) -> Envelope:
-    sync_part = bunch.getSyncParticle()
-    cov_matrix = get_bunch_cov_matrix(bunch)
-    centroid = get_bunch_centroid(bunch)
-    intensity = bunch.getSize()
-    return Envelope(
-        sync_part,
-        cov_matrix=cov_matrix,
-        centroid=centroid,
-        intensity=intensity
-    )
-
-
 def main(args: argparse.Namespace) -> None:
 
     path = pathlib.Path(__file__)
@@ -189,13 +155,17 @@ def main(args: argparse.Namespace) -> None:
 
     # Track envelope
     bunch = make_bunch(args)
-    envelope = make_envelope(bunch)
+    envelope = Envelope(bunch=bunch)
 
     lattice = make_lattice(args)
     lattice.trackDesignBunch(bunch)
 
     histories = {}
-    histories["envelope"] = lattice.trackEnvelopeHistory(envelope)
+    histories["envelope"] = lattice.trackEnvelope(
+        envelope,
+        history=True,
+        sc=("3d" if args.sc else None)
+    )
 
     # Track bunch
     bunch = make_bunch(args)

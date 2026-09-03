@@ -15,9 +15,9 @@ python test_env_3d_drift.py --sc 1 --rms-z 0.002 --tilt-x 45.0
 
 cd sns_linac
 python test_sns_linac.py --sc 0
-python test_sns_linac.py --sc 1 --dist gauss
-python test_sns_linac.py --sc 1 --dist waterbag
 python test_sns_linac.py --sc 1 --dist kv
+python test_sns_linac.py --sc 1 --dist waterbag
+python test_sns_linac.py --sc 1 --dist gauss
 cd ..
 
 cd sns_ring
