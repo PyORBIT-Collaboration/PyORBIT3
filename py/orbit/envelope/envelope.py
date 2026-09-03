@@ -1,5 +1,3 @@
-from multiprocessing.sharedctypes import Synchronized
-
 import numpy as np
 import scipy.constants
 import scipy.special
@@ -14,7 +12,7 @@ from .utils import get_classical_radius
 from .utils import proj_cov_matrix
 
 
-def get_bunch_cov_matrix(bunch: Bunch) -> Bunch:
+def get_bunch_cov_matrix(bunch: Bunch) -> np.ndarray:
     twiss_calc = BunchTwissAnalysis()
     twiss_calc.analyzeBunch(bunch)
 
@@ -25,7 +23,7 @@ def get_bunch_cov_matrix(bunch: Bunch) -> Bunch:
     return cov_matrix
 
 
-def get_bunch_centroid(bunch: Bunch) -> Bunch:
+def get_bunch_centroid(bunch: Bunch) -> np.ndarray:
     twiss_calc = BunchTwissAnalysis()
     twiss_calc.analyzeBunch(bunch)
 
@@ -100,8 +98,8 @@ class Envelope:
     def copy(self):
         return Envelope(
             sync_part=self.sync_part,
-            cov_matrix=self.cov_matrix,
-            centroid=self.centroid,
+            cov_matrix=self.cov_matrix.copy(),
+            centroid=self.centroid.copy(),
             intensity=self.intensity
         )
 
