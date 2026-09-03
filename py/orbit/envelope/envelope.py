@@ -1,3 +1,5 @@
+from multiprocessing.sharedctypes import Synchronized
+
 import numpy as np
 import scipy.constants
 import scipy.special
@@ -26,7 +28,7 @@ class Envelope:
     """Represents beam envelope/centroid.
 
     Attributes:
-        bunch: Bunch containing synchronous particle and (optionally) test particles.
+        sync_part: Synchronous particle.
         cov_matrix: 6 x 6 covariance matrix
         centroid: 6 x 1 centroid vector.
         intensity: Total number of particles.
@@ -34,41 +36,21 @@ class Envelope:
 
     def __init__(
         self,
-        bunch: Bunch,
+        sync_part: SynchParticle,
         cov_matrix: np.ndarray = None,
         centroid: np.ndarray = None,
         intensity: float = 0.0,
     ) -> None:
 
-        empty_bunch = Bunch()
-        bunch.copyEmptyBunchTo(empty_bunch)
-
-        self.bunch = empty_bunch
-        self.sync_part = self.bunch.getSyncParticle()
+        self.sync_part = sync_part
 
         self.centroid = centroid
         if self.centroid is None:
-            if bunch.getSize():
-                twiss_calc = BunchTwissAnalysis()
-                twiss_calc.analyzeBunch(bunch)
-                self.centroid = np.zeros(6)
-                for i in range(6):
-                    self.centroid[i] = twiss_calc.getAverage(i)
-            else:
-                self.centroid = np.zeros(6)
+            self.centroid = np.zeros(6)
 
         self.cov_matrix = cov_matrix
         if self.cov_matrix is None:
-            if bunch.getSize():
-                twiss_calc = BunchTwissAnalysis()
-                twiss_calc.analyzeBunch(bunch)
-                self.cov_matrix = np.zeros((6, 6))
-                for i in range(6):
-                    for j in range(6):
-                        self.cov_matrix[i, j] = twiss_calc.getCorrelation(i, j)
-                        self.cov_matrix[j, i] = self.cov_matrix[i, j]
-            else:
-                self.cov_matrix = np.eye(6)
+            self.cov_matrix = np.eye(6)
 
         self.intensity = intensity
         self.classical_radius = get_classical_radius(self.charge, self.mass)
@@ -81,7 +63,7 @@ class Envelope:
 
     def copy(self):
         return Envelope(
-            bunch=self.bunch,
+            sync_part=self.sync_part,
             cov_matrix=self.cov_matrix,
             centroid=self.centroid,
             intensity=self.intensity
@@ -105,7 +87,7 @@ class Envelope:
 
     @property
     def charge(self) -> float:
-        return self.bunch.charge()
+        return self.sync_part.charge()
 
     @property
     def momentum(self) -> float:
