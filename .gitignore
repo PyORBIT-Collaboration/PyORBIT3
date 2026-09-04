@@ -17,3 +17,4 @@ _api/
 _cpp_api/
 doc/source/reference/*.rst
 doc/source/reference/*.rst.include
+.cache/

@@ -1,5 +1,21 @@
 # Add Python installation details
-python = import('python').find_installation('python3', pure: false)
+pymod = import('python')
+with_numpy = get_option('PyORBIT_EXPERIMENTAL_WITH_NUMPY')
+
+if with_numpy
+  message('Compiling with Numpy support')
+  python = pymod.find_installation('python3', pure: false, modules: ['numpy'])
+  numpy_inc = run_command(
+    python, '-c', 'import numpy; print(numpy.get_include())',
+    check: true
+  ).stdout().strip()
+  add_project_arguments('-DPyORBIT_EXPERIMENTAL_WITH_NUMPY=1', language: 'cpp')
+  add_project_arguments('-I' + numpy_inc, language: 'cpp')
+
+else
+    python = pymod.find_installation('python3', pure: false)
+endif
+
 
 # Add C++ compiler details
 cpp = meson.get_compiler('cpp')
