@@ -241,8 +241,7 @@ class EngeFunction(AbstractQuadFieldSourceFunction):
 class PMQ_Trace3D_Function(AbstractQuadFieldSourceFunction):
     """
     The PMQ Function is a represenatation of the field of permanent quad
-    from Trace3D documantation (p 77):
-    http://laacg.lanl.gov/laacg/services/traceman.pdf
+    from Trace3D documantation (p 77): https://inis.iaea.org/records/7awtr-mr708
     """
 
     def __init__(self, length_param, rad_in, rad_out, cutoff_level=0.01):
