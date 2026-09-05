@@ -175,7 +175,7 @@ def track(lattice: TEAPOT_Lattice, bunch: Bunch, nturns: int) -> dict:
     particles_out = particles_out[:, (0, 1, 2, 3)]
     particles_out *= 1000.0
     return {
-        "particles": particles_out,
+        "particles": particles_out.copy(),
         "history": history,
     }
 
