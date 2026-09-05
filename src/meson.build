@@ -187,7 +187,7 @@ sources = files([
 	'spacecharge/wrap_grid3D.cc',
 	'spacecharge/BaseBoundary2D.cc',
 	'spacecharge/wrap_grid2D.cc',
-	'spacecharge/wrap_spacechargecalc_uniform_ellipse.cc',
+	'spacecharge/wrap_spacechargecalc_unif_ellipse.cc',
 	'spacecharge/wrap_spacechargecalc3d.cc',
 	'spacecharge/UniformEllipsoidFieldCalculator.cc',
 	'spacecharge/wrap_spacechargeforcecalc2p5d.cc',
