@@ -43,7 +43,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--kin-energy", type=float, default=0.0025)
     parser.add_argument("--intensity", type=float, default=3e9)
 
-    parser.add_argument("--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"])
+    parser.add_argument(
+        "--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"]
+    )
     parser.add_argument("--mismatch-x", type=float, default=0.0)
     parser.add_argument("--mismatch-y", type=float, default=0.0)
     parser.add_argument("--tilt", type=float, default=0)
@@ -56,6 +58,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sc", type=int, default=0)
     parser.add_argument("--sc-grid-res", type=int, default=128)
     parser.add_argument("--sc-ellipse-n", type=int, default=1)
+
+    parser.add_argument("--plot-bins", type=int, default=64)
+    parser.add_argument("--plot-mask", action="store_true")
     return parser.parse_args()
 
 
@@ -119,8 +124,8 @@ def make_bunch(args: argparse.Namespace) -> Bunch:
     matrix = build_rotation_matrix_xy(math.radians(args.tilt))
     particles[:, :4] = particles[:, :4] @ matrix.T
 
-    particles[:, 0] *= (1.0 + args.mismatch_x)
-    particles[:, 2] *= (1.0 + args.mismatch_y)
+    particles[:, 0] *= 1.0 + args.mismatch_x
+    particles[:, 2] *= 1.0 + args.mismatch_y
 
     for i in range(args.nparts):
         bunch.addParticle(*particles[i])
@@ -146,19 +151,25 @@ def track(lattice: TEAPOT_Lattice, bunch: Bunch, nturns: int) -> dict:
     bunch_out = Bunch()
     bunch.copyBunchTo(bunch_out)
 
-    history = {"xrms": [], "yrms": []}
+    history = {"rms_x": [], "rms_y": [], "eps_x": [], "eps_y": []}
     for turn in range(nturns):
         if turn > 0:
             lattice.trackBunch(bunch_out)
 
-        cov_matrix = get_bunch_cov(bunch_out)
-        xrms = 1000.0 * math.sqrt(cov_matrix[0, 0])
-        yrms = 1000.0 * math.sqrt(cov_matrix[2, 2])
+        cov_matrix = 1e6 * get_bunch_cov(bunch_out)
+        x_rms = math.sqrt(cov_matrix[0, 0])
+        y_rms = math.sqrt(cov_matrix[2, 2])
+        eps_x = np.sqrt(np.linalg.det(cov_matrix[0:2, 0:2]))
+        eps_y = np.sqrt(np.linalg.det(cov_matrix[2:4, 2:4]))
 
-        history["xrms"].append(xrms)
-        history["yrms"].append(yrms)
+        history["rms_x"].append(x_rms)
+        history["rms_y"].append(y_rms)
+        history["eps_x"].append(eps_x)
+        history["eps_y"].append(eps_y)
 
-        print(f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f}")
+        print(
+            f"turn={turn} xrms={x_rms:0.3f} yrms={y_rms:0.3f} epsx={eps_x:0.3f} epsy={eps_y:0.3f}"
+        )
 
     particles_out = collect_bunch(bunch_out)["coords"]
     particles_out = particles_out[:, (0, 1, 2, 3)]
@@ -200,7 +211,6 @@ def main(args: argparse.Namespace) -> None:
     print("TRACK SCUnifEllipse2D")
     results["SCUnifEllipse"] = track(lattice, bunch, nturns=args.nturns)
 
-
     # Analysis
     # ------------------------------------------------------------------------------
 
@@ -211,13 +221,15 @@ def main(args: argparse.Namespace) -> None:
 
     # Print errors
     for key in results["SCUnifEllipse"]["history"]:
-        deltas = results["SCUnifEllipse"]["history"][key] - results["SC2p5D"]["history"][key]
+        deltas = (
+            results["SCUnifEllipse"]["history"][key] - results["SC2p5D"]["history"][key]
+        )
         print("key:", key)
         print("max_abs_delta:", np.max(np.abs(deltas)))
         print("avg_abs_delta:", np.mean(np.abs(deltas)))
 
-    # Plot rms bunch sizes
-    for key in ["xrms", "yrms"]:
+    # Plot rms size and emittance
+    for key in ["eps_x", "eps_y", "rms_x", "rms_y"]:
         fig, ax = plt.subplots(figsize=(5, 3))
         for i, model in enumerate(["SC2p5D", "SCUnifEllipse"]):
             plot_kws = {}
@@ -226,7 +238,7 @@ def main(args: argparse.Namespace) -> None:
             ax.plot(results[model]["history"][key], marker=".", label=model, **plot_kws)
         ax.set_ylim(0.0, ax.get_ylim()[1] * 2.0)
         ax.set_xlabel("Turn")
-        ax.set_ylabel("RMS [mm]")
+        ax.set_ylabel(key)
         ax.legend(loc="upper right")
         plt.savefig(os.path.join(output_dir, f"fig_{key}"))
         plt.close()
@@ -235,29 +247,27 @@ def main(args: argparse.Namespace) -> None:
     particles = results["SC2p5D"]["particles"]
     xmax = 4.0 * np.std(particles, axis=0)
     limits = list(zip(-xmax, xmax))
+    dims = ["x", "xp", "y", "yp"]
     labels = ["x [mm]", "xp [mrad]", "y [mm]", "yp [mrad]"]
 
-    # Plot x-x'
-    fig, axs = plt.subplots(figsize=(6, 3), ncols=2, sharex=True, sharey=True)
-    for ax, model in zip(axs, results):
-        particles = results[model]["particles"]
-        ax.hist2d(particles[:, 0], particles[:, 1], bins=64, range=[limits[0], limits[1]])
-        ax.set_xlabel(labels[0])
-        ax.set_ylabel(labels[1])
-        ax.set_title(model)
-    plt.savefig(os.path.join(output_dir, "fig_dist_x_xp"))
-    plt.close()
-
-    # Plot y-y'
-    fig, axs = plt.subplots(figsize=(6, 3), ncols=2, sharex=True, sharey=True)
-    for ax, model in zip(axs, results):
-        particles = results[model]["particles"]
-        ax.hist2d(particles[:, 2], particles[:, 3], bins=64, range=[limits[2], limits[3]])
-        ax.set_xlabel(labels[2])
-        ax.set_ylabel(labels[3])
-        ax.set_title(model)
-    plt.savefig(os.path.join(output_dir, "fig_dist_y_yp"))
-    plt.close()
+    # Plot x-x', y-y', x-y
+    for axis in [(0, 1), (2, 3), (0, 2)]:
+        fig, axs = plt.subplots(figsize=(6, 3), ncols=2, sharex=True, sharey=True)
+        for ax, model in zip(axs, results):
+            particles = results[model]["particles"]
+            values, edges = np.histogramdd(
+                particles[:, axis], bins=args.plot_bins, range=[limits[k] for k in axis]
+            )
+            if args.plot_mask:
+                values = np.ma.masked_equal(values, 0.0)
+            ax.pcolormesh(edges[0], edges[1], values.T)
+            ax.set_xlabel(labels[axis[0]])
+            ax.set_ylabel(labels[axis[1]])
+            ax.set_title(model)
+        plt.savefig(
+            os.path.join(output_dir, f"fig_dist_{dims[axis[0]]}_{dims[axis[1]]}")
+        )
+        plt.close()
 
     # Plot corner
     for model in results:
@@ -265,8 +275,9 @@ def main(args: argparse.Namespace) -> None:
         fig, axs = plot_corner(
             particles,
             limits=limits,
-            bins=64,
+            bins=args.plot_bins,
             labels=labels,
+            mask=args.plot_mask,
         )
         plt.savefig(os.path.join(output_dir, f"fig_dist_corner_{model}"))
         plt.close()

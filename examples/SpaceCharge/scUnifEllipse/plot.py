@@ -1,6 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import matplotlib.colors as mcolors
+
+
+def trunc_cmap(cmap_name: str, vmin: float = 0.0, vmax: float = 1.0, n: int = 100):
+    cmap = plt.get_cmap(cmap_name)
+    new_cmap = mcolors.LinearSegmentedColormap.from_list(
+        f"trunc({cmap.name},{vmin:.2f},{vmax:.2f})", cmap(np.linspace(vmin, vmax, n))
+    )
+    return new_cmap
 
 
 def calc_rms_ellipse_params(cov_matrix: np.ndarray) -> tuple[float, float, float]:
@@ -64,7 +73,7 @@ def plot_corner(
     limits: list[tuple[float, float]] = None,
     bins: int = 64,
     labels: list[str] = None,
-    blur: float = None,
+    mask: bool = False,
 ) -> tuple:
     """Generate corner plot."""
     ndim = particles.shape[1]
@@ -88,8 +97,8 @@ def plot_corner(
                 values, edges = np.histogramdd(
                     particles[:, axis], bins=bins, range=[limits[k] for k in axis]
                 )
-                if blur:
-                    values = scipy.ndimage.gaussian_filter(values, sigma=blur)
+                if mask:
+                    values = np.ma.masked_less_equal(values, 0.0)
                 ax.pcolormesh(
                     edges[0],
                     edges[1],
@@ -102,8 +111,6 @@ def plot_corner(
                 values, edges = np.histogram(
                     particles[:, i], bins=bins, range=limits[i]
                 )
-                if blur:
-                    values = scipy.ndimage.gaussian_filter(values, sigma=blur)
                 ax.stairs(values, edges, lw=1.5, color="black")
             else:
                 ax.axis("off")

@@ -1,6 +1,6 @@
 axes.linewidth: 1.25
 axes.titlesize: "medium"
-image.cmap: "Greys"
+image.cmap: "viridis"
 figure.constrained_layout.use: True
 savefig.dpi: 300
 savefig.format: "png"
