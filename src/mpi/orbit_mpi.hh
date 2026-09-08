@@ -1,4 +1,4 @@
-#include "Python.h"
+#include <Python.h>
 
 #ifndef ORBIT_MPI_INCLUDE
 #define ORBIT_MPI_INCLUDE
@@ -8,7 +8,7 @@
 #endif
 
 #if USE_MPI > 0
-  #include "mpi.h"
+  #include <mpi.h>
   #define ORBIT_MPI_IN_PLACE MPI_IN_PLACE
 #else
 //---------------------------------------------------------------
