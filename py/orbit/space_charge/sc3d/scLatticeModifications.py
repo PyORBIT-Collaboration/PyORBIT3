@@ -3,7 +3,7 @@ Module. Includes functions that will modify the accelerator lattice by inserting
 """
 
 # import SC acc. nodes
-from orbit.space_charge.sc3d import SC3D_AccNode, SC_UniformEllipses_AccNode
+from orbit.space_charge.sc3d import SC3D_AccNode, SCUnifEllipse_AccNode
 
 # import general accelerator elements and lattice
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
@@ -27,16 +27,16 @@ def setSC3DAccNodes(lattice, sc_path_length_min, space_charge_calculator):
     return scNodes_arr
 
 
-def setUniformEllipsesSCAccNodes(lattice, sc_path_length_min, space_charge_calculator):
+def setSCUnifEllipseAccNodes(lattice, sc_path_length_min, space_charge_calculator):
     """
-    It will put a set of a space charge SC_UniformEllipses_AccNode into the lattice as child nodes of the first level accelerator nodes.
+    It will put a set of SCUnifEllipse_AccNode nodes into the lattice as child nodes of the first level accelerator nodes.
     The SC nodes will be inserted at the beginning of a particular part of the first level AccNode element.
     The distance between SC nodes should be more than sc_path_length_min.
     The function will return the array of SC nodes as a convenience for the user.
     """
-    scNodes_arr = setSC_General_AccNodes(lattice, sc_path_length_min, space_charge_calculator, SC_UniformEllipses_AccNode)
+    scNodes_arr = setSC_General_AccNodes(lattice, sc_path_length_min, space_charge_calculator, SCUnifEllipse_AccNode)
     for scNode in scNodes_arr:
-        scNode.setName(scNode.getName() + "UnifEllsSC")
+        scNode.setName(scNode.getName() + "SCUnifEllipse")
     # initialize the lattice
     lattice.initialize()
     return scNodes_arr
