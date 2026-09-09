@@ -220,5 +220,3 @@ def test_uniform_ellipse_2d_matches_grid_solver_for_kv_beam():
         f"rms: {grid_rms} vs. {ellipse_rms}, "
         f"distribution difference: {distribution_difference}"
     )
-
-test_uniform_ellipse_2d_matches_grid_solver_for_kv_beam()
