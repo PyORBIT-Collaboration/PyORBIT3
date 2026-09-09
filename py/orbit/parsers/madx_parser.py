@@ -365,8 +365,8 @@ class MADX_Parser:
         fileName = os.path.basename(MADXfileName)
 
         self.collect_madx_lines(fileName, self.madxFilePath)
-        # Most recent placed occurrence by name, used to resolve from= references.
-        sequenceElemDict = {}
+
+        sequence_elem_dict = {}
 
         for str_local in self._madxLines:
             loc_flag_elem = True
@@ -445,10 +445,9 @@ class MADX_Parser:
                     aux = [x.split("at=")[-1] for x in tmp if "at=" in x]
                     position = eval(aux[0])
 
-                # Each MAD-X sequence occurrence has its own position and may
-                # override parameters without changing the element definition.
                 if sequence_elem is None:
                     sequence_elem = copy.deepcopy(self._accElemDict[elem_name])
+
                 latt_elem = sequence_elem
                 # he have the element, let's replace variables in parameters by numerical values here
                 latt_elem = self.recalculateParameters(latt_elem, localValDict)
@@ -461,11 +460,11 @@ class MADX_Parser:
 
                 if "from" in list(latt_elem.getParameters().keys()):
                     refer_elem_name = latt_elem.getParameter("from")
-                    refer_elem = sequenceElemDict[refer_elem_name]
+                    refer_elem = sequence_elem_dict[refer_elem_name]
                     position += refer_elem.getParameter("position")
 
                 latt_elem.addParameter("position", position)
-                sequenceElemDict[elem_name] = latt_elem
+                sequence_elem_dict[elem_name] = latt_elem
                 if latt_elem.hasParameter("apertype"):
                     latt_aper_entry = self.makeAperture(latt_elem)
                     latt_aper_entry.addParameter("position", position - length / 2.0)
