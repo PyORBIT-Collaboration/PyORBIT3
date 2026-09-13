@@ -1,4 +1,4 @@
-#include "wrap_aperture.hh"
+#include "orbit/Apertures/wrap_aperture.hh"
 PyMODINIT_FUNC PyInit_aperture(void) {
     return wrap_aperture::initaperture();
 }

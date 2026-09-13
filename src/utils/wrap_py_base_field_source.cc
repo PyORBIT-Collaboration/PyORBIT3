@@ -1,12 +1,12 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_utils.hh"
-#include "wrap_py_base_field_source.hh"
+#include "utils/wrap_utils.hh"
+#include "utils/wrap_py_base_field_source.hh"
 
 #include <iostream>
 
-#include "PyBaseFieldSource.hh"
+#include "utils/PyBaseFieldSource.hh"
 
 using namespace OrbitUtils;
 using namespace wrap_orbit_utils;
@@ -37,6 +37,7 @@ extern "C" {
   //this is implementation of the __init__ method
   static int PyBaseFieldSource_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
 		self->cpp_obj = new PyBaseFieldSource((PyObject*) self);
+		pyorbit::registerPyWrapper(self->cpp_obj, (PyObject*) self);
     return 0;
   }
 
@@ -45,6 +46,7 @@ extern "C" {
   //-----------------------------------------------------
   static void PyBaseFieldSource_del(pyORBIT_Object* self){
 		//std::cerr<<"The PyBaseFieldSource __del__ has been called!"<<std::endl;
+		pyorbit::unregisterPyWrapper(self->cpp_obj, (PyObject*) self);
 		delete ((PyBaseFieldSource*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }

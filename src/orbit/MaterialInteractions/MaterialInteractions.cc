@@ -13,10 +13,10 @@
 //    A class for storing hadron material interaction methods.
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "MaterialInteractions.hh"
-#include "OrbitConst.hh"
-#include "Random.hh"
-#include "bessel.hh"
+#include "orbit/MaterialInteractions/MaterialInteractions.hh"
+#include "orbit/OrbitConst.hh"
+#include "utils/Random.hh"
+#include "utils/bessel.hh"
 
 #include <iostream>
 #include <cmath>
@@ -338,7 +338,7 @@ double MaterialInteractions::elastic_t(double p, double a)
 		theta+=1.768e-3;
 	}
 
-	if(found==0) cout<<"Warning, never found elastic t.\n";
+	if(found==0) std::cout<<"Warning, never found elastic t.\n";
 	t=2.*p_cm*p_cm*(1. - cos(angle_cm));
 	return t;
 }

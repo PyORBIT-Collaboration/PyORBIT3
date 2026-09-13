@@ -1,15 +1,15 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_utils.hh"
-#include "wrap_matrix.hh"
-#include "wrap_bunch.hh"
+#include "utils/wrap_utils.hh"
+#include "utils/matrix/wrap_matrix.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "Matrix.hh"
-#include "PhaseVector.hh"
-#include "MatrixOperations.hh"
+#include "utils/matrix/Matrix.hh"
+#include "utils/matrix/PhaseVector.hh"
+#include "utils/matrix/MatrixOperations.hh"
 
 using namespace OrbitUtils;
 using namespace wrap_orbit_utils;
@@ -51,7 +51,7 @@ extern "C" {
 			Matrix* mtrx = (Matrix*)(((pyORBIT_Object*) pyIn)->cpp_obj);
 			self->cpp_obj = new Matrix(mtrx->rows(),mtrx->columns());
 			mtrx->copyTo((Matrix*) self->cpp_obj);
-			((Matrix*) self->cpp_obj)->setPyWrapper((PyObject*) self);
+			pyorbit::registerPyWrapper(self->cpp_obj, (PyObject*) self);
 			return 0;
     }
 		if(nArgs == 2){
@@ -60,7 +60,7 @@ extern "C" {
 				error("PyMatrix - Matrix(n,m) - a maririx size is needed.");
 			}
 			self->cpp_obj = new Matrix(n,m);
-			((Matrix*) self->cpp_obj)->setPyWrapper((PyObject*) self);
+			pyorbit::registerPyWrapper(self->cpp_obj, (PyObject*) self);
 		}
     return 0;
   }
@@ -68,8 +68,9 @@ extern "C" {
   //-----------------------------------------------------
   //destructor for python Matrix class (__del__ method).
   //-----------------------------------------------------
-  static void Matrix_del(pyORBIT_Object* self){
+	static void Matrix_del(pyORBIT_Object* self){
 		//std::cerr<<"The Matrix __del__ has been called!"<<std::endl;
+		pyorbit::unregisterPyWrapper(self->cpp_obj, (PyObject*) self);
 		delete ((Matrix*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }

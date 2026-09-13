@@ -29,14 +29,15 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 #include <cfloat>
+#include <cmath>
 
-#include "orbit_mpi.hh"
-#include "HarmonicData.hh"
-#include "OrbitConst.hh"
+#include "mpi/orbit_mpi.hh"
+#include "utils/harmonic_analysis/HarmonicData.hh"
+#include "orbit/OrbitConst.hh"
 
 using namespace OrbitUtils;
 
-HarmonicData::HarmonicData(int order_in, Function* inFunc): CppPyWrapper(NULL)
+HarmonicData::HarmonicData(int order_in, Function* inFunc)
 {
 	this->init(order_in,inFunc);
 }

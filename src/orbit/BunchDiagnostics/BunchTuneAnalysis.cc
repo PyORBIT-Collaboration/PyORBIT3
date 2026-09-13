@@ -1,6 +1,6 @@
-#include "BunchTuneAnalysis.hh"
-#include "SyncPart.hh"
-#include "OrbitConst.hh"
+#include "orbit/BunchDiagnostics/BunchTuneAnalysis.hh"
+#include "orbit/SyncPart.hh"
+#include "orbit/OrbitConst.hh"
 
 #include <iostream>
 #include <cmath>
@@ -8,7 +8,7 @@
 #include <cstdlib>
 
 
-BunchTuneAnalysis::BunchTuneAnalysis(): CppPyWrapper(NULL) {
+BunchTuneAnalysis::BunchTuneAnalysis() {
     double matrix[6][6] = {
         {1.0, 0.0, 0.0, 0.0, 0.0, 0.0},
         {0.0, 1.0, 0.0, 0.0, 0.0, 0.0},
@@ -77,7 +77,7 @@ void BunchTuneAnalysis::analyzeBunch(Bunch* bunch){
 	double** part_coord_arr = bunch->coordArr();
 
 	if(!bunch->hasParticleAttributes("ParticlePhaseAttributes")){
-		cerr<<"BunchTuneAnalysis: Adding particle phase information attribute.\n";
+		std::cerr<<"BunchTuneAnalysis: Adding particle phase information attribute.\n";
 		std::map<std::string, double> tunemap;
 		tunemap.insert(std::make_pair("phase_1", 0));
 		tunemap.insert(std::make_pair("phase_2", 0));
@@ -89,7 +89,7 @@ void BunchTuneAnalysis::analyzeBunch(Bunch* bunch){
 	}
 
     if (bunch->hasParticleAttributes("ParticlePhaseAttributes") && erase == 1) {
-		cerr<<"BunchTuneAnalysis: Normalization matrix has been updated. Setting particle phases to zero. Tunes will be accurate after the next `analyzeBunch` call.\n";
+		std::cerr<<"BunchTuneAnalysis: Normalization matrix has been updated. Setting particle phases to zero. Tunes will be accurate after the next `analyzeBunch` call.\n";
         for (int i=0; i < bunch->getSize(); i++) {
             bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 0) = 0.0;
             bunch->getParticleAttributes("ParticlePhaseAttributes")->attValue(i, 1) = 0.0;

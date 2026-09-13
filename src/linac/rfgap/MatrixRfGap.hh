@@ -8,25 +8,22 @@ For this RF gap we know the E0TL, frequency, and phase only.
 #define MATRIX_RF_GAP_H
 
 //MPI Function Wrappers
-#include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
+#include "mpi/orbit_mpi.hh"
 
 #include <cstdlib>
 #include <cmath>
 
 //ORBIT bunch
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 
 //pyORBIT utils
-#include "CppPyWrapper.hh"
 
-using namespace std;
 
 /**
   This class represents a RF gap as transport matrix. No nonlinear effects.
 */
 
-class MatrixRfGap: public OrbitUtils::CppPyWrapper
+class MatrixRfGap
 {
 public:
 

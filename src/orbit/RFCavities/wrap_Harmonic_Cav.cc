@@ -1,12 +1,12 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_Harmonic_Cav.hh"
-#include "wrap_bunch.hh"
+#include "orbit/RFCavities/wrap_Harmonic_Cav.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "Harmonic_Cav.hh"
+#include "orbit/RFCavities/Harmonic_Cav.hh"
 
 using namespace OrbitUtils;
 
@@ -66,7 +66,6 @@ static int Harmonic_Cav_init(pyORBIT_Object *self,
                                    RFHNum,
                                    RFVoltage,
                                    RFPhase);
-  ((Harmonic_Cav*) self->cpp_obj)->setPyWrapper((PyObject*) self);
   return 0;
 }
 

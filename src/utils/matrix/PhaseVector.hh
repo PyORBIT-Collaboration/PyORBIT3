@@ -17,13 +17,11 @@
 #ifndef PHASE_VECTOR_H
 #define PHASE_VECTOR_H
 
-#include "CppPyWrapper.hh"
-
 namespace OrbitUtils{
 
 	/** A double values vector. */
 
-	class PhaseVector : public CppPyWrapper
+	class PhaseVector
 	{
 		public:
 

@@ -15,14 +15,14 @@
 //    It is using linear interpolation.
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "orbit_mpi.hh"
-#include "OU_Function.hh"
+#include "mpi/orbit_mpi.hh"
+#include "utils/OU_Function.hh"
 
 #include <iomanip>
 
 using namespace OrbitUtils;
 
-Function::Function(): CppPyWrapper(NULL)
+Function::Function()
 {
 	x_arr = NULL;
 	y_arr = NULL;
@@ -641,7 +641,7 @@ void Function::findMinMaxXY(){
 }
 
 
-void Function::print(ostream& Out)
+void Function::print(std::ostream& Out)
 {
   if(rank_MPI == 0){
 		Out<<std::setprecision(15)<< std::setiosflags(std::ios::scientific);
@@ -667,8 +667,8 @@ void Function::print(ostream& Out)
 
 void Function::print(const char* fileName)
 {
-  ofstream F_dump;
-  if(rank_MPI == 0)F_dump.open (fileName, ios::out);
+  std::ofstream F_dump;
+  if(rank_MPI == 0)F_dump.open (fileName, std::ios::out);
   print(F_dump);
   if(rank_MPI == 0){F_dump.close();}
   return;

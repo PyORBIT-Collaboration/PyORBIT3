@@ -5,8 +5,8 @@
 	 The class can represent several RF gaps.
 */
 
-#include "OrbitConst.hh"
-#include "SuperFishFieldSource.hh"
+#include "orbit/OrbitConst.hh"
+#include "linac/rfgap/SuperFishFieldSource.hh"
 
 #include <iostream>
 #include <cmath>
@@ -24,9 +24,12 @@ SuperFishFieldSource::SuperFishFieldSource(): BaseFieldSource()
   amplitude = 0.;
   time_init = 0.;
 	field_center_pos = 0.;
-	grid2D_Ez = new Grid2D(3,3);
-	grid2D_Er = new Grid2D(3,3);
-	grid2D_H  = new Grid2D(3,3);
+	ownedGrid2D_Ez.reset(new Grid2D(3,3));
+	ownedGrid2D_Er.reset(new Grid2D(3,3));
+	ownedGrid2D_H.reset(new Grid2D(3,3));
+	grid2D_Ez = ownedGrid2D_Ez.get();
+	grid2D_Er = ownedGrid2D_Er.get();
+	grid2D_H  = ownedGrid2D_H.get();
 
 	avg_ez_field = 0.;
 
@@ -35,36 +38,15 @@ SuperFishFieldSource::SuperFishFieldSource(): BaseFieldSource()
 // Destructor
 SuperFishFieldSource::~SuperFishFieldSource()
 {
-	deleteGrids();
-}
-
-/** Delete all Grid2D grids. */
-void SuperFishFieldSource::deleteGrids()
-{
-	if(grid2D_Ez->getPyWrapper() != NULL){
-		Py_XDECREF(grid2D_Ez->getPyWrapper());
-	} else {
-		delete grid2D_Ez;
-	}
-
-	if(grid2D_Er->getPyWrapper() != NULL){
-		Py_XDECREF(grid2D_Er->getPyWrapper());
-	} else {
-		delete grid2D_Er;
-	}
-
-	if(grid2D_H->getPyWrapper() != NULL){
-		Py_XDECREF(grid2D_H->getPyWrapper());
-	} else {
-		delete grid2D_H;
-	}
 }
 
 
 /** Sets the Ez, Er, and H fields. */
 void SuperFishFieldSource::setGrid2D_Fields(Grid2D* grid2D_Ez_in,Grid2D* grid2D_Er_in,Grid2D* grid2D_H_in)
 {
-	deleteGrids();
+	ownedGrid2D_Ez.reset();
+	ownedGrid2D_Er.reset();
+	ownedGrid2D_H.reset();
 	grid2D_Ez = grid2D_Ez_in;
 	grid2D_Er = grid2D_Er_in;
 	grid2D_H  = grid2D_H_in;

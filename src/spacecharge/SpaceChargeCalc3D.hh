@@ -10,25 +10,23 @@
 #define SC_SPACECHARGE_CALC_3D_H
 
 //MPI Function Wrappers
-#include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
+#include "mpi/orbit_mpi.hh"
 
 #include <cstdlib>
 #include <cmath>
+#include <memory>
 
 //ORBIT bunch
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 
 //pyORBIT utils
-#include "CppPyWrapper.hh"
-#include "BunchExtremaCalculator.hh"
+#include "utils/bunch/BunchExtremaCalculator.hh"
 
-#include "Grid3D.hh"
-#include "PoissonSolverFFT3D.hh"
+#include "spacecharge/Grid3D.hh"
+#include "spacecharge/PoissonSolverFFT3D.hh"
 
-using namespace std;
 
-class SpaceChargeCalc3D: public OrbitUtils::CppPyWrapper
+class SpaceChargeCalc3D
 {
 public:
 
@@ -75,8 +73,8 @@ private:
 
 protected:
 	PoissonSolverFFT3D* poissonSolver;
-	Grid3D* rhoGrid;
-	Grid3D* phiGrid;
+	std::unique_ptr<Grid3D> rhoGrid;
+	std::unique_ptr<Grid3D> phiGrid;
 	OrbitUtils::BunchExtremaCalculator* bunchExtremaCalc;
 
 	double xy_ratio;

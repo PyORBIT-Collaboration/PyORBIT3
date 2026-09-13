@@ -31,7 +31,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 #include <string>
-#include "ParticleAttributes.hh"
+#include "orbit/ParticlesAttributes/ParticleAttributes.hh"
 
 class ParticleInitialCoordinates : public ParticleAttributes
 {

@@ -23,7 +23,7 @@
 #ifndef CURRENT_LOOP_FIELD_SOURCE_H
 #define CURRENT_LOOP_FIELD_SOURCE_H
 
-#include "ShiftedFieldSource.hh"
+#include "utils/field_sources/ShiftedFieldSource.hh"
 
 namespace OrbitUtils{
 

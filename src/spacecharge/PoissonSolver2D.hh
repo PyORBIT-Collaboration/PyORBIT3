@@ -4,26 +4,21 @@
 #define SC_POISSON_SOLVER_BASE_2D_H
 
 //MPI Function Wrappers
-#include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
+#include "mpi/orbit_mpi.hh"
 
 #include <cstdlib>
 #include <cmath>
 #include <string>
 
-//pyORBIT utils
-#include "CppPyWrapper.hh"
+#include "spacecharge/Grid2D.hh"
 
-#include "Grid2D.hh"
-
-using namespace std;
 
 /**
   The PoissonSolver2D class calculates electrostatic
   potential of a 2D charge distribution.
 */
 
-class PoissonSolver2D: public OrbitUtils::CppPyWrapper
+class PoissonSolver2D
 {
 public:
 

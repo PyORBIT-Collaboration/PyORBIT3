@@ -20,19 +20,19 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "orbit_mpi.hh"
-#include "BufferStore.hh"
+#include "mpi/orbit_mpi.hh"
+#include "utils/BufferStore.hh"
 
 #include <cstdlib>
 #include <iostream>
 #include <math.h>
 #include <float.h>
 
-#include "ShiftedFieldSource.hh"
-#include "LoopFieldSource.hh"
-#include "elliptint.hh"
+#include "utils/field_sources/ShiftedFieldSource.hh"
+#include "utils/field_sources/LoopFieldSource.hh"
+#include "utils/ellipticalint/elliptint.hh"
 
-#include "OrbitConst.hh"
+#include "orbit/OrbitConst.hh"
 
 using namespace OrbitUtils;
 

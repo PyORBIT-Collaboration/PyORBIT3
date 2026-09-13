@@ -8,13 +8,13 @@
 #ifndef SUPER_FISH_RF_FIELD_SOURCE_H
 #define SUPER_FISH_RF_FIELD_SOURCE_H
 
-#include "BaseFieldSource.hh"
-#include "Grid2D.hh"
+#include "utils/BaseFieldSource.hh"
+#include "spacecharge/Grid2D.hh"
 
 #include <cstdlib>
 #include <cmath>
+#include <memory>
 
-using namespace std;
 
 class SuperFishFieldSource: public OrbitUtils::BaseFieldSource
 {
@@ -93,13 +93,13 @@ public:
 	/** Returns the Grid2D instance with H field. */
 	Grid2D* getGrid2D_H();
 
-	/** Sets the Ez, Er, and H fields. */
+	/** Sets borrowed Ez, Er, and H fields. The caller retains ownership. */
 	void setGrid2D_Fields(Grid2D* grid2D_Ez_in,Grid2D* grid2D_Er_in,Grid2D* grid2D_H_in);
 
   private:
-
-		/** Delete all Grid2D grids. */
-		void deleteGrids();
+		std::unique_ptr<Grid2D> ownedGrid2D_Ez;
+		std::unique_ptr<Grid2D> ownedGrid2D_Er;
+		std::unique_ptr<Grid2D> ownedGrid2D_H;
 
 		//grids 2D for Ez, Er, and H
 		Grid2D* grid2D_Ez;

@@ -1,16 +1,12 @@
 #ifndef UNIFORM_SC_ELLIPSOID_HH
 #define UNIFORM_SC_ELLIPSOID_HH
 
-//pyORBIT utils
-#include "CppPyWrapper.hh"
-
 //Function from OrbitUtils
-#include "OU_Function.hh"
+#include "utils/OU_Function.hh"
 
 #include <cstdlib>
 #include <cmath>
 
-using namespace std;
 
 /**
   This class calculates the field of uniformly charged ellipsoid by using
@@ -18,7 +14,7 @@ using namespace std;
 */
 
 
-class UniformEllipsoidFieldCalculator: public OrbitUtils::CppPyWrapper
+class UniformEllipsoidFieldCalculator
 {
   public:
 

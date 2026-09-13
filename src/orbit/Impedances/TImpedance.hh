@@ -4,27 +4,25 @@
 #define TIMPEDANCE_H
 
 //MPI Function Wrappers
-#include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
+#include "mpi/orbit_mpi.hh"
 
 #include <cstdlib>
 #include <cmath>
+#include <memory>
 #include <complex>
 
 //ORBIT bunch
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 
 //pyORBIT utils
-#include "CppPyWrapper.hh"
-#include "BunchExtremaCalculator.hh"
-#include "Grid1D.hh"
+#include "utils/bunch/BunchExtremaCalculator.hh"
+#include "spacecharge/Grid1D.hh"
 
 //FFTW library header
 #include "fftw3.h"
 
-using namespace std;
 
-class TImpedance: public OrbitUtils::CppPyWrapper
+class TImpedance
 {
 public:
 
@@ -82,7 +80,7 @@ public:
   double _betaY;
   double _charge2TKick;
   int _Turns;
-  Grid1D* zGrid;
+  std::unique_ptr<Grid1D> zGrid;
   OrbitUtils::BunchExtremaCalculator* bunchExtremaCalc;
 
   double* _xCentroid;

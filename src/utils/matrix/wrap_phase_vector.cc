@@ -1,14 +1,14 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_utils.hh"
-#include "wrap_phase_vector.hh"
+#include "utils/wrap_utils.hh"
+#include "utils/matrix/wrap_phase_vector.hh"
 
 #include <iostream>
 
-#include "PhaseVector.hh"
-#include "Matrix.hh"
-#include "MatrixOperations.hh"
+#include "utils/matrix/PhaseVector.hh"
+#include "utils/matrix/Matrix.hh"
+#include "utils/matrix/MatrixOperations.hh"
 
 using namespace OrbitUtils;
 using namespace wrap_orbit_utils;
@@ -48,7 +48,6 @@ extern "C" {
 				error("PyPhaseVector - __init__(size) - input parameter is needed.");
 			}
 			self->cpp_obj = new PhaseVector(size);
-			((PhaseVector*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 			return 0;
 		}
 		PyObject* pyORBIT_PhaseVector_Type = getOrbitUtilsType("PhaseVector");
@@ -58,7 +57,6 @@ extern "C" {
 		PhaseVector* v = (PhaseVector*)(((pyORBIT_Object*) pyIn)->cpp_obj);
 		self->cpp_obj = new PhaseVector(v->size());
 		v->copyTo((PhaseVector*) self->cpp_obj);
-		((PhaseVector*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
 

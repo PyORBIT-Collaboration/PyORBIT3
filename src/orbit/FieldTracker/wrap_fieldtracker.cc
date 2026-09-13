@@ -1,13 +1,13 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
-#include "wrap_fieldtracker.hh"
-#include "wrap_bunch.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
+#include "orbit/FieldTracker/wrap_fieldtracker.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "FieldTracker.hh"
+#include "orbit/FieldTracker/FieldTracker.hh"
 
-#include "wrap_fieldtracker.hh"
+#include "orbit/FieldTracker/wrap_fieldtracker.hh"
 
 namespace wrap_fieldtracker{
 
@@ -68,7 +68,6 @@ namespace wrap_fieldtracker{
           	       ax, ay, ex,  epx, l, zi,  zf, ds,  niters, resid,
           	       xrefi, yrefi, eulerai, eulerbi, eulergi, cpp_bunch, filename_str);
 
-            ((FieldTracker*) self->cpp_obj)->setPyWrapper((PyObject*) self);
             return 0;
         }
 

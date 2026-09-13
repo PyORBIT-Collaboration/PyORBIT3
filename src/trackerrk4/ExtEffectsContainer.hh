@@ -1,11 +1,7 @@
 #ifndef EXTEFFECTSCONTAINER_HH_
 #define EXTEFFECTSCONTAINER_HH_
 
-
-
-#include "Python.h"
-
-#include "ExternalEffects.hh"
+#include "trackerrk4/ExternalEffects.hh"
 #include <vector>
 
 
@@ -25,7 +21,7 @@ using namespace OrbitUtils;
 		/** Destructor. */
 		~ExtEffectsContainer();
 
-		/** Adds the instance of the  ExternalEffects class to the container. */
+		/** Adds a non-owning external-effects reference to the container. */
 		void AddEffect(ExternalEffects* eff);
 
 		/** It initializes effects. */
@@ -52,11 +48,11 @@ using namespace OrbitUtils;
 
 		private:
 
-			vector<ExternalEffects*>	ref;
-			vector<ExternalEffects*>	ref_setup;
-			vector<ExternalEffects*>	ref_prepare;
-			vector<ExternalEffects*>	ref_apply;
-			vector<ExternalEffects*>	ref_finalize;
+			std::vector<ExternalEffects*>	ref;
+			std::vector<ExternalEffects*>	ref_setup;
+			std::vector<ExternalEffects*>	ref_prepare;
+			std::vector<ExternalEffects*>	ref_apply;
+			std::vector<ExternalEffects*>	ref_finalize;
 
 	};
 

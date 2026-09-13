@@ -1,12 +1,13 @@
-#include "ShapedBoundary2D.hh"
+#include "spacecharge/ShapedBoundary2D.hh"
 
+#include <cmath>
 #include <iostream>
 #include <cfloat>
 
 using namespace OrbitUtils;
 
 /** Constructor */
-ShapedBoundary2D::ShapedBoundary2D(int nPoints, int nModes, string shape, double xDim, double yDim):
+ShapedBoundary2D::ShapedBoundary2D(int nPoints, int nModes, std::string shape, double xDim, double yDim):
            BaseBoundary2D(4*((int)(nPoints/4)),nModes)
 {
 	nPoints = getNumberOfPoints();

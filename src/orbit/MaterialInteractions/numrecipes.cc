@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <cfloat>
-#include "numrecipes.hh"
+#include "orbit/MaterialInteractions/numrecipes.hh"
 
 namespace OrbitUtils{
 

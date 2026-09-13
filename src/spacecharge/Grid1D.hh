@@ -2,22 +2,17 @@
 #define SC_GRID_1D_H
 
 // MPI Function Wrappers
-#include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
+#include "mpi/orbit_mpi.hh"
 
 #include <cstdlib>
 #include <cmath>
 
 // ORBIT bunch
-#include "Bunch.hh"
-
-// pyORBIT utils
-#include "CppPyWrapper.hh"
-
-using namespace std;
+#include "orbit/Bunch.hh"
 
 
-class Grid1D:public OrbitUtils::CppPyWrapper
+
+class Grid1D
 {
 public:
 
@@ -135,7 +130,7 @@ public:
   void calcGradientSmoothed(double z, double& ez);
 
   /** synchronizeMPI */
-  void synchronizeMPI(pyORBIT_MPI_Comm* comm);
+  void synchronizeMPI(MPI_Comm comm);
 
 private:
 

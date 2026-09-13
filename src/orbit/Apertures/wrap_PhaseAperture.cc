@@ -1,12 +1,12 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_aperture.hh"
-#include "wrap_bunch.hh"
+#include "orbit/Apertures/wrap_aperture.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "PhaseAperture.hh"
+#include "orbit/Apertures/PhaseAperture.hh"
 
 namespace wrap_phase_aperture{
 
@@ -35,7 +35,6 @@ extern "C" {
 	  	ORBIT_MPI_Finalize("PhaseAperture class constructor - cannot parse arguments! It should be (frequency)");
 	  }
 	  self->cpp_obj =  new PhaseAperture(frequency);
-	  ((PhaseAperture*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
 

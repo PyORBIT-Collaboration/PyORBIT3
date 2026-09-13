@@ -23,15 +23,15 @@
 //    m[n-2] = (y[n-1] - y[n-2])/(x[n-1]-x[n-2])
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "orbit_mpi.hh"
-#include "OU_SplineCH.hh"
+#include "mpi/orbit_mpi.hh"
+#include "utils/OU_SplineCH.hh"
 
 #include <iomanip>
 
 namespace OrbitUtils{
 
 
-	SplineCH::SplineCH(): CppPyWrapper(NULL)
+	SplineCH::SplineCH()
 	{
 		x_arr = NULL;
 		y_arr = NULL;
@@ -207,7 +207,7 @@ namespace OrbitUtils{
 		return yyp;
 	}
 
-	void SplineCH::print(ostream& Out)
+	void SplineCH::print(std::ostream& Out)
 	{
 		if(rank_MPI == 0){
 		  Out<<std::setprecision(15)<< std::setiosflags(std::ios::scientific);
@@ -228,8 +228,8 @@ namespace OrbitUtils{
 
 	void SplineCH::print(const char* fileName)
 	{
-		ofstream F_dump;
-		if(rank_MPI == 0)F_dump.open (fileName, ios::out);
+		std::ofstream F_dump;
+		if(rank_MPI == 0)F_dump.open (fileName, std::ios::out);
 		print(F_dump);
 		if(rank_MPI == 0){F_dump.close();}
 		return;

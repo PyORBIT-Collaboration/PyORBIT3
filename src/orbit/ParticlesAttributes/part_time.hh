@@ -36,7 +36,7 @@
 //     WaveFunctionAmplitudes
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "ParticleAttributes.hh"
+#include "orbit/ParticlesAttributes/ParticleAttributes.hh"
 
 class part_time : public ParticleAttributes
 {

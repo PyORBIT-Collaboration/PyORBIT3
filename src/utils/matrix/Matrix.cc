@@ -14,15 +14,15 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "orbit_mpi.hh"
-#include "Matrix.hh"
-#include "BufferStore.hh"
+#include "mpi/orbit_mpi.hh"
+#include "utils/matrix/Matrix.hh"
+#include "utils/BufferStore.hh"
 
 #include <cstdlib>
 
 using namespace OrbitUtils;
 
-Matrix::Matrix(int n_in, int m_in): CppPyWrapper(NULL)
+Matrix::Matrix(int n_in, int m_in)
 {
 	n = n_in;
 	m = m_in;
@@ -34,7 +34,7 @@ Matrix::Matrix(int n_in, int m_in): CppPyWrapper(NULL)
 	zero();
 }
 
-Matrix::Matrix(Matrix* mtrx): CppPyWrapper(NULL)
+Matrix::Matrix(Matrix* mtrx)
 {
 	n = mtrx->rows();
 	m = mtrx->columns();

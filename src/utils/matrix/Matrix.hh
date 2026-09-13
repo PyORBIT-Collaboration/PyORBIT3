@@ -17,13 +17,11 @@
 #ifndef PLAIN_MATRIX_H
 #define PLAIN_MATRIX_H
 
-#include "CppPyWrapper.hh"
-
 namespace OrbitUtils{
 
 	/** A class for plain NxM matrices with double values. */
 
-	class Matrix : public CppPyWrapper
+	class Matrix
 	{
 		public:
 

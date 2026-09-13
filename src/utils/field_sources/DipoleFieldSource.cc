@@ -17,16 +17,16 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "orbit_mpi.hh"
-#include "BufferStore.hh"
+#include "mpi/orbit_mpi.hh"
+#include "utils/BufferStore.hh"
 
 #include <cstdlib>
 #include <iostream>
 #include <cmath>
 #include <cfloat>
 
-#include "ShiftedFieldSource.hh"
-#include "DipoleFieldSource.hh"
+#include "utils/field_sources/ShiftedFieldSource.hh"
+#include "utils/field_sources/DipoleFieldSource.hh"
 
 using namespace OrbitUtils;
 

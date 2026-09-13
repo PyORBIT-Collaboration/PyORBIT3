@@ -1,4 +1,4 @@
-#include "wrap_field_sources_module.hh"
+#include "utils/field_sources/wrap_field_sources_module.hh"
 PyMODINIT_FUNC PyInit_field_sources(void) {
     return wrap_field_sources_module::initFieldSourcesModule();
 }

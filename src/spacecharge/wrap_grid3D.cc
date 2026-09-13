@@ -1,13 +1,16 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "mpi/wrap_orbit_mpi_types.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_grid3D.hh"
-#include "wrap_spacecharge.hh"
-#include "wrap_bunch.hh"
+#include "spacecharge/wrap_grid3D.hh"
+#include "spacecharge/wrap_grid.hh"
+#include "spacecharge/wrap_spacecharge.hh"
+#include "orbit/wrap_bunch.hh"
+#include "mpi/wrap_mpi_comm.hh"
 
 #include <iostream>
 
-#include "Grid3D.hh"
+#include "spacecharge/Grid3D.hh"
 
 using namespace OrbitUtils;
 
@@ -25,21 +28,24 @@ extern "C" {
 	//It never will be called directly
 	static PyObject* Grid3D_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	{
-		pyORBIT_Object* self;
-		self = (pyORBIT_Object *) type->tp_alloc(type, 0);
+		pyORBIT_Grid* self;
+		self = (pyORBIT_Grid *) type->tp_alloc(type, 0);
 		self->cpp_obj = NULL;
+		self->owns_cpp = 0;
+		self->owner = NULL;
 		return (PyObject *) self;
 	}
 
   //initializator for python  Grid3D class
   //this is implementation of the __init__ method
-  static int Grid3D_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
+  static int Grid3D_init(pyORBIT_Grid *self, PyObject *args, PyObject *kwds){
    int binX, binY, binZ;
 	 if(!PyArg_ParseTuple(args,"iii:__init__",&binX,&binY,&binZ)){
 				ORBIT_MPI_Finalize("PyGrid3D - Grid3D(nX,nY,nZ) - constructor needs parameters.");
 		}
 		self->cpp_obj = new Grid3D(binX,binY,binZ);
-		((Grid3D*) self->cpp_obj)->setPyWrapper((PyObject*) self);
+		self->owns_cpp = 1;
+		pyorbit::registerPyWrapper(self->cpp_obj, (PyObject*) self);
 		return 0;
   }
 
@@ -195,7 +201,7 @@ extern "C" {
 			if((!PyObject_IsInstance(pyMPIComm,py_mpi_comm_type))){
 				ORBIT_MPI_Finalize("Grid3D.synchronizeMPI(MPI_Comm) - input parameter is not MPI_Comm");
 			}
-			cpp_Grid3D->synchronizeMPI((pyORBIT_MPI_Comm*) pyMPIComm);
+			cpp_Grid3D->synchronizeMPI(((pyORBIT_MPI_Comm*) pyMPIComm)->comm);
 		}
 	 	Py_INCREF(Py_None);
 		return Py_None;
@@ -311,10 +317,13 @@ extern "C" {
   //-----------------------------------------------------
   //destructor for python Grid3D class (__del__ method).
   //-----------------------------------------------------
-  static void Grid3D_del(pyORBIT_Object* self){
+  static void Grid3D_del(pyORBIT_Grid* self){
 		//std::cerr<<"The Grid3D __del__ has been called!"<<std::endl;
 		Grid3D* cpp_Grid3D = (Grid3D*) self->cpp_obj;
-		delete cpp_Grid3D;
+		pyorbit::unregisterPyWrapper(cpp_Grid3D, (PyObject*) self);
+		if(self->owns_cpp) delete cpp_Grid3D;
+		self->cpp_obj = NULL;
+		Py_CLEAR(self->owner);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 
@@ -358,7 +367,7 @@ extern "C" {
 	static PyTypeObject pyORBIT_Grid3D_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
 		"Grid3D", /*tp_name*/
-		sizeof(pyORBIT_Object), /*tp_basicsize*/
+		sizeof(pyORBIT_Grid), /*tp_basicsize*/
 		0, /*tp_itemsize*/
 		(destructor) Grid3D_del , /*tp_dealloc*/
 		0, /*tp_print*/
@@ -395,6 +404,24 @@ extern "C" {
 		0, /* tp_alloc */
 		Grid3D_new, /* tp_new */
 	};
+
+	PyObject* wrapGrid3D(Grid3D* grid, PyObject* owner)
+	{
+		PyObject* wrapper = pyorbit::getPyWrapper(grid);
+		if(wrapper != NULL) {
+			Py_INCREF(wrapper);
+			return wrapper;
+		}
+
+		pyORBIT_Grid* self = (pyORBIT_Grid*) pyORBIT_Grid3D_Type.tp_alloc(&pyORBIT_Grid3D_Type, 0);
+		if(self == NULL) return NULL;
+		self->cpp_obj = grid;
+		self->owns_cpp = 0;
+		self->owner = owner;
+		Py_XINCREF(owner);
+		pyorbit::registerPyWrapper(grid, (PyObject*) self);
+		return (PyObject*) self;
+	}
 
 	//--------------------------------------------------
 	//Initialization function of the pyGrid3D class

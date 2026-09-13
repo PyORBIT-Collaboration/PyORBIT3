@@ -1,5 +1,5 @@
-#include "BaseAperture.hh"
-#include "ParticleAttributes.hh"
+#include "orbit/Apertures/BaseAperture.hh"
+#include "orbit/ParticlesAttributes/ParticleAttributes.hh"
 
 #include <iostream>
 #include <cmath>
@@ -24,7 +24,7 @@
 ///////////////////////////////////////////////////////////////////////////
 
 /** BaseAperture constructor */
-BaseAperture::BaseAperture(): CppPyWrapper(NULL)
+BaseAperture::BaseAperture()
 {
 	apertureName = "no_name";
 	isActive = 1;
@@ -36,9 +36,6 @@ BaseAperture::BaseAperture(): CppPyWrapper(NULL)
 /** BaseAperture decstructor */
 BaseAperture::~BaseAperture()
 {
-	if(apertureShape != NULL){
-		Py_XDECREF(apertureShape->getPyWrapper());
-	}
 }
 
 /** Returns aperture shape */
@@ -55,18 +52,7 @@ void BaseAperture::setApertureShape(BaseApertureShape* apertureShapeIn){
 		return;
 	}
 
-	if( ((PyObject*) apertureShapeIn->getPyWrapper()) == NULL){
-		ORBIT_MPI_Finalize("BaseAperture class setApertureShape(...): BaseApertureShape Python class needed! Stop.");
-	}
-
-	if(apertureShape != NULL){
-		if( ((PyObject*) apertureShape->getPyWrapper()) != NULL){
-			Py_XDECREF( (PyObject*) apertureShape->getPyWrapper());
-		}
-	}
-
 	apertureShape = apertureShapeIn;
-	Py_INCREF((PyObject*) apertureShape->getPyWrapper());
 }
 
 /**
@@ -196,12 +182,12 @@ int BaseAperture::getNumberOfLost(){
 }
 
 /** Returns the aperture name */
-string BaseAperture::getName(){
+std::string BaseAperture::getName(){
 	return apertureName;
 }
 
 /** Sets the aperture name */
-void BaseAperture::setName(string apertureNameIn){
+void BaseAperture::setName(std::string apertureNameIn){
 	apertureName = apertureNameIn;
 }
 

@@ -1,7 +1,7 @@
-#include "orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
 
-#include "wrap_LImpedance.hh"
-#include "wrap_TImpedance.hh"
+#include "orbit/Impedances/wrap_LImpedance.hh"
+#include "orbit/Impedances/wrap_TImpedance.hh"
 
 static PyMethodDef impedancesMethods[] = {{NULL,NULL}};
 

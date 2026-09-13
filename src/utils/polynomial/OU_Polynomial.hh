@@ -18,13 +18,10 @@
 #ifndef ORBIT_UTILS_POLYNOMIAL_H
 #define ORBIT_UTILS_POLYNOMIAL_H
 
-#include "CppPyWrapper.hh"
-
-using namespace std;
 
 namespace OrbitUtils{
 
-	class  Polynomial : public CppPyWrapper
+	class Polynomial
 	{
 	public:
 		//-----------------------------------------

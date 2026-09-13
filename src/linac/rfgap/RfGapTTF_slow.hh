@@ -10,27 +10,24 @@
 #define TTF_RF_GAP_SLOW_H
 
 //MPI Function Wrappers
-#include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
+#include "mpi/orbit_mpi.hh"
 
 
 #include <cstdlib>
 #include <cmath>
 
 //ORBIT bunch
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 
 //pyORBIT utils
-#include "CppPyWrapper.hh"
-#include "OU_Polynomial.hh"
+#include "utils/polynomial/OU_Polynomial.hh"
 
-using namespace std;
 
 /**
   This class represents a RF gap as a Parmila type gap.
 */
 
-class RfGapTTF_slow: public OrbitUtils::CppPyWrapper
+class RfGapTTF_slow
 {
 public:
 

@@ -1,13 +1,15 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 #
-#include "wrap_spacechargeforcecalc2p5d.hh"
-#include "wrap_spacecharge.hh"
-#include "wrap_bunch.hh"
+#include "spacecharge/wrap_spacechargeforcecalc2p5d.hh"
+#include "spacecharge/wrap_spacecharge.hh"
+#include "spacecharge/wrap_grid1D.hh"
+#include "spacecharge/wrap_grid2D.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "SpaceChargeForceCalc2p5D.hh"
+#include "spacecharge/SpaceChargeForceCalc2p5D.hh"
 
 using namespace OrbitUtils;
 
@@ -42,7 +44,6 @@ extern "C" {
 		}
 		self->cpp_obj = new SpaceChargeForceCalc2p5D(xSize,ySize,zSize);
 
-		((SpaceChargeForceCalc2p5D*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 		//std::cerr<<"The SpaceChargeForceCalc2p5D __init__ has been called!"<<std::endl;
 		return 0;
 	}
@@ -51,42 +52,14 @@ extern "C" {
   static PyObject* SpaceChargeForceCalc2p5D_getRhoGrid(PyObject *self, PyObject *args){
 		pyORBIT_Object* pySpaceChargeForceCalc2p5D = (pyORBIT_Object*) self;
 		SpaceChargeForceCalc2p5D* cpp_SpaceChargeForceCalc2p5D = (SpaceChargeForceCalc2p5D*) pySpaceChargeForceCalc2p5D->cpp_obj;
-		Grid2D* cpp_grid2d = cpp_SpaceChargeForceCalc2p5D->getRhoGrid();
-		if(cpp_grid2d->getPyWrapper() != NULL){
-			Py_INCREF(cpp_grid2d->getPyWrapper());
-			return cpp_grid2d->getPyWrapper();
-		}
-		//It will create a pyGrid2D object
-		PyObject* mod = PyImport_ImportModule("orbit.core.spacecharge");
-		PyObject* pyGrid2D = PyObject_CallMethod(mod,const_cast<char*>("Grid2D"),const_cast<char*>("ii"),cpp_grid2d->getSizeX(),cpp_grid2d->getSizeY());
-		//delete the c++ reference to the internal Grid2D inside pyGrid2D and assign the new one
-		delete ((Grid2D*)((pyORBIT_Object*) pyGrid2D)->cpp_obj);
-		((pyORBIT_Object*) pyGrid2D)->cpp_obj = cpp_grid2d;
-		cpp_grid2d->setPyWrapper(pyGrid2D);
-		Py_INCREF(cpp_grid2d->getPyWrapper());
-		Py_DECREF(mod);
-		return pyGrid2D;
+		return wrapGrid2D(cpp_SpaceChargeForceCalc2p5D->getRhoGrid(), self);
   }
 
   //Grid2D* getPhiGrid() returns the 2D grid with horizontal force
   static PyObject* SpaceChargeForceCalc2p5D_getForceGridX(PyObject *self, PyObject *args){
 		pyORBIT_Object* pySpaceChargeForceCalc2p5D = (pyORBIT_Object*) self;
 		SpaceChargeForceCalc2p5D* cpp_SpaceChargeForceCalc2p5D = (SpaceChargeForceCalc2p5D*) pySpaceChargeForceCalc2p5D->cpp_obj;
-		Grid2D* cpp_grid2d = cpp_SpaceChargeForceCalc2p5D->getForceGridX();
-		if(cpp_grid2d->getPyWrapper() != NULL){
-			Py_INCREF(cpp_grid2d->getPyWrapper());
-			return cpp_grid2d->getPyWrapper();
-		}
-		//It will create a pyGrid2D object
-		PyObject* mod = PyImport_ImportModule("orbit.core.spacecharge");
-		PyObject* pyGrid2D = PyObject_CallMethod(mod,const_cast<char*>("Grid2D"),const_cast<char*>("ii"),cpp_grid2d->getSizeX(),cpp_grid2d->getSizeY());
-		//delete the c++ reference to the internal Grid2D inside pyGrid2D and assign the new one
-		delete ((Grid2D*)((pyORBIT_Object*) pyGrid2D)->cpp_obj);
-		((pyORBIT_Object*) pyGrid2D)->cpp_obj = cpp_grid2d;
-		cpp_grid2d->setPyWrapper(pyGrid2D);
-		Py_INCREF(cpp_grid2d->getPyWrapper());
-		Py_DECREF(mod);
-		return pyGrid2D;
+		return wrapGrid2D(cpp_SpaceChargeForceCalc2p5D->getForceGridX(), self);
   }
 
 
@@ -94,21 +67,7 @@ extern "C" {
 	static PyObject* SpaceChargeForceCalc2p5D_getForceGridY(PyObject *self, PyObject *args){
 		pyORBIT_Object* pySpaceChargeForceCalc2p5D = (pyORBIT_Object*) self;
 		SpaceChargeForceCalc2p5D* cpp_SpaceChargeForceCalc2p5D = (SpaceChargeForceCalc2p5D*) pySpaceChargeForceCalc2p5D->cpp_obj;
-		Grid2D* cpp_grid2d = cpp_SpaceChargeForceCalc2p5D->getForceGridY();
-		if(cpp_grid2d->getPyWrapper() != NULL){
-			Py_INCREF(cpp_grid2d->getPyWrapper());
-			return cpp_grid2d->getPyWrapper();
-		}
-		//It will create a pyGrid2D object
-		PyObject* mod = PyImport_ImportModule("orbit.core.spacecharge");
-		PyObject* pyGrid2D = PyObject_CallMethod(mod,const_cast<char*>("Grid2D"),const_cast<char*>("ii"),cpp_grid2d->getSizeX(),cpp_grid2d->getSizeY());
-		//delete the c++ reference to the internal Grid2D inside pyGrid2D and assign the new one
-		delete ((Grid2D*)((pyORBIT_Object*) pyGrid2D)->cpp_obj);
-		((pyORBIT_Object*) pyGrid2D)->cpp_obj = cpp_grid2d;
-		cpp_grid2d->setPyWrapper(pyGrid2D);
-		Py_INCREF(cpp_grid2d->getPyWrapper());
-		Py_DECREF(mod);
-		return pyGrid2D;
+		return wrapGrid2D(cpp_SpaceChargeForceCalc2p5D->getForceGridY(), self);
 	}
 
 
@@ -116,21 +75,7 @@ extern "C" {
   static PyObject* SpaceChargeForceCalc2p5D_getLongGrid(PyObject *self, PyObject *args){
 		pyORBIT_Object* pySpaceChargeForceCalc2p5D = (pyORBIT_Object*) self;
 		SpaceChargeForceCalc2p5D* cpp_SpaceChargeForceCalc2p5D = (SpaceChargeForceCalc2p5D*) pySpaceChargeForceCalc2p5D->cpp_obj;
-		Grid1D* cpp_grid1d = cpp_SpaceChargeForceCalc2p5D->getLongGrid();
-		if(cpp_grid1d->getPyWrapper() != NULL){
-			Py_INCREF(cpp_grid1d->getPyWrapper());
-			return cpp_grid1d->getPyWrapper();
-		}
-		//It will create a pyGrid2D object
-		PyObject* mod = PyImport_ImportModule("orbit.core.spacecharge");
-		PyObject* pyGrid1D = PyObject_CallMethod(mod,const_cast<char*>("Grid1D"),const_cast<char*>("i"),cpp_grid1d->getSizeZ());
-		//delete the c++ reference to the internal Grid1D inside pyGrid1D and assign the new one
-		delete ((Grid1D*)((pyORBIT_Object*) pyGrid1D)->cpp_obj);
-		((pyORBIT_Object*) pyGrid1D)->cpp_obj = cpp_grid1d;
-		cpp_grid1d->setPyWrapper(pyGrid1D);
-		Py_INCREF(cpp_grid1d->getPyWrapper());
-		Py_DECREF(mod);
-		return pyGrid1D;
+		return wrapGrid1D(cpp_SpaceChargeForceCalc2p5D->getLongGrid(), self);
   }
 
     //trackBunch(Bunch* bunch, double length[,BaseBoundary2D* boundary])

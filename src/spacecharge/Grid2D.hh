@@ -4,25 +4,20 @@
 #define SC_GRID_2D_H
 
 //MPI Function Wrappers
-#include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
+#include "mpi/orbit_mpi.hh"
 
 #include <cstdlib>
 #include <cmath>
 
 //ORBIT bunch
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 
-//pyORBIT utils
-#include "CppPyWrapper.hh"
-
-using namespace std;
 
 /**
   This class repersents a 2D rectangular grid.
 */
 
-class Grid2D: public OrbitUtils::CppPyWrapper
+class Grid2D
 {
 public:
 
@@ -93,7 +88,7 @@ public:
   	int getSizeY();
 
 	/** synchronizeMPI */
-	void synchronizeMPI(pyORBIT_MPI_Comm* comm);
+	void synchronizeMPI(MPI_Comm comm);
 
   	/** Returns 1 if (x,y) is inside the grid region, and 0 otherwise */
   	int isInside(double x,double y);

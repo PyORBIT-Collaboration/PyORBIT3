@@ -18,7 +18,7 @@
 #ifndef ERROR_BASE_H
 #define ERROR_BASE_H
 
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 
 namespace error_base
 {

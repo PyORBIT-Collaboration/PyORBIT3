@@ -10,4 +10,6 @@ project('PyORBIT',
 )
 
 subdir('src')
-subdir('py/orbit')
+if get_option('BUILD_PYTHON')
+  subdir('py/orbit')
+endif

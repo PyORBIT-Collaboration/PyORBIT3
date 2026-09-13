@@ -1,4 +1,4 @@
-#include "SynchPartRedefinitionZdE.hh"
+#include "orbit/SynchPartRedefinition/SynchPartRedefinitionZdE.hh"
 
 #include <iostream>
 #include <cmath>
@@ -6,13 +6,13 @@
 #include <cstdlib>
 
 //#include "Bunch.hh"
-#include "ParticlesAttributes/ParticleMacroSize.hh"
-#include "SyncPart.hh"
+#include "orbit/ParticlesAttributes/ParticleMacroSize.hh"
+#include "orbit/SyncPart.hh"
 
-#include "OrbitConst.hh"
+#include "orbit/OrbitConst.hh"
 
 /** Constructor */
-SynchPartRedefinitionZdE::SynchPartRedefinitionZdE(): CppPyWrapper(NULL)
+SynchPartRedefinitionZdE::SynchPartRedefinitionZdE()
 {
 
 	z_dE_avg_arr = (double* ) malloc (2*sizeof(double));
@@ -70,14 +70,14 @@ void SynchPartRedefinitionZdE::analyzeBunch(Bunch* bunch){
 	}
 
 	int count_MPI = 0;
-	ORBIT_MPI_Allreduce(&count,&count_MPI,1,MPI_INT,MPI_SUM,bunch->getMPI_Comm_Local()->comm);
+	ORBIT_MPI_Allreduce(&count,&count_MPI,1,MPI_INT,MPI_SUM,bunch->getMPI_Comm_Local());
 	count = count_MPI;
 
 	double total_macrosize_MPI = 0.;
-	ORBIT_MPI_Allreduce(&total_macrosize,&total_macrosize_MPI,1,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local()->comm);
+	ORBIT_MPI_Allreduce(&total_macrosize,&total_macrosize_MPI,1,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local());
 	total_macrosize = total_macrosize_MPI;
 
-	ORBIT_MPI_Allreduce(z_dE_avg_arr,z_dE_avg_arr_MPI,2,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local()->comm);
+	ORBIT_MPI_Allreduce(z_dE_avg_arr,z_dE_avg_arr_MPI,2,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local());
 
 	if(fabs(total_macrosize) > 0.){
 		for(int i = 0; i < 2; i++){

@@ -1,11 +1,11 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_bunch.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "ConvexApertureShape.hh"
+#include "orbit/Apertures/ConvexApertureShape.hh"
 
 namespace wrap_convex_aperture_shape{
 
@@ -26,7 +26,7 @@ extern "C" {
   /** This is implementation of the __init__ method */
   static int ConvexApertureShape_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
   	self->cpp_obj = new ConvexApertureShape();
- 	  ((BaseApertureShape*) self->cpp_obj)->setPyWrapper((PyObject*) self);
+	  pyorbit::registerPyWrapper(self->cpp_obj, (PyObject*) self);
     return 0;
   }
 
@@ -132,6 +132,7 @@ extern "C" {
   //destructor for python ConvexApertureShape class (__del__ method).
   //-----------------------------------------------------
   static void ConvexApertureShape_del(pyORBIT_Object* self){
+		pyorbit::unregisterPyWrapper(self->cpp_obj, (PyObject*) self);
 		delete ((ConvexApertureShape*) self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }

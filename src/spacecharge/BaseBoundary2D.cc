@@ -1,6 +1,7 @@
-#include "BaseBoundary2D.hh"
-#include "OrbitConst.hh"
+#include "spacecharge/BaseBoundary2D.hh"
+#include "orbit/OrbitConst.hh"
 
+#include <cmath>
 #include <iostream>
 #include <cfloat>
 
@@ -19,7 +20,7 @@ surface.
 */
 
 // Constructor
-BaseBoundary2D::BaseBoundary2D(int nPoints, int nModes): CppPyWrapper(NULL)
+BaseBoundary2D::BaseBoundary2D(int nPoints, int nModes)
 {
 
 	initialized_ = 0;
@@ -234,7 +235,7 @@ void BaseBoundary2D::initializeBPs(){
 }
 
 /** Returns the name of the shape */
-string BaseBoundary2D::getShapeName(){
+std::string BaseBoundary2D::getShapeName(){
 	return shape_;
 }
 

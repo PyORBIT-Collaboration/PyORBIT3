@@ -1,15 +1,15 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
 #include <iostream>
 
-#include "wrap_bunch.hh"
-#include "wrap_utils.hh"
+#include "orbit/wrap_bunch.hh"
+#include "utils/wrap_utils.hh"
 
-#include "wrap_magnetic_field_source_grid3d.hh"
-#include "wrap_quad_field_source.hh"
-#include "wrap_dipole_field_source.hh"
-#include "wrap_loop_field_source.hh"
+#include "utils/field_sources/wrap_magnetic_field_source_grid3d.hh"
+#include "utils/field_sources/wrap_quad_field_source.hh"
+#include "utils/field_sources/wrap_dipole_field_source.hh"
+#include "utils/field_sources/wrap_loop_field_source.hh"
 
 namespace wrap_field_sources_module{
 

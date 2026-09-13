@@ -1,7 +1,7 @@
 #ifndef WRAP_BOUNDARY_2D_H
 #define WRAP_BOUNDARY_2D_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

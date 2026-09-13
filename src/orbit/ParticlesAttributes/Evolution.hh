@@ -33,7 +33,7 @@
 //     WaveFunctionAmplitudes
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "ParticleAttributes.hh"
+#include "orbit/ParticlesAttributes/ParticleAttributes.hh"
 
 class Evolution : public ParticleAttributes
 {

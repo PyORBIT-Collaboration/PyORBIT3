@@ -15,8 +15,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "../Bunch.hh"
-#include "LostParticleAttributes.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/ParticlesAttributes/LostParticleAttributes.hh"
 
 LostParticleAttributes::LostParticleAttributes(Bunch* bunch):
 ParticleAttributes(bunch,1)

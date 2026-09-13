@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
 
 //=======================================
 //Usage
@@ -22,7 +21,7 @@ namespace OrbitUtils{
 		  The Tokenizer. It returns the vector with tokens.
 		  The delimiter is optional, and by default it is a space.
 		*/
-		int Tokenize(const string& str,vector<string>& tokens,  const string& delimiters = " ");
+		int Tokenize(const std::string& str,std::vector<std::string>& tokens,  const std::string& delimiters = " ");
 	};
 };
 #endif

@@ -15,8 +15,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "../Bunch.hh"
-#include "WaveFunctionAmplitudes.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/ParticlesAttributes/WaveFunctionAmplitudes.hh"
 
 WaveFunctionAmplitudes::WaveFunctionAmplitudes(Bunch* bunch, int size_in):
   ParticleAttributes(bunch, size_in)

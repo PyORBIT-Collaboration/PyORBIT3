@@ -1,18 +1,18 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_aperture.hh"
+#include "orbit/Apertures/wrap_aperture.hh"
 
-#include "wrap_TAperture.hh"
-#include "wrap_PhaseAperture.hh"
-#include "wrap_EnergyAperture.hh"
-#include "wrap_BaseAperture.hh"
-#include "wrap_PyBaseApertureShape.hh"
-#include "wrap_PrimitiveApertureShape.hh"
-#include "wrap_CompositeApertureShape.hh"
-#include "wrap_ConvexApertureShape.hh"
+#include "orbit/Apertures/wrap_TAperture.hh"
+#include "orbit/Apertures/wrap_PhaseAperture.hh"
+#include "orbit/Apertures/wrap_EnergyAperture.hh"
+#include "orbit/Apertures/wrap_BaseAperture.hh"
+#include "orbit/Apertures/wrap_PyBaseApertureShape.hh"
+#include "orbit/Apertures/wrap_PrimitiveApertureShape.hh"
+#include "orbit/Apertures/wrap_CompositeApertureShape.hh"
+#include "orbit/Apertures/wrap_ConvexApertureShape.hh"
 
-#include "wrap_bunch.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 

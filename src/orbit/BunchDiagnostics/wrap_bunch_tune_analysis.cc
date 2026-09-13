@@ -1,12 +1,12 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_bunch_tune_analysis.hh"
-#include "wrap_bunch.hh"
+#include "orbit/BunchDiagnostics/wrap_bunch_tune_analysis.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "BunchTuneAnalysis.hh"
+#include "orbit/BunchDiagnostics/BunchTuneAnalysis.hh"
 
 namespace wrap_bunch_tune_analysis{
 
@@ -31,7 +31,6 @@ static PyObject* BunchTuneAnalysis_new(PyTypeObject *type, PyObject *args, PyObj
 /** Implementation of the __init__ method */
 static int BunchTuneAnalysis_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
 	self->cpp_obj =  new BunchTuneAnalysis();
-	((BunchTuneAnalysis*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 	return 0;
 }
 

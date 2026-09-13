@@ -1,4 +1,5 @@
-#include "PyBaseApertureShape.hh"
+#include "orbit/Apertures/PyBaseApertureShape.hh"
+#include "main/pyORBIT_Object.hh"
 
 #include <iostream>
 #include <cmath>
@@ -22,8 +23,9 @@
 ///////////////////////////////////////////////////////////////////////////
 
 /** PyBaseApertureShape constructor */
-PyBaseApertureShape::PyBaseApertureShape(): BaseApertureShape()
+PyBaseApertureShape::PyBaseApertureShape(PyObject* py_wrapper): BaseApertureShape()
 {
+		this->py_wrapper = py_wrapper;
 		shapeName = "python_class_shape";
 		typeName = "python_class_shape";
 }
@@ -38,12 +40,11 @@ int PyBaseApertureShape::inside(Bunch* bunch, int count){
 
 	double** coord = bunch->coordArr();
 
-	PyObject* py_wrp = getPyWrapper();
-	PyObject* py_bunch = bunch->getPyWrapper();
+	PyObject* py_bunch = pyorbit::getPyWrapper(bunch);
 
 	int res_isinside = 0;
 
-	PyObject* py_res = PyObject_CallMethod(py_wrp,const_cast<char*>("inside"),const_cast<char*>("Oi"),py_bunch,count);
+	PyObject* py_res = PyObject_CallMethod(py_wrapper,const_cast<char*>("inside"),const_cast<char*>("Oi"),py_bunch,count);
 
 	res_isinside = (int) PyLong_AS_LONG(py_res);
 

@@ -31,14 +31,12 @@
 #ifndef ORBIT_UTILS_HARMONICDATA_H
 #define ORBIT_UTILS_HARMONICDATA_H
 
-#include "CppPyWrapper.hh"
-#include "OU_Function.hh"
+#include "utils/OU_Function.hh"
 
-using namespace std;
 
 namespace OrbitUtils{
 
-	class  HarmonicData : public CppPyWrapper
+	class HarmonicData
 	{
 	public:
 		//-----------------------------------------

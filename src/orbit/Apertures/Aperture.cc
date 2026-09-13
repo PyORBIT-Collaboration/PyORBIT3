@@ -1,14 +1,14 @@
-#include "Aperture.hh"
-#include "SyncPart.hh"
-#include "OrbitConst.hh"
-#include "Random.hh"
+#include "orbit/Apertures/Aperture.hh"
+#include "orbit/SyncPart.hh"
+#include "orbit/OrbitConst.hh"
+#include "utils/Random.hh"
 
 #include <iostream>
 #include <cmath>
 #include <cfloat>
 #include <cstdlib>
 
-#include "ParticleAttributes.hh"
+#include "orbit/ParticlesAttributes/ParticleAttributes.hh"
 // Constructor
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -31,7 +31,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-Aperture::Aperture(int shape, double a, double b, double c, double d, double pos): CppPyWrapper(NULL)
+Aperture::Aperture(int shape, double a, double b, double c, double d, double pos)
 {
 	shape_ = shape;
 	a_ = a;

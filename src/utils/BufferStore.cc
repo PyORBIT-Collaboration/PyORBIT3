@@ -19,7 +19,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "BufferStore.hh"
+#include "utils/BufferStore.hh"
 
 using namespace OrbitUtils;
 

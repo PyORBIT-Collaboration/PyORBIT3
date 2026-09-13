@@ -15,8 +15,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "../Bunch.hh"
-#include "ParticlePhaseAttributes.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/ParticlesAttributes/ParticlePhaseAttributes.hh"
 
 ParticlePhaseAttributes::ParticlePhaseAttributes(Bunch* bunch):
 ParticleAttributes(bunch,6)

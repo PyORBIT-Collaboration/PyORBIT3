@@ -1,11 +1,11 @@
-#include "Barrier_Cav.hh"
-#include "ParticleMacroSize.hh"
+#include "orbit/RFCavities/Barrier_Cav.hh"
+#include "orbit/ParticlesAttributes/ParticleMacroSize.hh"
 
 #include <iostream>
 #include <cmath>
 
-#include "Bunch.hh"
-#include "OrbitConst.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/OrbitConst.hh"
 
 using namespace OrbitUtils;
 
@@ -15,7 +15,7 @@ Barrier_Cav::Barrier_Cav(double ZtoPhi,
                          double RFPhasep,
                          double RFPhasem,
                          double dRFPhasep,
-                         double dRFPhasem): CppPyWrapper(NULL)
+                         double dRFPhasem)
 {
   _ZtoPhi    = ZtoPhi;
   _RFVoltage = RFVoltage;

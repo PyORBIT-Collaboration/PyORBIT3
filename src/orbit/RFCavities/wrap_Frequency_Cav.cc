@@ -1,12 +1,12 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_Frequency_Cav.hh"
-#include "wrap_bunch.hh"
+#include "orbit/RFCavities/wrap_Frequency_Cav.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "Frequency_Cav.hh"
+#include "orbit/RFCavities/Frequency_Cav.hh"
 
 using namespace OrbitUtils;
 
@@ -54,7 +54,6 @@ static int Frequency_Cav_init(pyORBIT_Object *self, PyObject *args, PyObject *kw
     ORBIT_MPI_Finalize("PyFrequency_Cav - Frequency_Cav_init - cannot parse arguments! They should be (RFFreq, RFE0TL, RFPhase)");
   }
   self->cpp_obj = new Frequency_Cav(RFFreq, RFE0TL, RFPhase);
-  ((Frequency_Cav*) self->cpp_obj)->setPyWrapper((PyObject*) self);
   return 0;
 }
 

@@ -1,17 +1,17 @@
-#include "MaterialInteractions.hh"
-#include "Collimator.hh"
-#include "SyncPart.hh"
-#include "cross_sections.hh"
-#include "numrecipes.hh"
-#include "OrbitConst.hh"
-#include "Random.hh"
+#include "orbit/MaterialInteractions/MaterialInteractions.hh"
+#include "orbit/MaterialInteractions/Collimator.hh"
+#include "orbit/SyncPart.hh"
+#include "orbit/MaterialInteractions/cross_sections.hh"
+#include "orbit/MaterialInteractions/numrecipes.hh"
+#include "orbit/OrbitConst.hh"
+#include "utils/Random.hh"
 
 #include <iostream>
 #include <cmath>
 #include <cfloat>
 #include <cstdlib>
 
-#include "ParticleInitialCoordinates.hh"
+#include "orbit/ParticlesAttributes/ParticleInitialCoordinates.hh"
 
 using namespace OrbitUtils;
 
@@ -51,7 +51,7 @@ using namespace OrbitUtils;
 
 Collimator::Collimator(double length, int ma,
 					   double density_fac, int shape,
-					   double a, double b, double c, double d, double angle, double pos): CppPyWrapper(NULL)
+					   double a, double b, double c, double d, double angle, double pos)
 {
 	length_ = length;
 	ma_ = ma;

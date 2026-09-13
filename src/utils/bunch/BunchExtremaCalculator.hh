@@ -18,13 +18,13 @@
 #define BUNCH_EXTREMA_CALCULATIONS_H
 
 //ORBIT bunch
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 
 namespace OrbitUtils{
 
 	/** A class calculates the extrema and averages of the particles coordinates in the bunch.*/
 
-	class BunchExtremaCalculator : public CppPyWrapper
+	class BunchExtremaCalculator
 	{
 		public:
 

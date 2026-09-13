@@ -1,12 +1,12 @@
-#include "FieldTracker.hh"
+#include "orbit/FieldTracker/FieldTracker.hh"
 
 #include <iostream>
 #include <fstream>
 #include <cmath>
 #include <cfloat>
 #include <cstdlib>
-#include "OrbitConst.hh"
-#include "SyncPart.hh"
+#include "orbit/OrbitConst.hh"
+#include "orbit/SyncPart.hh"
 
 //////////////////////////////////////////////////////////////////////////
 //Constructor for FieldTracker
@@ -46,9 +46,9 @@ FieldTracker::FieldTracker(const double &bx, const double &by,
 	       const double &resid,
 	       const double &xrefi, const double &yrefi,
 	       const double &eulerai, const double &eulerbi,
-	       const double &eulergi, Bunch* b, string &filename) {
+	       const double &eulergi, Bunch* b, std::string &filename) {
 
-	cerr << "Instantiating the 3D field track class \n" ;
+	std::cerr << "Instantiating the 3D field track class \n" ;
 	double ZPARSEMIN =  100.0 * zi - 1.0;
 	double ZPARSEMAX =  100.0 * zf + 1.0;
 
@@ -151,7 +151,7 @@ void FieldTracker::trackBunch(Bunch* b) {
 	  double xj, yj, zj, pxj, pyj, pzj, sj;
 	  int lost = 0;
 
-	    ofstream fio("Path", std::ios::out);
+	    std::ofstream fio("Path", std::ios::out);
 
 	  if(getPath == 1)
 	  {
@@ -359,7 +359,7 @@ void FieldTracker::trackBunch(Bunch* b) {
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-void FieldTracker::ParseGrid3D(const string &fileName, const double &xmin,
+void FieldTracker::ParseGrid3D(const std::string &fileName, const double &xmin,
 		const double &xmax, const double &ymin, const double &ymax,
 		const double &zmin, const double &zmax, const int &skipX,
 		const int &skipY, const int &skipZ) {
@@ -368,13 +368,13 @@ void FieldTracker::ParseGrid3D(const string &fileName, const double &xmin,
 	int nZTab = 0;
 	int iDummy, i, j, k;
 	int xindex, yindex, zindex;
-	string Dummy;
+	std::string Dummy;
 	double x, y, z, Bx, By, Bz;
 
 
 	std::cerr << "Filename: " << fileName << "\n";
 
-	ifstream fio(fileName.c_str(), ios::in);
+	std::ifstream fio(fileName.c_str(), std::ios::in);
 	if (!fio) {
 		std::cerr << "Filename " << fileName << " not found\n";
 	}
@@ -424,7 +424,7 @@ void FieldTracker::ParseGrid3D(const string &fileName, const double &xmin,
 	BZGrid = new Grid3D(nXTab, nYTab, nZTab);
 	BMagGrid = new Grid3D(nXTab, nYTab, nZTab);
 
-	ifstream fio2(fileName.c_str(), ios::in);
+	std::ifstream fio2(fileName.c_str(), std::ios::in);
 	if (!fio2) {
 		std::cerr << "Filename " << fileName << " not found\n";
 	}
@@ -671,7 +671,7 @@ void FieldTracker::nodeCalculator(Bunch* b)
   int iquit = 0;
   double xwidth = FieldTracker::xFoilMax - FieldTracker::xFoilMin;
 
- ofstream fio("RefPath", ios::out);
+ std::ofstream fio("RefPath", std::ios::out);
 
   xField3D = xref;
   yField3D = yref;

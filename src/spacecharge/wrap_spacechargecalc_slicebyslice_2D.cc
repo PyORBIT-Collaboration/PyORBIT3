@@ -1,13 +1,14 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 #
-#include "wrap_spacechargecalc_slicebyslice_2D.hh"
-#include "wrap_spacecharge.hh"
-#include "wrap_bunch.hh"
+#include "spacecharge/wrap_spacechargecalc_slicebyslice_2D.hh"
+#include "spacecharge/wrap_spacecharge.hh"
+#include "spacecharge/wrap_grid3D.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "SpaceChargeCalcSliceBySlice2D.hh"
+#include "spacecharge/SpaceChargeCalcSliceBySlice2D.hh"
 
 using namespace OrbitUtils;
 
@@ -46,7 +47,6 @@ extern "C" {
 		} else {
 			self->cpp_obj = new SpaceChargeCalcSliceBySlice2D(xSize,ySize,zSize);
 		}
-		((SpaceChargeCalcSliceBySlice2D*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 		//std::cerr<<"The SpaceChargeCalcSliceBySlice2D __init__ has been called!"<<std::endl;
 		return 0;
 	}
@@ -55,42 +55,14 @@ extern "C" {
   static PyObject* SpaceChargeCalcSliceBySlice2D_getRhoGrid(PyObject *self, PyObject *args){
 		pyORBIT_Object* pySpaceChargeCalcSliceBySlice2D = (pyORBIT_Object*) self;
 		SpaceChargeCalcSliceBySlice2D* cpp_SpaceChargeCalcSliceBySlice2D = (SpaceChargeCalcSliceBySlice2D*) pySpaceChargeCalcSliceBySlice2D->cpp_obj;
-		Grid3D* cpp_grid3d = cpp_SpaceChargeCalcSliceBySlice2D->getRhoGrid();
-		if(cpp_grid3d->getPyWrapper() != NULL){
-			Py_INCREF(cpp_grid3d->getPyWrapper());
-			return cpp_grid3d->getPyWrapper();
-		}
-		//It will create a pyGrid3D object
-		PyObject* mod = PyImport_ImportModule("orbit.core.spacecharge");
-		PyObject* pyGrid3D = PyObject_CallMethod(mod,const_cast<char*>("Grid3D"),const_cast<char*>("iii"),cpp_grid3d->getSizeX(),cpp_grid3d->getSizeY(),cpp_grid3d->getSizeZ());
-		//delete the c++ reference to the internal Grid3D inside pyGrid3D and assign the new one
-		delete ((Grid3D*)((pyORBIT_Object*) pyGrid3D)->cpp_obj);
-		((pyORBIT_Object*) pyGrid3D)->cpp_obj = cpp_grid3d;
-		cpp_grid3d->setPyWrapper(pyGrid3D);
-		Py_INCREF(cpp_grid3d->getPyWrapper());
-		Py_DECREF(mod);
-		return pyGrid3D;
+		return wrapGrid3D(cpp_SpaceChargeCalcSliceBySlice2D->getRhoGrid(), self);
   }
 
   //Grid3D* getPhiGrid() returns the 3D grid with potential
   static PyObject* SpaceChargeCalcSliceBySlice2D_getPhiGrid(PyObject *self, PyObject *args){
 		pyORBIT_Object* pySpaceChargeCalcSliceBySlice2D = (pyORBIT_Object*) self;
 		SpaceChargeCalcSliceBySlice2D* cpp_SpaceChargeCalcSliceBySlice2D = (SpaceChargeCalcSliceBySlice2D*) pySpaceChargeCalcSliceBySlice2D->cpp_obj;
-		Grid3D* cpp_grid3d = cpp_SpaceChargeCalcSliceBySlice2D->getPhiGrid();
-		if(cpp_grid3d->getPyWrapper() != NULL){
-			Py_INCREF(cpp_grid3d->getPyWrapper());
-			return cpp_grid3d->getPyWrapper();
-		}
-		//It will create a pyGrid3D object
-		PyObject* mod = PyImport_ImportModule("orbit.core.spacecharge");
-		PyObject* pyGrid3D = PyObject_CallMethod(mod,const_cast<char*>("Grid3D"),const_cast<char*>("iii"),cpp_grid3d->getSizeX(),cpp_grid3d->getSizeY(),cpp_grid3d->getSizeZ());
-		//delete the c++ reference to the internal Grid3D inside pyGrid3D and assign the new one
-		delete ((Grid3D*)((pyORBIT_Object*) pyGrid3D)->cpp_obj);
-		((pyORBIT_Object*) pyGrid3D)->cpp_obj = cpp_grid3d;
-		cpp_grid3d->setPyWrapper(pyGrid3D);
-		Py_INCREF(cpp_grid3d->getPyWrapper());
-		Py_DECREF(mod);
-		return pyGrid3D;
+		return wrapGrid3D(cpp_SpaceChargeCalcSliceBySlice2D->getPhiGrid(), self);
   }
 
   //trackBunch(Bunch* bunch, double length[,BaseBoundary2D* boundary])

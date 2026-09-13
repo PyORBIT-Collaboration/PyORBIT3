@@ -1,6 +1,6 @@
-#include "orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
 
-#include "ConvexApertureShape.hh"
+#include "orbit/Apertures/ConvexApertureShape.hh"
 
 #include <iostream>
 #include <cmath>

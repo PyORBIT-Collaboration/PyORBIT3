@@ -10,10 +10,10 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#include "Grid1D.hh"
-#include "BufferStore.hh"
-#include "TImpedance.hh"
-#include "OrbitConst.hh"
+#include "spacecharge/Grid1D.hh"
+#include "utils/BufferStore.hh"
+#include "orbit/Impedances/TImpedance.hh"
+#include "orbit/OrbitConst.hh"
 #include <complex>
 #include <iostream>
 #include <cmath>
@@ -30,14 +30,14 @@ TImpedance::TImpedance(double length,
                        int nMacrosMin,
                        int nBins,
                        int useX,
-                       int useY): CppPyWrapper(NULL)
+                       int useY)
 {
   _length       = length;
   _nMacrosMin   = nMacrosMin;
   _nBins        = nBins;
   _useX         = useX;
   _useY         = useY;
-  zGrid         = new Grid1D(_nBins, _length);
+  zGrid.reset(new Grid1D(_nBins, _length));
 
   _qX = 0.0;
   _qY = 0.0;
@@ -97,15 +97,6 @@ TImpedance::TImpedance(double length,
 
 TImpedance::~TImpedance()
 {
-  if(zGrid->getPyWrapper() != NULL)
-  {
-    Py_DECREF(zGrid->getPyWrapper());
-  }
-  else
-  {
-    delete zGrid;
-  }
-
   delete[] _xCentroid;
   delete[] _xpCentroid;
   delete[] _zXImped_nplus;

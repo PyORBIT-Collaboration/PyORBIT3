@@ -1,14 +1,14 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_utils.hh"
-#include "wrap_polynomial.hh"
+#include "utils/wrap_utils.hh"
+#include "utils/polynomial/wrap_polynomial.hh"
 
 #include <iostream>
 #include <string>
 #include <cfloat>
 
-#include "OU_Polynomial.hh"
+#include "utils/polynomial/OU_Polynomial.hh"
 
 using namespace OrbitUtils;
 using namespace wrap_orbit_utils;
@@ -35,7 +35,6 @@ extern "C" {
   /** This is implementation of the __init__ method */
   static int Polynomial_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
 	  self->cpp_obj =  new Polynomial(0);
-	  ((Polynomial*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     int nVars = PyTuple_Size(args);
 		int order = -1;
 		if(nVars == 1){

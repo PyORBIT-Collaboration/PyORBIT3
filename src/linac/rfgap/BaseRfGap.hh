@@ -5,25 +5,22 @@
 #define BASE_RF_GAP_H
 
 //MPI Function Wrappers
-#include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
+#include "mpi/orbit_mpi.hh"
 
 #include <cstdlib>
 #include <cmath>
 
 //ORBIT bunch
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 
 //pyORBIT utils
-#include "CppPyWrapper.hh"
 
-using namespace std;
 
 /**
   This class represents a 2D rectangular grid.
 */
 
-class BaseRfGap: public OrbitUtils::CppPyWrapper
+class BaseRfGap
 {
 public:
 

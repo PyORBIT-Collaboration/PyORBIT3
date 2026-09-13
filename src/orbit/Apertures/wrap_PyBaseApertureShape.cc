@@ -1,11 +1,11 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_bunch.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "PyBaseApertureShape.hh"
+#include "orbit/Apertures/PyBaseApertureShape.hh"
 
 namespace wrap_py_base_aperture_shape{
 
@@ -26,8 +26,8 @@ extern "C" {
 
   /** This is implementation of the __init__ method */
   static int PyBaseApertureShape_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
-	  self->cpp_obj =  new PyBaseApertureShape();
-	  ((PyBaseApertureShape*) self->cpp_obj)->setPyWrapper((PyObject*) self);
+	  self->cpp_obj =  new PyBaseApertureShape((PyObject*) self);
+	  pyorbit::registerPyWrapper(self->cpp_obj, (PyObject*) self);
     return 0;
   }
 
@@ -100,6 +100,7 @@ extern "C" {
   //-----------------------------------------------------
   static void PyBaseApertureShape_del(pyORBIT_Object* self){
 		//std::cerr<<"debug PyBaseApertureShape __del__ has been called!"<<std::endl;
+		pyorbit::unregisterPyWrapper(self->cpp_obj, (PyObject*) self);
 		delete ((PyBaseApertureShape*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }

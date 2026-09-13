@@ -1,12 +1,12 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_aperture.hh"
-#include "wrap_bunch.hh"
+#include "orbit/Apertures/wrap_aperture.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "Aperture.hh"
+#include "orbit/Apertures/Aperture.hh"
 
 namespace wrap_aperture{
 
@@ -40,7 +40,6 @@ extern "C" {
 	  	ORBIT_MPI_Finalize("Aperture class constructor - cannot parse arguments! It should be (shape,a,b,c,d,pos)");
 	  }
 	  self->cpp_obj =  new Aperture(shape,a,b,c,d,pos);
-	  ((Aperture*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
 

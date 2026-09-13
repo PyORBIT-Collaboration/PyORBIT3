@@ -15,19 +15,19 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "ParticleAttributesFactory.hh"
+#include "orbit/ParticlesAttributes/ParticleAttributesFactory.hh"
 
-#include "ParticleMacroSize.hh"
-#include "WaveFunctionAmplitudes.hh"
-#include "AtomPopulations.hh"
-#include "pq_coordinates.hh"
-#include "part_time.hh"
-#include "Evolution.hh"
-#include "LostParticleAttributes.hh"
-#include "ParticlePhaseAttributes.hh"
-#include "ParticleIdNumber.hh"
-#include "ParticleInitialCoordinates.hh"
-#include "TurnNumberAttributes.hh"
+#include "orbit/ParticlesAttributes/ParticleMacroSize.hh"
+#include "orbit/ParticlesAttributes/WaveFunctionAmplitudes.hh"
+#include "orbit/ParticlesAttributes/AtomPopulations.hh"
+#include "orbit/ParticlesAttributes/pq_coordinates.hh"
+#include "orbit/ParticlesAttributes/part_time.hh"
+#include "orbit/ParticlesAttributes/Evolution.hh"
+#include "orbit/ParticlesAttributes/LostParticleAttributes.hh"
+#include "orbit/ParticlesAttributes/ParticlePhaseAttributes.hh"
+#include "orbit/ParticlesAttributes/ParticleIdNumber.hh"
+#include "orbit/ParticlesAttributes/ParticleInitialCoordinates.hh"
+#include "orbit/ParticlesAttributes/TurnNumberAttributes.hh"
 
 ParticleAttributesFactory::ParticleAttributesFactory()
 {
@@ -46,7 +46,7 @@ ParticleAttributes* ParticleAttributesFactory::getParticleAttributesInstance(
 	int rank_MPI = 0;
 	int size_MPI = 1;
 	int iMPIini  = 0;
-	MPI_Comm MPI_COMM_Local = bunch->getMPI_Comm_Local()->comm;
+	MPI_Comm MPI_COMM_Local = bunch->getMPI_Comm_Local();
 	ORBIT_MPI_Initialized(&iMPIini);
 
 	if(iMPIini > 0){
@@ -78,7 +78,7 @@ ParticleAttributes* ParticleAttributesFactory::getParticleAttributesInstance(
 
 	if(name == "Amplitudes"){
 		if(params_dict.size() == 0){
-			cout<<"dictionary Amplitudes(dict) should be defined "<<"\n";
+			std::cout<<"dictionary Amplitudes(dict) should be defined "<<"\n";
 		} else {
 			if(params_dict.count("size") == 1){
 				part_atrs = new WaveFunctionAmplitudes(bunch,(int) params_dict["size"]);
@@ -99,7 +99,7 @@ ParticleAttributes* ParticleAttributesFactory::getParticleAttributesInstance(
 
 	if(name == "Populations"){
 		if(params_dict.size() == 0){
-			cout<<"dictionary AtomPopulations(dict) should be defined "<<"\n";
+			std::cout<<"dictionary AtomPopulations(dict) should be defined "<<"\n";
 		} else {
 			if(params_dict.count("size") == 1){
 				part_atrs = new AtomPopulations(bunch,(int) params_dict["size"]);
@@ -119,7 +119,7 @@ ParticleAttributes* ParticleAttributesFactory::getParticleAttributesInstance(
 
 	if(name == "pq_coords"){
 		if(params_dict.size() == 0){
-			cout<<"dictionary pq_coords(dict) should be defined "<<"\n";
+			std::cout<<"dictionary pq_coords(dict) should be defined "<<"\n";
 		} else {
 			if(params_dict.count("size") == 1){
 				part_atrs = new pq_coordinates(bunch,(int) params_dict["size"]);
@@ -139,7 +139,7 @@ ParticleAttributes* ParticleAttributesFactory::getParticleAttributesInstance(
 
 	if(name == "part_time"){
 		if(params_dict.size() == 0){
-			cout<<"dictionary prf_time(dict) should be defined "<<"\n";
+			std::cout<<"dictionary prf_time(dict) should be defined "<<"\n";
 		} else {
 			if(params_dict.count("size") == 1){
 				part_atrs = new part_time(bunch, (int)params_dict["size"]);
@@ -159,7 +159,7 @@ ParticleAttributes* ParticleAttributesFactory::getParticleAttributesInstance(
 
 	if(name == "Evolution"){
 		if(params_dict.size() == 0){
-			cout<<"dictionary Evolution(dict) should be defined "<<"\n";
+			std::cout<<"dictionary Evolution(dict) should be defined "<<"\n";
 		} else {
 			if(params_dict.count("size") == 1){
 				part_atrs = new Evolution(bunch, (int) params_dict["size"]);
@@ -205,7 +205,7 @@ ParticleAttributes* ParticleAttributesFactory::getParticleAttributesInstance(
 	return part_atrs;
 }
 
-void ParticleAttributesFactory::getParticleAttributesNames(std::vector<string>& names){
+void ParticleAttributesFactory::getParticleAttributesNames(std::vector<std::string>& names){
 	names.clear();
 	names.push_back("macrosize");
 	names.push_back("ParticleIdNumber");

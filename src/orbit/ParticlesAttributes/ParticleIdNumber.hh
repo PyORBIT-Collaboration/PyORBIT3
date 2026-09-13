@@ -36,7 +36,7 @@
 //    ParticleIdNumber
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "ParticleAttributes.hh"
+#include "orbit/ParticlesAttributes/ParticleAttributes.hh"
 
 class ParticleIdNumber : public ParticleAttributes
 {

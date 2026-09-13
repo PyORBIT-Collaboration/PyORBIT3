@@ -1,13 +1,9 @@
 #ifndef COMPOSITE_APERTURE_SHAPE_H
 #define COMPOSITE_APERTURE_SHAPE_H
 
-//pyORBIT utils
-#include "CppPyWrapper.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/Apertures/BaseApertureShape.hh"
 
-#include "Bunch.hh"
-#include "BaseApertureShape.hh"
-
-using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -39,7 +35,7 @@ public:
 	/** Return 1 if the particular macro-particle is inside this shape */
 	int inside(Bunch* bunch, int count);
 
-	/** Adds the new aperture shape to the collection */
+	/** Adds a non-owning aperture-shape reference to the collection. */
 	void addApertureShape(BaseApertureShape* apertureShape);
 
 

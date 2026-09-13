@@ -15,7 +15,7 @@
 //    a random number between 0 and 1.
 ///////////////////////////////////////////////////////////////////////////
 
-#include "Random.hh"
+#include "utils/Random.hh"
 #include <random>
 
 using namespace OrbitUtils;

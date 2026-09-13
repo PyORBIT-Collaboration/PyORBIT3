@@ -1,16 +1,15 @@
 #ifndef BUNCH_TUNE_ANALYSIS_H
 #define BUNCH_TUNE_ANALYSIS_H
 
-#include "CppPyWrapper.hh"
+//pyORBIT utils
 
-#include "Bunch.hh"
-#include "BunchTwissAnalysis.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/BunchDiagnostics/BunchTwissAnalysis.hh"
 
-using namespace std;
 
 
 /** Estimates particle tunes using average phase advance (APA) over one turn. */
-class BunchTuneAnalysis: public OrbitUtils::CppPyWrapper
+class BunchTuneAnalysis
 {
 	public:
 		/** Constructor*/

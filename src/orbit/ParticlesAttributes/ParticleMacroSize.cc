@@ -16,8 +16,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "../Bunch.hh"
-#include "ParticleMacroSize.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/ParticlesAttributes/ParticleMacroSize.hh"
 
 ParticleMacroSize::ParticleMacroSize(Bunch* bunch):
   ParticleAttributes(bunch,1)

@@ -6,13 +6,13 @@
 // This is a wrapper for the MPI_Comm data type from MPI
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "orbit_mpi.hh"
+#include "mpi/wrap_orbit_mpi_types.hh"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-  namespace wrap_orbit_mpi_comm{
+  namespace wrap_orbit_mpi_comm {
     void init_orbit_mpi_comm(PyObject* module);
 
 		//The function that will be exposed as C/C++ API for MPI_Comm

@@ -1,15 +1,15 @@
-#include "orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
 
-#include "wrap_linacmodule.hh"
-#include "wrap_BaseRfGap.hh"
-#include "wrap_BaseRfGap_slow.hh"
-#include "wrap_MatrixRfGap.hh"
-#include "wrap_RfGapTTF.hh"
-#include "wrap_RfGapTTF_slow.hh"
-#include "wrap_SuperFishFieldSource.hh"
-#include "wrap_RfGapThreePointTTF.hh"
-#include "wrap_RfGapThreePointTTF_slow.hh"
-#include "wrap_linac_tracking.hh"
+#include "linac/wrap_linacmodule.hh"
+#include "linac/rfgap/wrap_BaseRfGap.hh"
+#include "linac/rfgap/wrap_BaseRfGap_slow.hh"
+#include "linac/rfgap/wrap_MatrixRfGap.hh"
+#include "linac/rfgap/wrap_RfGapTTF.hh"
+#include "linac/rfgap/wrap_RfGapTTF_slow.hh"
+#include "linac/rfgap/wrap_SuperFishFieldSource.hh"
+#include "linac/rfgap/wrap_RfGapThreePointTTF.hh"
+#include "linac/rfgap/wrap_RfGapThreePointTTF_slow.hh"
+#include "linac/tracking/wrap_linac_tracking.hh"
 
 static PyMethodDef linacmoduleMethods[] = { {NULL,NULL} };
 

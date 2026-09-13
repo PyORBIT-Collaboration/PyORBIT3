@@ -9,12 +9,12 @@ A. Shishlo, J. Holmes,
 ORNL Tech. Note ORNL/TM-2015/247, June 2015
 */
 
-#include "MatrixRfGap.hh"
-#include "ParticleMacroSize.hh"
+#include "linac/rfgap/MatrixRfGap.hh"
+#include "orbit/ParticlesAttributes/ParticleMacroSize.hh"
 
-#include "Bunch.hh"
-#include "bessel.hh"
-#include "OrbitConst.hh"
+#include "orbit/Bunch.hh"
+#include "utils/bessel.hh"
+#include "orbit/OrbitConst.hh"
 
 #include <iostream>
 #include <cmath>
@@ -22,7 +22,7 @@ ORNL Tech. Note ORNL/TM-2015/247, June 2015
 using namespace OrbitUtils;
 
 // Constructor
-MatrixRfGap::MatrixRfGap(): CppPyWrapper(NULL)
+MatrixRfGap::MatrixRfGap()
 {
 }
 

@@ -17,9 +17,9 @@
 #ifndef PARTICLE_MACROSIZE_H
 #define PARTICLE_MACROSIZE_H
 
-#include "../../mpi/orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
 
-#include "ParticleAttributes.hh"
+#include "orbit/ParticlesAttributes/ParticleAttributes.hh"
 
 #include <string>
 

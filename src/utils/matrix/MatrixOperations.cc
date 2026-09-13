@@ -1,7 +1,7 @@
-#include "orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
 
-#include "MatrixOperations.hh"
-#include "BufferStore.hh"
+#include "utils/matrix/MatrixOperations.hh"
+#include "utils/BufferStore.hh"
 
 #include <cmath>
 

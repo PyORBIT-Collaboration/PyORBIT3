@@ -4,26 +4,21 @@
 #define SC_Force_SOLVER_BASE_2D_H
 
 //MPI Function Wrappers
-#include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
+#include "mpi/orbit_mpi.hh"
 
 #include <cstdlib>
 #include <cmath>
 #include <string>
 
-//pyORBIT utils
-#include "CppPyWrapper.hh"
+#include "spacecharge/Grid2D.hh"
 
-#include "Grid2D.hh"
-
-using namespace std;
 
 /**
   The ForceSolver2D class calculates 2D forces along X and Y axes
   created by a 2D charge distribution.
 */
 
-class ForceSolver2D: public OrbitUtils::CppPyWrapper
+class ForceSolver2D
 {
 public:
 

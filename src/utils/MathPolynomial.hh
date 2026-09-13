@@ -19,7 +19,7 @@
 ///////////////////////////////////////////////////////////////////////////
 #include <complex>
 #include <cmath>
-#include "tcomplex.hh"
+#include "utils/tcomplex.hh"
 #include <iostream>
 
 namespace OrbitUtils{

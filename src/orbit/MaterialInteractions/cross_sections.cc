@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <cfloat>
-#include "cross_sections.hh"
+#include "orbit/MaterialInteractions/cross_sections.hh"
 
 namespace OrbitUtils{
 

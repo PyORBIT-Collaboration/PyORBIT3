@@ -4,23 +4,18 @@
 #define SC_POISSON_SOLVER_FFT_3D_H
 
 //MPI Function Wrappers
-#include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
+#include "mpi/orbit_mpi.hh"
 
 #include <cstdlib>
 #include <cmath>
 #include <string>
 #include <cfloat>
 
-//pyORBIT utils
-#include "CppPyWrapper.hh"
-
 //FFTW library header
 #include "fftw3.h"
 
-#include "PoissonSolver3D.hh"
+#include "spacecharge/PoissonSolver3D.hh"
 
-using namespace std;
 
 /**
   The PoissonSolverFFT3D class calculates electrostatic

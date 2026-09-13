@@ -4,11 +4,10 @@
 	*/
 
 //MPI Function Wrappers
-#include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
+#include "mpi/orbit_mpi.hh"
 
-#include "UniformEllipsoidFieldCalculator.hh"
-#include "gauss_legendre_points.hh"
+#include "spacecharge/UniformEllipsoidFieldCalculator.hh"
+#include "utils/integration/gauss_legendre_points.hh"
 
 #include <iostream>
 
@@ -26,7 +25,7 @@ using namespace OrbitUtils;
 #endif
 
 /** Constructor. There is no parameters */
-UniformEllipsoidFieldCalculator::UniformEllipsoidFieldCalculator(): CppPyWrapper(NULL)
+UniformEllipsoidFieldCalculator::UniformEllipsoidFieldCalculator()
 {
 	intFuncX0 = new Function();
 	intFuncY0 = new Function();

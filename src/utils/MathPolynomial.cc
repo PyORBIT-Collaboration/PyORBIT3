@@ -14,8 +14,8 @@
 //    different polynomials.
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "orbit_mpi.hh"
-#include "MathPolynomial.hh"
+#include "mpi/orbit_mpi.hh"
+#include "utils/MathPolynomial.hh"
 
 using namespace OrbitUtils;
 

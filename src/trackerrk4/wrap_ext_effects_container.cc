@@ -1,20 +1,25 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_utils.hh"
-#include "wrap_ext_effects_container.hh"
+#include "utils/wrap_utils.hh"
+#include "trackerrk4/wrap_ext_effects_container.hh"
 
 #include <iostream>
 #include <string>
 
-#include "ExtEffectsContainer.hh"
-#include "ExternalEffects.hh"
+#include "trackerrk4/ExtEffectsContainer.hh"
+#include "trackerrk4/ExternalEffects.hh"
 
 
 using namespace OrbitUtils;
 
 
 namespace wrap_ext_effects_container{
+	typedef struct {
+		PyObject_HEAD
+		void* cpp_obj;
+		PyObject* effects;
+	} pyORBIT_ExtEffectsContainer;
 
   void error(const char* msg){ ORBIT_MPI_Finalize(msg); }
 
@@ -27,27 +32,30 @@ extern "C" {
 	//It never will be called directly
 	static PyObject* ExtEffectsContainer_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	{
-		pyORBIT_Object* self;
-		self = (pyORBIT_Object *) type->tp_alloc(type, 0);
+		pyORBIT_ExtEffectsContainer* self;
+		self = (pyORBIT_ExtEffectsContainer *) type->tp_alloc(type, 0);
 		self->cpp_obj = NULL;
+		self->effects = NULL;
 		return (PyObject *) self;
 	}
 
 
   //this is implementation of the __init__ method
-  static int ExtEffectsContainer_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
-
-
+  static int ExtEffectsContainer_init(pyORBIT_ExtEffectsContainer *self, PyObject *args, PyObject *kwds){
 	  self->cpp_obj =  new  ExtEffectsContainer();
-	  ((ExtEffectsContainer*) self->cpp_obj)->setPyWrapper((PyObject*) self);
-
-
+	  self->effects = PyList_New(0);
+	  if(self->effects == NULL) {
+		  delete ((ExtEffectsContainer*) self->cpp_obj);
+		  self->cpp_obj = NULL;
+		  return -1;
+	  }
+	  pyorbit::registerPyWrapper(self->cpp_obj, (PyObject*) self);
     return 0;
   }
 
   static PyObject* ExtEffectsContainer_AddEffect(PyObject *self, PyObject *args){
-
-	  ExtEffectsContainer* cpp_ExtEffectsContainer = (ExtEffectsContainer*)((pyORBIT_Object*) self)->cpp_obj;
+	  pyORBIT_ExtEffectsContainer* container = (pyORBIT_ExtEffectsContainer*) self;
+	  ExtEffectsContainer* cpp_ExtEffectsContainer = (ExtEffectsContainer*) container->cpp_obj;
 
 	  ExternalEffects* extEf;
 	  PyObject* pyExtEffects;
@@ -56,6 +64,7 @@ extern "C" {
 			error(" AddEffect(ExternalEffects effect) - parameter is needed");
 		else {
 			extEf = (ExternalEffects*) ((pyORBIT_Object*) pyExtEffects)->cpp_obj;
+			if(PyList_Append(container->effects, pyExtEffects) < 0) return NULL;
 			cpp_ExtEffectsContainer->AddEffect(extEf);
 		}
 
@@ -67,8 +76,10 @@ extern "C" {
   //-----------------------------------------------------
   //destructor for python ExtEffectsContainer class (__del__ method).
   //-----------------------------------------------------
-  static void ExtEffectsContainer_del(pyORBIT_Object* self){
+  static void ExtEffectsContainer_del(pyORBIT_ExtEffectsContainer* self){
+		pyorbit::unregisterPyWrapper(self->cpp_obj, (PyObject*) self);
 		delete ((ExtEffectsContainer*)self->cpp_obj);
+		Py_CLEAR(self->effects);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 
@@ -89,7 +100,7 @@ extern "C" {
 	static PyTypeObject pyORBIT_ExtEffectsContainer_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
 		"ExtEffectsContainer", /*tp_name*/
-		sizeof(pyORBIT_Object), /*tp_basicsize*/
+		sizeof(pyORBIT_ExtEffectsContainer), /*tp_basicsize*/
 		0, /*tp_itemsize*/
 		(destructor) ExtEffectsContainer_del , /*tp_dealloc*/
 		0, /*tp_print*/

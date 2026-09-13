@@ -10,11 +10,11 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#include "Grid1D.hh"
-#include "Grid2D.hh"
-#include "ForceSolverFFT2D.hh"
-#include "SpaceChargeForceCalc2p5D.hh"
-#include "BufferStore.hh"
+#include "spacecharge/Grid1D.hh"
+#include "spacecharge/Grid2D.hh"
+#include "spacecharge/ForceSolverFFT2D.hh"
+#include "spacecharge/SpaceChargeForceCalc2p5D.hh"
+#include "utils/BufferStore.hh"
 
 #include <iostream>
 #include <cmath>
@@ -22,55 +22,35 @@
 
 using namespace OrbitUtils;
 
-SpaceChargeForceCalc2p5D::SpaceChargeForceCalc2p5D(int xSize, int ySize, int zSize): CppPyWrapper(NULL)
+SpaceChargeForceCalc2p5D::SpaceChargeForceCalc2p5D(int xSize, int ySize, int zSize)
 {
 	forceSolver = new ForceSolverFFT2D(xSize, ySize);
-	rhoGrid = new Grid2D(xSize, ySize);
-	forceGridX = new Grid2D(xSize, ySize);
-	forceGridY = new Grid2D(xSize, ySize);
-	zGrid = new Grid1D(zSize);
+	rhoGrid.reset(new Grid2D(xSize, ySize));
+	forceGridX.reset(new Grid2D(xSize, ySize));
+	forceGridY.reset(new Grid2D(xSize, ySize));
+	zGrid.reset(new Grid1D(zSize));
 	bunchExtremaCalc = new BunchExtremaCalculator();
 }
 
 SpaceChargeForceCalc2p5D::~SpaceChargeForceCalc2p5D(){
 	delete forceSolver;
-	if(rhoGrid->getPyWrapper() != NULL){
-		Py_DECREF(rhoGrid->getPyWrapper());
-	} else {
-		delete rhoGrid;
-	}
-	if(forceGridX->getPyWrapper() != NULL){
-		Py_DECREF(forceGridX->getPyWrapper());
-	} else {
-		delete forceGridX;
-	}
-	if(forceGridY->getPyWrapper() != NULL){
-		Py_DECREF(forceGridY->getPyWrapper());
-	} else {
-		delete forceGridY;
-	}
-	if(zGrid->getPyWrapper() != NULL){
-		Py_DECREF(zGrid->getPyWrapper());
-	} else {
-		delete zGrid;
-	}
 	delete bunchExtremaCalc;
 }
 
 Grid2D* SpaceChargeForceCalc2p5D::getRhoGrid(){
-	return rhoGrid;
+	return rhoGrid.get();
 }
 
 Grid2D* SpaceChargeForceCalc2p5D::getForceGridX(){
-	return forceGridX;
+	return forceGridX.get();
 }
 
 Grid2D* SpaceChargeForceCalc2p5D::getForceGridY(){
-	return forceGridY;
+	return forceGridY.get();
 }
 
 Grid1D* SpaceChargeForceCalc2p5D::getLongGrid(){
-	return zGrid;
+	return zGrid.get();
 }
 
 void SpaceChargeForceCalc2p5D::trackBunch(Bunch* bunch, double length){
@@ -86,7 +66,7 @@ void SpaceChargeForceCalc2p5D::trackBunch(Bunch* bunch, double length){
 	double z_step = zGrid->getStepZ();
 
 	//calculate phiGrid
-	forceSolver->findForce(rhoGrid, forceGridX, forceGridY);
+	forceSolver->findForce(rhoGrid.get(), forceGridX.get(), forceGridY.get());
 
 	SyncPart* syncPart = bunch->getSyncPart();
 	double factor = 2*length*bunch->getClassicalRadius()/(pow(syncPart->getBeta(),2)*pow(syncPart->getGamma(),3));

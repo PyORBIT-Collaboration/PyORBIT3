@@ -1,4 +1,4 @@
-#include "EllipseApertureShape.hh"
+#include "orbit/Apertures/EllipseApertureShape.hh"
 
 #include <iostream>
 #include <cmath>

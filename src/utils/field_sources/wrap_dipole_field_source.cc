@@ -1,9 +1,9 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
-#include "wrap_spacecharge.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
+#include "spacecharge/wrap_spacecharge.hh"
 
-#include "wrap_utils.hh"
-#include "DipoleFieldSource.hh"
+#include "utils/wrap_utils.hh"
+#include "utils/field_sources/DipoleFieldSource.hh"
 
 #include <iostream>
 
@@ -11,6 +11,12 @@ using namespace OrbitUtils;
 using namespace wrap_orbit_utils;
 
 namespace wrap_dipole_field_source{
+
+	typedef struct {
+		PyObject_HEAD
+		void* cpp_obj;
+		PyObject* transform;
+	} pyORBIT_DipoleFieldSource;
 
   void error(const char* msg){ ORBIT_MPI_Finalize(msg); }
 
@@ -25,17 +31,18 @@ extern "C" {
 	//It never will be called directly
 	static PyObject* DipoleFieldSource_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	{
-		pyORBIT_Object* self;
-		self = (pyORBIT_Object *) type->tp_alloc(type, 0);
+		pyORBIT_DipoleFieldSource* self;
+		self = (pyORBIT_DipoleFieldSource *) type->tp_alloc(type, 0);
 		self->cpp_obj = NULL;
+		self->transform = NULL;
 		return (PyObject *) self;
 	}
 
   //initializator for python  DipoleFieldSource class
   //this is implementation of the __init__ method
-  static int DipoleFieldSource_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
+  static int DipoleFieldSource_init(pyORBIT_DipoleFieldSource *self, PyObject *args, PyObject *kwds){
 		self->cpp_obj = new DipoleFieldSource();
-		((DipoleFieldSource*) self->cpp_obj)->setPyWrapper((PyObject*) self);
+		pyorbit::registerPyWrapper(self->cpp_obj, (PyObject*) self);
     return 0;
   }
 
@@ -85,6 +92,7 @@ extern "C" {
 
   /** Sets / Returns the coordinates transformation matrix 4x4 from external to inner system */
   static PyObject* DipoleFieldSource_transormfMatrix(PyObject *self, PyObject *args){
+	  pyORBIT_DipoleFieldSource* source = (pyORBIT_DipoleFieldSource*) self;
 	  DipoleFieldSource* cpp_fieldSource = (DipoleFieldSource*)((pyORBIT_Object*) self)->cpp_obj;
 	  int nArgs = PyTuple_Size(args);
 	  PyObject* pyMatrix;
@@ -101,25 +109,27 @@ extern "C" {
 	  	if(cpp_matrix->rows() != 4 || cpp_matrix->columns() != 4){
 	  		error("DipoleFieldSource.transormfMatrix(Matrix) - Matrix is not 4x4.");
 	  	}
-	  	// the Py_INCREF(pyMatrix) call will be performed inside setCoordsTransformMatrix(...) method
 	  	cpp_fieldSource->setCoordsTransformMatrix(cpp_matrix);
+		Py_INCREF(pyMatrix);
+		Py_XDECREF(source->transform);
+		source->transform = pyMatrix;
 	  	Py_INCREF(Py_None);
 	  	return Py_None;
 	  }
-	  cpp_matrix = cpp_fieldSource->getCoordsTransformMatrix();
-	  pyMatrix = (PyObject*) ((pyORBIT_Object*) cpp_matrix->getPyWrapper());
-	  if(pyMatrix == NULL){
+	  if(source->transform == NULL){
 	  	error("DipoleFieldSource.transormfMatrix() - cannot return Matrix 4x4. You have to assign it first.");
 	  }
-	  Py_INCREF(pyMatrix);
-	  return pyMatrix;
+	  Py_INCREF(source->transform);
+	  return source->transform;
   }
 
   //-----------------------------------------------------
   //destructor for python DipoleFieldSource class (__del__ method).
   //-----------------------------------------------------
-  static void DipoleFieldSource_del(pyORBIT_Object* self){
+	static void DipoleFieldSource_del(pyORBIT_DipoleFieldSource* self){
+		pyorbit::unregisterPyWrapper(self->cpp_obj, (PyObject*) self);
 		delete ((DipoleFieldSource*)self->cpp_obj);
+		Py_CLEAR(self->transform);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 
@@ -143,7 +153,7 @@ extern "C" {
 	static PyTypeObject pyORBIT_DipoleFieldSource_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
 		"DipoleFieldSource", /*tp_name*/
-		sizeof(pyORBIT_Object), /*tp_basicsize*/
+		sizeof(pyORBIT_DipoleFieldSource), /*tp_basicsize*/
 		0, /*tp_itemsize*/
 		(destructor) DipoleFieldSource_del , /*tp_dealloc*/
 		0, /*tp_print*/

@@ -1,12 +1,12 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_Barrier_Cav.hh"
-#include "wrap_bunch.hh"
+#include "orbit/RFCavities/wrap_Barrier_Cav.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "Barrier_Cav.hh"
+#include "orbit/RFCavities/Barrier_Cav.hh"
 
 using namespace OrbitUtils;
 
@@ -69,7 +69,6 @@ static int Barrier_Cav_init(pyORBIT_Object *self,
                                   RFPhasem,
                                   dRFPhasep,
                                   dRFPhasem);
-  ((Barrier_Cav*) self->cpp_obj)->setPyWrapper((PyObject*) self);
   return 0;
 }
 

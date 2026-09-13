@@ -1,12 +1,12 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_LImpedance.hh"
-#include "wrap_bunch.hh"
+#include "orbit/Impedances/wrap_LImpedance.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "LImpedance.hh"
+#include "orbit/Impedances/LImpedance.hh"
 
 using namespace OrbitUtils;
 
@@ -63,7 +63,6 @@ extern "C"
 
     self->cpp_obj = new LImpedance(length, nMacrosMin, nBins);
 
-    ((LImpedance*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 
     return 0;
   }

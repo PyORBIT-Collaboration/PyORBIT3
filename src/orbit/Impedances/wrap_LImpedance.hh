@@ -1,7 +1,7 @@
 #ifndef WRAP_LIMPEDANCE_H
 #define WRAP_LIMPEDANCE_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C"

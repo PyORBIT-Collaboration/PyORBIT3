@@ -1,11 +1,11 @@
-#include "Python.h"
-#include "orbit_mpi.hh"
+#include <Python.h>
+#include "mpi/orbit_mpi.hh"
 
-#include "pyORBIT_Object.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "errorbase.hh"
+#include "orbit/Errors/errorbase.hh"
 
-#include "wrap_errorbase.hh"
+#include "orbit/Errors/wrap_errorbase.hh"
 
 namespace wrap_errorbase
 {

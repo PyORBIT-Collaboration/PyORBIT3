@@ -1,7 +1,7 @@
 #ifndef WRAP_FIELD_SOURCES_MODULE_H
 #define WRAP_FIELD_SOURCES_MODULE_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

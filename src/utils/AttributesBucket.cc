@@ -13,7 +13,7 @@
 //    A class for collection of int and double attributes in the dictionary.
 ///////////////////////////////////////////////////////////////////////////
 
-#include "AttributesBucket.hh"
+#include "utils/AttributesBucket.hh"
 
 using namespace OrbitUtils;
 

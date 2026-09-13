@@ -1,13 +1,8 @@
 #ifndef STAT_MOMENTS_2D_H
 #define STAT_MOMENTS_2D_H
 
-#include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
+#include "mpi/orbit_mpi.hh"
 
-//pyORBIT utils
-#include "CppPyWrapper.hh"
-
-using namespace std;
 
 /**
 The Moments1D class calculates the arbitrary moments of the (u,up) distribution.
@@ -16,7 +11,7 @@ It is used by other classes to calculate Twiss paraemeters etc.
 
 namespace OrbitUtils{
 
-	class StatMoments2D: public CppPyWrapper
+	class StatMoments2D
 	{
 	public:
 
@@ -66,7 +61,7 @@ namespace OrbitUtils{
 		int getCount();
 
 		/** It will synchronize the moments through the MPI communicator */
-		void synchronizeMPI(pyORBIT_MPI_Comm* pyComm);
+		void synchronizeMPI(MPI_Comm pyComm);
 
     /** Returns the emittance */
 		double getEmittance();

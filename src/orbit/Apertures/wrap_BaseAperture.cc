@@ -1,14 +1,19 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_bunch.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "BaseAperture.hh"
-#include "BaseApertureShape.hh"
+#include "orbit/Apertures/BaseAperture.hh"
+#include "orbit/Apertures/BaseApertureShape.hh"
 
 namespace wrap_base_aperture{
+	typedef struct {
+		PyObject_HEAD
+		void* cpp_obj;
+		PyObject* shape;
+	} pyORBIT_BaseAperture;
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,26 +24,31 @@ extern "C" {
       It never will be called directly.
 	*/
 	static PyObject* BaseAperture_new(PyTypeObject *type, PyObject *args, PyObject *kwds){
-		pyORBIT_Object* self;
-		self = (pyORBIT_Object *) type->tp_alloc(type, 0);
+		pyORBIT_BaseAperture* self;
+		self = (pyORBIT_BaseAperture *) type->tp_alloc(type, 0);
 		self->cpp_obj = NULL;
+		self->shape = NULL;
 		return (PyObject *) self;
 	}
 
   /** This is implementation of the __init__ method */
-  static int BaseAperture_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
+  static int BaseAperture_init(pyORBIT_BaseAperture *self, PyObject *args, PyObject *kwds){
 	  self->cpp_obj =  new BaseAperture();
-	  ((BaseAperture*) self->cpp_obj)->setPyWrapper((PyObject*) self);
+	  pyorbit::registerPyWrapper(self->cpp_obj, (PyObject*) self);
     return 0;
   }
 
   /** Sets the pyBaseApertureShape object for inside(...) method */
   static PyObject* BaseAperture_setApertureShape(PyObject *self, PyObject *args){
-	  BaseAperture* cpp_BaseAperture = (BaseAperture*)((pyORBIT_Object*) self)->cpp_obj;
+	  pyORBIT_BaseAperture* aperture = (pyORBIT_BaseAperture*) self;
+	  BaseAperture* cpp_BaseAperture = (BaseAperture*) aperture->cpp_obj;
 	  PyObject* pyBaseApertureShape;
 		if(!PyArg_ParseTuple(args,"O:setApertureShape",&pyBaseApertureShape)){
 				ORBIT_MPI_Finalize("BaseAperture - setApertureShape(BaseApertureShape) - parameter is needed. Stop.");
 		}
+		Py_INCREF(pyBaseApertureShape);
+		Py_XDECREF(aperture->shape);
+		aperture->shape = pyBaseApertureShape;
 		cpp_BaseAperture->setApertureShape((BaseApertureShape*) ((pyORBIT_Object*) pyBaseApertureShape)->cpp_obj);
 		Py_INCREF(Py_None);
 		return Py_None;
@@ -46,15 +56,13 @@ extern "C" {
 
   /** Returns the pyBaseApertureShape object for inside(...) method */
   static PyObject* BaseAperture_getApertureShape(PyObject *self, PyObject *args){
-	  BaseAperture* cpp_BaseAperture = (BaseAperture*)((pyORBIT_Object*) self)->cpp_obj;
-	  BaseApertureShape* baseApertureShape = cpp_BaseAperture->getApertureShape();
-	  if(baseApertureShape == NULL){
+	  pyORBIT_BaseAperture* aperture = (pyORBIT_BaseAperture*) self;
+	  if(aperture->shape == NULL){
 	  	Py_INCREF(Py_None);
 	  	return Py_None;
 	  }
-	  PyObject* pyBaseApertureShape = baseApertureShape->getPyWrapper();
-		Py_INCREF(pyBaseApertureShape);
-		return pyBaseApertureShape;
+		Py_INCREF(aperture->shape);
+		return aperture->shape;
 	}
 
   /** Performs the collimation tracking of the bunch */
@@ -149,9 +157,11 @@ extern "C" {
   //-----------------------------------------------------
   //destructor for python BaseAperture class (__del__ method).
   //-----------------------------------------------------
-  static void BaseAperture_del(pyORBIT_Object* self){
+  static void BaseAperture_del(pyORBIT_BaseAperture* self){
 		//std::cerr<<"The BaseAperture __del__ has been called!"<<std::endl;
+		pyorbit::unregisterPyWrapper(self->cpp_obj, (PyObject*) self);
 		delete ((BaseAperture*)self->cpp_obj);
+		Py_CLEAR(self->shape);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 
@@ -177,7 +187,7 @@ extern "C" {
 	static PyTypeObject pyORBIT_BaseAperture_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
 		"BaseAperture", /*tp_name*/
-		sizeof(pyORBIT_Object), /*tp_basicsize*/
+		sizeof(pyORBIT_BaseAperture), /*tp_basicsize*/
 		0, /*tp_itemsize*/
 		(destructor) BaseAperture_del , /*tp_dealloc*/
 		0, /*tp_print*/

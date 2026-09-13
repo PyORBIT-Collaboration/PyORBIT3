@@ -23,12 +23,10 @@
 //    the external coordinate system by coordTransformBack (3x3) matrix.
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "Python.h"
+#include "mpi/orbit_mpi.hh"
 
-#include "orbit_mpi.hh"
-
-#include "ShiftedFieldSource.hh"
-#include "MatrixOperations.hh"
+#include "utils/field_sources/ShiftedFieldSource.hh"
+#include "utils/matrix/MatrixOperations.hh"
 
 using namespace OrbitUtils;
 
@@ -36,8 +34,9 @@ using namespace OrbitUtils;
 ShiftedFieldSource::ShiftedFieldSource(): BaseFieldSource()
 {
 
-	coordTransformM4x4 = new Matrix(4,4);
-	coordTransformM3x3 = new Matrix(3,3);
+	ownedCoordTransformM4x4.reset(new Matrix(4,4));
+	coordTransformM4x4 = ownedCoordTransformM4x4.get();
+	coordTransformM3x3.reset(new Matrix(3,3));
 	coordTransformM4x4->unit();
 	coordTransformM3x3->unit();
 
@@ -58,15 +57,6 @@ ShiftedFieldSource::ShiftedFieldSource(): BaseFieldSource()
 /** Destructor */
 ShiftedFieldSource::~ShiftedFieldSource()
 {
-	if(coordTransformM4x4->getPyWrapper() == NULL){
-		delete coordTransformM4x4;
-	}
-	else {
-		Py_XDECREF(coordTransformM4x4->getPyWrapper());
-	}
-
-	delete coordTransformM3x3;
-
 	delete coordVectExt;
 	delete coordVectInn;
 
@@ -101,7 +91,7 @@ void ShiftedFieldSource::getElectricMagneticField(
 		innArr[1] = E_y;
 		innArr[2] = E_z;
 
-		MatrixOperations::mult(coordTransformM3x3,fieldVectInn,fieldVectExt);
+		MatrixOperations::mult(coordTransformM3x3.get(),fieldVectInn,fieldVectExt);
 
 		extArr = fieldVectExt->getArray();
 		E_x = extArr[0];
@@ -115,7 +105,7 @@ void ShiftedFieldSource::getElectricMagneticField(
 		innArr[1] = H_y;
 		innArr[2] = H_z;
 
-		MatrixOperations::mult(coordTransformM3x3,fieldVectInn,fieldVectExt);
+		MatrixOperations::mult(coordTransformM3x3.get(),fieldVectInn,fieldVectExt);
 
 		extArr = fieldVectExt->getArray();
 		H_x = extArr[0];
@@ -148,21 +138,11 @@ Matrix* ShiftedFieldSource::getCoordsTransformMatrix()
 */
 void ShiftedFieldSource::setCoordsTransformMatrix(Matrix* coordTransformM4x4_In)
 {
-	if(coordTransformM4x4->getPyWrapper() == NULL){
-		delete coordTransformM4x4;
-	}
-	else {
-		Py_XDECREF(coordTransformM4x4->getPyWrapper());
-	}
-
+	ownedCoordTransformM4x4.reset();
 	coordTransformM4x4 = coordTransformM4x4_In;
 
-	if(coordTransformM4x4->getPyWrapper() != NULL){
-		Py_INCREF(coordTransformM4x4->getPyWrapper());
-	}
-
-	for(int ind_x; ind_x < 3; ind_x++){
-		for(int ind_y; ind_y < 3; ind_y++){
+	for(int ind_x = 0; ind_x < 3; ind_x++){
+		for(int ind_y = 0; ind_y < 3; ind_y++){
 			coordTransformM3x3->getArray()[ind_x][ind_y] = coordTransformM4x4->getArray()[ind_x][ind_y];
 		}
 	}

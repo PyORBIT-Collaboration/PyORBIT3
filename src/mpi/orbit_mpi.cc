@@ -1,4 +1,4 @@
-#include "orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
 
 #include <cstdlib>
 #include <cstring>
@@ -33,9 +33,6 @@ int ORBIT_MPI_Init(){
 #if USE_MPI > 0
   // Ignoring result; if it fails, the proc is doomed anyway.
   MPI_Init(NULL, NULL);
-
-  // Registering MPI finalize method at cleanup stage
-  Py_AtExit(ORBIT_MPI_Finalize);
 #endif
   return MPI_SUCCESS;
 }
@@ -52,57 +49,37 @@ int ORBIT_MPI_Initialized(int *init){
   return res;
 }
 
-/** A C wrapper around MPI_Finalize. */
+/** Finalizes MPI without terminating the process. */
+int ORBIT_MPI_FinalizeMPI(){
+#if USE_MPI > 0
+  int initialized = 0;
+  int finalized = 0;
+  MPI_Initialized(&initialized);
+  if(initialized == 0) return MPI_SUCCESS;
+  MPI_Finalized(&finalized);
+  if(finalized == 0) return MPI_Finalize();
+#endif
+  return MPI_SUCCESS;
+}
+
+/** A C wrapper around MPI_Finalize that terminates successfully. */
 void ORBIT_MPI_Finalize(){
-  int res = 0;
-  res = ORBIT_MPI_Finalize(NULL);
-  if(res != MPI_SUCCESS){
-    PyErr_SetString(PyExc_RuntimeError,"ORBIT_MPI_Finalize.");
-    PyErr_Print();
-    PyRun_SimpleString("import traceback; traceback.print_stack()");
-  }
+  ORBIT_MPI_Finalize(NULL);
 }
 
 /** A C wrapper around MPI_Finalize(message). */
 int ORBIT_MPI_Finalize(const char* message){
-  int res = 0;
-  int rank;
-  ORBIT_MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  int init;
-  ORBIT_MPI_Initialized(&init);
-#if USE_MPI > 0
-  if(init > 0){
-    res = MPI_Finalize();
-  }
-#else
-  if(message != NULL){res  = MPI_SUCCESS;}
-#endif
+  int rank = 0;
+  int initialized = 0;
+  ORBIT_MPI_Initialized(&initialized);
+  if(initialized > 0) ORBIT_MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  int res = ORBIT_MPI_FinalizeMPI();
   if(rank == 0){
-    if(Py_IsInitialized()){
-      PyErr_SetString(PyExc_RuntimeError,"ORBIT_MPI_Finalize.");
-      PyErr_Print();
-      PyRun_SimpleString("import traceback; traceback.print_stack()");
-    }
     if(message != NULL){
       std::cerr<<message<<std::endl;
     }
   }
-  if(Py_IsInitialized()){
-  	if(message != NULL){
-  		Py_Exit(1);
-  	}
-  	else{
-  		Py_Exit(0);
-  	}
-  }
-  else{
-  	if(message != NULL){
-  		exit(1);
-  	}
-  	else{
-  		exit(0);
-  	}
-  }
+  exit(message != NULL || res != MPI_SUCCESS ? EXIT_FAILURE : EXIT_SUCCESS);
   return res;
 }
 
@@ -176,6 +153,7 @@ int ORBIT_MPI_Comm_dup(MPI_Comm comm, MPI_Comm *comm_out){
   res = MPI_Comm_dup(comm, comm_out);
 #else
   res  = MPI_SUCCESS;
+	*comm_out = comm;
 #endif
 	return res;
 }
@@ -233,6 +211,7 @@ int ORBIT_MPI_Comm_compare(MPI_Comm  comm1, MPI_Comm  comm2, int *result){
   res = MPI_Comm_compare(comm1, comm2, result);
 #else
   res  = MPI_SUCCESS;
+	*result = MPI_IDENT;
 #endif
 	return res;
 }

@@ -2,17 +2,14 @@
 #ifndef COLLIMATOR_H
 #define COLLIMATOR_H
 
-//pyORBIT utils
-#include "CppPyWrapper.hh"
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 
-using namespace std;
 
 /**
   The collimator class is used to define how a bunch propogates through a collimator
 */
 
-class Collimator: public OrbitUtils::CppPyWrapper
+class Collimator
 {
 public:
 

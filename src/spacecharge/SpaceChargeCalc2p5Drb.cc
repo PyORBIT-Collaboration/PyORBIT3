@@ -16,11 +16,11 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#include "Grid1D.hh"
-#include "Grid2D.hh"
-#include "PoissonSolverFFT2D.hh"
-#include "SpaceChargeCalc2p5Drb.hh"
-#include "BufferStore.hh"
+#include "spacecharge/Grid1D.hh"
+#include "spacecharge/Grid2D.hh"
+#include "spacecharge/PoissonSolverFFT2D.hh"
+#include "spacecharge/SpaceChargeCalc2p5Drb.hh"
+#include "utils/BufferStore.hh"
 
 #include <iostream>
 #include <cmath>
@@ -28,14 +28,14 @@
 
 using namespace OrbitUtils;
 
-SpaceChargeCalc2p5Drb::SpaceChargeCalc2p5Drb(int xSize, int ySize, int zSize, double xy_ratio_in): CppPyWrapper(NULL)
+SpaceChargeCalc2p5Drb::SpaceChargeCalc2p5Drb(int xSize, int ySize, int zSize, double xy_ratio_in)
 {
 	xy_ratio = xy_ratio_in;
 	poissonSolver = new PoissonSolverFFT2D(xSize, ySize, -xy_ratio, xy_ratio, -1.0, 1.0);
-	rhoGrid = new Grid2D(xSize, ySize);
-	phiGrid = new Grid2D(xSize, ySize);
-	zGrid = new Grid1D(zSize);
-	zDerivGrid = new Grid1D(zSize);
+	rhoGrid.reset(new Grid2D(xSize, ySize));
+	phiGrid.reset(new Grid2D(xSize, ySize));
+	zGrid.reset(new Grid1D(zSize));
+	zDerivGrid.reset(new Grid1D(zSize));
 	bunchExtremaCalc = new BunchExtremaCalculator();
 	//we will use 3 points by default to calculate the longitudinal density derivative
 	n_long_avg = 3;
@@ -45,14 +45,14 @@ SpaceChargeCalc2p5Drb::SpaceChargeCalc2p5Drb(int xSize, int ySize, int zSize, do
 	}
 }
 
-SpaceChargeCalc2p5Drb::SpaceChargeCalc2p5Drb(int xSize, int ySize, int zSize): CppPyWrapper(NULL)
+SpaceChargeCalc2p5Drb::SpaceChargeCalc2p5Drb(int xSize, int ySize, int zSize)
 {
 	xy_ratio = 1.0;
 	poissonSolver = new PoissonSolverFFT2D(xSize, ySize, -xy_ratio, xy_ratio, -1.0, 1.0);
-	rhoGrid = new Grid2D(xSize, ySize);
-	phiGrid = new Grid2D(xSize, ySize);
-	zGrid = new Grid1D(zSize);
-	zDerivGrid = new Grid1D(zSize);
+	rhoGrid.reset(new Grid2D(xSize, ySize));
+	phiGrid.reset(new Grid2D(xSize, ySize));
+	zGrid.reset(new Grid1D(zSize));
+	zDerivGrid.reset(new Grid1D(zSize));
 	bunchExtremaCalc = new BunchExtremaCalculator();
 	//we will use 3 points by default to calculate the longitudinal density derivative
 	n_long_avg = 3;
@@ -64,26 +64,6 @@ SpaceChargeCalc2p5Drb::SpaceChargeCalc2p5Drb(int xSize, int ySize, int zSize): C
 
 SpaceChargeCalc2p5Drb::~SpaceChargeCalc2p5Drb(){
 	delete poissonSolver;
-	if(rhoGrid->getPyWrapper() != NULL){
-		Py_DECREF(rhoGrid->getPyWrapper());
-	} else {
-		delete rhoGrid;
-	}
-	if(phiGrid->getPyWrapper() != NULL){
-		Py_DECREF(phiGrid->getPyWrapper());
-	} else {
-		delete phiGrid;
-	}
-	if(zGrid->getPyWrapper() != NULL){
-		Py_DECREF(zGrid->getPyWrapper());
-	} else {
-		delete zGrid;
-	}
-	if(zDerivGrid->getPyWrapper() != NULL){
-		Py_DECREF(zDerivGrid->getPyWrapper());
-	} else {
-		delete zDerivGrid;
-	}
 	delete bunchExtremaCalc;
 	for(int i = 0; i < 5; i++){
 		delete [] S_arr[i];
@@ -92,19 +72,19 @@ SpaceChargeCalc2p5Drb::~SpaceChargeCalc2p5Drb(){
 }
 
 Grid2D* SpaceChargeCalc2p5Drb::getRhoGrid(){
-	return rhoGrid;
+	return rhoGrid.get();
 }
 
 Grid2D* SpaceChargeCalc2p5Drb::getPhiGrid(){
-	return phiGrid;
+	return phiGrid.get();
 }
 
 Grid1D* SpaceChargeCalc2p5Drb::getLongGrid(){
-	return zGrid;
+	return zGrid.get();
 }
 
 Grid1D* SpaceChargeCalc2p5Drb::getLongDerivativeGrid(){
-	return zDerivGrid;
+	return zDerivGrid.get();
 }
 
 void SpaceChargeCalc2p5Drb::trackBunch(Bunch* bunch, double length, double pipe_radius){
@@ -122,7 +102,7 @@ void SpaceChargeCalc2p5Drb::trackBunch(Bunch* bunch, double length, double pipe_
 	double z_step = zGrid->getStepZ();
 
 	//calculate phiGrid
-	poissonSolver->findPotential(rhoGrid,phiGrid);
+	poissonSolver->findPotential(rhoGrid.get(),phiGrid.get());
 
 	SyncPart* syncPart = bunch->getSyncPart();
 	double factor =  2*length*bunch->getClassicalRadius()/(pow(syncPart->getBeta(),2)*pow(syncPart->getGamma(),3));

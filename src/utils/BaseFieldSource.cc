@@ -14,11 +14,11 @@
 ///////////////////////////////////////////////////////////////////////////
 
 
-#include "BaseFieldSource.hh"
+#include "utils/BaseFieldSource.hh"
 
 using namespace OrbitUtils;
 
-BaseFieldSource::BaseFieldSource(): CppPyWrapper(NULL)
+BaseFieldSource::BaseFieldSource()
 {
 }
 

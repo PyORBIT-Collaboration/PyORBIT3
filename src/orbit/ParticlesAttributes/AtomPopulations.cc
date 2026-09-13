@@ -16,8 +16,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "../Bunch.hh"
-#include "AtomPopulations.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/ParticlesAttributes/AtomPopulations.hh"
 
 AtomPopulations::AtomPopulations(Bunch* bunch, int size_in):
   ParticleAttributes(bunch,size_in)

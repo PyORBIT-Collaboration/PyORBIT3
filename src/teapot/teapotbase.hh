@@ -23,7 +23,7 @@
 #ifndef TEAPOT_BASE_H
 #define TEAPOT_BASE_H
 
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 
 namespace teapot_base
 {

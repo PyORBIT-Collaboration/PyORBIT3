@@ -1,9 +1,9 @@
-#include "orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
 
-#include "wrap_trackerrk4.hh"
-#include "wrap_runge_kutta_tracker.hh"
-#include "wrap_py_external_effects.hh"
-#include "wrap_ext_effects_container.hh"
+#include "trackerrk4/wrap_trackerrk4.hh"
+#include "trackerrk4/wrap_runge_kutta_tracker.hh"
+#include "trackerrk4/wrap_py_external_effects.hh"
+#include "trackerrk4/wrap_ext_effects_container.hh"
 
 static PyMethodDef trackerrk4Methods[] = { {NULL,NULL} };
 
@@ -29,14 +29,6 @@ extern "C" {
 
 		return module;
 }
-  PyObject* getTrackerRK4Type(const char* name){
-		PyObject* mod = PyImport_ImportModule("orbit.core.trackerrk4");
-		PyObject* pyType = PyObject_GetAttrString(mod,name);
-		Py_DECREF(mod);
-		Py_DECREF(pyType);
-		return pyType;
-	}
-
 #ifdef __cplusplus
 }
 #endif

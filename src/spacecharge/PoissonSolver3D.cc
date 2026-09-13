@@ -1,11 +1,11 @@
-#include "PoissonSolver3D.hh"
+#include "spacecharge/PoissonSolver3D.hh"
 
 #include <iostream>
 
 using namespace OrbitUtils;
 
 // Constructor
-PoissonSolver3D::PoissonSolver3D(int xSize, int ySize, int zSize): CppPyWrapper(NULL)
+PoissonSolver3D::PoissonSolver3D(int xSize, int ySize, int zSize)
 {
 	xSize_ = xSize;
 	ySize_ = ySize;
@@ -32,7 +32,7 @@ PoissonSolver3D::PoissonSolver3D(int xSize, int ySize, int zSize): CppPyWrapper(
 PoissonSolver3D::PoissonSolver3D(int xSize, int ySize, int zSize,
 	                               double xMin, double xMax,
 																  double yMin, double yMax,
-																  double zMin, double zMax): CppPyWrapper(NULL)
+																  double zMin, double zMax)
 {
 	xSize_ = xSize;
 	ySize_ = ySize;

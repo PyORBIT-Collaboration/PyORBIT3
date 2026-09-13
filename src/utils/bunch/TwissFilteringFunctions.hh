@@ -21,7 +21,7 @@
 #include <cmath>
 
 //ORBIT bunch
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 
 namespace OrbitUtils{
 

@@ -17,15 +17,13 @@
 #ifndef RUNGE_KUTTA_3D_TRACKER_H
 #define RUNGE_KUTTA_3D_TRACKER_H
 
-#include "Bunch.hh"
-#include "BaseFieldSource.hh"
-#include "ExternalEffects.hh"
-
-#include "CppPyWrapper.hh"
+#include "orbit/Bunch.hh"
+#include "utils/BaseFieldSource.hh"
+#include "trackerrk4/ExternalEffects.hh"
 
 namespace TrackerRK4{
 
-	class RungeKuttaTracker: public OrbitUtils::CppPyWrapper
+	class RungeKuttaTracker
 	{
 		//--------------------------------------------------
 		// public methods of the RungeKuttaTracker class

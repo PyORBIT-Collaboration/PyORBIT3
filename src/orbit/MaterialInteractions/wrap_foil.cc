@@ -1,12 +1,12 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_foil.hh"
-#include "wrap_bunch.hh"
+#include "orbit/MaterialInteractions/wrap_foil.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "Foil.hh"
+#include "orbit/MaterialInteractions/Foil.hh"
 
 namespace wrap_foil{
 
@@ -37,7 +37,6 @@ extern "C" {
 		  error("PyBunch - addParticle - cannot parse arguments! It should be (xmin, xmax, ymin, ymax, thick)");
 	  }
 		self->cpp_obj =  new Foil(xmin, xmax, ymin, ymax, thick);
-	  ((Foil*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
 

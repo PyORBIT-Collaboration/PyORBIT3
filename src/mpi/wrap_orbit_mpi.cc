@@ -1,22 +1,22 @@
 #define PY_SSIZE_T_CLEAN
-#include "Python.h"
-#include "orbit_mpi.hh"
+#include <Python.h>
+#include "mpi/orbit_mpi.hh"
 
 #include <cstring>
 #include <iostream>
 
 //arrays buffers for MPI exchange
-#include "BufferStore.hh"
+#include "utils/BufferStore.hh"
 
-#include "wrap_orbit_mpi.hh"
+#include "mpi/wrap_orbit_mpi.hh"
 
 //wrappers of mpi objects
-#include "wrap_mpi_comm.hh"
-#include "wrap_mpi_group.hh"
-#include "wrap_mpi_status.hh"
-#include "wrap_mpi_request.hh"
-#include "wrap_mpi_datatype.hh"
-#include "wrap_mpi_op.hh"
+#include "mpi/wrap_mpi_comm.hh"
+#include "mpi/wrap_mpi_group.hh"
+#include "mpi/wrap_mpi_status.hh"
+#include "mpi/wrap_mpi_request.hh"
+#include "mpi/wrap_mpi_datatype.hh"
+#include "mpi/wrap_mpi_op.hh"
 
 using namespace OrbitUtils;
 
@@ -27,6 +27,10 @@ using namespace OrbitUtils;
 
 /** The namespace for the python wrappers around MPI functions. */
 namespace wrap_orbit_mpi{
+
+	static void finalize_mpi_at_exit(){
+		ORBIT_MPI_FinalizeMPI();
+	}
 
 	/** A local error(message) function. */
   void error(const char* msg){ ORBIT_MPI_Finalize(msg); }
@@ -68,27 +72,27 @@ namespace wrap_orbit_mpi{
 		//------------------------------------------------------------------
 		// Wrappers for MPI functions related to the MPI_Comm manipulations
 		//------------------------------------------------------------------
-		#include 	"wrap_orbit_mpi_comm_functions.hh"
+		#include 	"mpi/wrap_orbit_mpi_comm_functions.hh"
 
 		//------------------------------------------------------------------
 		// Wrappers for MPI functions related to the MPI_Group manipulations
 		//------------------------------------------------------------------
-		#include 	"wrap_orbit_mpi_group_functions.hh"
+		#include 	"mpi/wrap_orbit_mpi_group_functions.hh"
 
 		//----------------------------------------------------------------------
 		// Wrappers for MPI functions related to the MPI_Intercomm manipulations
 		//----------------------------------------------------------------------
-		#include 	"wrap_orbit_mpi_intercomm_functions.hh"
+		#include 	"mpi/wrap_orbit_mpi_intercomm_functions.hh"
 
 		//-------------------------------------------------------------------
 		// Wrappers for MPI functions related to the MPI_Graph manipulations
 		//-------------------------------------------------------------------
-		#include 	"wrap_orbit_mpi_graph_functions.hh"
+		#include 	"mpi/wrap_orbit_mpi_graph_functions.hh"
 
 		//------------------------------------------------------------------
 		// Wrappers for MPI functions related to the Send-Receive operations
 		//------------------------------------------------------------------
-		#include 	"wrap_orbit_mpi_send_receive_functions.hh"
+		#include 	"mpi/wrap_orbit_mpi_send_receive_functions.hh"
 
 		//Finalizes the execution of program
 		//  the action is depended on the number of arguments
@@ -181,6 +185,7 @@ namespace wrap_orbit_mpi{
 		PyMODINIT_FUNC initorbit_mpi(void) {
 			// Initialize MPI
 			ORBIT_MPI_Init();
+			Py_AtExit(finalize_mpi_at_exit);
 
 			PyObject *m, *d;
 			m = PyModule_Create(&cModPyDem);

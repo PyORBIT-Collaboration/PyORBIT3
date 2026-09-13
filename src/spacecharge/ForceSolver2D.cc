@@ -1,11 +1,11 @@
-#include "ForceSolver2D.hh"
+#include "spacecharge/ForceSolver2D.hh"
 
 #include <iostream>
 
 using namespace OrbitUtils;
 
 // Constructor
-ForceSolver2D::ForceSolver2D(int xSize, int ySize): CppPyWrapper(NULL)
+ForceSolver2D::ForceSolver2D(int xSize, int ySize)
 {
 	xSize_ = xSize;
 	ySize_ = ySize;

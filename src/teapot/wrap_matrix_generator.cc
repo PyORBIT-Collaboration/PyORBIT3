@@ -1,15 +1,15 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_matrix_generator.hh"
-#include "wrap_teapotbase.hh"
-#include "wrap_bunch.hh"
-#include "wrap_utils.hh"
+#include "teapot/wrap_matrix_generator.hh"
+#include "teapot/wrap_teapotbase.hh"
+#include "orbit/wrap_bunch.hh"
+#include "utils/wrap_utils.hh"
 
 #include <iostream>
 
-#include "MatrixGenerator.hh"
-#include "MatrixOperations.hh"
+#include "teapot/MatrixGenerator.hh"
+#include "utils/matrix/MatrixOperations.hh"
 
 using namespace OrbitUtils;
 using namespace teapot_base;

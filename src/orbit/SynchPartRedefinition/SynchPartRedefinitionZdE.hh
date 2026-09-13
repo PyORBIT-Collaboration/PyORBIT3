@@ -2,11 +2,9 @@
 #define SYNCH_PARTICLE_REDEFINITION_H
 
 //pyORBIT utils
-#include "CppPyWrapper.hh"
 
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 
-using namespace std;
 
 /**
   The SynchPartRedefinitionZdE class calculates the average of z and dE coordinates
@@ -14,7 +12,7 @@ using namespace std;
   to the center of the bunch's phase space.
 */
 
-class SynchPartRedefinitionZdE: public OrbitUtils::CppPyWrapper
+class SynchPartRedefinitionZdE
 {
 	public:
 

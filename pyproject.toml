@@ -6,7 +6,7 @@ requires = ['meson-python', "setuptools>=45", "wheel", "setuptools_scm"]
 name = 'PyORBIT'
 dynamic = ["version"]
 description = 'Use meson-python to build c++ anf python modules.'
-requires-python = '>=3.9'
+requires-python = '>=3.11'
 #dependencies = [
 #'setuptools',
 #'setuptools-scm'

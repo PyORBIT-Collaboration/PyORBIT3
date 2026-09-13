@@ -16,8 +16,8 @@
 #ifndef TEAPOT_BASE_MATRIX_GENERATOR_H
 #define TEAPOT_BASE_MATRIX_GENERATOR_H
 
-#include "Bunch.hh"
-#include "Matrix.hh"
+#include "orbit/Bunch.hh"
+#include "utils/matrix/Matrix.hh"
 
 using namespace OrbitUtils;
 

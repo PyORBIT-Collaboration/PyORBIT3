@@ -1,9 +1,9 @@
-#include "orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
 
-#include "wrap_Frequency_Cav.hh"
-#include "wrap_Harmonic_Cav.hh"
-#include "wrap_Barrier_Cav.hh"
-#include "wrap_Dual_Harmonic_Cav.hh"
+#include "orbit/RFCavities/wrap_Frequency_Cav.hh"
+#include "orbit/RFCavities/wrap_Harmonic_Cav.hh"
+#include "orbit/RFCavities/wrap_Barrier_Cav.hh"
+#include "orbit/RFCavities/wrap_Dual_Harmonic_Cav.hh"
 
 
 static PyMethodDef rfcavitiesMethods[] = {{NULL,NULL}};

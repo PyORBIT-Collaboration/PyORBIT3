@@ -1,7 +1,7 @@
 #ifndef WRAP_BASE_RF_GAP_SLOW_H
 #define WRAP_BASE_RF_GAP_SLOW_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,14 +1,15 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "mpi/wrap_orbit_mpi_types.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_utils.hh"
-#include "wrap_statmoments2d.hh"
-#include "wrap_mpi_comm.hh"
+#include "utils/wrap_utils.hh"
+#include "utils/statistics/wrap_statmoments2d.hh"
+#include "mpi/wrap_mpi_comm.hh"
 
 #include <iostream>
 #include <string>
 
-#include "StatMoments2D.hh"
+#include "utils/statistics/StatMoments2D.hh"
 
 using namespace OrbitUtils;
 using namespace wrap_orbit_utils;
@@ -47,7 +48,6 @@ extern "C" {
 				self->cpp_obj =  new StatMoments2D(max_order);
 			}
 		}
-	  ((StatMoments2D*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
 
@@ -172,7 +172,7 @@ extern "C" {
 			if((!PyObject_IsInstance(pyMPIComm,py_mpi_comm_type))){
 				error("StatMoments2D.synchronizeMPI(MPI_Comm) - input parameter is not MPI_Comm");
 			}
-			cpp_StatMoments2D->synchronizeMPI((pyORBIT_MPI_Comm*) pyMPIComm);
+			cpp_StatMoments2D->synchronizeMPI(((pyORBIT_MPI_Comm*) pyMPIComm)->comm);
 		}
 	 	Py_INCREF(Py_None);
 		return Py_None;

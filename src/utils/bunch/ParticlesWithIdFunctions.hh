@@ -20,9 +20,9 @@
 #include <cmath>
 
 //ORBIT bunch
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 
-#include "Matrix.hh"
+#include "utils/matrix/Matrix.hh"
 
 namespace OrbitUtils{
 

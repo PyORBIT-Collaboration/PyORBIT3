@@ -23,14 +23,14 @@
 //    wx = exp(-(x^2+(alphax*x+betax*x')^2)/(2*(betax*emittancex)) etc.
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "orbit_mpi.hh"
-#include "ParticlesWithIdFunctions.hh"
-#include "ParticleIdNumber.hh"
-#include "ParticleMacroSize.hh"
+#include "mpi/orbit_mpi.hh"
+#include "utils/bunch/ParticlesWithIdFunctions.hh"
+#include "orbit/ParticlesAttributes/ParticleIdNumber.hh"
+#include "orbit/ParticlesAttributes/ParticleMacroSize.hh"
 
-#include "BufferStore.hh"
-#include "MatrixOperations.hh"
-#include "BunchTwissAnalysis.hh"
+#include "utils/BufferStore.hh"
+#include "utils/matrix/MatrixOperations.hh"
+#include "orbit/BunchDiagnostics/BunchTwissAnalysis.hh"
 
 #include <algorithm>    // std::sort
 #include <vector>       // std::vector
@@ -51,8 +51,8 @@ namespace OrbitUtils{
 		int n_parts = bunch->getSize();
 		if(n_parts == 0) return;
 		int size_MPI,rank_MPI;
-		ORBIT_MPI_Comm_size(bunch->getMPI_Comm_Local()->comm, &size_MPI);
-		ORBIT_MPI_Comm_rank(bunch->getMPI_Comm_Local()->comm, &rank_MPI);
+		ORBIT_MPI_Comm_size(bunch->getMPI_Comm_Local(), &size_MPI);
+		ORBIT_MPI_Comm_rank(bunch->getMPI_Comm_Local(), &rank_MPI);
 		if(bunch->hasParticleAttributes("ParticleIdNumber") == 0){
 			if(rank_MPI == 0){
 				std::cerr << "OrbitUtils::bunch_utils_functions::bunch_sort_id(Bunch* bunch) function"<< std::endl;
@@ -99,8 +99,8 @@ namespace OrbitUtils{
 	*/
 	int transport_mtrx(Bunch* bunch_in, Bunch* bunch_out, Matrix* A_mtr, int appl_twiss_x, int appl_twiss_y, int appl_twiss_z){
 		int size_MPI,rank_MPI;
-		ORBIT_MPI_Comm_size(bunch_in->getMPI_Comm_Local()->comm, &size_MPI);
-		ORBIT_MPI_Comm_rank(bunch_in->getMPI_Comm_Local()->comm, &rank_MPI);
+		ORBIT_MPI_Comm_size(bunch_in->getMPI_Comm_Local(), &size_MPI);
+		ORBIT_MPI_Comm_rank(bunch_in->getMPI_Comm_Local(), &rank_MPI);
 		if(bunch_in->hasParticleAttributes("ParticleIdNumber") == 0 || bunch_out->hasParticleAttributes("ParticleIdNumber") == 0){
 			if(rank_MPI == 0){
 				std::cerr << "OrbitUtils::bunch_utils_functions::transport_mtrx(...) function"<< std::endl;
@@ -117,7 +117,11 @@ namespace OrbitUtils{
 			}
 			ORBIT_MPI_Finalize();
 		}
-		if(bunch_in->getMPI_Comm_Local() != bunch_out->getMPI_Comm_Local()){
+		int comm_comparison = MPI_UNEQUAL;
+		if(ORBIT_MPI_Comm_compare(bunch_in->getMPI_Comm_Local(),
+		                          bunch_out->getMPI_Comm_Local(),
+		                          &comm_comparison) != MPI_SUCCESS ||
+		   (comm_comparison != MPI_IDENT && comm_comparison != MPI_CONGRUENT)){
 			if(rank_MPI == 0){
 				std::cerr << "OrbitUtils::bunch_utils_functions::transport_mtrx(...) function"<< std::endl;
 				std::cerr << "Bunches In and Out have different MPI communicators!"<< std::endl;
@@ -218,9 +222,9 @@ namespace OrbitUtils{
 				}
 			}
 
-			ORBIT_MPI_Allreduce(&total_macrosize,&total_macrosize_mpi,1,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local()->comm);
-			ORBIT_MPI_Allreduce(arr_avg_in,arr_avg_in_mpi,6,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local()->comm);
-			ORBIT_MPI_Allreduce(arr_avg_out,arr_avg_out_mpi,6,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local()->comm);
+			ORBIT_MPI_Allreduce(&total_macrosize,&total_macrosize_mpi,1,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local());
+			ORBIT_MPI_Allreduce(arr_avg_in,arr_avg_in_mpi,6,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local());
+			ORBIT_MPI_Allreduce(arr_avg_out,arr_avg_out_mpi,6,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local());
 
 			total_macrosize = total_macrosize_mpi;
 
@@ -276,7 +280,7 @@ namespace OrbitUtils{
 					count++;
 				}
 			}
-			ORBIT_MPI_Allreduce(mtrx_arr,mtrx_arr_mpi,36,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local()->comm);
+			ORBIT_MPI_Allreduce(mtrx_arr,mtrx_arr_mpi,36,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local());
 			count = 0;
 			for (int i = 0; i < 6; i++){
 				for (int j = 0; j < 6; j++){
@@ -292,7 +296,7 @@ namespace OrbitUtils{
 					count++;
 				}
 			}
-			ORBIT_MPI_Allreduce(mtrx_arr,mtrx_arr_mpi,36,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local()->comm);
+			ORBIT_MPI_Allreduce(mtrx_arr,mtrx_arr_mpi,36,MPI_DOUBLE,MPI_SUM,b_in_tmp->getMPI_Comm_Local());
 			count = 0;
 			for (int i = 0; i < 6; i++){
 				for (int j = 0; j < 6; j++){

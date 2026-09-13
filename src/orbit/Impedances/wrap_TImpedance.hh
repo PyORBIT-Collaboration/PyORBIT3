@@ -1,7 +1,7 @@
 #ifndef WRAP_TIMPEDANCE_H
 #define WRAP_TIMPEDANCE_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C"

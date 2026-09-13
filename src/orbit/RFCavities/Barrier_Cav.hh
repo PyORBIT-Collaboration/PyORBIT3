@@ -2,21 +2,18 @@
 #define BARRIER_CAV_H
 
 //MPI Function Wrappers
-#include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
+#include "mpi/orbit_mpi.hh"
 
 #include <cstdlib>
 #include <cmath>
 
 //ORBIT bunch
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 
 //pyORBIT utils
-#include "CppPyWrapper.hh"
 
-using namespace std;
 
-class Barrier_Cav: public OrbitUtils::CppPyWrapper
+class Barrier_Cav
 {
   public:
     Barrier_Cav(double ZtoPhi,    double RFVoltage,

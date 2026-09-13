@@ -25,8 +25,8 @@
 #ifndef MAGNET_FIELD_SOURCE_GRID3D_H
 #define MAGNET_FIELD_SOURCE_GRID3D_H
 
-#include "Grid3D.hh"
-#include "ShiftedFieldSource.hh"
+#include "spacecharge/Grid3D.hh"
+#include "utils/field_sources/ShiftedFieldSource.hh"
 
 namespace OrbitUtils{
 
@@ -36,7 +36,7 @@ namespace OrbitUtils{
 	{
 		public:
 
-			/** Constructor. */
+			/** Constructor. The caller retains ownership of the grids. */
 			MagnetFieldSourceGrid3D(Grid3D* BxGrid, Grid3D* ByGrid, Grid3D* BzGrid);
 
 			/** Destructor */

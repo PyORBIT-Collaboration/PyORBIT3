@@ -10,10 +10,10 @@
    ORNL Tech. Note ORNL/TM-2015/247, June 2015
 */
 
-#include "Bunch.hh"
-#include "bessel.hh"
-#include "OrbitConst.hh"
-#include "RfGapTTF.hh"
+#include "orbit/Bunch.hh"
+#include "utils/bessel.hh"
+#include "orbit/OrbitConst.hh"
+#include "linac/rfgap/RfGapTTF.hh"
 
 #include <iostream>
 #include <cmath>
@@ -22,7 +22,7 @@ using namespace OrbitUtils;
 
 
 // Constructor
-RfGapTTF::RfGapTTF(): CppPyWrapper(NULL)
+RfGapTTF::RfGapTTF()
 {
 }
 

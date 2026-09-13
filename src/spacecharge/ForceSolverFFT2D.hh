@@ -4,23 +4,18 @@
 #define SC_FORCE_SOLVER_FFT_2D_H
 
 //MPI Function Wrappers
-#include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
+#include "mpi/orbit_mpi.hh"
 
 #include <cstdlib>
 #include <cmath>
 #include <string>
 #include <complex>
 
-//pyORBIT utils
-#include "CppPyWrapper.hh"
-
 //FFTW library header
 #include "fftw3.h"
 
-#include "ForceSolver2D.hh"
+#include "spacecharge/ForceSolver2D.hh"
 
-using namespace std;
 
 /**
   The ForceSolverFFT2D class is used to calculate the force

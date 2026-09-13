@@ -27,10 +27,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "OrbitConst.hh"
-#include "Bunch.hh"
-#include "SyncPart.hh"
+#include "orbit/OrbitConst.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/SyncPart.hh"
 
+#include <cmath>
 #include <complex>
 
 namespace linac_tracking

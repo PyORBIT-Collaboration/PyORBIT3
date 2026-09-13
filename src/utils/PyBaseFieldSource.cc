@@ -19,16 +19,16 @@
 //               debugging only.
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "PyBaseFieldSource.hh"
+#include "utils/PyBaseFieldSource.hh"
 
-#include "orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
 #include <iostream>
 
 using namespace OrbitUtils;
 
 PyBaseFieldSource::PyBaseFieldSource(PyObject* py_wrapperIn)
 {
-	setPyWrapper(py_wrapperIn);
+	py_wrapper = py_wrapperIn;
 }
 
 PyBaseFieldSource::~PyBaseFieldSource()
@@ -40,8 +40,7 @@ void PyBaseFieldSource::getElectricMagneticField(
 	double& fe_x, double& fe_y, double& fe_z,
 	double& fm_x, double& fm_y, double& fm_z)
 {
-	  PyObject* py_wrp = getPyWrapper();
-  	PyObject* ef_tuple = PyObject_CallMethod(py_wrp,const_cast<char*>("getElectricMagneticField"),const_cast<char*>("dddd"),x,y,z,t);
+	PyObject* ef_tuple = PyObject_CallMethod(py_wrapper,const_cast<char*>("getElectricMagneticField"),const_cast<char*>("dddd"),x,y,z,t);
     if(!PyArg_ParseTuple(	ef_tuple,"dddddd:electric_magnetic_field",&fe_x,&fe_y,&fe_z,&fm_x,&fm_y,&fm_z)){
       ORBIT_MPI_Finalize("PyBaseFieldSource - getElectricMagneticField(x,y,z,t0 method does not work!");
     }

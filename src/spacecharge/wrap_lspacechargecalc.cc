@@ -1,12 +1,12 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_lspacechargecalc.hh"
-#include "wrap_bunch.hh"
+#include "spacecharge/wrap_lspacechargecalc.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "LSpaceChargeCalc.hh"
+#include "spacecharge/LSpaceChargeCalc.hh"
 
 using namespace OrbitUtils;
 
@@ -55,7 +55,6 @@ extern "C"
 
 		self->cpp_obj = new LSpaceChargeCalc(b_a, length, nMacrosMin, useSpaceCharge, nBins);
 
-		((LSpaceChargeCalc*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 
 		return 0;
 	}

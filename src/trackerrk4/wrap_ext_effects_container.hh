@@ -1,7 +1,7 @@
 #ifndef WRAP_EXT_EFFECTS_CONTAINER_HH_
 #define WRAP_EXT_EFFECTS_CONTAINER_HH_
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

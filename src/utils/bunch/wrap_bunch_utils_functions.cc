@@ -1,14 +1,14 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
 #include <iostream>
 
-#include "wrap_bunch.hh"
-#include "wrap_utils.hh"
+#include "orbit/wrap_bunch.hh"
+#include "utils/wrap_utils.hh"
 
-#include "ParticlesWithIdFunctions.hh"
-#include "TwissFilteringFunctions.hh"
-#include "InitialCoordsAttrFunctions.hh"
+#include "utils/bunch/ParticlesWithIdFunctions.hh"
+#include "utils/bunch/TwissFilteringFunctions.hh"
+#include "utils/bunch/InitialCoordsAttrFunctions.hh"
 
 using namespace OrbitUtils;
 

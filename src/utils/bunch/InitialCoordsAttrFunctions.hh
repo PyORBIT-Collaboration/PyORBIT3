@@ -18,9 +18,9 @@
 #define PARTICLES_INIT_COORDS_FUNCTIONS_H
 
 //ORBIT bunch
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 
-#include "Matrix.hh"
+#include "utils/matrix/Matrix.hh"
 
 #include <cmath>
 

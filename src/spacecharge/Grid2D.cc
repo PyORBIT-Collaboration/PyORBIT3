@@ -1,15 +1,15 @@
 //This class repersents a 2D rectangular grid
 
-#include "Grid2D.hh"
-#include "ParticleMacroSize.hh"
-#include "BufferStore.hh"
+#include "spacecharge/Grid2D.hh"
+#include "orbit/ParticlesAttributes/ParticleMacroSize.hh"
+#include "utils/BufferStore.hh"
 
 #include <iostream>
 
 using namespace OrbitUtils;
 
 // Constructor
-Grid2D::Grid2D(int xSize, int ySize): CppPyWrapper(NULL)
+Grid2D::Grid2D(int xSize, int ySize)
 {
 	xSize_ = xSize;
 	ySize_ = ySize;
@@ -23,7 +23,7 @@ Grid2D::Grid2D(int xSize, int ySize): CppPyWrapper(NULL)
 
 Grid2D::Grid2D(int xSize, int ySize,
 	       double xMin, double xMax,
-	       double yMin, double yMax): CppPyWrapper(NULL)
+	       double yMin, double yMax)
 {
 	xSize_ = xSize;
 	ySize_ = ySize;
@@ -440,7 +440,7 @@ int Grid2D::isInside(double x,double y){
 }
 
 /**synchronizeMPI */
-void Grid2D::synchronizeMPI(pyORBIT_MPI_Comm* pyComm){
+void Grid2D::synchronizeMPI(MPI_Comm comm){
   // ====== MPI  start ========
 	int size_MPI = xSize_ * ySize_;
 	int buff_index0 = 0;
@@ -456,10 +456,10 @@ void Grid2D::synchronizeMPI(pyORBIT_MPI_Comm* pyComm){
 		}
 	}
 
-	if(pyComm == NULL) {
+	if(comm == MPI_COMM_NULL) {
 		ORBIT_MPI_Allreduce(inArr,outArr,size_MPI,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
 	} else {
-		ORBIT_MPI_Allreduce(inArr,outArr,size_MPI,MPI_DOUBLE,MPI_SUM,pyComm->comm);
+		ORBIT_MPI_Allreduce(inArr,outArr,size_MPI,MPI_DOUBLE,MPI_SUM,comm);
 	}
 
 	count = 0;

@@ -26,11 +26,12 @@
 //               debugging only.
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
 #include <iostream>
 
-#include "PyExternalEffects.hh"
-#include "RungeKuttaTracker.hh"
+#include "trackerrk4/PyExternalEffects.hh"
+#include "trackerrk4/RungeKuttaTracker.hh"
+#include "main/pyORBIT_Object.hh"
 //#include <c++/4.4.6/bits/stl_vector.h>
 
 using namespace TrackerRK4;
@@ -39,7 +40,7 @@ using namespace OrbitUtils;
 PyExternalEffects::PyExternalEffects(PyObject* py_wrapperIn)
 {
 	setName("PyExternalEffects");
-	setPyWrapper(py_wrapperIn);
+	py_wrapper = py_wrapperIn;
 }
 
 PyExternalEffects::~PyExternalEffects()
@@ -47,24 +48,21 @@ PyExternalEffects::~PyExternalEffects()
 }
 
 void PyExternalEffects::setupEffects(Bunch* bunch){
-	PyObject* py_wrp = getPyWrapper();
-	PyObject* py_bunch = bunch->getPyWrapper();
-	PyObject* res_tuple = PyObject_CallMethod(py_wrp,const_cast<char*>("setupEffects"),const_cast<char*>("O"),py_bunch);
+	PyObject* py_bunch = pyorbit::getPyWrapper(bunch);
+	PyObject* res_tuple = PyObject_CallMethod(py_wrapper,const_cast<char*>("setupEffects"),const_cast<char*>("O"),py_bunch);
 	Py_DECREF(res_tuple);
 }
 
 void PyExternalEffects::prepareEffects(Bunch* bunch, double t){
-	PyObject* py_wrp = getPyWrapper();
-	PyObject* py_bunch = bunch->getPyWrapper();
-	PyObject* res_tuple = PyObject_CallMethod(py_wrp,const_cast<char*>("prepareEffects"),const_cast<char*>("Od"),py_bunch, time);
+	PyObject* py_bunch = pyorbit::getPyWrapper(bunch);
+	PyObject* res_tuple = PyObject_CallMethod(py_wrapper,const_cast<char*>("prepareEffects"),const_cast<char*>("Od"),py_bunch, t);
 	Py_DECREF(res_tuple);
 }
 
 
 void PyExternalEffects::finalizeEffects(Bunch* bunch){
-	PyObject* py_wrp = getPyWrapper();
-	PyObject* py_bunch = bunch->getPyWrapper();
-	PyObject* res_tuple = PyObject_CallMethod(py_wrp,const_cast<char*>("finalizeEffects"),const_cast<char*>("O"),py_bunch);
+	PyObject* py_bunch = pyorbit::getPyWrapper(bunch);
+	PyObject* res_tuple = PyObject_CallMethod(py_wrapper,const_cast<char*>("finalizeEffects"),const_cast<char*>("O"),py_bunch);
 	Py_DECREF(res_tuple);
 }
 
@@ -73,11 +71,10 @@ void PyExternalEffects::applyEffects(Bunch* bunch,
 														  BaseFieldSource* fieldSource,
 															RungeKuttaTracker* tracker)
 {
-	PyObject* py_wrp = getPyWrapper();
-	PyObject* py_bunch = bunch->getPyWrapper();
-	PyObject* py_field = fieldSource->getPyWrapper();
-	PyObject* py_tracker = tracker->getPyWrapper();
-	PyObject* res_tuple = PyObject_CallMethod(py_wrp,const_cast<char*>("applyEffects"),const_cast<char*>("OddOO"),
+	PyObject* py_bunch = pyorbit::getPyWrapper(bunch);
+	PyObject* py_field = pyorbit::getPyWrapper(fieldSource);
+	PyObject* py_tracker = pyorbit::getPyWrapper(tracker);
+	PyObject* res_tuple = PyObject_CallMethod(py_wrapper,const_cast<char*>("applyEffects"),const_cast<char*>("OddOO"),
 		py_bunch,
 		t,t_step,
 		py_field,
@@ -91,15 +88,14 @@ void PyExternalEffects::applyEffectsForEach(Bunch* bunch, int index,
 														  BaseFieldSource* fieldSource,
 															RungeKuttaTracker* tracker)
 {
-	PyObject* py_wrp = getPyWrapper();
-	PyObject* py_bunch = bunch->getPyWrapper();
-	PyObject* py_field = fieldSource->getPyWrapper();
-	PyObject* py_tracker = tracker->getPyWrapper();
+	PyObject* py_bunch = pyorbit::getPyWrapper(bunch);
+	PyObject* py_field = pyorbit::getPyWrapper(fieldSource);
+	PyObject* py_tracker = pyorbit::getPyWrapper(tracker);
 	PyObject* pyInVct = Py_BuildValue("(dddddd)",y_in_vct[0],y_in_vct[1],y_in_vct[2],
 		                                           y_in_vct[3],y_in_vct[4],y_in_vct[5]);
 	PyObject* pyOutVct = Py_BuildValue("(dddddd)",y_out_vct[0],y_out_vct[1],y_out_vct[2],
 		                                           y_out_vct[3],y_out_vct[4],y_out_vct[5]);
-	PyObject* res_tuple = PyObject_CallMethod(py_wrp,const_cast<char*>("applyEffectsForEach"),const_cast<char*>("OiOOddOO"),
+	PyObject* res_tuple = PyObject_CallMethod(py_wrapper,const_cast<char*>("applyEffectsForEach"),const_cast<char*>("OiOOddOO"),
 		py_bunch,
 		index,
 		pyInVct,pyOutVct,

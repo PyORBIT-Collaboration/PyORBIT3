@@ -1,4 +1,4 @@
-#include "CompositeApertureShape.hh"
+#include "orbit/Apertures/CompositeApertureShape.hh"
 
 #include <iostream>
 #include <cmath>
@@ -32,12 +32,6 @@ CompositeApertureShape::CompositeApertureShape(): BaseApertureShape()
 /** CompositeApertureShape decstructor */
 CompositeApertureShape::~CompositeApertureShape()
 {
-	int n_shapes = apertureShapes.size();
-	for(int ind = 0; ind < n_shapes; ind++){
-		if(apertureShapes[ind]->getPyWrapper() != NULL){
-			Py_XDECREF((PyObject*) apertureShapes[ind]->getPyWrapper());
-		}
-	}
 }
 
 /** Return 1 if the particular macro-particle is inside this shape */
@@ -59,7 +53,6 @@ int CompositeApertureShape::inside(Bunch* bunch, int count){
 void CompositeApertureShape::addApertureShape(BaseApertureShape* apertureShape)
 {
 	apertureShapes.push_back(apertureShape);
-	Py_INCREF((PyObject*) apertureShape->getPyWrapper());
 }
 
 /** Returns vector of pointers to aperture shapes that are in this collection */

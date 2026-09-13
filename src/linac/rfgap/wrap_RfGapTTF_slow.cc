@@ -1,15 +1,15 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_RfGapTTF_slow.hh"
-#include "wrap_linacmodule.hh"
-#include "wrap_bunch.hh"
+#include "linac/rfgap/wrap_RfGapTTF_slow.hh"
+#include "linac/wrap_linacmodule.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "wrap_utils.hh"
-#include "RfGapTTF_slow.hh"
-#include "OU_Polynomial.hh"
+#include "utils/wrap_utils.hh"
+#include "linac/rfgap/RfGapTTF_slow.hh"
+#include "utils/polynomial/OU_Polynomial.hh"
 
 using namespace OrbitUtils;
 
@@ -38,7 +38,6 @@ extern "C" {
   //this is implementation of the __init__ method
   static int RfGapTTF_slow_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
 		self->cpp_obj = new RfGapTTF_slow();
-		((RfGapTTF_slow*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 		return 0;
   }
 

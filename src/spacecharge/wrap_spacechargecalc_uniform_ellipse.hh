@@ -1,7 +1,7 @@
 #ifndef WRAP_SPACE_CHARGE_CALC_UNIFORM_ELLIPSE_H
 #define WRAP_SPACE_CHARGE_CALC_UNIFORM_ELLIPSE_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

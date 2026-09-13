@@ -1,9 +1,9 @@
 #ifndef __MATRIX_OPERATIONS_H_
 #define __MATRIX_OPERATIONS_H_
 
-#include "Matrix.hh"
-#include "PhaseVector.hh"
-#include "Bunch.hh"
+#include "utils/matrix/Matrix.hh"
+#include "utils/matrix/PhaseVector.hh"
+#include "orbit/Bunch.hh"
 
 namespace OrbitUtils{
 

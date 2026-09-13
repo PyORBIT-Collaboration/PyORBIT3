@@ -1,5 +1,3 @@
-#include "Python.h"
-
 #ifndef ORBIT_MPI_INCLUDE
 #define ORBIT_MPI_INCLUDE
 
@@ -103,53 +101,9 @@
 //--------------------------------------------------------------
 
 
-//--------------------------------------------------------------
-//     The PyORBIT MPI classes definitions         START
-//--------------------------------------------------------------
-#ifdef __cplusplus
-extern "C" {
-#endif
-
- typedef struct {
-   PyObject_HEAD
-   MPI_Comm comm;
- } pyORBIT_MPI_Comm;
-
- typedef struct {
-   PyObject_HEAD
-   MPI_Group group;
- } pyORBIT_MPI_Group;
-
- typedef struct {
-   PyObject_HEAD
-   MPI_Status status;
- } pyORBIT_MPI_Status;
-
- typedef struct {
-   PyObject_HEAD
-   MPI_Request request;
- } pyORBIT_MPI_Request;
-
- typedef struct {
-   PyObject_HEAD
-   MPI_Datatype datatype;
- } pyORBIT_MPI_Datatype;
-
- typedef struct {
-   PyObject_HEAD
-   MPI_Op op;
- } pyORBIT_MPI_Op;
-
-#ifdef __cplusplus
-}
-#endif
-//--------------------------------------------------------------
-//     The PyORBIT MPI classes definitions         STOP
-//--------------------------------------------------------------
-
-
 int ORBIT_MPI_Init();
 int ORBIT_MPI_Initialized(int *init);
+int ORBIT_MPI_FinalizeMPI();
 void ORBIT_MPI_Finalize();
 int ORBIT_MPI_Finalize(const char* message);
 int ORBIT_MPI_Get_processor_name(char *name, int* len);

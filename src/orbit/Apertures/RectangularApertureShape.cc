@@ -1,4 +1,4 @@
-#include "RectangularApertureShape.hh"
+#include "orbit/Apertures/RectangularApertureShape.hh"
 
 #include <iostream>
 #include <cmath>

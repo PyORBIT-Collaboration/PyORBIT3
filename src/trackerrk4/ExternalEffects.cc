@@ -11,12 +11,12 @@
 //    slow changing magnetic and electric fields.
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "RungeKuttaTracker.hh"
+#include "trackerrk4/RungeKuttaTracker.hh"
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
 
-#include "ExternalEffects.hh"
+#include "trackerrk4/ExternalEffects.hh"
 
 
 using namespace TrackerRK4;

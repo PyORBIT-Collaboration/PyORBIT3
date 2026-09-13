@@ -12,8 +12,6 @@
 #ifndef BASE_FIELD_SOURCE_H
 #define BASE_FIELD_SOURCE_H
 
-#include "CppPyWrapper.hh"
-
 namespace OrbitUtils{
 
 
@@ -23,7 +21,7 @@ namespace OrbitUtils{
   subclasses.
 */
 
-	class  BaseFieldSource: public CppPyWrapper
+	class BaseFieldSource
 	{
 	public:
 

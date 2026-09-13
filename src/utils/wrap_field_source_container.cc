@@ -1,20 +1,25 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_utils.hh"
-#include "wrap_field_source_container.hh"
+#include "utils/wrap_utils.hh"
+#include "utils/wrap_field_source_container.hh"
 
 #include <iostream>
 #include <string>
 
-#include "FieldSourceContainer.hh"
-#include "BaseFieldSource.hh"
+#include "utils/FieldSourceContainer.hh"
+#include "utils/BaseFieldSource.hh"
 
 
 using namespace OrbitUtils;
 
 
 namespace wrap_field_source_container{
+	typedef struct {
+		PyObject_HEAD
+		void* cpp_obj;
+		PyObject* sources;
+	} pyORBIT_FieldSourceContainer;
 
   void error(const char* msg){ ORBIT_MPI_Finalize(msg); }
 
@@ -26,27 +31,36 @@ extern "C" {
 	//constructor for python class wrapping CppFieldSource instance
 	//It never will be called directly
 	static PyObject* FieldSourceContainer_new(PyTypeObject *type, PyObject *args, PyObject *kwds){
-		pyORBIT_Object* self;
-		self = (pyORBIT_Object *) type->tp_alloc(type, 0);
+		pyORBIT_FieldSourceContainer* self;
+		self = (pyORBIT_FieldSourceContainer *) type->tp_alloc(type, 0);
 		self->cpp_obj = NULL;
+		self->sources = NULL;
 		return (PyObject *) self;
 	}
 
   //this is implementation of the __init__ method
-  static int FieldSourceContainer_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
+  static int FieldSourceContainer_init(pyORBIT_FieldSourceContainer *self, PyObject *args, PyObject *kwds){
 	  self->cpp_obj =  new  FieldSourceContainer();
-	  ((FieldSourceContainer*) self->cpp_obj)->setPyWrapper((PyObject*) self);
+	  self->sources = PyList_New(0);
+	  if(self->sources == NULL) {
+		  delete ((FieldSourceContainer*) self->cpp_obj);
+		  self->cpp_obj = NULL;
+		  return -1;
+	  }
+	  pyorbit::registerPyWrapper(self->cpp_obj, (PyObject*) self);
     return 0;
   }
 
   static PyObject* FieldSourceContainer_AddFieldSource(PyObject *self, PyObject *args){
-	  FieldSourceContainer* cpp_FieldSourceContainer = (FieldSourceContainer*)((pyORBIT_Object*) self)->cpp_obj;
+	  pyORBIT_FieldSourceContainer* container = (pyORBIT_FieldSourceContainer*) self;
+	  FieldSourceContainer* cpp_FieldSourceContainer = (FieldSourceContainer*) container->cpp_obj;
 	  BaseFieldSource* fs;
 	  PyObject* pyfs;
 		if(!PyArg_ParseTuple(	args,"O:",&pyfs))
 			error(" AddFieldSource(BaseFieldSource fs) - parameter is needed");
 		else {
 			fs = (BaseFieldSource*) ((pyORBIT_Object*) pyfs)->cpp_obj;
+			if(PyList_Append(container->sources, pyfs) < 0) return NULL;
 			cpp_FieldSourceContainer->AddFieldSource(fs);
 		}
 		Py_INCREF(Py_None);
@@ -68,9 +82,11 @@ extern "C" {
   //-----------------------------------------------------
   //destructor for python FieldSourceContainer class (__del__ method).
   //-----------------------------------------------------
-  static void FieldSourceContainer_del(pyORBIT_Object* self){
+  static void FieldSourceContainer_del(pyORBIT_FieldSourceContainer* self){
 		//std::cerr<<"The FieldSourceContainer __del__ has been called!"<<std::endl;
+		pyorbit::unregisterPyWrapper(self->cpp_obj, (PyObject*) self);
 		delete ((FieldSourceContainer*)self->cpp_obj);
+		Py_CLEAR(self->sources);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 
@@ -93,7 +109,7 @@ extern "C" {
 	static PyTypeObject pyORBIT_FieldSourceContainer_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
 		"FieldSourceContainer", /*tp_name*/
-		sizeof(pyORBIT_Object), /*tp_basicsize*/
+		sizeof(pyORBIT_FieldSourceContainer), /*tp_basicsize*/
 		0, /*tp_itemsize*/
 		(destructor) FieldSourceContainer_del , /*tp_dealloc*/
 		0, /*tp_print*/

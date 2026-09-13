@@ -3,15 +3,15 @@
 // INCLUDE FILES
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
 
 //this header is from Python package
-#include "structmember.h"
+#include <structmember.h>
 
 //c++ header for cerr and cout
 #include <iostream>
 
-#include "wrap_mpi_datatype.hh"
+#include "mpi/wrap_mpi_datatype.hh"
 
 namespace wrap_orbit_mpi_datatype{
 

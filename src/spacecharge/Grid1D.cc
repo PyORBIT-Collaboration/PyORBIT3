@@ -14,12 +14,12 @@
 //   Correction done by A. Shishlo 2023.02.10
 //
 /////////////////////////////////////////////////////////////////////////////
-#include "orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
 
-#include "Grid1D.hh"
-#include "Bunch.hh"
-#include "ParticleMacroSize.hh"
-#include "BufferStore.hh"
+#include "spacecharge/Grid1D.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/ParticlesAttributes/ParticleMacroSize.hh"
+#include "utils/BufferStore.hh"
 
 #include <iostream>
 
@@ -27,7 +27,7 @@ using namespace OrbitUtils;
 
 
 /** Constructor with grid size only */
-Grid1D::Grid1D(int zSize):CppPyWrapper(NULL)
+Grid1D::Grid1D(int zSize)
 {
   zSize_ = zSize;
   zMin_  = -0.5;
@@ -37,7 +37,7 @@ Grid1D::Grid1D(int zSize):CppPyWrapper(NULL)
 }
 
 /** Constructor with grid size and grid physical length */
-Grid1D::Grid1D(int zSize, double length):CppPyWrapper(NULL)
+Grid1D::Grid1D(int zSize, double length)
 {
 	zSize_ = zSize;
 	zMin_  = 0.;
@@ -47,7 +47,7 @@ Grid1D::Grid1D(int zSize, double length):CppPyWrapper(NULL)
 }
 
 /** Constructor with grid size and spatial limits */
-Grid1D::Grid1D(int zSize, double zMin, double zMax):CppPyWrapper(NULL)
+Grid1D::Grid1D(int zSize, double zMin, double zMax)
 {
   zSize_ = zSize;
   zMin_  = zMin;
@@ -759,7 +759,7 @@ void Grid1D::getBinIndAndWZSmoothed(double z,
 }
 
 /** synchronizeMPI */
-void Grid1D::synchronizeMPI(pyORBIT_MPI_Comm* pyComm)
+void Grid1D::synchronizeMPI(MPI_Comm comm)
 {
   // ====== MPI  start ========
 
@@ -776,7 +776,7 @@ void Grid1D::synchronizeMPI(pyORBIT_MPI_Comm* pyComm)
     inArr[i] = arr_[i];
   }
 
-  if(pyComm == NULL)
+  if(comm == MPI_COMM_NULL)
   {
     ORBIT_MPI_Allreduce(inArr, outArr, size_MPI,
                         MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
@@ -784,7 +784,7 @@ void Grid1D::synchronizeMPI(pyORBIT_MPI_Comm* pyComm)
   else
   {
     ORBIT_MPI_Allreduce(inArr, outArr, size_MPI,
-                        MPI_DOUBLE, MPI_SUM, pyComm->comm);
+                        MPI_DOUBLE, MPI_SUM, comm);
   }
 
   for(int i = 0; i < zSize_; i++)

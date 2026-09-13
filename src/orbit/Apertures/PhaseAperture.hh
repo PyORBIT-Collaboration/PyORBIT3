@@ -22,12 +22,10 @@
 ///////////////////////////////////////////////////////////////////////////
 
 //pyORBIT utils
-#include "CppPyWrapper.hh"
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 
-using namespace std;
 
-class PhaseAperture: public OrbitUtils::CppPyWrapper
+class PhaseAperture
 {
   public:
 

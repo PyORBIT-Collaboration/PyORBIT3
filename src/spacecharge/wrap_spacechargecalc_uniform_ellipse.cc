@@ -1,13 +1,14 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_spacechargecalc_uniform_ellipse.hh"
-#include "wrap_spacecharge.hh"
-#include "wrap_bunch.hh"
+#include "spacecharge/wrap_spacechargecalc_uniform_ellipse.hh"
+#include "spacecharge/wrap_spacecharge.hh"
+#include "spacecharge/wrap_uniform_ellipsoid_field_calculator.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "SpaceChargeCalcUnifEllipse.hh"
+#include "spacecharge/SpaceChargeCalcUnifEllipse.hh"
 
 using namespace OrbitUtils;
 
@@ -75,20 +76,7 @@ extern "C" {
 			Py_INCREF(Py_None);
 			return Py_None;
 		}
-		if(cpp_ellipseFieldCalc->getPyWrapper() != NULL){
-			Py_INCREF(cpp_ellipseFieldCalc->getPyWrapper());
-			return cpp_ellipseFieldCalc->getPyWrapper();
-		}
-		//It will create a pyUniformEllipsoidFieldCalculator object
-		PyObject* mod = PyImport_ImportModule("orbit.core.spacecharge");
-		PyObject* pyUniformEllipsoidFieldCalculator = PyObject_CallMethod(mod,const_cast<char*>("UniformEllipsoidFieldCalculator"),const_cast<char*>(""));
-		//delete the c++ reference to the internal UniformEllipsoidFieldCalculator inside pyUniformEllipsoidFieldCalculator and assign the new one
-		delete ((UniformEllipsoidFieldCalculator*)((pyORBIT_Object*) pyUniformEllipsoidFieldCalculator)->cpp_obj);
-		((pyORBIT_Object*) pyUniformEllipsoidFieldCalculator)->cpp_obj = cpp_ellipseFieldCalc;
-		cpp_ellipseFieldCalc->setPyWrapper(pyUniformEllipsoidFieldCalculator);
-		Py_INCREF(cpp_ellipseFieldCalc->getPyWrapper());
-		Py_DECREF(mod);
-		return pyUniformEllipsoidFieldCalculator;
+		return wrapUniformEllipsoidFieldCalculator(cpp_ellipseFieldCalc, self);
   }
 
   //getNEllipses() - returns the number of ellipses inside the Space Charge calculator

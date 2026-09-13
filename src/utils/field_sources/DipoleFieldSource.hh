@@ -19,8 +19,8 @@
 #ifndef DIPOLE_FIELD_SOURCE_H
 #define DIPOLE_FIELD_SOURCE_H
 
-#include "Grid3D.hh"
-#include "ShiftedFieldSource.hh"
+#include "spacecharge/Grid3D.hh"
+#include "utils/field_sources/ShiftedFieldSource.hh"
 
 namespace OrbitUtils{
 

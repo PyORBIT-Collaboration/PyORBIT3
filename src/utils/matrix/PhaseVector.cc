@@ -13,22 +13,22 @@
 //    A class for a plain double values vector
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
 
-#include "PhaseVector.hh"
+#include "utils/matrix/PhaseVector.hh"
 
 #include <cstdlib>
 
 using namespace OrbitUtils;
 
-PhaseVector::PhaseVector(int n_in): CppPyWrapper(NULL)
+PhaseVector::PhaseVector(int n_in)
 {
 	n = n_in;
   v = (double* ) malloc (sizeof(double)*n);
 	zero();
 }
 
-PhaseVector::PhaseVector(PhaseVector* vIn): CppPyWrapper(NULL)
+PhaseVector::PhaseVector(PhaseVector* vIn)
 {
 	n = vIn->size();
   v = (double* ) malloc (sizeof(double)*n);

@@ -24,15 +24,15 @@
 // INCLUDE FILES
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "Python.h"
+#include "orbit/SyncPart.hh"
 
-#include "SyncPart.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/OrbitConst.hh"
+#include "utils/StringUtils.hh"
+#include "utils/BufferStore.hh"
 
-#include "Bunch.hh"
-#include "OrbitConst.hh"
-#include "StringUtils.hh"
-#include "BufferStore.hh"
-
+#include <cmath>
+#include <cstring>
 #include <iomanip>
 #include <string>
 
@@ -55,24 +55,11 @@ SyncPart::SyncPart(Bunch* bunchIn)
 
 SyncPart::~SyncPart()
 {
-	Py_XDECREF(py_wrapper);
-}
-
-void SyncPart::setPyWrapper(PyObject* py_wrapper_In){
-	if(py_wrapper != NULL) Py_XDECREF(py_wrapper);
-	Py_INCREF(py_wrapper_In);
-	py_wrapper = py_wrapper_In;
-}
-
-PyObject* SyncPart::getPyWrapper(){
-	return py_wrapper;
 }
 
 //initialization all necessary variables and attributes
 void SyncPart::init()
 {
-	py_wrapper = NULL;
-
 	energy = 0.;
 	time = 0.;
 
@@ -326,7 +313,7 @@ void SyncPart::readSyncPart(const char* fileName){
   int rank_MPI = 0;
   int size_MPI = 1;
   int iMPIini  = 0;
-	MPI_Comm MPI_COMM_Local = bunch->getMPI_Comm_Local()->comm;
+	MPI_Comm MPI_COMM_Local = bunch->getMPI_Comm_Local();
   ORBIT_MPI_Initialized(&iMPIini);
 
   if(iMPIini > 0){
@@ -337,7 +324,7 @@ void SyncPart::readSyncPart(const char* fileName){
   std::vector<std::string> attr_names;
   attr_names.clear();
 
-  ifstream is;
+  std::ifstream is;
 
   int error_ind = 0;
   if(rank_MPI == 0){
@@ -358,7 +345,7 @@ void SyncPart::readSyncPart(const char* fileName){
   }
 
   std::string  str;
-  std::vector<string> v_str;
+  std::vector<std::string> v_str;
 
   int stop_ind = 0;
   int def_found_ind = 0;
@@ -469,7 +456,7 @@ void SyncPart::print(std::ostream& Out)
   int rank_MPI = 0;
   int size_MPI = 1;
   int iMPIini  = 0;
-	MPI_Comm MPI_COMM_Local = bunch->getMPI_Comm_Local()->comm;
+	MPI_Comm MPI_COMM_Local = bunch->getMPI_Comm_Local();
   ORBIT_MPI_Initialized(&iMPIini);
 
   if(iMPIini > 0){

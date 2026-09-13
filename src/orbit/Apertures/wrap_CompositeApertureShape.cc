@@ -1,13 +1,18 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_bunch.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "CompositeApertureShape.hh"
+#include "orbit/Apertures/CompositeApertureShape.hh"
 
 namespace wrap_py_composite_aperture_shape{
+	typedef struct {
+		PyObject_HEAD
+		void* cpp_obj;
+		PyObject* shapes;
+	} pyORBIT_CompositeApertureShape;
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,16 +22,23 @@ extern "C" {
 	Constructor for python class wrapping c++ Circle, Ellipse, and Rectangular ApertureShape instances.
 	*/
 	static PyObject* CompositeApertureShape_new(PyTypeObject *type, PyObject *args, PyObject *kwds){
-		pyORBIT_Object* self;
-		self = (pyORBIT_Object *) type->tp_alloc(type, 0);
+		pyORBIT_CompositeApertureShape* self;
+		self = (pyORBIT_CompositeApertureShape *) type->tp_alloc(type, 0);
 		self->cpp_obj = NULL;
+		self->shapes = NULL;
 		return (PyObject *) self;
 	}
 
   /** This is implementation of the __init__ method */
-  static int CompositeApertureShape_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
+  static int CompositeApertureShape_init(pyORBIT_CompositeApertureShape *self, PyObject *args, PyObject *kwds){
   	self->cpp_obj = (pyORBIT_Object*) new CompositeApertureShape();
-	  ((BaseApertureShape*) self->cpp_obj)->setPyWrapper((PyObject*) self);
+	  self->shapes = PyList_New(0);
+	  if(self->shapes == NULL) {
+		  delete ((CompositeApertureShape*) self->cpp_obj);
+		  self->cpp_obj = NULL;
+		  return -1;
+	  }
+	  pyorbit::registerPyWrapper(self->cpp_obj, (PyObject*) self);
     return 0;
   }
 
@@ -58,12 +70,13 @@ extern "C" {
 
 	// addApertureShape() - adds the ApertureShape instance to composite
   static PyObject* CompositeApertureShape_addApertureShape(PyObject *self, PyObject *args){
-    pyORBIT_Object* pyCompositeApertureShape= (pyORBIT_Object*) self;
-		CompositeApertureShape* cpp_CompositeApertureShape = (CompositeApertureShape*) pyCompositeApertureShape->cpp_obj;
+		pyORBIT_CompositeApertureShape* composite = (pyORBIT_CompositeApertureShape*) self;
+		CompositeApertureShape* cpp_CompositeApertureShape = (CompositeApertureShape*) composite->cpp_obj;
 	  PyObject* pyBaseApertureShape;
 		if(!PyArg_ParseTuple(args,"O:setApertureShape",&pyBaseApertureShape)){
 				ORBIT_MPI_Finalize("CompositeApertureShape.addApertureShape(BaseApertureShape) - parameter is needed. Stop.");
 		}
+		if(PyList_Append(composite->shapes, pyBaseApertureShape) < 0) return NULL;
 		cpp_CompositeApertureShape->addApertureShape((BaseApertureShape*) ((pyORBIT_Object*) pyBaseApertureShape)->cpp_obj);
 		Py_INCREF(Py_None);
 		return Py_None;
@@ -71,26 +84,18 @@ extern "C" {
 
 	// getApertureShapes() - returns the ApertureShape instances inside the composite
   static PyObject* CompositeApertureShape_getApertureShapes(PyObject *self, PyObject *args){
-    pyORBIT_Object* pyCompositeApertureShape= (pyORBIT_Object*) self;
-		CompositeApertureShape* cpp_CompositeApertureShape = (CompositeApertureShape*) pyCompositeApertureShape->cpp_obj;
-		std::vector<BaseApertureShape*> apertureShapes = cpp_CompositeApertureShape->getApertureShape();
-		//create tuple with apertureShapes
-		PyObject* resTuple = PyTuple_New(apertureShapes.size());
-		for(int i = 0, n = apertureShapes.size(); i < n; i++){
-			PyObject* py_nm = apertureShapes[i]->getPyWrapper();
-			if(PyTuple_SetItem(resTuple,i,py_nm)){
-				ORBIT_MPI_Finalize("CompositeApertureShape.getApertureShapes(...) - cannot add the ApertureShape instance to composite");
-			}
-		}
-    return resTuple;
+		pyORBIT_CompositeApertureShape* composite = (pyORBIT_CompositeApertureShape*) self;
+		return PyList_AsTuple(composite->shapes);
   }
 
   //-----------------------------------------------------
   //destructor for python CompositeApertureShape class (__del__ method).
   //-----------------------------------------------------
-  static void CompositeApertureShape_del(pyORBIT_Object* self){
+  static void CompositeApertureShape_del(pyORBIT_CompositeApertureShape* self){
 		//std::cerr<<"debug CompositeApertureShape __del__ has been called!"<<std::endl;
+		pyorbit::unregisterPyWrapper(self->cpp_obj, (PyObject*) self);
 		delete ((BaseApertureShape*)self->cpp_obj);
+		Py_CLEAR(self->shapes);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 
@@ -113,7 +118,7 @@ extern "C" {
 	static PyTypeObject pyORBIT_CompositeApertureShape_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
 		"CompositeApertureShape", /*tp_name*/
-		sizeof(pyORBIT_Object), /*tp_basicsize*/
+		sizeof(pyORBIT_CompositeApertureShape), /*tp_basicsize*/
 		0, /*tp_itemsize*/
 		(destructor) CompositeApertureShape_del , /*tp_dealloc*/
 		0, /*tp_print*/

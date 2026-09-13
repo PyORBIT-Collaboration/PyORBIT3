@@ -1,7 +1,9 @@
 #ifndef WRAP_SPACE_CHARGE_GRID_3D_H
 #define WRAP_SPACE_CHARGE_GRID_3D_H
 
-#include "Python.h"
+#include <Python.h>
+
+class Grid3D;
 
 #ifdef __cplusplus
 extern "C" {
@@ -9,6 +11,7 @@ extern "C" {
 
   namespace wrap_spacecharge{
     void initGrid3D(PyObject* module);
+    PyObject* wrapGrid3D(Grid3D* grid, PyObject* owner);
   }
 
 #ifdef __cplusplus

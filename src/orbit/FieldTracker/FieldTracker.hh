@@ -3,19 +3,16 @@
 #ifndef FIELDTRACKER_H
 #define FIELDTRACKER_H
 
-//pyORBIT utils
-#include "CppPyWrapper.hh"
-#include "Bunch.hh"
-#include "Grid3D.hh"
+#include "orbit/Bunch.hh"
+#include "spacecharge/Grid3D.hh"
 
-using namespace std;
 
 /**
  The FieldTracker class is used to define how a particle/bunch  propogates through an
  3-dimensional magnetic field
  */
 
-class FieldTracker: public OrbitUtils::CppPyWrapper
+class FieldTracker
 {
 public:
 
@@ -29,14 +26,14 @@ public:
  	       const double &resid,
  	       const double &xrefi, const double &yrefi,
  	       const double &eulerai, const double &eulerbi,
- 	       const double &eulergi, Bunch* b, string &filename);
+	       const double &eulergi, Bunch* b, std::string &filename);
 
 	/** Routine for transfering particles through a aperture */
 	void trackBunch(Bunch* b);
 
 	void BGrid3D();
 
-	void ParseGrid3D(const string &fileName,
+	void ParseGrid3D(const std::string &fileName,
 	                 const double &xmin, const double &xmax,
 	                 const double &ymin, const double &ymax,
 	                 const double &zmin, const double &zmax,

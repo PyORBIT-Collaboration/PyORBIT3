@@ -22,9 +22,9 @@
 #ifndef PY_BASE_FIELD_SOURCE_H
 #define PY_BASE_FIELD_SOURCE_H
 
-#include "Python.h"
+#include <Python.h>
 
-#include "BaseFieldSource.hh"
+#include "utils/BaseFieldSource.hh"
 
 namespace OrbitUtils{
 
@@ -54,6 +54,9 @@ namespace OrbitUtils{
 				double x, double y, double z, double t,
 				double& fe_x, double& fe_y, double& fe_z,
 				double& fm_x, double& fm_y, double& fm_z);
+
+		private:
+			PyObject* py_wrapper;
 
 	};
 };

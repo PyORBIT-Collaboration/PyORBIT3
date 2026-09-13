@@ -16,8 +16,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "../Bunch.hh"
-#include "Evolution.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/ParticlesAttributes/Evolution.hh"
 
 Evolution::Evolution(Bunch* bunch, int size_in):
   ParticleAttributes(bunch,size_in)

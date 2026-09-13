@@ -1,14 +1,14 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_utils.hh"
-#include "wrap_harmonic_data.hh"
+#include "utils/wrap_utils.hh"
+#include "utils/harmonic_analysis/wrap_harmonic_data.hh"
 
 #include <iostream>
 #include <string>
 #include <cfloat>
 
-#include "HarmonicData.hh"
+#include "utils/harmonic_analysis/HarmonicData.hh"
 
 using namespace OrbitUtils;
 using namespace wrap_orbit_utils;
@@ -62,7 +62,6 @@ extern "C" {
 		else{
 			error("HarmonicData(order,pyFunction) or HarmonicData(harmonicData)- constructor parameters are needed");
 		}
-		((HarmonicData*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
 

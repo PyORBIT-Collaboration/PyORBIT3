@@ -1,11 +1,11 @@
-#include "Dual_Harmonic_Cav.hh"
-#include "ParticleMacroSize.hh"
+#include "orbit/RFCavities/Dual_Harmonic_Cav.hh"
+#include "orbit/ParticlesAttributes/ParticleMacroSize.hh"
 
 #include <iostream>
 #include <cmath>
 
-#include "Bunch.hh"
-#include "OrbitConst.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/OrbitConst.hh"
 
 using namespace OrbitUtils;
 
@@ -16,7 +16,7 @@ Dual_Harmonic_Cav::Dual_Harmonic_Cav(double ZtoPhi   ,
                            double RFVoltage,
                            double RatioVoltage,
                            double RFPhase,
-                           double RFPhase2): CppPyWrapper(NULL)
+                           double RFPhase2)
 {
   _ZtoPhi    = ZtoPhi;
   _RFHNum    = RFHNum;

@@ -1,13 +1,13 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_utils.hh"
-#include "wrap_py_external_effects.hh"
+#include "utils/wrap_utils.hh"
+#include "trackerrk4/wrap_py_external_effects.hh"
 
 #include <iostream>
 #include <string>
 
-#include "PyExternalEffects.hh"
+#include "trackerrk4/PyExternalEffects.hh"
 
 using namespace OrbitUtils;
 using namespace TrackerRK4;
@@ -38,6 +38,7 @@ extern "C" {
   //this is implementation of the __init__ method
   static int PyExternalEffects_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
 		self->cpp_obj = new PyExternalEffects((PyObject*) self);
+		pyorbit::registerPyWrapper(self->cpp_obj, (PyObject*) self);
     return 0;
   }
 
@@ -61,6 +62,7 @@ extern "C" {
   //-----------------------------------------------------
   static void PyExternalEffects_del(pyORBIT_Object* self){
 		//std::cerr<<"The PyExternalEffects __del__ has been called!"<<std::endl;
+		pyorbit::unregisterPyWrapper(self->cpp_obj, (PyObject*) self);
 		delete ((PyExternalEffects*)self->cpp_obj);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }

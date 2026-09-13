@@ -1,4 +1,4 @@
-#include "gauss_legendre_points.hh"
+#include "utils/integration/gauss_legendre_points.hh"
 #include <cstdlib>
 
 namespace OrbitUtils{

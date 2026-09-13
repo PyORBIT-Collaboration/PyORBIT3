@@ -1,12 +1,12 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_TImpedance.hh"
-#include "wrap_bunch.hh"
+#include "orbit/Impedances/wrap_TImpedance.hh"
+#include "orbit/wrap_bunch.hh"
 
 #include <iostream>
 
-#include "TImpedance.hh"
+#include "orbit/Impedances/TImpedance.hh"
 
 using namespace OrbitUtils;
 
@@ -69,7 +69,6 @@ extern "C"
 
     self->cpp_obj = new TImpedance(length, nMacrosMin, nBins, useX, useY);
 
-    ((TImpedance*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 
     return 0;
   }

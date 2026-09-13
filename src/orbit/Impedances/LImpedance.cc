@@ -11,10 +11,10 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#include "Grid1D.hh"
-#include "BufferStore.hh"
-#include "LImpedance.hh"
-#include "OrbitConst.hh"
+#include "spacecharge/Grid1D.hh"
+#include "utils/BufferStore.hh"
+#include "orbit/Impedances/LImpedance.hh"
+#include "orbit/OrbitConst.hh"
 #include <complex>
 #include <iostream>
 #include <cmath>
@@ -29,12 +29,12 @@ using namespace OrbitUtils;
 
 LImpedance::LImpedance(double length,
                        int nMacrosMin,
-                       int nBins): CppPyWrapper(NULL)
+                       int nBins)
 {
   _length        = length;
   _nMacrosMin    = nMacrosMin;
   _nBins         = nBins;
-  zGrid          = new Grid1D(_nBins, _length);
+  zGrid.reset(new Grid1D(_nBins, _length));
 
   _fftmagnitude  = new double[_nBins / 2];
   _fftphase      = new double[_nBins / 2];
@@ -64,14 +64,6 @@ LImpedance::LImpedance(double length,
 
 LImpedance::~LImpedance()
 {
-  if(zGrid->getPyWrapper() != NULL)
-  {
-    Py_DECREF(zGrid->getPyWrapper());
-  }
-  else
-  {
-    delete zGrid;
-  }
   delete[] _fftmagnitude;
   delete[] _fftphase;
   delete[] _z;

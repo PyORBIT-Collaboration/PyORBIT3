@@ -1,5 +1,6 @@
-#include "ForceSolverFFT2D.hh"
+#include "spacecharge/ForceSolverFFT2D.hh"
 
+#include <complex>
 #include <iostream>
 
 using namespace OrbitUtils;
@@ -114,22 +115,22 @@ void ForceSolverFFT2D::_defineGreenF()
 		{
 			rTransX = iX * dx_;
 			rTot2 = rTransX*rTransX + rTransY*rTransY;
-			greensF_[iX][iY] = complex<double>(rTransX/rTot2, rTransY/rTot2);
+			greensF_[iX][iY] = std::complex<double>(rTransX/rTot2, rTransY/rTot2);
 		}
 
-		greensF_[xSize2_/2][iY] = complex<double>(0,0); //end point
+		greensF_[xSize2_/2][iY] = std::complex<double>(0,0); //end point
 
 		for (iX = xSize2_/2+1; iX < xSize2_; iX++)
 		{
 			rTransX = (iX - xSize2_) * dx_;
 			rTot2 = rTransX*rTransX + rTransY*rTransY;
-			greensF_[iX][iY] = complex<double>(rTransX/rTot2, rTransY/rTot2);
+			greensF_[iX][iY] = std::complex<double>(rTransX/rTot2, rTransY/rTot2);
 		}
 	}
 
 	for(iX=0; iX < xSize_/2; iX++)   // Null the top row:
 	{
-		greensF_[iX][ySize2_/2] = complex<double>(0,0);
+		greensF_[iX][ySize2_/2] = std::complex<double>(0,0);
 	}
 
 	for (iY = ySize2_/2+1; iY < ySize2_; iY++)  // Bottom rows:
@@ -140,20 +141,20 @@ void ForceSolverFFT2D::_defineGreenF()
 		{
 			rTransX = iX * dx_;
 			rTot2 = rTransX*rTransX + rTransY*rTransY;
-			greensF_[iX][iY] = complex<double>(rTransX/rTot2, rTransY/rTot2);
+			greensF_[iX][iY] = std::complex<double>(rTransX/rTot2, rTransY/rTot2);
 	    }
 
-		greensF_[xSize2_/2][iY] = complex<double>(0,0); //end point
+		greensF_[xSize2_/2][iY] = std::complex<double>(0,0); //end point
 
 		for (iX = xSize2_/2+1; iX < xSize2_; iX++)
 		{
 			rTransX = (iX - xSize2_) * dx_;
 			//rTransX = (iX - 1 - xSize2_) * dx_;
 			rTot2 = rTransX*rTransX + rTransY*rTransY;
-			greensF_[iX][iY] = complex<double>(rTransX/rTot2, rTransY/rTot2);
+			greensF_[iX][iY] = std::complex<double>(rTransX/rTot2, rTransY/rTot2);
 	    }
 	}
-	greensF_[0][0] = complex<double>(0,0); //end point
+	greensF_[0][0] = std::complex<double>(0,0); //end point
 
 	//   Calculate the FFT of the Greens Function:
 

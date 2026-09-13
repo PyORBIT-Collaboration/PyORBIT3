@@ -16,8 +16,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "../Bunch.hh"
-#include "ParticleIdNumber.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/ParticlesAttributes/ParticleIdNumber.hh"
 
 ParticleIdNumber::ParticleIdNumber(Bunch* bunch):
   ParticleAttributes(bunch,1)

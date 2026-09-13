@@ -6,7 +6,7 @@
 // This is a wrapper for the MPI_Request data type from MPI
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "orbit_mpi.hh"
+#include "mpi/wrap_orbit_mpi_types.hh"
 
 #ifdef __cplusplus
 extern "C" {

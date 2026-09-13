@@ -18,7 +18,7 @@
 #ifndef LINAC_TRACKING_H
 #define LINAC_TRACKING_H
 
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 
 namespace linac_tracking
 {

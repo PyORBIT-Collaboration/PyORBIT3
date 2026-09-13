@@ -1,15 +1,15 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_utils.hh"
+#include "utils/wrap_utils.hh"
 
 #include <iostream>
 #include <string>
 
-#include "GaussLegendreIntegrator.hh"
-#include "wrap_gauss_legendre_integrator.hh"
-#include "OU_SplineCH.hh"
-#include "OU_Function.hh"
+#include "utils/integration/GaussLegendreIntegrator.hh"
+#include "utils/integration/wrap_gauss_legendre_integrator.hh"
+#include "utils/OU_SplineCH.hh"
+#include "utils/OU_Function.hh"
 
 using namespace OrbitUtils;
 using namespace wrap_orbit_utils;
@@ -61,7 +61,6 @@ extern "C" {
 		if(self->cpp_obj == NULL){
 			error("GaussLegendreIntegrator([nPoints[,x_min,x_max]]) - constructor signature.");
 		}
-	  ((GaussLegendreIntegrator*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
 

@@ -2,7 +2,7 @@
 #define WRAP_ORBIT_UTILS_STAT_MOMENTS_2D_HH_
 
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

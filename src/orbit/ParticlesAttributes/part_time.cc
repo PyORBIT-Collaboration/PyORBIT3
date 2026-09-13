@@ -16,8 +16,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "../Bunch.hh"
-#include "part_time.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/ParticlesAttributes/part_time.hh"
 
 part_time::part_time(Bunch* bunch, int size_in):
   ParticleAttributes(bunch,size_in)

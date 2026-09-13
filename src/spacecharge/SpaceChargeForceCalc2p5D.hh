@@ -4,26 +4,24 @@
 #define SC_SPACEFORCECHARGE_CALC_2P5D_H
 
 //MPI Function Wrappers
-#include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
+#include "mpi/orbit_mpi.hh"
 
 #include <cstdlib>
 #include <cmath>
+#include <memory>
 
 //ORBIT bunch
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 //pyORBIT utils
-#include "CppPyWrapper.hh"
-#include "BunchExtremaCalculator.hh"
+#include "utils/bunch/BunchExtremaCalculator.hh"
 
-#include "Grid1D.hh"
-#include "Grid2D.hh"
-#include "ForceSolverFFT2D.hh"
-#include "BaseBoundary2D.hh"
+#include "spacecharge/Grid1D.hh"
+#include "spacecharge/Grid2D.hh"
+#include "spacecharge/ForceSolverFFT2D.hh"
+#include "spacecharge/BaseBoundary2D.hh"
 
-using namespace std;
 
-class SpaceChargeForceCalc2p5D: public OrbitUtils::CppPyWrapper
+class SpaceChargeForceCalc2p5D
 {
 public:
 
@@ -57,11 +55,11 @@ private:
 
 protected:
 	ForceSolverFFT2D* forceSolver;
-	Grid2D* rhoGrid;
-	Grid2D* phiGrid;
-	Grid2D* forceGridX;
-	Grid2D* forceGridY;
-	Grid1D* zGrid;
+	std::unique_ptr<Grid2D> rhoGrid;
+	std::unique_ptr<Grid2D> phiGrid;
+	std::unique_ptr<Grid2D> forceGridX;
+	std::unique_ptr<Grid2D> forceGridY;
+	std::unique_ptr<Grid1D> zGrid;
 	OrbitUtils::BunchExtremaCalculator* bunchExtremaCalc;
 
 };

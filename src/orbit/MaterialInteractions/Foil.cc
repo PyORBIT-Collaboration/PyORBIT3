@@ -1,17 +1,17 @@
-#include "MaterialInteractions.hh"
-#include "Foil.hh"
-#include "SyncPart.hh"
-#include "cross_sections.hh"
-#include "numrecipes.hh"
-#include "OrbitConst.hh"
-#include "Random.hh"
+#include "orbit/MaterialInteractions/MaterialInteractions.hh"
+#include "orbit/MaterialInteractions/Foil.hh"
+#include "orbit/SyncPart.hh"
+#include "orbit/MaterialInteractions/cross_sections.hh"
+#include "orbit/MaterialInteractions/numrecipes.hh"
+#include "orbit/OrbitConst.hh"
+#include "utils/Random.hh"
 
 #include <iostream>
 #include <cmath>
 #include <cfloat>
 #include <cstdlib>
 
-#include "ParticleInitialCoordinates.hh"
+#include "orbit/ParticlesAttributes/ParticleInitialCoordinates.hh"
 
 using namespace OrbitUtils;
 
@@ -35,7 +35,7 @@ using namespace OrbitUtils;
 //
 ///////////////////////////////////////////////////////////////////////////
 
-Foil::Foil(double xmin, double xmax, double ymin, double ymax, double thick): CppPyWrapper(NULL)
+Foil::Foil(double xmin, double xmax, double ymin, double ymax, double thick)
 {
 	xmin_ = xmin;
 	xmax_ = xmax;

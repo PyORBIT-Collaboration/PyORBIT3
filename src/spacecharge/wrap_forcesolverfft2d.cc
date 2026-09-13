@@ -1,11 +1,11 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "ForceSolverFFT2D.hh"
-#include "Grid2D.hh"
+#include "spacecharge/ForceSolverFFT2D.hh"
+#include "spacecharge/Grid2D.hh"
 
-#include "wrap_forcesolverfft2d.hh"
-#include "wrap_spacecharge.hh"
+#include "spacecharge/wrap_forcesolverfft2d.hh"
+#include "spacecharge/wrap_spacecharge.hh"
 
 #include <iostream>
 
@@ -40,7 +40,6 @@ extern "C" {
 			ORBIT_MPI_Finalize("PyForceSolverFFT2D - ForceSolverFFT2D(nX,nY) - constructor needs parameters.");
 		}
 		self->cpp_obj = new ForceSolverFFT2D(xSize,ySize);
-		((ForceSolverFFT2D*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 		//std::cerr<<"The ForceSolverFFT2D __init__ has been called!"<<std::endl;
 		return 0;
   }

@@ -12,7 +12,7 @@
 #ifndef GAUSS_LEGENDRE_POINTS_H
 #define GAUSS_LEGENDRE_POINTS_H
 
-#include "OU_Function.hh"
+#include "utils/OU_Function.hh"
 
 namespace OrbitUtils{
 

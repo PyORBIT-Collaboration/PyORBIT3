@@ -20,8 +20,8 @@
 //   b = ((y1-y0)*x2^2 - (y2-y0)*x1^2) / (x1*x2*(x2-x1))
 //
 /////////////////////////////////////////////////////////////////////////////
-#include "orbit_mpi.hh"
-#include "MatrixGenerator.hh"
+#include "mpi/orbit_mpi.hh"
+#include "teapot/MatrixGenerator.hh"
 
 using namespace OrbitUtils;
 

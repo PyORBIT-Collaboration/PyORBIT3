@@ -13,13 +13,13 @@
 //    The container for instances of the BaseFieldSource class.
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
 #include <iostream>
 #include <iomanip>
 #include <cmath>
 #include <fstream>
 
-#include "FieldSourceContainer.hh"
+#include "utils/FieldSourceContainer.hh"
 
 
 using namespace OrbitUtils;
@@ -29,23 +29,10 @@ FieldSourceContainer::FieldSourceContainer():BaseFieldSource()
 }
 
 FieldSourceContainer::~FieldSourceContainer(){
-
-	for (int i=0;i<ref.size();i++){
-		if(ref[i]->getPyWrapper() == NULL){
-			delete ref[i];
-		} else {
-			Py_XDECREF(ref[i]->getPyWrapper());
-		}
-	}
-
 }
 
 /** Adds the instance of the  ExternalEffects class to the container. */
 void FieldSourceContainer::AddFieldSource(BaseFieldSource* fs)	{
-	if(fs->getPyWrapper() != NULL){
-		Py_INCREF(fs->getPyWrapper());
-	}
-
 	ref.push_back(fs);
 
 }

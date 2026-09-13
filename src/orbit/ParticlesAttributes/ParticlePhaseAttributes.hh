@@ -21,7 +21,7 @@
 // INCLUDE FILES
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "ParticleAttributes.hh"
+#include "orbit/ParticlesAttributes/ParticleAttributes.hh"
 
 class ParticlePhaseAttributes : public ParticleAttributes
 {

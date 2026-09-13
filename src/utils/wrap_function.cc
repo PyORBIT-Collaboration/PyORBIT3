@@ -1,13 +1,13 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_utils.hh"
-#include "wrap_function.hh"
+#include "utils/wrap_utils.hh"
+#include "utils/wrap_function.hh"
 
 #include <iostream>
 #include <string>
 
-#include "OU_Function.hh"
+#include "utils/OU_Function.hh"
 
 using namespace OrbitUtils;
 using namespace wrap_orbit_utils;
@@ -34,7 +34,6 @@ extern "C" {
   /** This is implementation of the __init__ method */
   static int Function_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
 	  self->cpp_obj =  new Function();
-	  ((Function*) self->cpp_obj)->setPyWrapper((PyObject*) self);
     return 0;
   }
   

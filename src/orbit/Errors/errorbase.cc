@@ -22,11 +22,11 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#include "errorbase.hh"
-#include "teapotbase.hh"
-#include "OrbitConst.hh"
-#include "SyncPart.hh"
-#include "Random.hh"
+#include "orbit/Errors/errorbase.hh"
+#include "teapot/teapotbase.hh"
+#include "orbit/OrbitConst.hh"
+#include "orbit/SyncPart.hh"
+#include "utils/Random.hh"
 
 #include <complex>
 #include <iostream>

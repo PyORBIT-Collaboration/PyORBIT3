@@ -15,9 +15,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "BunchTwissAnalysis.hh"
+#include "orbit/BunchDiagnostics/BunchTwissAnalysis.hh"
 
-#include "orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
 
 namespace OrbitUtils{
 

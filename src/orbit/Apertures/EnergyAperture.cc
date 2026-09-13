@@ -19,21 +19,21 @@
 ///////////////////////////////////////////////////////////////////////////
 
 
-#include "EnergyAperture.hh"
-#include "SyncPart.hh"
-#include "OrbitConst.hh"
+#include "orbit/Apertures/EnergyAperture.hh"
+#include "orbit/SyncPart.hh"
+#include "orbit/OrbitConst.hh"
 
 #include <iostream>
 #include <cmath>
 #include <cfloat>
 #include <cstdlib>
 
-#include "ParticleAttributes.hh"
+#include "orbit/ParticlesAttributes/ParticleAttributes.hh"
 
 /**
  The EnergyAperture class constructor.
  */
-EnergyAperture::EnergyAperture(): CppPyWrapper(NULL)
+EnergyAperture::EnergyAperture()
 {
 	minEnergy_ = -1.0e+36;
 	maxEnergy_ = +1.0e+36;

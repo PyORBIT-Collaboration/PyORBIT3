@@ -13,18 +13,18 @@
 //    The integrator for the Gauss-Legendre schema.
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "orbit_mpi.hh"
-#include "orbit_mpi.hh"
-#include "GaussLegendreIntegrator.hh"
-#include "gauss_legendre_points.hh"
-#include "OU_Function.hh"
-#include "OU_SplineCH.hh"
+#include "mpi/orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
+#include "utils/integration/GaussLegendreIntegrator.hh"
+#include "utils/integration/gauss_legendre_points.hh"
+#include "utils/OU_Function.hh"
+#include "utils/OU_SplineCH.hh"
 
 #include <iomanip>
 
 using namespace OrbitUtils;
 
-GaussLegendreIntegrator::GaussLegendreIntegrator(): CppPyWrapper(NULL)
+GaussLegendreIntegrator::GaussLegendreIntegrator()
 {
 	n_int_points = 1024;
 	x0 = 0.;
@@ -34,7 +34,7 @@ GaussLegendreIntegrator::GaussLegendreIntegrator(): CppPyWrapper(NULL)
 	n_int_points = pw_finc->getSize();
 }
 
-GaussLegendreIntegrator::GaussLegendreIntegrator(int nPoints): CppPyWrapper(NULL)
+GaussLegendreIntegrator::GaussLegendreIntegrator(int nPoints)
 {
 	n_int_points = nPoints;
 	x0 = 0.;
@@ -44,7 +44,7 @@ GaussLegendreIntegrator::GaussLegendreIntegrator(int nPoints): CppPyWrapper(NULL
 	n_int_points = pw_finc->getSize();
 }
 
-GaussLegendreIntegrator::GaussLegendreIntegrator(int nPoints, double x_from, double x_to): CppPyWrapper(NULL)
+GaussLegendreIntegrator::GaussLegendreIntegrator(int nPoints, double x_from, double x_to)
 {
 	n_int_points = nPoints;
 	x0 = x_from;

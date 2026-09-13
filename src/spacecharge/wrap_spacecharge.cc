@@ -1,21 +1,21 @@
-#include "orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
 
-#include "wrap_grid1D.hh"
-#include "wrap_grid2D.hh"
-#include "wrap_grid3D.hh"
-#include "wrap_poissonsolverfft2d.hh"
-#include "wrap_poissonsolverfft3d.hh"
-#include "wrap_forcesolverfft2d.hh"
-#include "wrap_boundary2d.hh"
-#include "wrap_spacecharge.hh"
-#include "wrap_spacechargecalc2p5d.hh"
-#include "wrap_spacechargeforcecalc2p5d.hh"
-#include "wrap_spacechargecalc2p5d_rb.hh"
-#include "wrap_spacechargecalc_slicebyslice_2D.hh"
-#include "wrap_lspacechargecalc.hh"
-#include "wrap_spacechargecalc3d.hh"
-#include "wrap_uniform_ellipsoid_field_calculator.hh"
-#include "wrap_spacechargecalc_uniform_ellipse.hh"
+#include "spacecharge/wrap_grid1D.hh"
+#include "spacecharge/wrap_grid2D.hh"
+#include "spacecharge/wrap_grid3D.hh"
+#include "spacecharge/wrap_poissonsolverfft2d.hh"
+#include "spacecharge/wrap_poissonsolverfft3d.hh"
+#include "spacecharge/wrap_forcesolverfft2d.hh"
+#include "spacecharge/wrap_boundary2d.hh"
+#include "spacecharge/wrap_spacecharge.hh"
+#include "spacecharge/wrap_spacechargecalc2p5d.hh"
+#include "spacecharge/wrap_spacechargeforcecalc2p5d.hh"
+#include "spacecharge/wrap_spacechargecalc2p5d_rb.hh"
+#include "spacecharge/wrap_spacechargecalc_slicebyslice_2D.hh"
+#include "spacecharge/wrap_lspacechargecalc.hh"
+#include "spacecharge/wrap_spacechargecalc3d.hh"
+#include "spacecharge/wrap_uniform_ellipsoid_field_calculator.hh"
+#include "spacecharge/wrap_spacechargecalc_uniform_ellipse.hh"
 
 static PyMethodDef spacechargeMethods[] = { {NULL,NULL} };
 
@@ -51,14 +51,6 @@ extern "C" {
 		wrap_spacecharge::initSpaceChargeForceCalc2p5D(module);
 		return module;
   }
-
-	PyObject* getSpaceChargeType(const char* name){
-		PyObject* mod = PyImport_ImportModule("orbit.core.spacecharge");
-		PyObject* pyType = PyObject_GetAttrString(mod,name);
-		Py_DECREF(mod);
-		Py_DECREF(pyType);
-		return pyType;
-	}
 
 #ifdef __cplusplus
 }

@@ -1,18 +1,24 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_SuperFishFieldSource.hh"
-#include "wrap_linacmodule.hh"
+#include "linac/rfgap/wrap_SuperFishFieldSource.hh"
+#include "linac/wrap_linacmodule.hh"
 
-#include "wrap_utils.hh"
-#include "wrap_spacecharge.hh"
-#include "SuperFishFieldSource.hh"
+#include "utils/wrap_utils.hh"
+#include "spacecharge/wrap_spacecharge.hh"
+#include "linac/rfgap/SuperFishFieldSource.hh"
 
 #include <iostream>
 
 using namespace OrbitUtils;
 
 namespace wrap_linac{
+
+	typedef struct {
+		PyObject_HEAD
+		void* cpp_obj;
+		PyObject* grids[3];
+	} pyORBIT_SuperFishFieldSource;
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,18 +32,21 @@ extern "C" {
 	//It never will be called directly
 	static PyObject* SuperFishFieldSource_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	{
-		pyORBIT_Object* self;
-		self = (pyORBIT_Object *) type->tp_alloc(type, 0);
+		pyORBIT_SuperFishFieldSource* self;
+		self = (pyORBIT_SuperFishFieldSource *) type->tp_alloc(type, 0);
 		self->cpp_obj = NULL;
+		self->grids[0] = NULL;
+		self->grids[1] = NULL;
+		self->grids[2] = NULL;
 		//std::cerr<<"The SuperFishFieldSource new has been called!"<<std::endl;
 		return (PyObject *) self;
 	}
 
   //initializator for python  SuperFishFieldSource class
   //this is implementation of the __init__ method
-  static int SuperFishFieldSource_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
+  static int SuperFishFieldSource_init(pyORBIT_SuperFishFieldSource *self, PyObject *args, PyObject *kwds){
 		self->cpp_obj = new SuperFishFieldSource();
-		((SuperFishFieldSource*) self->cpp_obj)->setPyWrapper((PyObject*) self);
+		pyorbit::registerPyWrapper(self->cpp_obj, (PyObject*) self);
 		return 0;
   }
 
@@ -55,7 +64,7 @@ extern "C" {
 
 	//setGrid2D_Fields(grid2D_Ez,grid2D_Er,grid2D_H) - sets the Grid2D instances with Ez, Er, H fields.
   static PyObject* SuperFishFieldSource_setGrid2D_Fields(PyObject *self, PyObject *args){
-    pyORBIT_Object* pySuperFishFieldSource = (pyORBIT_Object*) self;
+		pyORBIT_SuperFishFieldSource* pySuperFishFieldSource = (pyORBIT_SuperFishFieldSource*) self;
 		SuperFishFieldSource* cpp_SuperFishFieldSource = (SuperFishFieldSource*) pySuperFishFieldSource->cpp_obj;
 		PyObject* pyGrid2D_Ez;
 		PyObject* pyGrid2D_Er;
@@ -76,25 +85,24 @@ extern "C" {
 		Py_INCREF(pyGrid2D_Ez);
 		Py_INCREF(pyGrid2D_Er);
 		Py_INCREF(pyGrid2D_H);
+		Py_XDECREF(pySuperFishFieldSource->grids[0]);
+		Py_XDECREF(pySuperFishFieldSource->grids[1]);
+		Py_XDECREF(pySuperFishFieldSource->grids[2]);
+		pySuperFishFieldSource->grids[0] = pyGrid2D_Ez;
+		pySuperFishFieldSource->grids[1] = pyGrid2D_Er;
+		pySuperFishFieldSource->grids[2] = pyGrid2D_H;
 		Py_INCREF(Py_None);
     return Py_None;
 	}
 
 	//getGrid2D_Fields returns the Grid2D instances with Ez, Er, H fields.
   static PyObject* SuperFishFieldSource_getGrid2D_Fields(PyObject *self, PyObject *args){
-    pyORBIT_Object* pySuperFishFieldSource = (pyORBIT_Object*) self;
-		SuperFishFieldSource* cpp_SuperFishFieldSource = (SuperFishFieldSource*) pySuperFishFieldSource->cpp_obj;
-		Grid2D* grid2d_Ez = cpp_SuperFishFieldSource->getGrid2D_Ez();
-		Grid2D* grid2d_Er = cpp_SuperFishFieldSource->getGrid2D_Er();
-		Grid2D* grid2d_H  = cpp_SuperFishFieldSource->getGrid2D_H();
-		PyObject* pyGrid2D_Ez = (PyObject*) grid2d_Ez->getPyWrapper();
-		PyObject* pyGrid2D_Er = (PyObject*) grid2d_Er->getPyWrapper();
-		PyObject* pyGrid2D_H  = (PyObject*) grid2d_H->getPyWrapper();
-		if(pyGrid2D_Ez == NULL || pyGrid2D_Er == NULL || pyGrid2D_H == NULL){
+		pyORBIT_SuperFishFieldSource* source = (pyORBIT_SuperFishFieldSource*) self;
+		if(source->grids[0] == NULL || source->grids[1] == NULL || source->grids[2] == NULL){
 			Py_INCREF(Py_None);
 			return Py_None;
 		}
-		return Py_BuildValue("(OOO)",pyGrid2D_Ez,pyGrid2D_Er,pyGrid2D_H);
+		return Py_BuildValue("(OOO)", source->grids[0], source->grids[1], source->grids[2]);
 	}
 
 	//setFrequency(frequency) sets the RF frequency.
@@ -254,10 +262,14 @@ extern "C" {
   //-----------------------------------------------------
   //destructor for python SuperFishFieldSource class (__del__ method).
   //-----------------------------------------------------
-  static void SuperFishFieldSource_del(pyORBIT_Object* self){
+  static void SuperFishFieldSource_del(pyORBIT_SuperFishFieldSource* self){
 		//std::cerr<<"The SuperFishFieldSource __del__ has been called!"<<std::endl;
 		SuperFishFieldSource* cpp_SuperFishFieldSource = (SuperFishFieldSource*) self->cpp_obj;
+		pyorbit::unregisterPyWrapper(cpp_SuperFishFieldSource, (PyObject*) self);
 		delete cpp_SuperFishFieldSource;
+		Py_CLEAR(self->grids[0]);
+		Py_CLEAR(self->grids[1]);
+		Py_CLEAR(self->grids[2]);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 
@@ -296,7 +308,7 @@ extern "C" {
 	static PyTypeObject pyORBIT_SuperFishFieldSource_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
 		"SuperFishFieldSource", /*tp_name*/
-		sizeof(pyORBIT_Object), /*tp_basicsize*/
+		sizeof(pyORBIT_SuperFishFieldSource), /*tp_basicsize*/
 		0, /*tp_itemsize*/
 		(destructor) SuperFishFieldSource_del , /*tp_dealloc*/
 		0, /*tp_print*/

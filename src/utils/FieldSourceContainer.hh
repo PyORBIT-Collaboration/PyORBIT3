@@ -18,9 +18,7 @@
 #ifndef FIELDSOURCECONTAINER_HH_
 #define FIELDSOURCECONTAINER_HH_
 
-#include "Python.h"
-
-#include "BaseFieldSource.hh"
+#include "utils/BaseFieldSource.hh"
 #include <vector>
 
 namespace OrbitUtils{
@@ -40,7 +38,7 @@ namespace OrbitUtils{
 		/** Destructor. */
 		~FieldSourceContainer();
 
-		/** Adds the instance of the  ExternalEffects class to the container. */
+		/** Adds a non-owning field-source reference to the container. */
 		void AddFieldSource(BaseFieldSource* fs);
 
 		/** Adds the instance of the  ExternalEffects class to the container. */
@@ -50,7 +48,7 @@ namespace OrbitUtils{
 
 		private:
 
-			std::vector<BaseFieldSource*>	ref;
+			std::vector<BaseFieldSource*> ref;
 
 	};
 };

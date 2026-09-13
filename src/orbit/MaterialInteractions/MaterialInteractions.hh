@@ -1,11 +1,6 @@
 #ifndef MATERIAL_INTERACTIONS_H
 #define MATERIAL_INTERACTIONS_H
 
-//pyORBIT utils
-#include "CppPyWrapper.hh"
-
-
-using namespace std;
 
 /**
   The MaterialInteractions class contains a set of routines for calculating common interactions of a particle with a

@@ -17,7 +17,8 @@
 #ifndef PY_ORBIT_OBJECT_H
 #define PY_ORBIT_OBJECT_H
 
-#include "structmember.h"
+#include <Python.h>
+#include <structmember.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,6 +30,15 @@ extern "C" {
  } pyORBIT_Object;
 
 #ifdef __cplusplus
+}
+
+namespace pyorbit {
+
+// Registry entries are borrowed references owned by their Python wrappers.
+void registerPyWrapper(void* cpp_obj, PyObject* py_wrapper);
+void unregisterPyWrapper(void* cpp_obj, PyObject* py_wrapper);
+PyObject* getPyWrapper(void* cpp_obj);
+
 }
 #endif
 

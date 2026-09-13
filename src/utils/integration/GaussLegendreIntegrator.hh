@@ -21,16 +21,13 @@
 #include <cstdlib>
 #include <cmath>
 
-#include "CppPyWrapper.hh"
+#include "utils/OU_Function.hh"
+#include "utils/OU_SplineCH.hh"
 
-#include "OU_Function.hh"
-#include "OU_SplineCH.hh"
-
-using namespace std;
 
 namespace OrbitUtils{
 
-	class  GaussLegendreIntegrator : public CppPyWrapper
+	class GaussLegendreIntegrator
 	{
 	public:
 		//-----------------------------------------

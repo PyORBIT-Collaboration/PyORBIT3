@@ -18,11 +18,11 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#include "Grid3D.hh"
-#include "PoissonSolverFFT3D.hh"
-#include "SpaceChargeCalc3D.hh"
-#include "BufferStore.hh"
-#include "OrbitConst.hh"
+#include "spacecharge/Grid3D.hh"
+#include "spacecharge/PoissonSolverFFT3D.hh"
+#include "spacecharge/SpaceChargeCalc3D.hh"
+#include "utils/BufferStore.hh"
+#include "orbit/OrbitConst.hh"
 
 #include <iostream>
 #include <cmath>
@@ -30,16 +30,16 @@
 
 using namespace OrbitUtils;
 
-SpaceChargeCalc3D::SpaceChargeCalc3D(int xSize, int ySize, int zSize): CppPyWrapper(NULL)
+SpaceChargeCalc3D::SpaceChargeCalc3D(int xSize, int ySize, int zSize)
 {
 	xy_ratio = 1.0;
 	xz_ratio = 1.0;
 	poissonSolver = new PoissonSolverFFT3D(xSize, ySize, zSize, -xy_ratio, xy_ratio, -1./xy_ratio, 1./xy_ratio, -1./xz_ratio, 1./xz_ratio);
-	rhoGrid = new Grid3D(xSize, ySize, zSize);
+	rhoGrid.reset(new Grid3D(xSize, ySize, zSize));
 	rhoGrid->setGridX(poissonSolver->getMinX(),poissonSolver->getMaxX());
 	rhoGrid->setGridY(poissonSolver->getMinY(),poissonSolver->getMaxY());
 	rhoGrid->setGridZ(poissonSolver->getMinZ(),poissonSolver->getMaxZ());
-	phiGrid = new Grid3D(xSize, ySize, zSize);
+	phiGrid.reset(new Grid3D(xSize, ySize, zSize));
 	phiGrid->setGridX(poissonSolver->getMinX(),poissonSolver->getMaxX());
 	phiGrid->setGridY(poissonSolver->getMinY(),poissonSolver->getMaxY());
 	phiGrid->setGridZ(poissonSolver->getMinZ(),poissonSolver->getMaxZ());
@@ -60,25 +60,15 @@ SpaceChargeCalc3D::SpaceChargeCalc3D(int xSize, int ySize, int zSize): CppPyWrap
 
 SpaceChargeCalc3D::~SpaceChargeCalc3D(){
 	delete poissonSolver;
-	if(rhoGrid->getPyWrapper() != NULL){
-		Py_DECREF(rhoGrid->getPyWrapper());
-	} else {
-		delete rhoGrid;
-	}
-	if(phiGrid->getPyWrapper() != NULL){
-		Py_DECREF(phiGrid->getPyWrapper());
-	} else {
-		delete phiGrid;
-	}
 	delete bunchExtremaCalc;
 }
 
 Grid3D* SpaceChargeCalc3D::getRhoGrid(){
-	return rhoGrid;
+	return rhoGrid.get();
 }
 
 Grid3D* SpaceChargeCalc3D::getPhiGrid(){
-	return phiGrid;
+	return phiGrid.get();
 }
 
 void SpaceChargeCalc3D::setNumberOfExternalBunches(int nBunches){
@@ -113,7 +103,7 @@ void SpaceChargeCalc3D::trackBunch(Bunch* bunch, double length){
 	}
 
 	//calculate phiGrid with potential. The z-coordinate is in the center of mass coordinate system
-	poissonSolver->findPotential(rhoGrid,phiGrid);
+	poissonSolver->findPotential(rhoGrid.get(),phiGrid.get());
 
 	SyncPart* syncPart = bunch->getSyncPart();
 	double gamma = syncPart->getGamma();

@@ -29,9 +29,9 @@
 #ifndef PY_EXTERNAL_EFFECTS_H
 #define PY_EXTERNAL_EFFECTS_H
 
-#include "Python.h"
+#include <Python.h>
 
-#include "ExternalEffects.hh"
+#include "trackerrk4/ExternalEffects.hh"
 
 namespace TrackerRK4{
 
@@ -67,7 +67,8 @@ namespace TrackerRK4{
 														  OrbitUtils::BaseFieldSource* fieldSource,
 															RungeKuttaTracker* tracker);
 
-
+		private:
+			PyObject* py_wrapper;
 	};
 };
 

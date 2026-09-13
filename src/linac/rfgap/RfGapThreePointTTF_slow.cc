@@ -13,10 +13,10 @@
    ORNL Tech. Note ORNL/TM-2015/247, June 2015
 */
 
-#include "Bunch.hh"
-#include "bessel.hh"
-#include "OrbitConst.hh"
-#include "RfGapThreePointTTF_slow.hh"
+#include "orbit/Bunch.hh"
+#include "utils/bessel.hh"
+#include "orbit/OrbitConst.hh"
+#include "linac/rfgap/RfGapThreePointTTF_slow.hh"
 
 #include <iostream>
 #include <cmath>
@@ -25,7 +25,7 @@ using namespace OrbitUtils;
 
 
 // Constructor
-RfGapThreePointTTF_slow::RfGapThreePointTTF_slow(): CppPyWrapper(NULL)
+RfGapThreePointTTF_slow::RfGapThreePointTTF_slow()
 {
 }
 

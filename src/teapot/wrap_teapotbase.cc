@@ -1,12 +1,12 @@
-#include "Python.h"
-#include "orbit_mpi.hh"
+#include <Python.h>
+#include "mpi/orbit_mpi.hh"
 
-#include "pyORBIT_Object.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "teapotbase.hh"
+#include "teapot/teapotbase.hh"
 
-#include "wrap_teapotbase.hh"
-#include "wrap_matrix_generator.hh"
+#include "teapot/wrap_teapotbase.hh"
+#include "teapot/wrap_matrix_generator.hh"
 
 namespace wrap_teapotbase
 {

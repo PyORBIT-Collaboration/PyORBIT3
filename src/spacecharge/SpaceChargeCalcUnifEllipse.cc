@@ -15,18 +15,19 @@
 //  The space charge kick is transformed later into the lab system.
 //
 /////////////////////////////////////////////////////////////////////////////
-#include "SpaceChargeCalcUnifEllipse.hh"
-#include "BufferStore.hh"
+#include "spacecharge/SpaceChargeCalcUnifEllipse.hh"
+#include "utils/BufferStore.hh"
 
-#include "ParticleMacroSize.hh"
+#include "orbit/ParticlesAttributes/ParticleMacroSize.hh"
 
+#include <cstdlib>
 #include <iostream>
 #include <cmath>
 #include <cfloat>
 
 using namespace OrbitUtils;
 
-SpaceChargeCalcUnifEllipse::SpaceChargeCalcUnifEllipse(int nEllipses_in): CppPyWrapper(NULL)
+SpaceChargeCalcUnifEllipse::SpaceChargeCalcUnifEllipse(int nEllipses_in)
 {
 	nEllipses = nEllipses_in;
   ellipsoidCalc_arr = new UniformEllipsoidFieldCalculator*[nEllipses];
@@ -44,11 +45,7 @@ SpaceChargeCalcUnifEllipse::SpaceChargeCalcUnifEllipse(int nEllipses_in): CppPyW
 
 SpaceChargeCalcUnifEllipse::~SpaceChargeCalcUnifEllipse(){
 	for(int ie = 0; ie < nEllipses; ie++){
-		if(ellipsoidCalc_arr[ie]->getPyWrapper() != NULL){
-			Py_DECREF(ellipsoidCalc_arr[ie]->getPyWrapper());
-		} else {
-			delete ellipsoidCalc_arr[ie];
-		}
+		delete ellipsoidCalc_arr[ie];
 	}
 	delete [] ellipsoidCalc_arr;
 
@@ -143,7 +140,7 @@ void SpaceChargeCalcUnifEllipse::bunchAnalysis(Bunch* bunch){
 	}
 
 	//calculates sum over all  CPUs
-	ORBIT_MPI_Allreduce(coord_avg,coord_avg_out,7,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local()->comm);
+	ORBIT_MPI_Allreduce(coord_avg,coord_avg_out,7,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local());
 
 	total_macrosize = coord_avg_out[6];
 	if(total_macrosize == 0.){
@@ -233,7 +230,7 @@ void SpaceChargeCalcUnifEllipse::bunchAnalysis(Bunch* bunch){
 		}
 	}
 	//calculates sum over all  CPUs
-	ORBIT_MPI_Allreduce(macroSizesEll_arr,macroSizesEll_MPI_arr,nEllipses,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local()->comm);
+	ORBIT_MPI_Allreduce(macroSizesEll_arr,macroSizesEll_MPI_arr,nEllipses,MPI_DOUBLE,MPI_SUM,bunch->getMPI_Comm_Local());
 	for(int ie = 0; ie < nEllipses; ie++){
 		macroSizesEll_arr[ie] = macroSizesEll_MPI_arr[ie];
 		//std::cout<<"debug 0 ie ="<< ie <<" macrosize="<< macroSizesEll_MPI_arr[ie] << std::endl;

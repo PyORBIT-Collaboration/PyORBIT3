@@ -23,8 +23,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "../Bunch.hh"
-#include "ParticleInitialCoordinates.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/ParticlesAttributes/ParticleInitialCoordinates.hh"
 
 ParticleInitialCoordinates::ParticleInitialCoordinates(Bunch* bunch):
   ParticleAttributes(bunch,6)

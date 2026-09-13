@@ -17,21 +17,17 @@
 #define SC_GRID3D_HH
 
 //MPI Function Wrappers
-#include "orbit_mpi.hh"
-#include "wrap_mpi_comm.hh"
+#include "mpi/orbit_mpi.hh"
 
 //ORBIT bunch
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 
-//pyORBIT utils
-#include "CppPyWrapper.hh"
-
-#include "Grid2D.hh"
+#include "spacecharge/Grid2D.hh"
 
 #include <iostream>
 #include <cstdlib>
 
-class Grid3D: public OrbitUtils::CppPyWrapper
+class Grid3D
 {
 public:
   //--------------------------------------
@@ -175,7 +171,7 @@ public:
   double getSliceSum(double z);
 
   /** synchronize MPI */
-  void synchronizeMPI(pyORBIT_MPI_Comm* pyComm);
+  void synchronizeMPI(MPI_Comm pyComm);
 
 protected:
   //---------------------------------------

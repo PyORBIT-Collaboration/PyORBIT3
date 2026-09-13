@@ -1,4 +1,4 @@
-#include "PoissonSolverFFT2D.hh"
+#include "spacecharge/PoissonSolverFFT2D.hh"
 
 #include <iostream>
 

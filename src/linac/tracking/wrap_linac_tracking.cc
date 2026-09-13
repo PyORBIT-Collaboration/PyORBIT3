@@ -1,11 +1,11 @@
-#include "Python.h"
-#include "orbit_mpi.hh"
+#include <Python.h>
+#include "mpi/orbit_mpi.hh"
 
-#include "pyORBIT_Object.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "linac_tracking.hh"
+#include "linac/tracking/linac_tracking.hh"
 
-#include "wrap_linac_tracking.hh"
+#include "linac/tracking/wrap_linac_tracking.hh"
 
 namespace wrap_linac_tracking
 {

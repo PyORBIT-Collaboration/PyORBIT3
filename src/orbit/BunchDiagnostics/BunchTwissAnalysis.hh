@@ -2,18 +2,16 @@
 #define BUNCH_TWISS_ANALYSIS_H
 
 //pyORBIT utils
-#include "CppPyWrapper.hh"
 
-#include "Bunch.hh"
+#include "orbit/Bunch.hh"
 
-using namespace std;
 
 /**
   The BunchTwissAnalysis class calculates the average of 6D coordinates and they correlations.
   As results it returns the Twiss parameters for each plane.
 */
 
-class BunchTwissAnalysis: public OrbitUtils::CppPyWrapper
+class BunchTwissAnalysis
 {
 	public:
 

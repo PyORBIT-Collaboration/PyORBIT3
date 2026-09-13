@@ -1,20 +1,20 @@
-#include "orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
 
-#include "wrap_utils.hh"
-#include "wrap_matrix.hh"
-#include "wrap_phase_vector.hh"
-#include "wrap_py_base_field_source.hh"
-#include "wrap_field_source_container.hh"
-#include "wrap_function.hh"
-#include "wrap_splinech.hh"
-#include "wrap_statmoments2d.hh"
-#include "wrap_bunch_extrema_calculator.hh"
-#include "wrap_gauss_legendre_integrator.hh"
-#include "wrap_polynomial.hh"
-#include "wrap_numrecipes.hh"
-#include "wrap_bunch_utils_functions.hh"
-#include "wrap_harmonic_data.hh"
-#include "wrap_random.hh"
+#include "utils/wrap_utils.hh"
+#include "utils/matrix/wrap_matrix.hh"
+#include "utils/matrix/wrap_phase_vector.hh"
+#include "utils/wrap_py_base_field_source.hh"
+#include "utils/wrap_field_source_container.hh"
+#include "utils/wrap_function.hh"
+#include "utils/wrap_splinech.hh"
+#include "utils/statistics/wrap_statmoments2d.hh"
+#include "utils/bunch/wrap_bunch_extrema_calculator.hh"
+#include "utils/integration/wrap_gauss_legendre_integrator.hh"
+#include "utils/polynomial/wrap_polynomial.hh"
+#include "utils/wrap_numrecipes.hh"
+#include "utils/bunch/wrap_bunch_utils_functions.hh"
+#include "utils/harmonic_analysis/wrap_harmonic_data.hh"
+#include "utils/wrap_random.hh"
 //#include "wrap_field_sources_module.hh"
 
 namespace wrap_orbit_utils{
@@ -57,15 +57,6 @@ extern "C" {
 		wrap_random::initRandom(module);
 		return module;
   }
-
-	PyObject* getOrbitUtilsType(const char* name){
-		PyObject* mod = PyImport_ImportModule(const_cast<char*>("orbit.core.orbit_utils"));
-		PyObject* pyType = PyObject_GetAttrString(mod,name);
-		Py_DECREF(mod);
-		Py_DECREF(pyType);
-		return pyType;
-	}
-
 
 #ifdef __cplusplus
 }

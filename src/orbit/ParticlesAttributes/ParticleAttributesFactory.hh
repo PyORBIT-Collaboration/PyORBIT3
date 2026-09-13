@@ -28,9 +28,9 @@
 // INCLUDE FILES
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "../Bunch.hh"
+#include "orbit/Bunch.hh"
 
-#include "ParticleAttributes.hh"
+#include "orbit/ParticlesAttributes/ParticleAttributes.hh"
 ///////////////////////////////////////////////////////////////////////////
 //
 // CLASS NAME
@@ -47,12 +47,12 @@ class ParticleAttributesFactory
 
   //returns the name of the particle attributes bucket
   static  ParticleAttributes* getParticleAttributesInstance(
-		const string name,
+		const std::string name,
 		std::map<std::string,double> part_attr_dict,
 		Bunch* bunch);
 
   //returns the vector of possible particle attributes names
-  static void getParticleAttributesNames(std::vector<string>& names);
+  static void getParticleAttributesNames(std::vector<std::string>& names);
 
   private:
   ParticleAttributesFactory();

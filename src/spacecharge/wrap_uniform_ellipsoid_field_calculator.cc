@@ -1,16 +1,22 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "UniformEllipsoidFieldCalculator.hh"
+#include "spacecharge/UniformEllipsoidFieldCalculator.hh"
 
-#include "wrap_uniform_ellipsoid_field_calculator.hh"
-#include "wrap_spacecharge.hh"
+#include "spacecharge/wrap_uniform_ellipsoid_field_calculator.hh"
+#include "spacecharge/wrap_spacecharge.hh"
 
 #include <iostream>
 
 using namespace OrbitUtils;
 
 namespace wrap_spacecharge{
+	typedef struct {
+		PyObject_HEAD
+		void* cpp_obj;
+		int owns_cpp;
+		PyObject* owner;
+	} pyORBIT_UniformEllipsoidFieldCalculator;
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,17 +30,20 @@ extern "C" {
 	//It never will be called directly
 	static PyObject* UniformEllipsoidFieldCalculator_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	{
-		pyORBIT_Object* self;
-		self = (pyORBIT_Object *) type->tp_alloc(type, 0);
+		pyORBIT_UniformEllipsoidFieldCalculator* self;
+		self = (pyORBIT_UniformEllipsoidFieldCalculator *) type->tp_alloc(type, 0);
 		self->cpp_obj = NULL;
+		self->owns_cpp = 0;
+		self->owner = NULL;
 		return (PyObject *) self;
 	}
 
   //initializator for python  UniformEllipsoidFieldCalculator class
   //this is implementation of the __init__ method
-  static int UniformEllipsoidFieldCalculator_init(pyORBIT_Object *self, PyObject *args, PyObject *kwds){
+  static int UniformEllipsoidFieldCalculator_init(pyORBIT_UniformEllipsoidFieldCalculator *self, PyObject *args, PyObject *kwds){
 		self->cpp_obj = new UniformEllipsoidFieldCalculator();
-		((UniformEllipsoidFieldCalculator*) self->cpp_obj)->setPyWrapper((PyObject*) self);
+		self->owns_cpp = 1;
+		pyorbit::registerPyWrapper(self->cpp_obj, (PyObject*) self);
 		return 0;
   }
 
@@ -69,11 +78,12 @@ extern "C" {
   //-----------------------------------------------------
   //destructor for python UniformEllipsoidFieldCalculator class (__del__ method).
   //-----------------------------------------------------
-  static void UniformEllipsoidFieldCalculator_del(pyORBIT_Object* self){
+  static void UniformEllipsoidFieldCalculator_del(pyORBIT_UniformEllipsoidFieldCalculator* self){
 		UniformEllipsoidFieldCalculator* cpp_UniformEllipsoidFieldCalculator = (UniformEllipsoidFieldCalculator*) self->cpp_obj;
-		if(cpp_UniformEllipsoidFieldCalculator != NULL){
-			delete cpp_UniformEllipsoidFieldCalculator;
-		}
+		pyorbit::unregisterPyWrapper(cpp_UniformEllipsoidFieldCalculator, (PyObject*) self);
+		if(self->owns_cpp) delete cpp_UniformEllipsoidFieldCalculator;
+		self->cpp_obj = NULL;
+		Py_CLEAR(self->owner);
 		self->ob_base.ob_type->tp_free((PyObject*)self);
   }
 
@@ -95,7 +105,7 @@ extern "C" {
 	static PyTypeObject pyORBIT_UniformEllipsoidFieldCalculator_Type = {
 		PyVarObject_HEAD_INIT(NULL, 0)
 		"UniformEllipsoidFieldCalculator", /*tp_name*/
-		sizeof(pyORBIT_Object), /*tp_basicsize*/
+		sizeof(pyORBIT_UniformEllipsoidFieldCalculator), /*tp_basicsize*/
 		0, /*tp_itemsize*/
 		(destructor) UniformEllipsoidFieldCalculator_del , /*tp_dealloc*/
 		0, /*tp_print*/
@@ -132,6 +142,30 @@ extern "C" {
 		0, /* tp_alloc */
 		UniformEllipsoidFieldCalculator_new, /* tp_new */
 	};
+
+	PyObject* wrapUniformEllipsoidFieldCalculator(
+		UniformEllipsoidFieldCalculator* calculator,
+		PyObject* owner
+	){
+		PyObject* wrapper = pyorbit::getPyWrapper(calculator);
+		if(wrapper != NULL){
+			Py_INCREF(wrapper);
+			return wrapper;
+		}
+
+		pyORBIT_UniformEllipsoidFieldCalculator* self =
+			(pyORBIT_UniformEllipsoidFieldCalculator*)
+			pyORBIT_UniformEllipsoidFieldCalculator_Type.tp_alloc(
+				&pyORBIT_UniformEllipsoidFieldCalculator_Type, 0
+			);
+		if(self == NULL) return NULL;
+		self->cpp_obj = calculator;
+		self->owns_cpp = 0;
+		self->owner = owner;
+		Py_XINCREF(owner);
+		pyorbit::registerPyWrapper(calculator, (PyObject*) self);
+		return (PyObject*) self;
+	}
 
 	//--------------------------------------------------
 	//Initialization function of the pyUniformEllipsoidFieldCalculator class

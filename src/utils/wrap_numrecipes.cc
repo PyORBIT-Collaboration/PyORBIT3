@@ -1,12 +1,12 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_utils.hh"
+#include "utils/wrap_utils.hh"
 
 #include <iostream>
 #include <string>
 
-#include "bessel.hh"
+#include "utils/bessel.hh"
 
 using namespace OrbitUtils;
 using namespace wrap_orbit_utils;

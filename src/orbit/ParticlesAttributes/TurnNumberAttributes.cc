@@ -21,8 +21,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "../Bunch.hh"
-#include "TurnNumberAttributes.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/ParticlesAttributes/TurnNumberAttributes.hh"
 
 TurnNumberAttributes::TurnNumberAttributes(Bunch* bunch):
 ParticleAttributes(bunch,1)

@@ -22,16 +22,16 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "orbit_mpi.hh"
-#include "BufferStore.hh"
+#include "mpi/orbit_mpi.hh"
+#include "utils/BufferStore.hh"
 
 #include <cstdlib>
 #include <iostream>
 #include <cmath>
 #include <cfloat>
 
-#include "ShiftedFieldSource.hh"
-#include "MagnetFieldSourceGrid3D.hh"
+#include "utils/field_sources/ShiftedFieldSource.hh"
+#include "utils/field_sources/MagnetFieldSourceGrid3D.hh"
 
 using namespace OrbitUtils;
 
@@ -85,28 +85,6 @@ MagnetFieldSourceGrid3D::MagnetFieldSourceGrid3D(Grid3D* BxGrid_In, Grid3D* ByGr
 
 MagnetFieldSourceGrid3D::~MagnetFieldSourceGrid3D()
 {
-
-	if(BxGrid->getPyWrapper() == NULL){
-		delete BxGrid;
-	}
-	else {
-		Py_XDECREF(BxGrid->getPyWrapper());
-	}
-
-	if(ByGrid->getPyWrapper() == NULL){
-		delete ByGrid;
-	}
-	else {
-		Py_XDECREF(ByGrid->getPyWrapper());
-	}
-
-	if(BzGrid->getPyWrapper() == NULL){
-		delete BzGrid;
-	}
-	else {
-		Py_XDECREF(BzGrid->getPyWrapper());
-	}
-
 	for(int i = 0; i < 8; i++){
 		delete [] field_sign_arr[i];
 	}

@@ -1,7 +1,7 @@
 #ifndef WRAP_HARMONIC_CAV_H
 #define WRAP_HARMONIC_CAV_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C"

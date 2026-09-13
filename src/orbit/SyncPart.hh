@@ -23,7 +23,7 @@
 // INCLUDE FILES
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "orbit_mpi.hh"
+#include "mpi/orbit_mpi.hh"
 
 #include <iostream>
 #include <fstream>
@@ -35,7 +35,6 @@
 #include <map>
 #include <vector>
 
-using namespace std;
 
 #ifndef SYNC_PARTICLE_H
 #define SYNC_PARTICLE_H
@@ -54,9 +53,6 @@ class  SyncPart
   //the public methods of the SyncPart class
   //--------------------------------------
   virtual ~SyncPart();
-
-	void setPyWrapper(PyObject* py_wrapper_In);
-	PyObject* getPyWrapper();
 
 	/**
 	  Kinetic energy in GeV
@@ -134,7 +130,7 @@ private:
 
   friend class Bunch;
 
-  SyncPart(Bunch* bunch);
+	SyncPart(Bunch* bunch);
 
 	//initilaze the sync. particle from file
 	void readSyncPart(const char* fileName);
@@ -143,7 +139,6 @@ private:
 	void print(std::ostream& Out);
 
   Bunch* bunch;
-	PyObject* py_wrapper;
 
 	//--------------------------------------------
 	//parameters

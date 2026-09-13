@@ -3,12 +3,13 @@
 // INCLUDE FILES
 //
 ///////////////////////////////////////////////////////////////////////////
-#include "wrap_syncpart.hh"
+#include "orbit/wrap_syncpart.hh"
+#include "orbit/wrap_bunch.hh"
 
-#include "pyORBIT_Object.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "Bunch.hh"
-#include "SyncPart.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/SyncPart.hh"
 
 namespace wrap_orbit_syncpart{
 
@@ -43,12 +44,11 @@ extern "C" {
 		pyORBIT_Object* pyBunch = (pyORBIT_Object*) PyTuple_GetItem(args,0);
 		Bunch* cpp_bunch = (Bunch*) pyBunch->cpp_obj;
 
-		if(cpp_bunch->getSyncPart()->getPyWrapper() != NULL){
+		if(wrap_orbit_bunch::getSyncPartWrapper((PyObject*) pyBunch) != NULL){
 			error("You should not create SyncParticle class instance directly!");
 		}
 
     self->cpp_obj = (void*) cpp_bunch->getSyncPart();
-		cpp_bunch->getSyncPart()->setPyWrapper((PyObject *) self);
 
     return 0;
   }

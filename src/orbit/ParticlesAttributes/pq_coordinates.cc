@@ -15,8 +15,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "../Bunch.hh"
-#include "pq_coordinates.hh"
+#include "orbit/Bunch.hh"
+#include "orbit/ParticlesAttributes/pq_coordinates.hh"
 
 pq_coordinates::pq_coordinates(Bunch* bunch, int size_in):
   ParticleAttributes(bunch,size_in)

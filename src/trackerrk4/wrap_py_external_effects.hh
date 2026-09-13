@@ -1,7 +1,7 @@
 #ifndef WRAP_PY_EXTERNAL_EFFECTS_H
 #define WRAP_PY_EXTERNAL_EFFECTS_H
 
-#include "Python.h"
+#include <Python.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,14 +1,14 @@
-#include "orbit_mpi.hh"
-#include "pyORBIT_Object.hh"
+#include "mpi/orbit_mpi.hh"
+#include "main/pyORBIT_Object.hh"
 
-#include "wrap_boundary2d.hh"
-#include "wrap_spacecharge.hh"
+#include "spacecharge/wrap_boundary2d.hh"
+#include "spacecharge/wrap_spacecharge.hh"
 
 #include <iostream>
 
-#include "BaseBoundary2D.hh"
-#include "ShapedBoundary2D.hh"
-#include "Grid2D.hh"
+#include "spacecharge/BaseBoundary2D.hh"
+#include "spacecharge/ShapedBoundary2D.hh"
+#include "spacecharge/Grid2D.hh"
 
 using namespace OrbitUtils;
 
@@ -45,7 +45,6 @@ extern "C" {
 				ORBIT_MPI_Finalize("PyBoundary2D - Boundary2D(nPoints,nModes) - constructor needs parameters.");
 			}
 			self->cpp_obj = new BaseBoundary2D(nPoints, nModes);
-			((BaseBoundary2D*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 			//std::cerr<<"The Boundary2D __init__ has been called!"<<std::endl;
 			return 0;
 		}
@@ -55,10 +54,9 @@ extern "C" {
 			if(!PyArg_ParseTuple(args,"iisd|d:__init__",&nPoints,&nModes,&shape_name,&xDim,&yDim)){
 				ORBIT_MPI_Finalize("PyBoundary2D - Boundary2D(nPoints,nModes,shape,xDim,yDim) - constructor needs parameters.");
 			}
-			string shape(shape_name);
+			std::string shape(shape_name);
 			if(nVars == 4){ yDim = xDim;}
 			self->cpp_obj = new ShapedBoundary2D(nPoints, nModes,shape,xDim,yDim);
-			((BaseBoundary2D*) self->cpp_obj)->setPyWrapper((PyObject*) self);
 			//std::cerr<<"The Boundary2D __init__ has been called!"<<std::endl;
 			return 0;
 		}
