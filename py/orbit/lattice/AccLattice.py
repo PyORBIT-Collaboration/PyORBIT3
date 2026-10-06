@@ -281,24 +281,27 @@ class AccLattice(NamedObject, TypedObject):
             index_stop = len(self.__children) - 1
         return self.__children[index_start : index_stop + 1]
 
-    def _prepareEnvelopeTracking(self, fit: bool = True) -> None:
+    def _prepareEnvelopeTracking(self, index_start: int, index_stop: int, fit: bool = True) -> None:
         """Check lattice before tracking envelope."""
         if fit:
             return
+
+        from orbit.py_linac.lattice.LinacAccNodes import Bend
+        from orbit.teapot.teapot import BendTEAPOT
+
         for node in self.__children:
-            node_type = type(node)
-            is_teapot_bend = node_type.__name__ == "BendTEAPOT" and node_type.__module__ == "orbit.teapot.teapot"
-            is_linac_bend = node_type.__name__ == "Bend" and node_type.__module__ == "orbit.py_linac.lattice.LinacAccNodes"
-            if is_teapot_bend:
-                uses_unsupported_fringe = (node.getParam("ea1") != 0.0 and node.getUsageFringeFieldIN()) or (
-                    node.getParam("ea2") != 0.0 and node.getUsageFringeFieldOUT()
-                )
+            if isinstance(node, BendTEAPOT):
+                uses_unsupported_fringe = (
+                    node.getParam("ea1") != 0.0 and node.getUsageFringeFieldIN()
+                ) or (node.getParam("ea2") != 0.0 and node.getUsageFringeFieldOUT())
                 if uses_unsupported_fringe:
                     message = f"Found an enabled fringe field with a nonzero edge angle ({node.getName()})."
-                    message += " Analytic envelope tracking supports the wedge transformations only."
+                    message += (
+                        " Analytic envelope tracking supports the wedge transformations only."
+                    )
                     message += " Disable the bend fringe field or use `fit=True`."
                     raise RuntimeError(message)
-            if is_linac_bend:
+            if isinstance(node, Bend):
                 if node.getParam("ea1") != 0.0 or node.getParam("ea2") != 0.0:
                     message = f"Found bend ea1 or ea2 != 0.0 ({node.getName()}.)"
                     message += " Nonzero edge angles are not yet supported in envelope tracking."
@@ -306,6 +309,17 @@ class AccLattice(NamedObject, TypedObject):
                     message += "   `node.setParam('ea1', 0.0)`"
                     message += "   `node.setParam('ea2', 0.0)`"
                     raise RuntimeError(message)
+
+    @staticmethod
+    def _getEnvelopeCacheKey(envelope: Envelope, index_start: int, index_stop: int, sc: bool, fit: bool):
+        sync_part = envelope.sync_part
+        sync_state = (
+            sync_part.kinEnergy(),
+            sync_part.time(),
+            sync_part.mass(),
+            sync_part.charge(),
+        )
+        return index_start, index_stop, sc, fit, sync_state
 
     def _createEnvelopeFitState(self, sync_part) -> dict[str, Any]:
         """Return items needed to compute best-fit transfer matrix."""
@@ -353,7 +367,9 @@ class AccLattice(NamedObject, TypedObject):
         copy_sync_particle(fit_state["bunch"].getSyncParticle(), sync_part)
         return matrix
 
-    def _getEnvelopeSpaceChargeMatrix(self, envelope: Envelope, length: float, sc: str | None) -> np.ndarray | None:
+    def _getEnvelopeSpaceChargeMatrix(
+        self, envelope: Envelope, length: float, sc: str | None
+    ) -> np.ndarray | None:
         """Return transfer matrix for linear space charge kick."""
         if not sc or length <= 0:
             return None
@@ -372,7 +388,7 @@ class AccLattice(NamedObject, TypedObject):
         fit: bool = True,
     ):
         """Yield matrices, space charge kicks, and position updates in tracking order."""
-        self._prepareEnvelopeTracking(fit=fit)
+        self._prepareEnvelopeTracking(index_start, index_stop, fit=fit)
         sync_part = envelope.sync_part
         fit_state = self._createEnvelopeFitState(sync_part) if fit else None
 
@@ -472,6 +488,7 @@ class AccLattice(NamedObject, TypedObject):
         fit: bool = True,
     ) -> list:
         """Precompute envelope elements in lattice."""
+        cache_key = self._getEnvelopeCacheKey(envelope, index_start, index_stop, sc, fit)
         self._envelope_elements = list(
             self._iterateEnvelopeElements(
                 envelope,
@@ -481,7 +498,7 @@ class AccLattice(NamedObject, TypedObject):
                 fit=fit,
             )
         )
-        self._envelope_cache_key = (index_start, index_stop, sc, fit)
+        self._envelope_cache_key = cache_key
         self._envelope_total_matrix = None
         return self._envelope_elements
 
@@ -493,7 +510,7 @@ class AccLattice(NamedObject, TypedObject):
         sc: str | None = None,
         fit: bool = True,
     ) -> list:
-        cache_key = (index_start, index_stop, sc, fit)
+        cache_key = self._getEnvelopeCacheKey(envelope, index_start, index_stop, sc, fit)
         if self._envelope_cache_key != cache_key:
             self._precomputeEnvelopeElements(
                 envelope,
@@ -602,8 +619,7 @@ class AccLattice(NamedObject, TypedObject):
             gamma = envelope.gamma
             beta = envelope.beta
             emittances = [
-                np.sqrt(np.linalg.det(cov_matrix[i : i + 2, i : i + 2]))
-                for i in (0, 2, 4)
+                np.sqrt(np.linalg.det(cov_matrix[i : i + 2, i : i + 2])) for i in (0, 2, 4)
             ]
             return {
                 "gamma": gamma,
@@ -700,15 +716,16 @@ class AccLattice(NamedObject, TypedObject):
         fit: bool = True,
     ) -> np.ndarray:
         """Return total transfer matrix, including linear space charge when requested."""
+        envelope_out = envelope.copy()
         elements = self._precomputeEnvelopeElements(
-            envelope,
+            envelope_out,
             index_start=index_start,
             index_stop=index_stop,
             sc=sc,
             fit=fit,
         )
         return self._applyEnvelopeElements(
-            envelope,
+            envelope_out,
             elements,
             sc=sc,
             calculate_matrix=True,
