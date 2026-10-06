@@ -191,19 +191,18 @@ def main(args: argparse.Namespace) -> None:
     action_container.addAction(monitor, AccActionsContainer.EXIT)
 
     params_dict = {"old_pos": -1.0, "count": 0, "pos_step": args.sc_path_length_min}
-
     lattice.trackBunch(bunch, paramsDict=params_dict, actionContainer=action_container)
-
     histories["bunch"] = monitor.history
 
     # Analysis
     # --------------------------------------------------------------------------------
 
-    # History: rms
+    # Process history arrays
     for mode in histories:
         for key in histories[mode]:
             histories[mode][key] = np.array(histories[mode][key])
 
+    # History: rms size
     plot_kws = {}
     plot_kws["bunch"] = dict(color="black", lw=0, marker=".", ms=2)
     plot_kws["envelope"] = dict(color="red", lw=0, marker=".", ms=1)
@@ -221,7 +220,27 @@ def main(args: argparse.Namespace) -> None:
     axs[1].set_ylabel("y rms [mm]")
     axs[2].set_ylabel("z rms [mm]")
     axs[2].set_xlabel("s [m]")
-    plt.savefig(os.path.join(output_dir, "fig_history_rms.png"))
+    plt.savefig(os.path.join(output_dir, "fig_history_rms_size.png"))
+    if args.show:
+        plt.show()
+    plt.close()
+
+    # History: rms emittance
+    fig, axs = plt.subplots(
+        nrows=3, figsize=(10, 5), sharex=True, constrained_layout=True
+    )
+    for mode in ["bunch", "envelope"]:
+        history = histories[mode]
+        for ax, key in zip(axs, ["eps_x_n", "eps_y_n", "eps_z_n"]):
+            ax.plot(history["s"], history[key], **plot_kws[mode], label=mode)
+    for ax in axs:
+        ax.legend(loc="lower right")
+        ax.set_ylim(0.0, ax.get_ylim()[1] * 2.0)
+    axs[0].set_ylabel(r"$\gamma \beta \varepsilon_x$ [m rad]")
+    axs[1].set_ylabel(r"$\gamma \beta  \varepsilon_y$ [m rad]")
+    axs[2].set_ylabel(r"$\varepsilon_z / \beta$ [m GeV]")
+    axs[2].set_xlabel("s [m]")
+    plt.savefig(os.path.join(output_dir, "fig_history_rms_emittance.png"))
     if args.show:
         plt.show()
     plt.close()

@@ -10,8 +10,8 @@ python test_env_2d_fodo_speed.py --sc 0
 python test_env_2d_fodo_speed.py --sc 1
 python test_env_3d_drift.py --sc 0
 python test_env_3d_drift.py --sc 1
-python test_env_3d_drift.py --sc 1 --rms-y 0.002 --tilt-z 45.0
-python test_env_3d_drift.py --sc 1 --rms-z 0.002 --tilt-x 45.0
+python test_env_3d_drift.py --sc 1 --rms-y 0.002 --rot-z 45.0
+python test_env_3d_drift.py --sc 1 --rms-z 0.002 --rot-x 45.0
 
 cd sns_linac
 python test_sns_linac.py --sc 0

@@ -1,5 +1,6 @@
 import os
 from typing import Any
+from typing import Callable
 
 import numpy as np
 
@@ -42,7 +43,7 @@ class AccLattice(NamedObject, TypedObject):
         self.__children = []
         self.__childPositions = {}
         self._envelope_elements = []
-        self._envelope_one_turn_matrix = None
+        self._envelope_total_matrix = None
         self._envelope_cache_key = None
 
     def initialize(self):
@@ -362,7 +363,7 @@ class AccLattice(NamedObject, TypedObject):
             return envelope.sc_matrix_3d(length)
         raise ValueError(f"Invalid envelope space charge option `{sc}`")
 
-    def _iterEnvelopeElements(
+    def _iterateEnvelopeElements(
         self,
         envelope: Envelope,
         index_start: int = 0,
@@ -435,9 +436,9 @@ class AccLattice(NamedObject, TypedObject):
     def _applyEnvelopeElements(
         self,
         envelope: Envelope,
-        elements,
+        elements: list,
         sc: str | None = None,
-        update_history=None,
+        update_history: Callable = None,
         calculate_matrix: bool = False,
     ) -> np.ndarray | None:
         """Apply envelope operations and optionally return their combined matrix."""
@@ -470,9 +471,9 @@ class AccLattice(NamedObject, TypedObject):
         sc: str | None = None,
         fit: bool = True,
     ) -> list:
-        """Precompute envelope operations for a static lattice."""
+        """Precompute envelope elements in lattice."""
         self._envelope_elements = list(
-            self._iterEnvelopeElements(
+            self._iterateEnvelopeElements(
                 envelope,
                 index_start=index_start,
                 index_stop=index_stop,
@@ -481,7 +482,7 @@ class AccLattice(NamedObject, TypedObject):
             )
         )
         self._envelope_cache_key = (index_start, index_stop, sc, fit)
-        self._envelope_one_turn_matrix = None
+        self._envelope_total_matrix = None
         return self._envelope_elements
 
     def _getStaticEnvelopeElements(
@@ -513,8 +514,7 @@ class AccLattice(NamedObject, TypedObject):
         fit: bool = True,
         static: bool = False,
     ) -> None | dict[str, list]:
-        """
-        Track envelope through the lattice.
+        """Track envelope through the lattice.
 
         Args:
             envelope: Envelope to track.
@@ -547,7 +547,7 @@ class AccLattice(NamedObject, TypedObject):
             )
             return None
 
-        elements = self._iterEnvelopeElements(
+        elements = self._iterateEnvelopeElements(
             envelope,
             index_start=index_start,
             index_stop=index_stop,
@@ -565,10 +565,8 @@ class AccLattice(NamedObject, TypedObject):
         fit: bool = True,
         static: bool = False,
     ) -> dict[str, list]:
-        """
-        Track envelope and return parameters vs. position in lattice.
-        """
-        history_keys = [
+        """Track envelope and return parameters vs. position in lattice."""
+        keys = [
             "s",
             "kin_energy",
             "gamma",
@@ -579,24 +577,49 @@ class AccLattice(NamedObject, TypedObject):
             "rms_y",
             "rms_z",
             "eps_x",
+            "eps_x_n",
             "eps_y",
+            "eps_y_n",
+            "eps_z",
+            "eps_z_n",
+            "eps_1",
+            "eps_2",
+            "eps_3",
         ]
-        history = {key: [] for key in history_keys}
+        history = {key: [] for key in keys}
 
         def observe(envelope: Envelope) -> dict:
             cov_matrix = envelope.cov_matrix.copy()
-            return {
-                "gamma": envelope.gamma,
-                "beta": envelope.beta,
-                "kin_energy": envelope.kin_energy,
-                "mean": envelope.centroid.copy(),
-                "cov": cov_matrix,
-                "rms_x": np.sqrt(cov_matrix[0, 0]),
-                "rms_y": np.sqrt(cov_matrix[2, 2]),
-                "rms_z": np.sqrt(cov_matrix[4, 4]),
-                "eps_x": np.sqrt(np.linalg.det(cov_matrix[0:2, 0:2])),
-                "eps_y": np.sqrt(np.linalg.det(cov_matrix[2:4, 2:4])),
-            }
+
+            results = {}
+            results["gamma"] = envelope.gamma
+            results["beta"] = envelope.beta
+            results["kin_energy"] = envelope.kin_energy
+            results["mean"] = envelope.centroid.copy()
+            results["cov"] = cov_matrix
+            results["rms_x"] = np.sqrt(cov_matrix[0, 0])
+            results["rms_y"] = np.sqrt(cov_matrix[2, 2])
+            results["rms_z"] = np.sqrt(cov_matrix[4, 4])
+            results["eps_x"] = np.sqrt(np.linalg.det(cov_matrix[0:2, 0:2]))
+            results["eps_y"] = np.sqrt(np.linalg.det(cov_matrix[2:4, 2:4]))
+            results["eps_z"] = np.sqrt(np.linalg.det(cov_matrix[4:6, 4:6]))
+
+            poisson_matrix = np.zeros_like(cov_matrix)
+            for i in range(0, 6, 2):
+                poisson_matrix[i, i + 1] = +1.0
+                poisson_matrix[i + 1, i] = -1.0
+
+            eigvals = np.linalg.eigvals(cov_matrix @ poisson_matrix)
+            eigvals = np.imag(eigvals)
+            eigvals = eigvals[eigvals > 0]
+            results["eps_1"] = eigvals[0]
+            results["eps_2"] = eigvals[1]
+            results["eps_3"] = eigvals[2]
+
+            results["eps_x_n"] = results["eps_x"] * results["gamma"] * results["beta"]
+            results["eps_y_n"] = results["eps_y"] * results["gamma"] * results["beta"]
+            results["eps_z_n"] = results["eps_z"] / results["beta"]
+            return results
 
         def update_history(position: float) -> None:
             history["s"].append(position)
@@ -614,7 +637,7 @@ class AccLattice(NamedObject, TypedObject):
                 fit=fit,
             )
         else:
-            elements = self._iterEnvelopeElements(
+            elements = self._iterateEnvelopeElements(
                 envelope,
                 index_start=index_start,
                 index_stop=index_stop,
@@ -654,12 +677,12 @@ class AccLattice(NamedObject, TypedObject):
         )
 
         if not sc:
-            if self._envelope_one_turn_matrix is None:
-                self._envelope_one_turn_matrix = np.identity(7)
+            if self._envelope_total_matrix is None:
+                self._envelope_total_matrix = np.identity(7)
                 for element_type, matrix in elements:
                     if element_type != "position":
-                        self._envelope_one_turn_matrix = matrix @ self._envelope_one_turn_matrix
-            envelope.transform(self._envelope_one_turn_matrix)
+                        self._envelope_total_matrix = matrix @ self._envelope_total_matrix
+            envelope.transform(self._envelope_total_matrix)
             return
 
         self._applyEnvelopeElements(envelope, elements, sc=sc)
@@ -672,9 +695,7 @@ class AccLattice(NamedObject, TypedObject):
         sc: str | None = None,
         fit: bool = True,
     ) -> np.ndarray:
-        """
-        Return total transfer matrix, including linear space charge when requested.
-        """
+        """Return total transfer matrix, including linear space charge when requested."""
         elements = self._precomputeEnvelopeElements(
             envelope,
             index_start=index_start,
