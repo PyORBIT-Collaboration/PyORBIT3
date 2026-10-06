@@ -590,36 +590,40 @@ class AccLattice(NamedObject, TypedObject):
 
         def observe(envelope: Envelope) -> dict:
             cov_matrix = envelope.cov_matrix.copy()
-
-            results = {}
-            results["gamma"] = envelope.gamma
-            results["beta"] = envelope.beta
-            results["kin_energy"] = envelope.kin_energy
-            results["mean"] = envelope.centroid.copy()
-            results["cov"] = cov_matrix
-            results["rms_x"] = np.sqrt(cov_matrix[0, 0])
-            results["rms_y"] = np.sqrt(cov_matrix[2, 2])
-            results["rms_z"] = np.sqrt(cov_matrix[4, 4])
-            results["eps_x"] = np.sqrt(np.linalg.det(cov_matrix[0:2, 0:2]))
-            results["eps_y"] = np.sqrt(np.linalg.det(cov_matrix[2:4, 2:4]))
-            results["eps_z"] = np.sqrt(np.linalg.det(cov_matrix[4:6, 4:6]))
-
             poisson_matrix = np.zeros_like(cov_matrix)
             for i in range(0, 6, 2):
-                poisson_matrix[i, i + 1] = +1.0
+                poisson_matrix[i, i + 1] = 1.0
                 poisson_matrix[i + 1, i] = -1.0
 
             eigvals = np.linalg.eigvals(cov_matrix @ poisson_matrix)
-            eigvals = np.imag(eigvals)
-            eigvals = eigvals[eigvals > 0]
-            results["eps_1"] = eigvals[0]
-            results["eps_2"] = eigvals[1]
-            results["eps_3"] = eigvals[2]
+            eigenemittances = np.imag(eigvals)
+            eigenemittances = eigenemittances[eigenemittances > 0]
 
-            results["eps_x_n"] = results["eps_x"] * results["gamma"] * results["beta"]
-            results["eps_y_n"] = results["eps_y"] * results["gamma"] * results["beta"]
-            results["eps_z_n"] = results["eps_z"] / results["beta"]
-            return results
+            gamma = envelope.gamma
+            beta = envelope.beta
+            emittances = [
+                np.sqrt(np.linalg.det(cov_matrix[i : i + 2, i : i + 2]))
+                for i in (0, 2, 4)
+            ]
+            return {
+                "gamma": gamma,
+                "beta": beta,
+                "kin_energy": envelope.kin_energy,
+                "mean": envelope.centroid.copy(),
+                "cov": cov_matrix,
+                "rms_x": np.sqrt(cov_matrix[0, 0]),
+                "rms_y": np.sqrt(cov_matrix[2, 2]),
+                "rms_z": np.sqrt(cov_matrix[4, 4]),
+                "eps_x": emittances[0],
+                "eps_y": emittances[1],
+                "eps_z": emittances[2],
+                "eps_x_n": emittances[0] * gamma * beta,
+                "eps_y_n": emittances[1] * gamma * beta,
+                "eps_z_n": emittances[2] / beta,
+                "eps_1": eigenemittances[0],
+                "eps_2": eigenemittances[1],
+                "eps_3": eigenemittances[2],
+            }
 
         def update_history(position: float) -> None:
             history["s"].append(position)
