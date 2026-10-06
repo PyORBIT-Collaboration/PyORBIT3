@@ -1319,11 +1319,47 @@ class BendTEAPOT(NodeTEAPOT):
             return None
 
         nparts = self.getnParts()
-        theta = self.getParam("theta") / (nparts - 1)
-        if part_index == 0 or part_index == nparts - 1:
-            theta *= 0.5
+        if part_index < 0:
+            theta = self.getParam("theta")
+        else:
+            theta = self.getParam("theta") / (nparts - 1)
+            if part_index == 0 or part_index == nparts - 1:
+                theta *= 0.5
 
-        return get_matrix_bend(sync_part, length=length, theta=theta)
+        matrix = get_matrix_bend(sync_part, length=length, theta=theta)
+
+        def get_wedge_matrix(edge_angle: float) -> np.ndarray:
+            # ``wedgedrift`` has an identity Jacobian on the reference orbit.
+            # ``wedgebendCF`` acts as a thin edge kick to first order. Only
+            # pole-zero multipoles survive the linearization because the path
+            # length through the wedge is itself proportional to x.
+            edge_matrix = np.identity(7)
+            normal_dipole = 0.0
+            skew_dipole = 0.0
+            if sync_part.charge() != 0.0:
+                for pole, kl, skew in zip(
+                    self.getParam("poles"),
+                    self.getParam("kls"),
+                    self.getParam("skews"),
+                ):
+                    if pole == 0:
+                        if skew:
+                            skew_dipole += kl
+                        else:
+                            normal_dipole += kl
+
+            tan_edge = np.tan(edge_angle)
+            edge_matrix[1, 0] = tan_edge * ((1.0 / self.getParam("rho")) + normal_dipole)
+            edge_matrix[3, 0] = -tan_edge * skew_dipole
+            return edge_matrix
+
+        is_first_part = part_index < 0 or part_index == 0
+        is_last_part = part_index < 0 or part_index == nparts - 1
+        if is_first_part and self.getParam("ea1") != 0.0:
+            matrix = matrix @ get_wedge_matrix(self.getParam("ea1"))
+        if is_last_part and self.getParam("ea2") != 0.0:
+            matrix = get_wedge_matrix(self.getParam("ea2")) @ matrix
+        return matrix
 
 
 class RingRFTEAPOT(NodeTEAPOT):

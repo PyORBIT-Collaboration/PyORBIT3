@@ -164,7 +164,8 @@ def main(args: argparse.Namespace) -> None:
     histories["envelope"] = lattice.trackEnvelope(
         envelope,
         history=True,
-        sc=("3d" if args.sc else None)
+        sc=("3d" if args.sc else None),
+        fit=True,
     )
 
     # Track bunch

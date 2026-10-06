@@ -21,7 +21,6 @@ from orbit.space_charge.sc2p5d import setSC2p5DAccNodes
 from orbit.teapot import TEAPOT_Ring
 from orbit.teapot import TEAPOT_MATRIX_Lattice
 from orbit.teapot import teapot
-from orbit.teapot import BendTEAPOT
 from orbit.utils.consts import mass_proton
 
 sys.path.append("..")
@@ -57,9 +56,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sc", type=int, default=0)
     parser.add_argument("--sc-grid", type=int, default=64)
 
-    parser.add_argument(
-        "--handle-unknown", type=str, default=None, choices=["drift", "fit"]
-    )
+    parser.add_argument("--fit", type=int, default=1)
+    parser.add_argument("--fringe", type=int, default=0)
     return parser.parse_args()
 
 
@@ -77,11 +75,8 @@ def main(args: argparse.Namespace) -> None:
 
     for node in lattice.getNodes():
         if type(node) != teapot.TurnCounterTEAPOT:
-            node.setUsageFringeFieldIN(False)
-            node.setUsageFringeFieldOUT(False)
-        if type(node) is teapot.BendTEAPOT:
-            node.setParam("ea1", 0.0)
-            node.setParam("ea2", 0.0)
+            node.setUsageFringeFieldIN(args.fringe)
+            node.setUsageFringeFieldOUT(args.fringe)
 
     if args.sol:
         for name in ["scbdsol_c13a", "scbdsol_c13b"]:
@@ -177,7 +172,12 @@ def main(args: argparse.Namespace) -> None:
 
     for turn in range(args.turns + 1):
         if turn > 0:
-            lattice.trackEnvelopeRing(envelope, sc=("2d" if args.sc else None))
+            lattice.trackEnvelope(
+                envelope,
+                sc=("2d" if args.sc else None),
+                fit=args.fit,
+                static=True,
+            )
 
         cov_matrix = envelope.cov_matrix
         centroid = envelope.centroid

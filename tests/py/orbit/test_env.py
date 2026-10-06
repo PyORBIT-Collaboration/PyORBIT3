@@ -6,6 +6,7 @@ from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.linac import MatrixRfGap
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
+from orbit.envelope import fit_transfer_matrix
 from orbit.lattice import AccNode
 from orbit.lattice import AccLattice
 from orbit.py_linac.lattice import Drift
@@ -17,6 +18,7 @@ from orbit.teapot import BendTEAPOT
 from orbit.teapot import ContinuousLinearFocusingTEAPOT
 from orbit.teapot import DriftTEAPOT
 from orbit.teapot import KickTEAPOT
+from orbit.teapot import MultipoleTEAPOT
 from orbit.teapot import QuadTEAPOT
 from orbit.teapot import SolenoidTEAPOT
 from orbit.teapot import TiltTEAPOT
@@ -207,6 +209,48 @@ def test_bend_teapot(charge: float):
 
 
 @pytest.mark.parametrize("charge", [1.0, -1.0])
+def test_bend_teapot_edge_matrix(charge: float):
+    node = BendTEAPOT(
+        length=1.0,
+        theta=np.radians(20.0),
+        nparts=5,
+        ea1=np.radians(8.0),
+        ea2=np.radians(-3.0),
+    )
+    lattice = make_lattice([node])
+
+    bunch = Bunch()
+    bunch.mass(mass_proton)
+    bunch.charge(charge)
+    bunch.getSyncParticle().kinEnergy(1.3)
+
+    matrix_fit = fit_transfer_matrix(lattice, bunch)
+    envelope = Envelope(sync_part=bunch.getSyncParticle())
+    matrix_analytic = lattice.getEnvelopeTransferMatrix(envelope)
+    assert np.allclose(matrix_analytic, matrix_fit, atol=1.0e-10)
+
+
+def test_fitted_envelope_matrices():
+    node = MultipoleTEAPOT(
+        length=0.4,
+        nparts=3,
+        poles=[2],
+        kls=[0.2],
+        skews=[0],
+    )
+    lattice = make_lattice([node])
+
+    bunch = Bunch()
+    bunch.mass(mass_proton)
+    bunch.getSyncParticle().kinEnergy(1.3)
+
+    matrix_expected = fit_transfer_matrix(lattice, bunch)
+    envelope = Envelope(sync_part=bunch.getSyncParticle())
+    matrix_actual = lattice.getEnvelopeTransferMatrix(envelope, fit=True)
+    assert np.allclose(matrix_actual, matrix_expected, atol=1.0e-12)
+
+
+@pytest.mark.parametrize("charge", [1.0, -1.0])
 def test_bend_linac(charge: float):
     node = Bend()
     node.setLength(1.0)
@@ -334,6 +378,74 @@ def test_track_sublattice_no_error():
     for i in range(n):
         lattice.trackEnvelope(envelope, index_start=i)
         lattice.trackEnvelope(envelope, index_stop=-i)
+
+
+def test_track_static_sublattice():
+    lattice = make_lattice(
+        [
+            DriftTEAPOT(length=0.1),
+            DriftTEAPOT(length=0.2),
+            DriftTEAPOT(length=0.3),
+        ]
+    )
+
+    bunch = Bunch()
+    bunch.mass(mass_proton)
+    bunch.getSyncParticle().kinEnergy(0.001)
+    envelope = Envelope(
+        sync_part=bunch.getSyncParticle(),
+        cov_matrix=make_default_cov_matrix(),
+    )
+
+    for index_start, index_stop in [(0, 0), (1, 2)]:
+        expected = envelope.copy()
+        lattice.trackEnvelope(
+            expected,
+            index_start=index_start,
+            index_stop=index_stop,
+            fit=False,
+        )
+
+        actual = envelope.copy()
+        lattice.trackEnvelope(
+            actual,
+            index_start=index_start,
+            index_stop=index_stop,
+            fit=False,
+            static=True,
+        )
+
+        assert np.allclose(actual.cov_matrix, expected.cov_matrix)
+        assert np.allclose(actual.centroid, expected.centroid)
+
+
+def test_track_static_history():
+    lattice = make_lattice(
+        [
+            DriftTEAPOT(length=0.1, nparts=1),
+            DriftTEAPOT(length=0.2, nparts=2),
+        ]
+    )
+
+    bunch = Bunch()
+    bunch.mass(mass_proton)
+    bunch.getSyncParticle().kinEnergy(0.001)
+    envelope = Envelope(
+        sync_part=bunch.getSyncParticle(),
+        cov_matrix=make_default_cov_matrix(),
+    )
+
+    expected = lattice.trackEnvelope(envelope.copy(), history=True, fit=False)
+    actual = lattice.trackEnvelope(
+        envelope.copy(),
+        history=True,
+        fit=False,
+        static=True,
+    )
+
+    assert actual.keys() == expected.keys()
+    for key in actual:
+        assert np.allclose(actual[key], expected[key])
 
 
 @pytest.mark.parametrize("charge", [1.0, -1.0])

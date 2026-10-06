@@ -55,6 +55,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--nparts", type=int, default=100_000)
     parser.add_argument("--turns", type=int, default=25)
     parser.add_argument("--sc", type=int, default=0)
+    parser.add_argument("--fit", type=int, default=1)
     return parser.parse_args()
 
 
@@ -147,7 +148,7 @@ def main(args: argparse.Namespace) -> None:
     history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
     for turn in range(args.turns):
         if turn > 0:
-            lattice.trackEnvelopeRing(envelope, sc=envelope_sc)
+            lattice.trackEnvelope(envelope, sc=envelope_sc, fit=args.fit, static=True)
 
         cov_matrix = envelope.cov_matrix
         centroid = envelope.centroid
