@@ -289,7 +289,7 @@ class AccLattice(NamedObject, TypedObject):
         from orbit.py_linac.lattice.LinacAccNodes import Bend
         from orbit.teapot.teapot import BendTEAPOT
 
-        for node in self.__children:
+        for node in self._getNodesInRange(index_start, index_stop):
             if isinstance(node, BendTEAPOT):
                 uses_unsupported_fringe = (
                     node.getParam("ea1") != 0.0 and node.getUsageFringeFieldIN()
