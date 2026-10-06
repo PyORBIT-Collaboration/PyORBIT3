@@ -62,6 +62,9 @@ public:
 	/** Returns the number of smoothing points to calculate the derivative of the longitudinal density. */
 	int getLongAveragingPointsN();
 
+	void setUseIntegratedGreenFunction(bool use_integrated);
+	bool getUseIntegratedGreenFunction() const;
+
 private:
 
 	/** Analyses the bunch and does bining. */

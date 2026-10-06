@@ -49,6 +49,9 @@ public:
 	/** Returns the 1D grid with a longitudinal density. **/
 	Grid1D* getLongGrid();
 
+	void setUseIntegratedGreenFunction(bool use_integrated);
+	bool getUseIntegratedGreenFunction() const;
+
 private:
 	/** Analyses the bunch and does bining. */
  void bunchAnalysis(Bunch* bunch, double& totalMacrosize, BaseBoundary2D* boundary);

@@ -107,6 +107,14 @@ Grid1D* SpaceChargeCalc2p5Drb::getLongDerivativeGrid(){
 	return zDerivGrid;
 }
 
+void SpaceChargeCalc2p5Drb::setUseIntegratedGreenFunction(bool use_integrated){
+	poissonSolver->setUseIntegratedGreenFunction(use_integrated);
+}
+
+bool SpaceChargeCalc2p5Drb::getUseIntegratedGreenFunction() const{
+	return poissonSolver->getUseIntegratedGreenFunction();
+}
+
 void SpaceChargeCalc2p5Drb::trackBunch(Bunch* bunch, double length, double pipe_radius){
 
 	int nPartsGlobal = bunch->getSizeGlobal();

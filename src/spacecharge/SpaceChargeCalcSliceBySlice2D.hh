@@ -54,6 +54,9 @@ public:
 	void longTracking(int useLongTracking);
 	int getLongitudinalTracking();
 
+	void setUseIntegratedGreenFunction(bool use_integrated);
+	bool getUseIntegratedGreenFunction() const;
+
 private:
 	/** Analyses the bunch and does bining. */
 	void bunchAnalysis(Bunch* bunch, double& totalMacrosize, BaseBoundary2D* boundary);

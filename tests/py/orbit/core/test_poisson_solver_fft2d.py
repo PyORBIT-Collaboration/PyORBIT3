@@ -2,7 +2,13 @@ import math
 
 import pytest
 
-from orbit.core.spacecharge import Grid2D, PoissonSolverFFT2D
+from orbit.core.spacecharge import (
+    Grid2D,
+    PoissonSolverFFT2D,
+    SpaceChargeCalc2p5D,
+    SpaceChargeCalc2p5Drb,
+    SpaceChargeCalcSliceBySlice2D,
+)
 
 
 def _antiderivative(x, y):
@@ -64,3 +70,11 @@ def test_mode_switching_preserves_default_point_kernel():
     assert phi.getValueOnGrid(source[0] + 1, source[1]) == pytest.approx(point_value, rel=0.0, abs=1e-15)
     with pytest.raises(TypeError):
         solver.setUseIntegratedGreenFunction()
+
+
+def test_tracking_calculators_forward_integrated_green_function_mode():
+    for calculator_type in (SpaceChargeCalc2p5D, SpaceChargeCalc2p5Drb, SpaceChargeCalcSliceBySlice2D):
+        calculator = calculator_type(9, 8, 7)
+        assert calculator.getUseIntegratedGreenFunction() is False
+        calculator.setUseIntegratedGreenFunction(True)
+        assert calculator.getUseIntegratedGreenFunction() is True

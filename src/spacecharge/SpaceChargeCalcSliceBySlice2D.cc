@@ -65,6 +65,14 @@ int SpaceChargeCalcSliceBySlice2D::getLongitudinalTracking()
 	return useLongTracking;
 }
 
+void SpaceChargeCalcSliceBySlice2D::setUseIntegratedGreenFunction(bool use_integrated){
+	poissonSolver->setUseIntegratedGreenFunction(use_integrated);
+}
+
+bool SpaceChargeCalcSliceBySlice2D::getUseIntegratedGreenFunction() const{
+	return poissonSolver->getUseIntegratedGreenFunction();
+}
+
 Grid3D* SpaceChargeCalcSliceBySlice2D::getRhoGrid(){
 	return rhoGrid3D;
 }

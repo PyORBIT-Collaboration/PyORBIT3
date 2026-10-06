@@ -74,6 +74,14 @@ Grid1D* SpaceChargeCalc2p5D::getLongGrid(){
 	return zGrid;
 }
 
+void SpaceChargeCalc2p5D::setUseIntegratedGreenFunction(bool use_integrated){
+	poissonSolver->setUseIntegratedGreenFunction(use_integrated);
+}
+
+bool SpaceChargeCalc2p5D::getUseIntegratedGreenFunction() const{
+	return poissonSolver->getUseIntegratedGreenFunction();
+}
+
 void SpaceChargeCalc2p5D::trackBunch(Bunch* bunch, double length, BaseBoundary2D* boundary){
 
 	int nPartsGlobal = bunch->getSizeGlobal();
