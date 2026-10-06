@@ -1,4 +1,5 @@
 #include "PoissonSolverFFT2D.hh"
+#include "GreensFunction2D.hh"
 
 #include <iostream>
 
@@ -27,6 +28,7 @@ void PoissonSolverFFT2D::init(int xSize, int ySize,
 	//points, but if we get more it will be fine also.
   xSize2_ = 2*xSize;
   ySize2_ = 2*ySize;
+	useIntegratedGreenFunction_ = false;
 
   if( xSize_ < 3 || ySize_ < 3){
 		int rank = 0;
@@ -39,11 +41,6 @@ void PoissonSolverFFT2D::init(int xSize, int ySize,
 								<< "Stop. \n";
 		}
 		ORBIT_MPI_Finalize();
-  }
-
-  greensF_ = new double*[xSize2_];
-  for(int i = 0; i < xSize2_ ; i++) {
-    greensF_[i] =  new double [ySize2_];
   }
 
   in_        = (double *) fftw_malloc(sizeof(double)*xSize2_ * ySize2_);
@@ -68,11 +65,6 @@ PoissonSolverFFT2D::~PoissonSolverFFT2D()
 
 	//std::cerr<<"debug PoissonSolverFFT2D::~PoissonSolverFFT2D() start! "<<std::endl;
   //delete Green function and FFT input and output arrays
-
-  for(int i = 0; i < xSize2_ ; i++) {
-    delete [] greensF_[i];
-  }
-  delete [] greensF_;
 
   fftw_free(in_);
   fftw_free(in_res_);
@@ -110,61 +102,36 @@ void PoissonSolverFFT2D::setGridXY(double xMin, double xMax, double yMin, double
 	_defineGreenF();
 }
 
+void PoissonSolverFFT2D::setUseIntegratedGreenFunction(bool use_integrated){
+	if (useIntegratedGreenFunction_ != use_integrated) {
+		useIntegratedGreenFunction_ = use_integrated;
+		_defineGreenF();
+	}
+}
+
+bool PoissonSolverFFT2D::getUseIntegratedGreenFunction() const{
+	return useIntegratedGreenFunction_;
+}
+
 // Defines the FFT of the Green Function: field = lambda/r, potential = - lambda*ln(abs(r))
 // Please, keep in mind that the field of point like string 2*lambda*ln(abs(r)) in CGS
 void PoissonSolverFFT2D::_defineGreenF()
 {
 
-  double rTransY, rTransX, rTot2;
-  int i, j, iY , iX;
-
-	for (iY = 0; iY <= ySize2_/2; iY++)
-	{
-		rTransY = iY * dy_;
-
-		for (iX = 0; iX <= xSize2_/2; iX++)
-		{
-			rTransX = iX * dx_;
-			rTot2 = rTransX*rTransX + rTransY*rTransY;
-			//we can add constant (to get the same numers as in ORBIT)
-			//this constant is (- log(1000.0))
-			//here in the original ORBIT we deleted this constant
-			if(iX != 0 || iY != 0){
-				greensF_[iX][iY] = - log(rTot2)/2;
-			}
-			else{
-				greensF_[iX][iY] = 0.0;
-			}
-		}
-
-		for (iX = xSize2_/2+1; iX < xSize2_; iX++)
-		{
-			greensF_[iX][iY] = greensF_[xSize2_-iX][iY];
-		}
-	}
-
-	for (iY = ySize2_/2+1; iY < ySize2_; iY++)
-	{
-		for (iX = 0; iX < xSize2_; iX++)
-		{
-			greensF_[iX][iY] = greensF_[iX][ySize2_-iY];
-		}
+	if (useIntegratedGreenFunction_) {
+		GreensFunction2D::fillIntegratedKernel(in_, xSize2_, ySize2_, dx_, dy_);
+	} else {
+		GreensFunction2D::fillPointKernel(in_, xSize2_, ySize2_, dx_, dy_);
 	}
 
 	//   Calculate the FFT of the Greens Function:
 
-	for (i = 0; i < xSize2_; i++)
-		for (j = 0; j < ySize2_; j++)
-		{
-      in_[j + ySize2_*i] = greensF_[i][j];
-		}
-
-		fftw_execute(planForward_greenF_);
+	fftw_execute(planForward_greenF_);
 
 		out_green_re00_ = out_green_[0][0];
 
-		for (i = 0; i < xSize2_; i++)
-			for (j = 0; j < ySize2_; j++)
+	for (int i = 0; i < xSize2_; i++)
+		for (int j = 0; j < ySize2_; j++)
 			{
 				in_[j + ySize2_*i] = 0.0;
 			}
