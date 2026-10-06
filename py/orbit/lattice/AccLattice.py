@@ -1,4 +1,5 @@
 import os
+from typing import Any
 
 import numpy as np
 
@@ -40,11 +41,9 @@ class AccLattice(NamedObject, TypedObject):
         self.__isInitialized = False
         self.__children = []
         self.__childPositions = {}
-        self.__envelopeElements = []
-        self.__envelopeOneTurnMatrix = None
-        self.__envelopeSpaceCharge = None
-        self.__envelopeFit = True
-        self.__envelopeRange = None
+        self._envelope_elements = []
+        self._envelope_one_turn_matrix = None
+        self._envelope_cache_key = None
 
     def initialize(self):
         """
@@ -276,12 +275,13 @@ class AccLattice(NamedObject, TypedObject):
             paramsDict["parentNode"] = self
             node.trackActions(actionsContainer, paramsDict)
 
-    def _getNodesInRange(self, index_start: int = 0, index_stop: int = None):
+    def _getNodesInRange(self, index_start: int = 0, index_stop: int = None) -> list[AccNode]:
         if index_stop is None:
             index_stop = len(self.__children) - 1
         return self.__children[index_start : index_stop + 1]
 
     def _prepareEnvelopeTracking(self, fit: bool = True) -> None:
+        """Check lattice before tracking envelope."""
         if fit:
             return
         for node in self.__children:
@@ -289,9 +289,7 @@ class AccLattice(NamedObject, TypedObject):
             is_teapot_bend = node_type.__name__ == "BendTEAPOT" and node_type.__module__ == "orbit.teapot.teapot"
             is_linac_bend = node_type.__name__ == "Bend" and node_type.__module__ == "orbit.py_linac.lattice.LinacAccNodes"
             if is_teapot_bend:
-                uses_unsupported_fringe = (
-                    node.getParam("ea1") != 0.0 and node.getUsageFringeFieldIN()
-                ) or (
+                uses_unsupported_fringe = (node.getParam("ea1") != 0.0 and node.getUsageFringeFieldIN()) or (
                     node.getParam("ea2") != 0.0 and node.getUsageFringeFieldOUT()
                 )
                 if uses_unsupported_fringe:
@@ -308,7 +306,8 @@ class AccLattice(NamedObject, TypedObject):
                     message += "   `node.setParam('ea2', 0.0)`"
                     raise RuntimeError(message)
 
-    def _createEnvelopeFitState(self, sync_part):
+    def _createEnvelopeFitState(self, sync_part) -> dict[str, Any]:
+        """Return items needed to compute best-fit transfer matrix."""
         bunch = bunch_from_sync_particle(sync_part)
         lost_bunch = Bunch()
         bunch.copyEmptyBunchTo(lost_bunch)
@@ -330,11 +329,11 @@ class AccLattice(NamedObject, TypedObject):
         parent_node: AccNode = None,
         fit_state: dict | None = None,
     ) -> np.ndarray | None:
-        """Return 7 x 7 transfer matrix from node and synchonous particle.
+        """Return 7 x 7 transfer matrix from node and synchronous particle.
 
         If `fit_state` is provided, the matrix will be fit to input/output
-        coordinates of a particle near the origin. Otherwise the analytic
-        matrix will be used (if implemented).
+        coordinates of a particle launched near the origin. Otherwise the
+        analytic matrix will be used (if implemented).
         """
         if fit_state is None:
             if part_index is None:
@@ -354,6 +353,7 @@ class AccLattice(NamedObject, TypedObject):
         return matrix
 
     def _getEnvelopeSpaceChargeMatrix(self, envelope: Envelope, length: float, sc: str | None) -> np.ndarray | None:
+        """Return transfer matrix for linear space charge kick."""
         if not sc or length <= 0:
             return None
         if sc == "2d":
@@ -362,8 +362,146 @@ class AccLattice(NamedObject, TypedObject):
             return envelope.sc_matrix_3d(length)
         raise ValueError(f"Invalid envelope space charge option `{sc}`")
 
-    def setEnvelopeSpaceCharge(self, sc: str | None) -> None:
-        self.__envelopeSpaceCharge = sc
+    def _iterEnvelopeElements(
+        self,
+        envelope: Envelope,
+        index_start: int = 0,
+        index_stop: int = None,
+        sc: str | None = None,
+        fit: bool = True,
+    ):
+        """Yield matrices, space charge kicks, and position updates in tracking order."""
+        self._prepareEnvelopeTracking(fit=fit)
+        sync_part = envelope.sync_part
+        fit_state = self._createEnvelopeFitState(sync_part) if fit else None
+
+        def iter_child_elements(child_nodes, parent_node):
+            for child_node in child_nodes:
+                matrix = self._getEnvelopeNodeMatrix(
+                    child_node,
+                    sync_part,
+                    parent_node=parent_node,
+                    fit_state=fit_state,
+                )
+                if matrix is not None:
+                    yield child_node, matrix
+
+        for node in self._getNodesInRange(index_start, index_stop):
+            yield from iter_child_elements(
+                node.getChildNodes(AccNode.ENTRANCE),
+                node,
+            )
+
+            for part_index in range(node.getnParts()):
+                yield from iter_child_elements(
+                    node.getChildNodes(
+                        AccNode.BODY,
+                        part_index,
+                        place_in_part=AccNode.BEFORE,
+                    ),
+                    node,
+                )
+
+                length = node.getLength(part_index)
+                if sc and length > 0:
+                    yield "sc", length
+
+                matrix = self._getEnvelopeNodeMatrix(
+                    node,
+                    sync_part,
+                    part_index=part_index,
+                    parent_node=self,
+                    fit_state=fit_state,
+                )
+                if matrix is not None:
+                    yield node, matrix
+
+                yield "position", length
+
+                yield from iter_child_elements(
+                    node.getChildNodes(
+                        AccNode.BODY,
+                        part_index,
+                        place_in_part=AccNode.AFTER,
+                    ),
+                    node,
+                )
+
+            yield from iter_child_elements(
+                node.getChildNodes(AccNode.EXIT),
+                node,
+            )
+
+    def _applyEnvelopeElements(
+        self,
+        envelope: Envelope,
+        elements,
+        sc: str | None = None,
+        update_history=None,
+        calculate_matrix: bool = False,
+    ) -> np.ndarray | None:
+        """Apply envelope operations and optionally return their combined matrix."""
+        total_matrix = np.identity(7) if calculate_matrix else None
+        path_length = 0.0
+
+        for element_type, value in elements:
+            if element_type == "position":
+                path_length += value
+                if update_history is not None:
+                    update_history(path_length)
+                continue
+
+            if element_type == "sc":
+                matrix = self._getEnvelopeSpaceChargeMatrix(envelope, value, sc)
+            else:
+                matrix = value
+
+            envelope.transform(matrix)
+            if calculate_matrix:
+                total_matrix = matrix @ total_matrix
+
+        return total_matrix
+
+    def _precomputeEnvelopeElements(
+        self,
+        envelope: Envelope,
+        index_start: int = 0,
+        index_stop: int = None,
+        sc: str | None = None,
+        fit: bool = True,
+    ) -> list:
+        """Precompute envelope operations for a static lattice."""
+        self._envelope_elements = list(
+            self._iterEnvelopeElements(
+                envelope,
+                index_start=index_start,
+                index_stop=index_stop,
+                sc=sc,
+                fit=fit,
+            )
+        )
+        self._envelope_cache_key = (index_start, index_stop, sc, fit)
+        self._envelope_one_turn_matrix = None
+        return self._envelope_elements
+
+    def _getStaticEnvelopeElements(
+        self,
+        envelope: Envelope,
+        index_start: int = 0,
+        index_stop: int = None,
+        sc: str | None = None,
+        fit: bool = True,
+    ) -> list:
+        cache_key = (index_start, index_stop, sc, fit)
+        if self._envelope_cache_key != cache_key:
+            self._precomputeEnvelopeElements(
+                envelope,
+                index_start=index_start,
+                index_stop=index_stop,
+                sc=sc,
+                fit=fit,
+            )
+        return self._envelope_elements
 
     def trackEnvelope(
         self,
@@ -409,65 +547,14 @@ class AccLattice(NamedObject, TypedObject):
             )
             return None
 
-        self._prepareEnvelopeTracking(fit=fit)
-        self.setEnvelopeSpaceCharge(sc)
-        sync_part = envelope.sync_part
-        fit_state = self._createEnvelopeFitState(sync_part) if fit else None
-
-        for node in self._getNodesInRange(index_start, index_stop):
-            for child_node in node.getChildNodes(AccNode.ENTRANCE):
-                matrix = self._getEnvelopeNodeMatrix(
-                    child_node,
-                    sync_part,
-                    parent_node=node,
-                    fit_state=fit_state,
-                )
-                if matrix is not None:
-                    envelope.transform(matrix)
-
-            for part_index in range(node.getnParts()):
-                for child_node in node.getChildNodes(AccNode.BODY, part_index, place_in_part=AccNode.BEFORE):
-                    matrix = self._getEnvelopeNodeMatrix(
-                        child_node,
-                        sync_part,
-                        parent_node=node,
-                        fit_state=fit_state,
-                    )
-                    if matrix is not None:
-                        envelope.transform(matrix)
-
-                matrix_sc = self._getEnvelopeSpaceChargeMatrix(envelope, node.getLength(part_index), sc)
-                matrix = self._getEnvelopeNodeMatrix(
-                    node,
-                    sync_part,
-                    part_index=part_index,
-                    parent_node=self,
-                    fit_state=fit_state,
-                )
-                if matrix is not None:
-                    if matrix_sc is not None:
-                        matrix = matrix @ matrix_sc
-                    envelope.transform(matrix)
-
-                for child_node in node.getChildNodes(AccNode.BODY, part_index, place_in_part=AccNode.AFTER):
-                    matrix = self._getEnvelopeNodeMatrix(
-                        child_node,
-                        sync_part,
-                        parent_node=node,
-                        fit_state=fit_state,
-                    )
-                    if matrix is not None:
-                        envelope.transform(matrix)
-
-            for child_node in node.getChildNodes(AccNode.EXIT):
-                matrix = self._getEnvelopeNodeMatrix(
-                    child_node,
-                    sync_part,
-                    parent_node=node,
-                    fit_state=fit_state,
-                )
-                if matrix is not None:
-                    envelope.transform(matrix)
+        elements = self._iterEnvelopeElements(
+            envelope,
+            index_start=index_start,
+            index_stop=index_stop,
+            sc=sc,
+            fit=fit,
+        )
+        self._applyEnvelopeElements(envelope, elements, sc=sc)
 
     def _trackEnvelopeHistory(
         self,
@@ -481,11 +568,6 @@ class AccLattice(NamedObject, TypedObject):
         """
         Track envelope and return parameters vs. position in lattice.
         """
-        self._prepareEnvelopeTracking(fit=fit)
-        self.setEnvelopeSpaceCharge(sc)
-        sync_part = envelope.sync_part
-        fit_state = self._createEnvelopeFitState(sync_part) if fit else None
-
         history_keys = [
             "s",
             "kin_energy",
@@ -502,167 +584,50 @@ class AccLattice(NamedObject, TypedObject):
         history = {key: [] for key in history_keys}
 
         def observe(envelope: Envelope) -> dict:
-            parameters = {}
-            parameters["gamma"] = envelope.gamma
-            parameters["beta"] = envelope.beta
-            parameters["kin_energy"] = envelope.kin_energy
-            parameters["mean"] = envelope.centroid.copy()
-            parameters["cov"] = envelope.cov_matrix.copy()
-            parameters["rms_x"] = np.sqrt(parameters["cov"][0, 0])
-            parameters["rms_y"] = np.sqrt(parameters["cov"][2, 2])
-            parameters["rms_z"] = np.sqrt(parameters["cov"][4, 4])
-            return parameters
+            cov_matrix = envelope.cov_matrix.copy()
+            return {
+                "gamma": envelope.gamma,
+                "beta": envelope.beta,
+                "kin_energy": envelope.kin_energy,
+                "mean": envelope.centroid.copy(),
+                "cov": cov_matrix,
+                "rms_x": np.sqrt(cov_matrix[0, 0]),
+                "rms_y": np.sqrt(cov_matrix[2, 2]),
+                "rms_z": np.sqrt(cov_matrix[4, 4]),
+                "eps_x": np.sqrt(np.linalg.det(cov_matrix[0:2, 0:2])),
+                "eps_y": np.sqrt(np.linalg.det(cov_matrix[2:4, 2:4])),
+            }
 
-        def update_history(envelope: Envelope, position: float) -> None:
+        def update_history(position: float) -> None:
             history["s"].append(position)
             parameters = observe(envelope)
-            for key in parameters:
-                history[key].append(parameters[key])
+            for key, value in parameters.items():
+                history[key].append(value)
 
-        path_length = 0.0
-        update_history(envelope, path_length)
-
-        for node in self._getNodesInRange(index_start, index_stop):
-            for child_node in node.getChildNodes(AccNode.ENTRANCE):
-                matrix = self._getEnvelopeNodeMatrix(
-                    child_node,
-                    sync_part,
-                    parent_node=node,
-                    fit_state=fit_state,
-                )
-                if matrix is not None:
-                    envelope.transform(matrix)
-
-            for part_index in range(node.getnParts()):
-                for child_node in node.getChildNodes(AccNode.BODY, part_index, place_in_part=AccNode.BEFORE):
-                    matrix = self._getEnvelopeNodeMatrix(
-                        child_node,
-                        sync_part,
-                        parent_node=node,
-                        fit_state=fit_state,
-                    )
-                    if matrix is not None:
-                        envelope.transform(matrix)
-
-                matrix_sc = self._getEnvelopeSpaceChargeMatrix(envelope, node.getLength(part_index), sc)
-                matrix = self._getEnvelopeNodeMatrix(
-                    node,
-                    sync_part,
-                    part_index=part_index,
-                    parent_node=self,
-                    fit_state=fit_state,
-                )
-                if matrix is not None:
-                    if matrix_sc is not None:
-                        matrix = matrix @ matrix_sc
-                    envelope.transform(matrix)
-
-                path_length += node.getLength(part_index)
-                update_history(envelope, path_length)
-
-                for child_node in node.getChildNodes(AccNode.BODY, part_index, place_in_part=AccNode.AFTER):
-                    matrix = self._getEnvelopeNodeMatrix(
-                        child_node,
-                        sync_part,
-                        parent_node=node,
-                        fit_state=fit_state,
-                    )
-                    if matrix is not None:
-                        envelope.transform(matrix)
-
-            for child_node in node.getChildNodes(AccNode.EXIT):
-                matrix = self._getEnvelopeNodeMatrix(
-                    child_node,
-                    sync_part,
-                    parent_node=node,
-                    fit_state=fit_state,
-                )
-                if matrix is not None:
-                    envelope.transform(matrix)
+        update_history(0.0)
+        if static:
+            elements = self._getStaticEnvelopeElements(
+                envelope,
+                index_start=index_start,
+                index_stop=index_stop,
+                sc=sc,
+                fit=fit,
+            )
+        else:
+            elements = self._iterEnvelopeElements(
+                envelope,
+                index_start=index_start,
+                index_stop=index_stop,
+                sc=sc,
+                fit=fit,
+            )
+        self._applyEnvelopeElements(
+            envelope,
+            elements,
+            sc=sc,
+            update_history=update_history,
+        )
         return history
-
-    def _precomputeEnvelopeMatrices(
-        self,
-        envelope: Envelope,
-        index_start: int = 0,
-        index_stop: int = None,
-        sc: str | None = None,
-        fit: bool = True,
-    ) -> list:
-        """
-        Pre-compute transfer matrices for each node.
-
-        For each node, store tuple (node, matrix). Space charge kicks are
-        stored as ("sc", length).
-        """
-        self._prepareEnvelopeTracking(fit=fit)
-        sync_part = envelope.sync_part
-
-        self.__envelopeElements = []
-        self.__envelopeOneTurnMatrix = None
-        self.__envelopeSpaceCharge = sc
-        self.__envelopeFit = fit
-        self.__envelopeRange = (index_start, index_stop)
-        fit_state = self._createEnvelopeFitState(sync_part) if fit else None
-
-        for node in self._getNodesInRange(index_start, index_stop):
-            for child_node in node.getChildNodes(AccNode.ENTRANCE):
-                matrix = self._getEnvelopeNodeMatrix(
-                    child_node,
-                    sync_part,
-                    parent_node=node,
-                    fit_state=fit_state,
-                )
-                if matrix is not None:
-                    self.__envelopeElements.append((child_node, matrix))
-
-            for part_index in range(node.getnParts()):
-                for child_node in node.getChildNodes(AccNode.BODY, part_index, place_in_part=AccNode.BEFORE):
-                    matrix = self._getEnvelopeNodeMatrix(
-                        child_node,
-                        sync_part,
-                        parent_node=node,
-                        fit_state=fit_state,
-                    )
-                    if matrix is not None:
-                        self.__envelopeElements.append((child_node, matrix))
-
-                if sc:
-                    length = node.getLength(part_index)
-                    if length > 0:
-                        self.__envelopeElements.append(("sc", length))
-
-                matrix = self._getEnvelopeNodeMatrix(
-                    node,
-                    sync_part,
-                    part_index=part_index,
-                    parent_node=self,
-                    fit_state=fit_state,
-                )
-                if matrix is not None:
-                    self.__envelopeElements.append((node, matrix))
-
-                for child_node in node.getChildNodes(AccNode.BODY, part_index, place_in_part=AccNode.AFTER):
-                    matrix = self._getEnvelopeNodeMatrix(
-                        child_node,
-                        sync_part,
-                        parent_node=node,
-                        fit_state=fit_state,
-                    )
-                    if matrix is not None:
-                        self.__envelopeElements.append((child_node, matrix))
-
-            for child_node in node.getChildNodes(AccNode.EXIT):
-                matrix = self._getEnvelopeNodeMatrix(
-                    child_node,
-                    sync_part,
-                    parent_node=node,
-                    fit_state=fit_state,
-                )
-                if matrix is not None:
-                    self.__envelopeElements.append((child_node, matrix))
-
-        return self.__envelopeElements
 
     def _trackEnvelopeStatic(
         self,
@@ -680,37 +645,24 @@ class AccLattice(NamedObject, TypedObject):
         can be computed once and reused on each turn. If there is no space charge,
         we track using the one-turn matrix.
         """
-        envelope_range = (index_start, index_stop)
-        if (
-            not self.__envelopeElements
-            or self.__envelopeSpaceCharge != sc
-            or self.__envelopeFit != fit
-            or self.__envelopeRange != envelope_range
-        ):
-            self._precomputeEnvelopeMatrices(
-                envelope,
-                index_start=index_start,
-                index_stop=index_stop,
-                sc=sc,
-                fit=fit,
-            )
+        elements = self._getStaticEnvelopeElements(
+            envelope,
+            index_start=index_start,
+            index_stop=index_stop,
+            sc=sc,
+            fit=fit,
+        )
 
         if not sc:
-            if self.__envelopeOneTurnMatrix is None:
-                self.__envelopeOneTurnMatrix = np.identity(7)
-                for node, matrix in self.__envelopeElements:
-                    self.__envelopeOneTurnMatrix = matrix @ self.__envelopeOneTurnMatrix
-            envelope.transform(self.__envelopeOneTurnMatrix)
+            if self._envelope_one_turn_matrix is None:
+                self._envelope_one_turn_matrix = np.identity(7)
+                for element_type, matrix in elements:
+                    if element_type != "position":
+                        self._envelope_one_turn_matrix = matrix @ self._envelope_one_turn_matrix
+            envelope.transform(self._envelope_one_turn_matrix)
             return
 
-        for element in self.__envelopeElements:
-            if element[0] == "sc":
-                length = element[1]
-                matrix = self._getEnvelopeSpaceChargeMatrix(envelope, length, sc)
-                envelope.transform(matrix)
-            else:
-                node, matrix = element
-                envelope.transform(matrix)
+        self._applyEnvelopeElements(envelope, elements, sc=sc)
 
     def getEnvelopeTransferMatrix(
         self,
@@ -723,15 +675,16 @@ class AccLattice(NamedObject, TypedObject):
         """
         Return total transfer matrix, including linear space charge when requested.
         """
-        elements = self._precomputeEnvelopeMatrices(envelope, index_start, index_stop, sc=sc, fit=fit)
-
-        total_matrix = np.identity(7)
-        for element in elements:
-            if element[0] == "sc":
-                length = element[1]
-                matrix = self._getEnvelopeSpaceChargeMatrix(envelope, length, sc)
-            else:
-                node, matrix = element
-            envelope.transform(matrix)
-            total_matrix = matrix @ total_matrix
-        return total_matrix
+        elements = self._precomputeEnvelopeElements(
+            envelope,
+            index_start=index_start,
+            index_stop=index_stop,
+            sc=sc,
+            fit=fit,
+        )
+        return self._applyEnvelopeElements(
+            envelope,
+            elements,
+            sc=sc,
+            calculate_matrix=True,
+        )

@@ -419,6 +419,35 @@ def test_track_static_sublattice():
         assert np.allclose(actual.centroid, expected.centroid)
 
 
+def test_track_static_history():
+    lattice = make_lattice(
+        [
+            DriftTEAPOT(length=0.1, nparts=1),
+            DriftTEAPOT(length=0.2, nparts=2),
+        ]
+    )
+
+    bunch = Bunch()
+    bunch.mass(mass_proton)
+    bunch.getSyncParticle().kinEnergy(0.001)
+    envelope = Envelope(
+        sync_part=bunch.getSyncParticle(),
+        cov_matrix=make_default_cov_matrix(),
+    )
+
+    expected = lattice.trackEnvelope(envelope.copy(), history=True, fit=False)
+    actual = lattice.trackEnvelope(
+        envelope.copy(),
+        history=True,
+        fit=False,
+        static=True,
+    )
+
+    assert actual.keys() == expected.keys()
+    for key in actual:
+        assert np.allclose(actual[key], expected[key])
+
+
 @pytest.mark.parametrize("charge", [1.0, -1.0])
 def test_get_total_matrix(charge: float) -> None:
     node = DriftTEAPOT(length=2.0, nparts=50)
