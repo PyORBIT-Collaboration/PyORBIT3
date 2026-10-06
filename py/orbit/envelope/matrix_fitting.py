@@ -15,7 +15,6 @@ if TYPE_CHECKING:
 
 
 def orbit_matrix_to_numpy(matrix: Matrix) -> np.ndarray:
-    """Convert an ORBIT matrix to a NumPy array."""
     matrix_out = np.zeros(matrix.size())
     for i in range(matrix_out.shape[0]):
         for j in range(matrix_out.shape[1]):
@@ -24,7 +23,6 @@ def orbit_matrix_to_numpy(matrix: Matrix) -> np.ndarray:
 
 
 def copy_sync_particle(source: SyncParticle, target: SyncParticle) -> None:
-    """Copy the mutable synchronous-particle state."""
     target.rVector(source.rVector())
     target.pVector(source.pVector())
     target.nxVector(source.nxVector())
@@ -32,7 +30,6 @@ def copy_sync_particle(source: SyncParticle, target: SyncParticle) -> None:
 
 
 def bunch_from_sync_particle(sync_part: SyncParticle) -> Bunch:
-    """Create an empty bunch with a copy of a synchronous particle."""
     bunch = Bunch()
     bunch.mass(sync_part.mass())
     bunch.charge(sync_part.charge())
@@ -49,12 +46,7 @@ def fit_node_transfer_matrix(
     lost_bunch: Bunch | None = None,
     params_dict: dict | None = None,
 ) -> np.ndarray:
-    """Fit the local linear map of one node operation by particle tracking.
 
-    The input ``bunch`` is used as reusable workspace. Its synchronous particle
-    advances through the node, which lets a caller fit successive operations at
-    the correct energy and time.
-    """
     if matrix_generator is None:
         matrix_generator = MatrixGenerator()
     if lost_bunch is None:
@@ -90,7 +82,7 @@ def fit_transfer_matrix(
     index_start: int = 0,
     index_stop: int | None = None,
 ) -> np.ndarray:
-    """Fit a lattice transfer matrix by tracking finite-difference probes."""
+
     if index_stop is None:
         index_stop = -1
 

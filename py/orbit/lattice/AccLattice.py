@@ -1,19 +1,21 @@
-from __future__ import annotations
-
 import os
-from typing import TYPE_CHECKING
 
 import numpy as np
 
-from ..utils import orbitFinalize
-from ..utils import NamedObject
-from ..utils import TypedObject
+from orbit.core.bunch import Bunch
+from orbit.core.bunch import SyncParticle
+from orbit.core.teapot_base import MatrixGenerator
+from orbit.envelope import Envelope
+from orbit.envelope.matrix_fitting import bunch_from_sync_particle
+from orbit.envelope.matrix_fitting import copy_sync_particle
+from orbit.envelope.matrix_fitting import fit_node_transfer_matrix
+
+from orbit.utils import orbitFinalize
+from orbit.utils import NamedObject
+from orbit.utils import TypedObject
 
 from .AccActionsContainer import AccActionsContainer
 from .AccNode import AccNode
-
-if TYPE_CHECKING:
-    from orbit.envelope.envelope import Envelope
 
 
 class AccLattice(NamedObject, TypedObject):
@@ -41,7 +43,8 @@ class AccLattice(NamedObject, TypedObject):
         self.__envelopeElements = []
         self.__envelopeOneTurnMatrix = None
         self.__envelopeSpaceCharge = None
-        self.__envelopeFit = False
+        self.__envelopeFit = True
+        self.__envelopeRange = None
 
     def initialize(self):
         """
@@ -278,7 +281,7 @@ class AccLattice(NamedObject, TypedObject):
             index_stop = len(self.__children) - 1
         return self.__children[index_start : index_stop + 1]
 
-    def _prepareEnvelopeTracking(self, fit: bool = False) -> None:
+    def _prepareEnvelopeTracking(self, fit: bool = True) -> None:
         if fit:
             return
         for node in self.__children:
@@ -306,10 +309,6 @@ class AccLattice(NamedObject, TypedObject):
                     raise RuntimeError(message)
 
     def _createEnvelopeFitState(self, sync_part):
-        from orbit.core.bunch import Bunch
-        from orbit.core.teapot_base import MatrixGenerator
-        from orbit.envelope.matrix_fitting import bunch_from_sync_particle
-
         bunch = bunch_from_sync_particle(sync_part)
         lost_bunch = Bunch()
         bunch.copyEmptyBunchTo(lost_bunch)
@@ -325,19 +324,22 @@ class AccLattice(NamedObject, TypedObject):
 
     def _getEnvelopeNodeMatrix(
         self,
-        node,
-        sync_part,
+        node: AccNode,
+        sync_part: SyncParticle,
         part_index: int | None = None,
-        parent_node=None,
+        parent_node: AccNode = None,
         fit_state: dict | None = None,
     ) -> np.ndarray | None:
+        """Return 7 x 7 transfer matrix from node and synchonous particle.
+
+        If `fit_state` is provided, the matrix will be fit to input/output
+        coordinates of a particle near the origin. Otherwise the analytic
+        matrix will be used (if implemented).
+        """
         if fit_state is None:
             if part_index is None:
                 return node.getMatrix(sync_part)
             return node.getMatrix(sync_part, part_index=part_index)
-
-        from orbit.envelope.matrix_fitting import copy_sync_particle
-        from orbit.envelope.matrix_fitting import fit_node_transfer_matrix
 
         matrix = fit_node_transfer_matrix(
             node,
@@ -370,22 +372,42 @@ class AccLattice(NamedObject, TypedObject):
         index_stop: int = None,
         sc: str | None = None,
         history: bool = False,
-        fit: bool = False,
+        fit: bool = True,
+        static: bool = False,
     ) -> None | dict[str, list]:
         """
         Track envelope through the lattice.
 
-        If ``fit`` is true, obtain each linear map from tracking probes rather
-        than from the node's analytic ``getMatrix`` implementation.
+        Args:
+            envelope: Envelope to track.
+            index_start: Index of first node in sublattice.
+            index_stop: Index of last node in sublattice.
+            sc: Whether to include space charge kicks.
+            history: Whether to return beam parameters vs. position in lattice.
+            fit: Whether to use best-fit transfer matrices or analytic
+                transfer matrices.
+            static: Whether to pre-compute transfer matrices before
+                tracking. This works for as long as there are no time-dependent
+                nodes in the lattice.
         """
         if history:
-            return self.trackEnvelopeHistory(
+            return self._trackEnvelopeHistory(
+                envelope,
+                index_start=index_start,
+                index_stop=index_stop,
+                sc=sc,
+                fit=fit,
+                static=static,
+            )
+        if static:
+            self._trackEnvelopeStatic(
                 envelope,
                 index_start=index_start,
                 index_stop=index_stop,
                 sc=sc,
                 fit=fit,
             )
+            return None
 
         self._prepareEnvelopeTracking(fit=fit)
         self.setEnvelopeSpaceCharge(sc)
@@ -447,13 +469,14 @@ class AccLattice(NamedObject, TypedObject):
                 if matrix is not None:
                     envelope.transform(matrix)
 
-    def trackEnvelopeHistory(
+    def _trackEnvelopeHistory(
         self,
         envelope: Envelope,
         index_start: int = 0,
         index_stop: int = None,
         sc: str | None = None,
-        fit: bool = False,
+        fit: bool = True,
+        static: bool = False,
     ) -> dict[str, list]:
         """
         Track envelope and return parameters vs. position in lattice.
@@ -558,13 +581,13 @@ class AccLattice(NamedObject, TypedObject):
                     envelope.transform(matrix)
         return history
 
-    def precomputeEnvelopeMatrices(
+    def _precomputeEnvelopeMatrices(
         self,
         envelope: Envelope,
         index_start: int = 0,
         index_stop: int = None,
         sc: str | None = None,
-        fit: bool = False,
+        fit: bool = True,
     ) -> list:
         """
         Pre-compute transfer matrices for each node.
@@ -579,6 +602,7 @@ class AccLattice(NamedObject, TypedObject):
         self.__envelopeOneTurnMatrix = None
         self.__envelopeSpaceCharge = sc
         self.__envelopeFit = fit
+        self.__envelopeRange = (index_start, index_stop)
         fit_state = self._createEnvelopeFitState(sync_part) if fit else None
 
         for node in self._getNodesInRange(index_start, index_stop):
@@ -640,7 +664,14 @@ class AccLattice(NamedObject, TypedObject):
 
         return self.__envelopeElements
 
-    def trackEnvelopeRing(self, envelope: Envelope, sc: str | None = None, fit: bool = False) -> None:
+    def _trackEnvelopeStatic(
+        self,
+        envelope: Envelope,
+        index_start: int = 0,
+        index_stop: int = None,
+        sc: str | None = None,
+        fit: bool = True,
+    ) -> None:
         """
         Track using pre-computed transfer matrices.
 
@@ -649,8 +680,20 @@ class AccLattice(NamedObject, TypedObject):
         can be computed once and reused on each turn. If there is no space charge,
         we track using the one-turn matrix.
         """
-        if not self.__envelopeElements or self.__envelopeSpaceCharge != sc or self.__envelopeFit != fit:
-            self.precomputeEnvelopeMatrices(envelope, sc=sc, fit=fit)
+        envelope_range = (index_start, index_stop)
+        if (
+            not self.__envelopeElements
+            or self.__envelopeSpaceCharge != sc
+            or self.__envelopeFit != fit
+            or self.__envelopeRange != envelope_range
+        ):
+            self._precomputeEnvelopeMatrices(
+                envelope,
+                index_start=index_start,
+                index_stop=index_stop,
+                sc=sc,
+                fit=fit,
+            )
 
         if not sc:
             if self.__envelopeOneTurnMatrix is None:
@@ -675,12 +718,12 @@ class AccLattice(NamedObject, TypedObject):
         index_start: int = 0,
         index_stop: int = None,
         sc: str | None = None,
-        fit: bool = False,
+        fit: bool = True,
     ) -> np.ndarray:
         """
         Return total transfer matrix, including linear space charge when requested.
         """
-        elements = self.precomputeEnvelopeMatrices(envelope, index_start, index_stop, sc=sc, fit=fit)
+        elements = self._precomputeEnvelopeMatrices(envelope, index_start, index_stop, sc=sc, fit=fit)
 
         total_matrix = np.identity(7)
         for element in elements:
