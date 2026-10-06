@@ -33,6 +33,7 @@ parser.add_argument("--nparts", type=int, default=10_000)
 parser.add_argument("--turns", type=int, default=500)
 parser.add_argument("--sc", type=int, default=0)
 parser.add_argument("--sc-grid", type=int, default=64)
+parser.add_argument("--fit", type=int, default=1)
 args = parser.parse_args()
 
 nodes = [
@@ -93,7 +94,7 @@ profiler = cProfile.Profile()
 profiler.enable()
 
 for turn in trange(args.turns):
-    lattice.trackEnvelopeRing(envelope, sc=envelope_sc)
+    lattice.trackEnvelope(envelope, sc=envelope_sc, fit=args.fit, static=True)
 
 time_per_turn = (time.time() - start_time) / args.turns
 

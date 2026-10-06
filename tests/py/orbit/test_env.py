@@ -380,6 +380,45 @@ def test_track_sublattice_no_error():
         lattice.trackEnvelope(envelope, index_stop=-i)
 
 
+def test_track_static_sublattice():
+    lattice = make_lattice(
+        [
+            DriftTEAPOT(length=0.1),
+            DriftTEAPOT(length=0.2),
+            DriftTEAPOT(length=0.3),
+        ]
+    )
+
+    bunch = Bunch()
+    bunch.mass(mass_proton)
+    bunch.getSyncParticle().kinEnergy(0.001)
+    envelope = Envelope(
+        sync_part=bunch.getSyncParticle(),
+        cov_matrix=make_default_cov_matrix(),
+    )
+
+    for index_start, index_stop in [(0, 0), (1, 2)]:
+        expected = envelope.copy()
+        lattice.trackEnvelope(
+            expected,
+            index_start=index_start,
+            index_stop=index_stop,
+            fit=False,
+        )
+
+        actual = envelope.copy()
+        lattice.trackEnvelope(
+            actual,
+            index_start=index_start,
+            index_stop=index_stop,
+            fit=False,
+            static=True,
+        )
+
+        assert np.allclose(actual.cov_matrix, expected.cov_matrix)
+        assert np.allclose(actual.centroid, expected.centroid)
+
+
 @pytest.mark.parametrize("charge", [1.0, -1.0])
 def test_get_total_matrix(charge: float) -> None:
     node = DriftTEAPOT(length=2.0, nparts=50)

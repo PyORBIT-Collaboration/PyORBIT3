@@ -42,9 +42,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--rms-y", type=float, default=0.010)
     parser.add_argument("--rms-z", type=float, default=0.010)
 
-    parser.add_argument("--tilt-x", type=float, default=0.0)
-    parser.add_argument("--tilt-y", type=float, default=0.0)
-    parser.add_argument("--tilt-z", type=float, default=0.0)
+    parser.add_argument("--rot-x", type=float, default=0.0)
+    parser.add_argument("--rot-y", type=float, default=0.0)
+    parser.add_argument("--rot-z", type=float, default=0.0)
 
     parser.add_argument("--nslice", type=int, default=10)
     parser.add_argument("--length", type=float, default=0.1)
@@ -53,6 +53,7 @@ def parse_args() -> argparse.Namespace:
 
     parser.add_argument("--nparts", type=int, default=100_000)
     parser.add_argument("--sc", type=int, default=0)
+    parser.add_argument("--fit", type=int, default=0)
     return parser.parse_args()
 
 
@@ -99,7 +100,7 @@ def main(args: argparse.Namespace) -> None:
     cov_matrix_init = np.zeros((6, 6))
 
     rotation_matrix = rotation_matrix_3d(
-        math.radians(args.tilt_x), math.radians(args.tilt_y), math.radians(args.tilt_z)
+        math.radians(args.rot_x), math.radians(args.rot_y), math.radians(args.rot_z)
     )
     print(rotation_matrix)
 
@@ -136,7 +137,7 @@ def main(args: argparse.Namespace) -> None:
     history = {"xrms": [], "yrms": [], "zrms": []}
     for turn in range(args.turns):
         if turn > 0:
-            lattice.trackEnvelope(envelope, sc=envelope_sc)
+            lattice.trackEnvelope(envelope, sc=envelope_sc, fit=args.fit)
 
         cov_matrix = envelope.cov_matrix
 

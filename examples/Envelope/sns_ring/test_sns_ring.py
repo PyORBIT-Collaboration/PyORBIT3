@@ -56,15 +56,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sc", type=int, default=0)
     parser.add_argument("--sc-grid", type=int, default=64)
 
-    parser.add_argument("--fit-matrices", action="store_true")
-    parser.add_argument("--fringe", action="store_true")
-    parser.add_argument(
-        "--handle-unknown",
-        type=str,
-        default=None,
-        choices=["drift", "fit"],
-        help=argparse.SUPPRESS,
-    )
+    parser.add_argument("--fit", type=int, default=1)
+    parser.add_argument("--fringe", type=int, default=0)
     return parser.parse_args()
 
 
@@ -179,10 +172,11 @@ def main(args: argparse.Namespace) -> None:
 
     for turn in range(args.turns + 1):
         if turn > 0:
-            lattice.trackEnvelopeRing(
+            lattice.trackEnvelope(
                 envelope,
                 sc=("2d" if args.sc else None),
-                fit=(args.fit_matrices or args.handle_unknown == "fit"),
+                fit=args.fit,
+                static=True,
             )
 
         cov_matrix = envelope.cov_matrix
