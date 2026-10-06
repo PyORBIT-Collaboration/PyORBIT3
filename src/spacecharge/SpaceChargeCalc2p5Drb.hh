@@ -40,6 +40,11 @@ public:
 	/** Destructor */
 	virtual ~SpaceChargeCalc2p5Drb();
 
+	SpaceChargeCalc2p5Drb(const SpaceChargeCalc2p5Drb&) = delete;
+	SpaceChargeCalc2p5Drb& operator=(const SpaceChargeCalc2p5Drb&) = delete;
+	SpaceChargeCalc2p5Drb(SpaceChargeCalc2p5Drb&&) = delete;
+	SpaceChargeCalc2p5Drb& operator=(SpaceChargeCalc2p5Drb&&) = delete;
+
 	/** Calculates space charge and applies the transverse and
 	    longitudinal SC kicks to the macro-particles in the bunch. */
 	void trackBunch(Bunch* bunch, double length, double pipe_radius);
@@ -74,12 +79,12 @@ private:
  void calculateLongDerivative();
 
 protected:
-	PoissonSolverFFT2D* poissonSolver;
+	PoissonSolverFFT2D poissonSolver;
 	Grid2D* rhoGrid;
 	Grid2D* phiGrid;
 	Grid1D* zGrid;
 	Grid1D* zDerivGrid;
-	OrbitUtils::BunchExtremaCalculator* bunchExtremaCalc;
+	OrbitUtils::BunchExtremaCalculator bunchExtremaCalc;
 
 	double xy_ratio;
 	int n_long_avg;

@@ -28,15 +28,13 @@
 
 using namespace OrbitUtils;
 
-SpaceChargeCalc2p5Drb::SpaceChargeCalc2p5Drb(int xSize, int ySize, int zSize, double xy_ratio_in): CppPyWrapper(NULL)
+SpaceChargeCalc2p5Drb::SpaceChargeCalc2p5Drb(int xSize, int ySize, int zSize, double xy_ratio_in): CppPyWrapper(NULL), poissonSolver(xSize, ySize, -xy_ratio_in, xy_ratio_in, -1.0, 1.0)
 {
 	xy_ratio = xy_ratio_in;
-	poissonSolver = new PoissonSolverFFT2D(xSize, ySize, -xy_ratio, xy_ratio, -1.0, 1.0);
 	rhoGrid = new Grid2D(xSize, ySize);
 	phiGrid = new Grid2D(xSize, ySize);
 	zGrid = new Grid1D(zSize);
 	zDerivGrid = new Grid1D(zSize);
-	bunchExtremaCalc = new BunchExtremaCalculator();
 	//we will use 3 points by default to calculate the longitudinal density derivative
 	n_long_avg = 3;
 	S_arr = new double*[5];
@@ -45,15 +43,13 @@ SpaceChargeCalc2p5Drb::SpaceChargeCalc2p5Drb(int xSize, int ySize, int zSize, do
 	}
 }
 
-SpaceChargeCalc2p5Drb::SpaceChargeCalc2p5Drb(int xSize, int ySize, int zSize): CppPyWrapper(NULL)
+SpaceChargeCalc2p5Drb::SpaceChargeCalc2p5Drb(int xSize, int ySize, int zSize): CppPyWrapper(NULL), poissonSolver(xSize, ySize, -1.0, 1.0, -1.0, 1.0)
 {
 	xy_ratio = 1.0;
-	poissonSolver = new PoissonSolverFFT2D(xSize, ySize, -xy_ratio, xy_ratio, -1.0, 1.0);
 	rhoGrid = new Grid2D(xSize, ySize);
 	phiGrid = new Grid2D(xSize, ySize);
 	zGrid = new Grid1D(zSize);
 	zDerivGrid = new Grid1D(zSize);
-	bunchExtremaCalc = new BunchExtremaCalculator();
 	//we will use 3 points by default to calculate the longitudinal density derivative
 	n_long_avg = 3;
 	S_arr = new double*[5];
@@ -63,7 +59,6 @@ SpaceChargeCalc2p5Drb::SpaceChargeCalc2p5Drb(int xSize, int ySize, int zSize): C
 }
 
 SpaceChargeCalc2p5Drb::~SpaceChargeCalc2p5Drb(){
-	delete poissonSolver;
 	if(rhoGrid->getPyWrapper() != NULL){
 		Py_DECREF(rhoGrid->getPyWrapper());
 	} else {
@@ -84,7 +79,6 @@ SpaceChargeCalc2p5Drb::~SpaceChargeCalc2p5Drb(){
 	} else {
 		delete zDerivGrid;
 	}
-	delete bunchExtremaCalc;
 	for(int i = 0; i < 5; i++){
 		delete [] S_arr[i];
 	}
@@ -108,11 +102,11 @@ Grid1D* SpaceChargeCalc2p5Drb::getLongDerivativeGrid(){
 }
 
 void SpaceChargeCalc2p5Drb::setUseIntegratedGreenFunction(bool use_integrated){
-	poissonSolver->setUseIntegratedGreenFunction(use_integrated);
+	poissonSolver.setUseIntegratedGreenFunction(use_integrated);
 }
 
 bool SpaceChargeCalc2p5Drb::getUseIntegratedGreenFunction() const{
-	return poissonSolver->getUseIntegratedGreenFunction();
+	return poissonSolver.getUseIntegratedGreenFunction();
 }
 
 void SpaceChargeCalc2p5Drb::trackBunch(Bunch* bunch, double length, double pipe_radius){
@@ -130,7 +124,7 @@ void SpaceChargeCalc2p5Drb::trackBunch(Bunch* bunch, double length, double pipe_
 	double z_step = zGrid->getStepZ();
 
 	//calculate phiGrid
-	poissonSolver->findPotential(rhoGrid,phiGrid);
+	poissonSolver.findPotential(rhoGrid,phiGrid);
 
 	SyncPart* syncPart = bunch->getSyncPart();
 	double factor =  2*length*bunch->getClassicalRadius()/(pow(syncPart->getBeta(),2)*pow(syncPart->getGamma(),3));
@@ -179,7 +173,7 @@ void SpaceChargeCalc2p5Drb::bunchAnalysis(Bunch* bunch, double& totalMacrosize, 
 
 	double xMin, xMax, yMin, yMax, zMin, zMax;
 
-	bunchExtremaCalc->getExtremaXYZ(bunch, xMin, xMax, yMin, yMax, zMin, zMax);
+	bunchExtremaCalc.getExtremaXYZ(bunch, xMin, xMax, yMin, yMax, zMin, zMax);
 
 	//check if the beam size is not zero
   if( xMin >=  xMax || yMin >=  yMax || zMin >=  zMax){

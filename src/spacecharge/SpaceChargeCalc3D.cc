@@ -30,36 +30,22 @@
 
 using namespace OrbitUtils;
 
-SpaceChargeCalc3D::SpaceChargeCalc3D(int xSize, int ySize, int zSize) : CppPyWrapper(NULL)
+SpaceChargeCalc3D::SpaceChargeCalc3D(int xSize, int ySize, int zSize) :
+    CppPyWrapper(NULL), 
+    poissonSolver(xSize, ySize, zSize, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0)
 {
-	xy_ratio = 1.0;
-	xz_ratio = 1.0;
-	poissonSolver = new PoissonSolverFFT3D(xSize, ySize, zSize, -xy_ratio, xy_ratio, -1./xy_ratio, 1./xy_ratio, -1./xz_ratio, 1./xz_ratio);
 	rhoGrid = new Grid3D(xSize, ySize, zSize);
-	rhoGrid->setGridX(poissonSolver->getMinX(),poissonSolver->getMaxX());
-	rhoGrid->setGridY(poissonSolver->getMinY(),poissonSolver->getMaxY());
-	rhoGrid->setGridZ(poissonSolver->getMinZ(),poissonSolver->getMaxZ());
+	rhoGrid->setGridX(poissonSolver.getMinX(),poissonSolver.getMaxX());
+	rhoGrid->setGridY(poissonSolver.getMinY(),poissonSolver.getMaxY());
+	rhoGrid->setGridZ(poissonSolver.getMinZ(),poissonSolver.getMaxZ());
+
 	phiGrid = new Grid3D(xSize, ySize, zSize);
-	phiGrid->setGridX(poissonSolver->getMinX(),poissonSolver->getMaxX());
-	phiGrid->setGridY(poissonSolver->getMinY(),poissonSolver->getMaxY());
-	phiGrid->setGridZ(poissonSolver->getMinZ(),poissonSolver->getMaxZ());
-	bunchExtremaCalc = new BunchExtremaCalculator();
-
-	//------------ratio change limit ----------
-	//If the shape (x to y and x to z ratios) of 3D region changes more than this
-	//limit then we have to change shape and recalculate Green Functions in the Poisson solver
-	ratio_limit = 1.2;
-
-	//Number of bunches from both sides that should be taken into account for space charge.
-	nBunches_ = 0;
-
-	// The frequency of the bunch arrivals in Hz. It defines by the RFQ frequency.
-	// The non-zero is setup by default to avoid division on zero
-	frequency_ = 402.5e+6;
+	phiGrid->setGridX(poissonSolver.getMinX(),poissonSolver.getMaxX());
+	phiGrid->setGridY(poissonSolver.getMinY(),poissonSolver.getMaxY());
+	phiGrid->setGridZ(poissonSolver.getMinZ(),poissonSolver.getMaxZ());
 }
 
 SpaceChargeCalc3D::~SpaceChargeCalc3D(){
-	delete poissonSolver;
 	if(rhoGrid->getPyWrapper() != NULL){
 		Py_DECREF(rhoGrid->getPyWrapper());
 	} else {
@@ -70,7 +56,6 @@ SpaceChargeCalc3D::~SpaceChargeCalc3D(){
 	} else {
 		delete phiGrid;
 	}
-	delete bunchExtremaCalc;
 }
 
 Grid3D* SpaceChargeCalc3D::getRhoGrid(){
@@ -82,27 +67,27 @@ Grid3D* SpaceChargeCalc3D::getPhiGrid(){
 }
 
 void SpaceChargeCalc3D::setNumberOfExternalBunches(int nBunches){
-	poissonSolver->setNumberOfExternalBunches(nBunches);
+	poissonSolver.setNumberOfExternalBunches(nBunches);
 }
 
 void SpaceChargeCalc3D::setFrequencyOfBunches(double frequency){
 	frequency_ = frequency;
 }
 
-int SpaceChargeCalc3D::getNumberOfExternalBunches(){
-	return poissonSolver->getNumberOfExternalBunches();
+int SpaceChargeCalc3D::getNumberOfExternalBunches() const {
+	return poissonSolver.getNumberOfExternalBunches();
 }
 
-double SpaceChargeCalc3D::getFrequencyOfBunches(){
+double SpaceChargeCalc3D::getFrequencyOfBunches() const {
 	return frequency_;
 }
 
 void SpaceChargeCalc3D::setUseIntegratedGreenFunction(bool use_integrated){
-	poissonSolver->setUseIntegratedGreenFunction(use_integrated);
+	poissonSolver.setUseIntegratedGreenFunction(use_integrated);
 }
 
 bool SpaceChargeCalc3D::getUseIntegratedGreenFunction() const{
-	return poissonSolver->getUseIntegratedGreenFunction();
+	return poissonSolver.getUseIntegratedGreenFunction();
 }
 
 void SpaceChargeCalc3D::trackBunch(Bunch* bunch, double length){
@@ -121,7 +106,7 @@ void SpaceChargeCalc3D::trackBunch(Bunch* bunch, double length){
 	}
 
 	//calculate phiGrid with potential. The z-coordinate is in the center of mass coordinate system
-	poissonSolver->findPotential(rhoGrid,phiGrid);
+	poissonSolver.findPotential(rhoGrid,phiGrid);
 
 	SyncPart* syncPart = bunch->getSyncPart();
 	double gamma = syncPart->getGamma();
@@ -161,7 +146,7 @@ void SpaceChargeCalc3D::bunchAnalysis(Bunch* bunch){
 
 	double xMin, xMax, yMin, yMax, zMin, zMax;
 
-	bunchExtremaCalc->getExtremaXYZ(bunch, xMin, xMax, yMin, yMax, zMin, zMax);
+	bunchExtremaCalc.getExtremaXYZ(bunch, xMin, xMax, yMin, yMax, zMin, zMax);
 
 	//we are not going to account for neighboring bunches here
 	rhoGrid->setLongWrapping(0);
@@ -207,28 +192,28 @@ void SpaceChargeCalc3D::bunchAnalysis(Bunch* bunch){
 	if(changeRationInfo == 1){
 		xy_ratio = xy_ratio_beam;
 		xz_ratio = xz_ratio_beam;
-		poissonSolver->setGridXYZ(-(xMax - xMin)/2.0,(xMax - xMin)/2.0,-(yMax - yMin)/2.0,(yMax - yMin)/2.0,-(zMax - zMin)/2.0,(zMax - zMin)/2.0);
+		poissonSolver.setGridXYZ(-(xMax - xMin)/2.0,(xMax - xMin)/2.0,-(yMax - yMin)/2.0,(yMax - yMin)/2.0,-(zMax - zMin)/2.0,(zMax - zMin)/2.0);
 	}
 
 	//now we have to define the sizes of 3D grids for charge density and potential
 	//The shape is defined by the Poisson Solver grid, and they should cover all particles
 	double scale_coeff_x,scale_coeff_y,scale_coeff_z;
-	scale_coeff_x = (xMax - xMin)/(poissonSolver->getMaxX() - poissonSolver->getMinX());
-	scale_coeff_y = (yMax - yMin)/(poissonSolver->getMaxY() - poissonSolver->getMinY());
-	scale_coeff_z = (zMax - zMin)/(poissonSolver->getMaxZ() - poissonSolver->getMinZ());
+	scale_coeff_x = (xMax - xMin)/(poissonSolver.getMaxX() - poissonSolver.getMinX());
+	scale_coeff_y = (yMax - yMin)/(poissonSolver.getMaxY() - poissonSolver.getMinY());
+	scale_coeff_z = (zMax - zMin)/(poissonSolver.getMaxZ() - poissonSolver.getMinZ());
 	double scale_coeff = scale_coeff_x;
 	if(scale_coeff < scale_coeff_y) scale_coeff = scale_coeff_y;
 	if(scale_coeff < scale_coeff_z) scale_coeff = scale_coeff_z;
 
 	center = (xMax + xMin)/2.0;
-	width = (poissonSolver->getMaxX() - poissonSolver->getMinX())*scale_coeff/2.0;
+	width = (poissonSolver.getMaxX() - poissonSolver.getMinX())*scale_coeff/2.0;
 	xMin = center - width;
 	xMax = center + width;
 	rhoGrid->setGridX(xMin,xMax);
 	phiGrid->setGridX(xMin,xMax);
 
 	center = (yMax + yMin)/2.0;
-	width = (poissonSolver->getMaxY() - poissonSolver->getMinY())*scale_coeff/2.0;
+	width = (poissonSolver.getMaxY() - poissonSolver.getMinY())*scale_coeff/2.0;
 	yMin = center - width;
 	yMax = center + width;
 	rhoGrid->setGridY(yMin,yMax);
@@ -236,7 +221,7 @@ void SpaceChargeCalc3D::bunchAnalysis(Bunch* bunch){
 
 	//for binning we have to use real longitudinal coordinates
 	center = (zMax + zMin)/2.0;
-	width = (poissonSolver->getMaxZ() - poissonSolver->getMinZ())*scale_coeff/(2.0*gamma);
+	width = (poissonSolver.getMaxZ() - poissonSolver.getMinZ())*scale_coeff/(2.0*gamma);
 	zMin = center - width;
 	zMax = center + width;
 	rhoGrid->setGridZ(zMin,zMax);
@@ -262,7 +247,7 @@ void SpaceChargeCalc3D::wrappedBunchAnalysis(Bunch* bunch){
 
 	double xMin, xMax, yMin, yMax, zMin, zMax;
 
-	bunchExtremaCalc->getExtremaXYZ(bunch, xMin, xMax, yMin, yMax, zMin, zMax);
+	bunchExtremaCalc.getExtremaXYZ(bunch, xMin, xMax, yMin, yMax, zMin, zMax);
 
 	//we will account for neighboring bunches here
 	rhoGrid->setLongWrapping(1);
@@ -332,8 +317,8 @@ void SpaceChargeCalc3D::wrappedBunchAnalysis(Bunch* bunch){
 
 	//now we set the sizes of the Poisson Solver grids and
 	//calculate Green function FFT inside it
-	poissonSolver->setSpacingOfExternalBunches(lambda_cm);
-	poissonSolver->setGridXYZ(rhoGrid->getMinX(), rhoGrid->getMaxX(),
+	poissonSolver.setSpacingOfExternalBunches(lambda_cm);
+	poissonSolver.setGridXYZ(rhoGrid->getMinX(), rhoGrid->getMaxX(),
 			                      rhoGrid->getMinY(), rhoGrid->getMaxY(),
 			                      rhoGrid->getMinZ(), rhoGrid->getMaxZ());
 }
@@ -345,7 +330,6 @@ void SpaceChargeCalc3D::setRatioLimit(double ratio_limit_in)
 }
 
 /** Returns the ratio limit for the shape change and Green Function recalculations. */
-double SpaceChargeCalc3D::getRatioLimit()
-{
+double SpaceChargeCalc3D::getRatioLimit() const {
 	return ratio_limit;
 }

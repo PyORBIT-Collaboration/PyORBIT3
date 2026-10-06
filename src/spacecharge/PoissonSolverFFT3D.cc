@@ -95,11 +95,11 @@ void PoissonSolverFFT3D::setSpacingOfExternalBunches(double lambda){
 	lambda_ = lambda;
 }
 
-int PoissonSolverFFT3D::getNumberOfExternalBunches(){
+int PoissonSolverFFT3D::getNumberOfExternalBunches() const {
 	return nBunches_;
 }
 
-double PoissonSolverFFT3D::getSpacingOfExternalBunches(){
+double PoissonSolverFFT3D::getSpacingOfExternalBunches() const {
 	return lambda_;
 }
 

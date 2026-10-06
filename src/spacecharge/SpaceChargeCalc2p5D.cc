@@ -22,28 +22,23 @@
 
 using namespace OrbitUtils;
 
-SpaceChargeCalc2p5D::SpaceChargeCalc2p5D(int xSize, int ySize, int zSize, double xy_ratio_in): CppPyWrapper(NULL)
+SpaceChargeCalc2p5D::SpaceChargeCalc2p5D(int xSize, int ySize, int zSize, double xy_ratio_in): CppPyWrapper(NULL), poissonSolver(xSize, ySize, -xy_ratio_in, xy_ratio_in, -1.0, 1.0)
 {
 	xy_ratio = xy_ratio_in;
-	poissonSolver = new PoissonSolverFFT2D(xSize, ySize, -xy_ratio, xy_ratio, -1.0, 1.0);
 	rhoGrid = new Grid2D(xSize, ySize);
 	phiGrid = new Grid2D(xSize, ySize);
 	zGrid = new Grid1D(zSize);
-	bunchExtremaCalc = new BunchExtremaCalculator();
 }
 
-SpaceChargeCalc2p5D::SpaceChargeCalc2p5D(int xSize, int ySize, int zSize): CppPyWrapper(NULL)
+SpaceChargeCalc2p5D::SpaceChargeCalc2p5D(int xSize, int ySize, int zSize): CppPyWrapper(NULL), poissonSolver(xSize, ySize, -1.0, 1.0, -1.0, 1.0)
 {
 	xy_ratio = 1.0;
-	poissonSolver = new PoissonSolverFFT2D(xSize, ySize, -xy_ratio, xy_ratio, -1.0, 1.0);
 	rhoGrid = new Grid2D(xSize, ySize);
 	phiGrid = new Grid2D(xSize, ySize);
 	zGrid = new Grid1D(zSize);
-	bunchExtremaCalc = new BunchExtremaCalculator();
 }
 
 SpaceChargeCalc2p5D::~SpaceChargeCalc2p5D(){
-	delete poissonSolver;
 	if(rhoGrid->getPyWrapper() != NULL){
 		Py_DECREF(rhoGrid->getPyWrapper());
 	} else {
@@ -59,7 +54,6 @@ SpaceChargeCalc2p5D::~SpaceChargeCalc2p5D(){
 	} else {
 		delete zGrid;
 	}
-	delete bunchExtremaCalc;
 }
 
 Grid2D* SpaceChargeCalc2p5D::getRhoGrid(){
@@ -75,11 +69,11 @@ Grid1D* SpaceChargeCalc2p5D::getLongGrid(){
 }
 
 void SpaceChargeCalc2p5D::setUseIntegratedGreenFunction(bool use_integrated){
-	poissonSolver->setUseIntegratedGreenFunction(use_integrated);
+	poissonSolver.setUseIntegratedGreenFunction(use_integrated);
 }
 
 bool SpaceChargeCalc2p5D::getUseIntegratedGreenFunction() const{
-	return poissonSolver->getUseIntegratedGreenFunction();
+	return poissonSolver.getUseIntegratedGreenFunction();
 }
 
 void SpaceChargeCalc2p5D::trackBunch(Bunch* bunch, double length, BaseBoundary2D* boundary){
@@ -93,7 +87,7 @@ void SpaceChargeCalc2p5D::trackBunch(Bunch* bunch, double length, BaseBoundary2D
 	double z_step = zGrid->getStepZ();
 
 	//calculate phiGrid
-	poissonSolver->findPotential(rhoGrid,phiGrid);
+	poissonSolver.findPotential(rhoGrid,phiGrid);
 
 	if(boundary != NULL){
 		//update potential with boundary condition
@@ -133,7 +127,7 @@ void SpaceChargeCalc2p5D::bunchAnalysis(Bunch* bunch, double& totalMacrosize, Ba
 
 	if(boundary == NULL){
 
-		bunchExtremaCalc->getExtremaXYZ(bunch, xMin, xMax, yMin, yMax, zMin, zMax);
+		bunchExtremaCalc.getExtremaXYZ(bunch, xMin, xMax, yMin, yMax, zMin, zMax);
 
 		//check if the beam size is not zero
 		if( xMin >=  xMax || yMin >=  yMax || zMin >=  zMax){
@@ -175,7 +169,7 @@ void SpaceChargeCalc2p5D::bunchAnalysis(Bunch* bunch, double& totalMacrosize, Ba
 		}
 		else{
 			xy_ratio = xy_ratio_beam;
-			poissonSolver->setGridXY(xMin,xMax,yMin,yMax);
+			poissonSolver.setGridXY(xMin,xMax,yMin,yMax);
 			//std::cerr << "debug v0 grid changed r="<<xy_ratio<< std::endl;
 		}
 	}
@@ -187,7 +181,7 @@ void SpaceChargeCalc2p5D::bunchAnalysis(Bunch* bunch, double& totalMacrosize, Ba
 
 		xy_ratio = (xMax - xMin)/(yMax - yMin);
 
-		bunchExtremaCalc->getExtremaZ(bunch, zMin, zMax);
+		bunchExtremaCalc.getExtremaZ(bunch, zMin, zMax);
 
 		//check if the beam size is not zero
 		if(zMin >=  zMax){
@@ -213,13 +207,13 @@ void SpaceChargeCalc2p5D::bunchAnalysis(Bunch* bunch, double& totalMacrosize, Ba
 	zGrid->setGridZ(zMin,zMax);
 
 	//this one just for case boundary != null, and will work only once
-	double solver_xMin = poissonSolver->getMinX();
-	double solver_xMax = poissonSolver->getMaxX();
-	double solver_yMin = poissonSolver->getMinY();
-	double solver_yMax = poissonSolver->getMaxY();
+	double solver_xMin = poissonSolver.getMinX();
+	double solver_xMax = poissonSolver.getMaxX();
+	double solver_yMin = poissonSolver.getMinY();
+	double solver_yMax = poissonSolver.getMaxY();
 	double shape_diff_limit = 0.00000001;
 	if(fabs((solver_xMax-solver_xMin)/(solver_yMax-solver_yMin)- xy_ratio) > shape_diff_limit){
-		poissonSolver->setGridXY(xMin,xMax,yMin,yMax);
+		poissonSolver.setGridXY(xMin,xMax,yMin,yMax);
 		//std::cerr << "debug v1 grid changed r="<<xy_ratio<< std::endl;
 	}
 

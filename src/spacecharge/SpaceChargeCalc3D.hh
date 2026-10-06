@@ -38,6 +38,11 @@ public:
 	/** Destructor */
 	virtual ~SpaceChargeCalc3D();
 
+    SpaceChargeCalc3D(SpaceChargeCalc3D&) = delete;
+    SpaceChargeCalc3D& operator=(const SpaceChargeCalc3D&) = delete;
+    SpaceChargeCalc3D(SpaceChargeCalc3D&&) = delete;
+    SpaceChargeCalc3D& operator=(SpaceChargeCalc3D&&) = delete;
+
 	/** Calculates space charge and applies 3D kicks to the macro-particles in the bunch. */
 	void trackBunch(Bunch* bunch, double length);
 
@@ -51,7 +56,7 @@ public:
 	void setRatioLimit(double ratio_limit_in);
 
 	/** Returns the ratio limit for the shape change and Green Function recalculations. */
-	double getRatioLimit();
+	double getRatioLimit() const;
 
 	/** Set number of bunches from both sides for space charge calculations */
 	void setNumberOfExternalBunches(int nBunches);
@@ -60,10 +65,10 @@ public:
 	void setFrequencyOfBunches(double frequency);
 
 	/** Get number of bunches from both sides for space charge calculations */
-	int getNumberOfExternalBunches();
+	int getNumberOfExternalBunches() const;
 
 	/** Get frequency of the arrivals of the bunches */
-	double getFrequencyOfBunches();
+	double getFrequencyOfBunches() const;
 
 	/** Selects the cell-integrated Green function kernel. */
 	void setUseIntegratedGreenFunction(bool use_integrated);
@@ -80,13 +85,13 @@ private:
  	void wrappedBunchAnalysis(Bunch* bunch);
 
 protected:
-	PoissonSolverFFT3D* poissonSolver;
+	PoissonSolverFFT3D poissonSolver;
 	Grid3D* rhoGrid;
 	Grid3D* phiGrid;
-	OrbitUtils::BunchExtremaCalculator* bunchExtremaCalc;
+	OrbitUtils::BunchExtremaCalculator bunchExtremaCalc;
 
-	double xy_ratio;
-	double xz_ratio;
+	double xy_ratio = 1.0;
+	double xz_ratio = 1.0;
 
 	//------------ratio change limit ----------
 	//If the shape (x to y and x to z ratios) of 3D region changes more than this
@@ -96,10 +101,11 @@ protected:
 	//Number of bunches from both sides that should be taken into account.
 	//It defines the how many components we will add to Green function.
 	//This number will be an even number.
-	int nBunches_;
+	int nBunches_ = 0;
 
 	//The frequency of the bunch arrivals in Hz. It defines by the RFQ frequency.
-	double frequency_;
+	// The non-zero is setup by default to avoid division on zero
+	double frequency_ = 402.5e6;
 };
 //end of SC_SPACECHARGE_CALC_3D_H
 #endif

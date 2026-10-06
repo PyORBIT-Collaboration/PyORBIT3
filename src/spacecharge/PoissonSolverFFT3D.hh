@@ -50,10 +50,10 @@ class PoissonSolverFFT3D: public PoissonSolver3D
 		void setSpacingOfExternalBunches(double lambda);
 
 		/** Get number of bunches from both sides for space charge calculations */
-		int getNumberOfExternalBunches();
+		int getNumberOfExternalBunches() const;
 
 		/** Get distance between bunches */
-		double getSpacingOfExternalBunches();
+		double getSpacingOfExternalBunches() const;
 
 	  void setGridX(double xMin, double xMax);
 	  void setGridY(double yMin, double yMax);

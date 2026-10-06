@@ -35,6 +35,11 @@ public:
 	/** Destructor */
 	virtual ~SpaceChargeCalcSliceBySlice2D();
 
+	SpaceChargeCalcSliceBySlice2D(const SpaceChargeCalcSliceBySlice2D&) = delete;
+	SpaceChargeCalcSliceBySlice2D& operator=(const SpaceChargeCalcSliceBySlice2D&) = delete;
+	SpaceChargeCalcSliceBySlice2D(SpaceChargeCalcSliceBySlice2D&&) = delete;
+	SpaceChargeCalcSliceBySlice2D& operator=(SpaceChargeCalcSliceBySlice2D&&) = delete;
+
 	/** Calculates space charge and applies the transverse
 	SC kicks to the macro-particles in the bunch. */
 	void trackBunch(Bunch* bunch, double length, BaseBoundary2D* boundary);
@@ -64,10 +69,10 @@ private:
 
 
 protected:
-	PoissonSolverFFT2D* poissonSolver;
+	PoissonSolverFFT2D poissonSolver;
 	Grid3D* rhoGrid3D;
 	Grid3D* phiGrid3D;
-	OrbitUtils::BunchExtremaCalculator* bunchExtremaCalc;
+	OrbitUtils::BunchExtremaCalculator bunchExtremaCalc;
 
 	double xy_ratio;
 };
