@@ -1,4 +1,5 @@
 #include "PoissonSolverFFT3D.hh"
+#include "GreensFunction3D.hh"
 
 #include <iostream>
 
@@ -33,6 +34,7 @@ void PoissonSolverFFT3D::init(int xSize, int ySize, int zSize,
 
   nBunches_ = 0;
   lambda_ = DBL_MAX;
+	useIntegratedGreenFunction_ = false;
 
   if( xSize_ < 3 || ySize_ < 3){
 		int rank = 0;
@@ -48,14 +50,6 @@ void PoissonSolverFFT3D::init(int xSize, int ySize, int zSize,
 		ORBIT_MPI_Finalize();
   }
 
-  greensF_ = new double**[xSize2_];
-  for(int ix = 0; ix < xSize2_ ; ix++) {
-		greensF_[ix] =  new double* [ySize2_];
-		for(int iy = 0; iy < ySize2_ ; iy++) {
-			greensF_[ix][iy] =  new double [zSize2_];
-		}
-  }
-
   in_        = (double *) fftw_malloc(sizeof(double)*xSize2_ * ySize2_ * zSize2_);
   in_res_    = (double *) fftw_malloc(sizeof(double)*xSize2_ * ySize2_ * zSize2_);
   out_green_ = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) *xSize2_ * ySize2_ * (zSize2_/2+1));
@@ -64,9 +58,9 @@ void PoissonSolverFFT3D::init(int xSize, int ySize, int zSize,
 
 	// FFTW_MEASURE or FFTW_ESTIMATE
 
-  planForward_greenF_ = fftw_plan_dft_r2c_3d(xSize2_ , ySize2_ , zSize2_ , in_,  out_green_, FFTW_ESTIMATE);
-  planForward_        = fftw_plan_dft_r2c_3d(xSize2_ , ySize2_ , zSize2_ , in_,  out_,       FFTW_ESTIMATE);
-  planBackward_       = fftw_plan_dft_c2r_3d(xSize2_ , ySize2_ , zSize2_ , out_res_, in_res_,FFTW_ESTIMATE);
+  planForward_greenF_ = fftw_plan_dft_r2c_3d(xSize2_ , ySize2_ , zSize2_ , in_,  out_green_, FFTW_MEASURE);
+  planForward_        = fftw_plan_dft_r2c_3d(xSize2_ , ySize2_ , zSize2_ , in_,  out_,       FFTW_MEASURE);
+  planBackward_       = fftw_plan_dft_c2r_3d(xSize2_ , ySize2_ , zSize2_ , out_res_, in_res_,FFTW_MEASURE);
 
   //define FFT of the Green fuction
   _defineGreenF();
@@ -78,14 +72,6 @@ PoissonSolverFFT3D::~PoissonSolverFFT3D()
 
 	//std::cerr<<"debug PoissonSolverFFT3D::~PoissonSolverFFT3D() start! "<<std::endl;
   //delete Green function and FFT input and output arrays
-
-  for(int ix = 0; ix < xSize2_ ; ix++) {
-		for(int iy = 0; iy < ySize2_ ; iy++) {
-			delete [] greensF_[ix][iy];
-		}
-		delete [] greensF_[ix];
-	}
-  delete [] greensF_;
 
   fftw_free(in_);
   fftw_free(in_res_);
@@ -156,94 +142,38 @@ void PoissonSolverFFT3D::updateGreenFunction(){
 	this->_defineGreenF();
 }
 
+void PoissonSolverFFT3D::setUseIntegratedGreenFunction(bool use_integrated){
+	if (useIntegratedGreenFunction_ != use_integrated) {
+		useIntegratedGreenFunction_ = use_integrated;
+		_defineGreenF();
+	}
+}
+
+bool PoissonSolverFFT3D::getUseIntegratedGreenFunction() const{
+	return useIntegratedGreenFunction_;
+}
+
 // Defines the FFT of the Green Function: field = Q/r^2, potential = Q/r
 void PoissonSolverFFT3D::_defineGreenF()
 {
-  double rTransY, rTransX, rTransZ, rTot, rTotExt;
-  double externalPhi,rTransZ_tmp;
-  double rTransY2, rTransX2, rTransZ2;
-  int i, j, k, iY , iX, iZ;
-
-	for (iZ = 0; iZ <= zSize2_/2; iZ++)
-	{
-		rTransZ = iZ * dz_;
-		rTransZ2 = rTransZ*rTransZ;
-
-		for (iY = 0; iY <= ySize2_/2; iY++)
-		{
-			rTransY = iY * dy_;
-			rTransY2 = rTransY*rTransY;
-
-			for (iX = 0; iX <= xSize2_/2; iX++)
-			{
-				rTransX = iX * dx_;
-				rTransX2 = rTransX*rTransX;
-				rTot = sqrt(rTransX2 + rTransY2 + rTransZ2);
-
-				externalPhi = 0.;
-				if(nBunches_ != 0){
-					for (int iBunch = -nBunches_/2; iBunch <= nBunches_/2; iBunch++){
-						if(iBunch == 0){
-							continue;
-						}
-						rTransZ_tmp = rTransZ + iBunch*lambda_;
-						rTotExt = sqrt(rTransX2 + rTransY2 + rTransZ_tmp*rTransZ_tmp);
-						//this is protection for iX, iY, = 0, iZ = zSize2_/2, and iBunch = -1
-						//Rememeber, here we do not have control over lambda value
-						if(rTotExt > 1.0e-10) externalPhi += 1.0/rTotExt;
-					}
-				}
-
-				if(iX != 0 || iY != 0 || iZ != 0){
-					greensF_[iX][iY][iZ] = 1./rTot + externalPhi;
-				}
-				else{
-					greensF_[iX][iY][iZ] = externalPhi;
-				}
-			}
-
-			for (iX = xSize2_/2+1; iX < xSize2_; iX++)
-			{
-				greensF_[iX][iY][iZ] = greensF_[xSize2_-iX][iY][iZ];
-			}
-		}
-
-		for (iY = ySize2_/2+1; iY < ySize2_; iY++)
-		{
-			for (iX = 0; iX < xSize2_; iX++)
-			{
-				greensF_[iX][iY][iZ] = greensF_[iX][ySize2_-iY][iZ];
-			}
-		}
-	}
-
-	for (iZ = zSize2_/2+1; iZ < zSize2_; iZ++)
-	{
-		for (iX = 0; iX < xSize2_; iX++)
-		{
-			for (iY = 0; iY < ySize2_; iY++){
-				greensF_[iX][iY][iZ] = greensF_[iX][iY][zSize2_-iZ];
-			}
-		}
+	if (useIntegratedGreenFunction_) {
+		GreensFunction3D::fillIntegratedKernel(in_, xSize2_, ySize2_, zSize2_,
+			dx_, dy_, dz_, nBunches_, lambda_);
+	} else {
+		GreensFunction3D::fillPointKernel(in_, xSize2_, ySize2_, zSize2_,
+			dx_, dy_, dz_, nBunches_, lambda_);
 	}
 	//   Calculate the FFT of the Greens Function:
 
-	for (i = 0; i < xSize2_; i++)
-		for (j = 0; j < ySize2_; j++)
-		  for (k = 0; k < zSize2_; k++)
-		  {
-        in_[k + zSize2_*j + zSize2_*ySize2_*i] = greensF_[i][j][k];
-		  }
+	fftw_execute(planForward_greenF_);
 
-		fftw_execute(planForward_greenF_);
-
-		for (i = 0; i < xSize2_; i++)
-			for (j = 0; j < ySize2_; j++)
-			  for (k = 0; k < zSize2_; k++)
-			  {
-				  in_[k + zSize2_*j + zSize2_*ySize2_*i] = 0.0;
-			  }
-
+  for (int i = 0; i < xSize2_; ++i) {
+    for (int j = 0; j < ySize2_; ++j) {
+      for (int k = 0; k < zSize2_; ++k) {
+          in_[k + zSize2_*j + zSize2_*ySize2_*i] = 0.0;
+      }
+    }
+  }
 }
 
 void PoissonSolverFFT3D::findPotential(Grid3D* rhoGrid,Grid3D*  phiGrid)

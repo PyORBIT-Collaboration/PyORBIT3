@@ -65,6 +65,12 @@ public:
 	/** Get frequency of the arrivals of the bunches */
 	double getFrequencyOfBunches();
 
+	/** Selects the cell-integrated Green function kernel. */
+	void setUseIntegratedGreenFunction(bool use_integrated);
+
+	/** Returns whether the cell-integrated Green function kernel is selected. */
+	bool getUseIntegratedGreenFunction() const;
+
 private:
 
 	/** Analyses the bunch and does binning. */

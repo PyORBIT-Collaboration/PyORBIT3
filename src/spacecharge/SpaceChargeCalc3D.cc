@@ -30,7 +30,7 @@
 
 using namespace OrbitUtils;
 
-SpaceChargeCalc3D::SpaceChargeCalc3D(int xSize, int ySize, int zSize): CppPyWrapper(NULL)
+SpaceChargeCalc3D::SpaceChargeCalc3D(int xSize, int ySize, int zSize) : CppPyWrapper(NULL)
 {
 	xy_ratio = 1.0;
 	xz_ratio = 1.0;
@@ -95,6 +95,14 @@ int SpaceChargeCalc3D::getNumberOfExternalBunches(){
 
 double SpaceChargeCalc3D::getFrequencyOfBunches(){
 	return frequency_;
+}
+
+void SpaceChargeCalc3D::setUseIntegratedGreenFunction(bool use_integrated){
+	poissonSolver->setUseIntegratedGreenFunction(use_integrated);
+}
+
+bool SpaceChargeCalc3D::getUseIntegratedGreenFunction() const{
+	return poissonSolver->getUseIntegratedGreenFunction();
 }
 
 void SpaceChargeCalc3D::trackBunch(Bunch* bunch, double length){
