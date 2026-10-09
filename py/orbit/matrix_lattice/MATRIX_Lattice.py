@@ -9,7 +9,7 @@ The  This class cannot calculate chromaticities.
 """
 import os
 import math
-
+import numpy as np
 
 # import bunch
 from orbit.core.bunch import Bunch
@@ -114,6 +114,8 @@ class MATRIX_Lattice(AccLattice):
         mt = self.oneTurnMatrix
         res_dict["fractional tune x"] = None
         res_dict["fractional tune y"] = None
+        res_dict["fractional tune 1"] = None
+        res_dict["fractional tune 2"] = None
         res_dict["alpha x"] = None
         res_dict["alpha y"] = None
         res_dict["beta x [m]"] = None
@@ -144,6 +146,17 @@ class MATRIX_Lattice(AccLattice):
         nuy %= 1.0
         res_dict["fractional tune x"] = nux
         res_dict["fractional tune y"] = nuy
+
+        # Eigentunes
+        M = np.array([[mt.get(i, j) for j in range(4)] for i in range(4)])
+        eigvals, _ = np.linalg.eig(M)
+        eigvals = eigvals[[0, 2]]
+        cos_phi = np.real(eigvals)
+        phi = np.arccos(cos_phi)
+        nu = phi / (2.0 * np.pi)
+        nu %= 1.0
+        res_dict["fractional tune 1"] = float(nu[0])
+        res_dict["fractional tune 2"] = float(nu[1])
 
         # Alpha, beta, gamma
         beta_x = mt.get(0, 1) / sin_phi_x
