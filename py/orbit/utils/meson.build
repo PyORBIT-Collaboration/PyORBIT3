@@ -12,7 +12,8 @@ py_sources = files([
 	'consts.py',
 	'multiDimArray.py',
 	'NamedObject.py',
-	'orbitFinalize.py'
+	'orbitFinalize.py',
+	'matrix.py'
 ])
 
 python.install_sources(

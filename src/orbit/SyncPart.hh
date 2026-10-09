@@ -69,6 +69,11 @@ class  SyncPart
 	double getMass();
 
 	/**
+	  Charge in elementary charge units
+	*/
+	double getCharge();
+
+	/**
 	  time in seconds
 	*/
 	void setTime(double time);

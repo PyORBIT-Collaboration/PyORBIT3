@@ -11,7 +11,6 @@ from tqdm import trange
 from orbit.core.bunch import Bunch
 from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.envelope import Envelope
-from orbit.envelope import EnvelopeTracker
 from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.space_charge.sc2p5d import setSC2p5DAccNodes
 from orbit.teapot import QuadTEAPOT
@@ -31,9 +30,10 @@ parser.add_argument("--nslice", type=int, default=10)
 parser.add_argument("--kq", type=float, default=0.25)
 
 parser.add_argument("--nparts", type=int, default=10_000)
-parser.add_argument("--turns", type=int, default=5000)
+parser.add_argument("--turns", type=int, default=500)
 parser.add_argument("--sc", type=int, default=0)
 parser.add_argument("--sc-grid", type=int, default=64)
+parser.add_argument("--fit", type=int, default=1)
 args = parser.parse_args()
 
 nodes = [
@@ -82,11 +82,11 @@ cov_matrix_init = np.copy(cov_matrix)
 print("ENVELOPE")
 
 envelope = Envelope(
-    bunch=bunch,
+    sync_part=sync_part,
     cov_matrix=cov_matrix_init,
     intensity=args.intensity,
 )
-tracker = EnvelopeTracker(lattice, sc=("2d" if args.sc else None))
+envelope_sc = "2d" if args.sc else None
 
 start_time = time.time()
 
@@ -94,7 +94,7 @@ profiler = cProfile.Profile()
 profiler.enable()
 
 for turn in trange(args.turns):
-    tracker.track_ring(envelope)
+    lattice.trackEnvelope(envelope, sc=envelope_sc, fit=args.fit, static=True)
 
 time_per_turn = (time.time() - start_time) / args.turns
 

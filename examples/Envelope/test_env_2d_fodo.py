@@ -5,6 +5,7 @@ import copy
 import math
 import os
 import pathlib
+import time
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,7 +15,6 @@ from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
-from orbit.envelope import EnvelopeTracker
 from orbit.lattice import AccLattice
 from orbit.lattice import AccNode
 from orbit.core.spacecharge import SpaceChargeCalc2p5D
@@ -55,16 +55,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--nparts", type=int, default=100_000)
     parser.add_argument("--turns", type=int, default=25)
     parser.add_argument("--sc", type=int, default=0)
+    parser.add_argument("--fit", type=int, default=1)
     return parser.parse_args()
 
 
 def main(args: argparse.Namespace) -> None:
-
-    # Setup
-    # ------------------------------------------------------------------------------
-
     path = pathlib.Path(__file__)
-    output_dir = os.path.join("outputs", path.stem)
+    output_dir = os.path.join("outputs", path.stem, time.strftime("%Y%m%d_%H%M%S"))
     os.makedirs(output_dir, exist_ok=True)
 
     # Create lattice
@@ -120,7 +117,7 @@ def main(args: argparse.Namespace) -> None:
     # Tilt
     if args.tilt:
         rot_matrix = np.identity(6)
-        rot_matrix[:4, :4] = build_rotation_matrix_xy(angle=(args.tilt * math.pi))
+        rot_matrix[:4, :4] = build_rotation_matrix_xy(angle=np.radians(args.tilt))
         cov_matrix = np.linalg.multi_dot([rot_matrix, cov_matrix, rot_matrix.T])
 
     # Mismatch
@@ -135,7 +132,7 @@ def main(args: argparse.Namespace) -> None:
 
     # Create envelope
     envelope = Envelope(
-        bunch=bunch,
+        sync_part=sync_part,
         cov_matrix=cov_matrix_init,
         centroid=centroid_init,
         intensity=args.intensity,
@@ -146,12 +143,12 @@ def main(args: argparse.Namespace) -> None:
 
     print("TRACK ENVELOPE")
 
-    tracker = EnvelopeTracker(lattice, sc=("2d" if args.sc else None))
+    envelope_sc = "2d" if args.sc else None
 
     history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
     for turn in range(args.turns):
         if turn > 0:
-            tracker.track_ring(envelope)
+            lattice.trackEnvelope(envelope, sc=envelope_sc, fit=args.fit, static=True)
 
         cov_matrix = envelope.cov_matrix
         centroid = envelope.centroid

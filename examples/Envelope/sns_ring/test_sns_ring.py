@@ -5,8 +5,8 @@ import copy
 import math
 import os
 import pathlib
-import time
 import sys
+import time
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -16,7 +16,6 @@ from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
-from orbit.envelope import EnvelopeTracker
 from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.space_charge.sc2p5d import setSC2p5DAccNodes
 from orbit.teapot import TEAPOT_Ring
@@ -57,15 +56,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sc", type=int, default=0)
     parser.add_argument("--sc-grid", type=int, default=64)
 
-    parser.add_argument(
-        "--handle-unknown", type=str, default=None, choices=["drift", "fit"]
-    )
+    parser.add_argument("--fit", type=int, default=1)
+    parser.add_argument("--fringe", type=int, default=0)
     return parser.parse_args()
 
 
 def main(args: argparse.Namespace) -> None:
     path = pathlib.Path(__file__)
-    output_dir = os.path.join("outputs", path.stem)
+    output_dir = os.path.join("outputs", path.stem, time.strftime("%Y%m%d_%H%M%S"))
     os.makedirs(output_dir, exist_ok=True)
 
     # Lattice
@@ -77,11 +75,8 @@ def main(args: argparse.Namespace) -> None:
 
     for node in lattice.getNodes():
         if type(node) != teapot.TurnCounterTEAPOT:
-            node.setUsageFringeFieldIN(False)
-            node.setUsageFringeFieldOUT(False)
-        if type(node) is teapot.BendTEAPOT:
-            node.setParam("ea1", 0.0)
-            node.setParam("ea2", 0.0)
+            node.setUsageFringeFieldIN(args.fringe)
+            node.setUsageFringeFieldOUT(args.fringe)
 
     if args.sol:
         for name in ["scbdsol_c13a", "scbdsol_c13b"]:
@@ -122,7 +117,7 @@ def main(args: argparse.Namespace) -> None:
 
     if args.tilt:
         rot_matrix = np.identity(6)
-        rot_matrix[:4, :4] = build_rotation_matrix_xy(angle=(args.tilt * math.pi))
+        rot_matrix[:4, :4] = build_rotation_matrix_xy(angle=np.radians(args.tilt))
         cov_matrix = np.linalg.multi_dot([rot_matrix, cov_matrix, rot_matrix.T])
 
     if args.mismatch_x or args.mismatch_y:
@@ -157,12 +152,11 @@ def main(args: argparse.Namespace) -> None:
     print("TRACK ENVELOPE")
 
     envelope = Envelope(
-        bunch=bunch,
+        sync_part=sync_part,
         cov_matrix=cov_matrix_init,
         centroid=centroid_init,
         intensity=args.intensity,
     )
-    tracker = EnvelopeTracker(lattice, sc=("2d" if args.sc else None))
 
     history_keys = [
         "rms_x",
@@ -178,7 +172,12 @@ def main(args: argparse.Namespace) -> None:
 
     for turn in range(args.turns + 1):
         if turn > 0:
-            tracker.track_ring(envelope)
+            lattice.trackEnvelope(
+                envelope,
+                sc=("2d" if args.sc else None),
+                fit=args.fit,
+                static=True,
+            )
 
         cov_matrix = envelope.cov_matrix
         centroid = envelope.centroid
