@@ -247,7 +247,11 @@ class MATRIX_Lattice(AccLattice):
                 track_m.set(2, 2, mt.get(ind1, ind1) * mt.get(ind1, ind1))
                 alpha_0 = track_v.get(0)
                 beta_0 = track_v.get(1)
-                delta_phi = math.atan(mt.get(ind0, ind1) / (beta_0 * mt.get(ind0, ind0) - alpha_0 * mt.get(ind0, ind1)))
+                delta_phi = math.atan2(
+                    mt.get(ind0, ind1),
+                    beta_0 * mt.get(ind0, ind0) - alpha_0 * mt.get(ind0, ind1)
+                )
+                delta_phi = delta_phi % (2.0 * math.pi)
                 phi = phi + delta_phi
                 track_v = track_m.mult(track_v)
                 position = position + matrixNode.getLength()
