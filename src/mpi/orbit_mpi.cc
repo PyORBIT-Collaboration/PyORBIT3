@@ -28,6 +28,23 @@ static std::size_t ORBIT_MPI_Type_size(MPI_Datatype data) {
 }
 #endif
 
+#if USE_MPI > 0
+/** Finalize MPI during interpreter shutdown without changing its exit status. */
+static void ORBIT_MPI_Finalize_AtExit(){
+  int initialized = 0;
+  if(MPI_Initialized(&initialized) != MPI_SUCCESS || !initialized){
+    return;
+  }
+
+  int finalized = 0;
+  if(MPI_Finalized(&finalized) != MPI_SUCCESS || finalized){
+    return;
+  }
+
+  MPI_Finalize();
+}
+#endif
+
 /** A C wrapper around MPI_Init. */
 int ORBIT_MPI_Init(){
 #if USE_MPI > 0
@@ -35,7 +52,7 @@ int ORBIT_MPI_Init(){
   MPI_Init(NULL, NULL);
 
   // Registering MPI finalize method at cleanup stage
-  Py_AtExit(ORBIT_MPI_Finalize);
+  Py_AtExit(ORBIT_MPI_Finalize_AtExit);
 #endif
   return MPI_SUCCESS;
 }

@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
   namespace wrap_spacecharge{
-    void initGrid3D(PyObject* module);
+    int initGrid3D(PyObject* module);
   }
 
 #ifdef __cplusplus
