@@ -79,7 +79,9 @@ void BaseRfGap::trackBunch(Bunch* bunch, double frequency, double E0TL, double p
 	//the linear part - implemented in MatrixRFGap
   double d_rp = kappa *sin(phase);
   double I0, I1;
-  for(int i = 0, n = bunch->getSize(); i < n; i++)
+  int const n = bunch->getSize();
+	#pragma omp parallel for private(x, y, r, I0, I1, d_phi, d_rp)
+  for(int i = 0; i < n; i++)
   {
     x = bunch->x(i);
     y = bunch->y(i);

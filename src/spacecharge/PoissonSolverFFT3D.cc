@@ -1,6 +1,9 @@
 #include "PoissonSolverFFT3D.hh"
 
 #include <iostream>
+#include <cstring>
+
+#include "orbit_openmp.hh"
 
 using namespace OrbitUtils;
 
@@ -24,6 +27,11 @@ void PoissonSolverFFT3D::init(int xSize, int ySize, int zSize,
 											        double yMin, double yMax,
 															double  zMin, double zMax)
 {
+	#ifdef WITH_FFTW3_THREADS
+	fftw_init_threads();
+	fftw_plan_with_nthreads(orbit_omp_get_max_threads());
+	#endif
+
   //====== Grid parameters and Green function==============
 	//To get double size we need only (xSize -1), (ySize -1), and (zSize -1) additional grid
 	//points, but if we get more it will be fine also.
@@ -159,91 +167,78 @@ void PoissonSolverFFT3D::updateGreenFunction(){
 // Defines the FFT of the Green Function: field = Q/r^2, potential = Q/r
 void PoissonSolverFFT3D::_defineGreenF()
 {
-  double rTransY, rTransX, rTransZ, rTot, rTotExt;
-  double externalPhi,rTransZ_tmp;
-  double rTransY2, rTransX2, rTransZ2;
-  int i, j, k, iY , iX, iZ;
-
-	for (iZ = 0; iZ <= zSize2_/2; iZ++)
+	#pragma omp parallel
 	{
-		rTransZ = iZ * dz_;
-		rTransZ2 = rTransZ*rTransZ;
+		#pragma omp for
+		for (int iZ = 0; iZ <= zSize2_/2; iZ++) {
+			double const rTransZ = iZ * dz_;
+			double const rTransZ2 = rTransZ*rTransZ;
 
-		for (iY = 0; iY <= ySize2_/2; iY++)
-		{
-			rTransY = iY * dy_;
-			rTransY2 = rTransY*rTransY;
+			for (int iY = 0; iY <= ySize2_/2; iY++) {
+				double const rTransY = iY * dy_;
+				double const rTransY2 = rTransY*rTransY;
 
-			for (iX = 0; iX <= xSize2_/2; iX++)
-			{
-				rTransX = iX * dx_;
-				rTransX2 = rTransX*rTransX;
-				rTot = sqrt(rTransX2 + rTransY2 + rTransZ2);
+				for (int iX = 0; iX <= xSize2_/2; iX++) {
+					double const rTransX = iX * dx_;
+					double const rTransX2 = rTransX*rTransX;
+					double const rTot = sqrt(rTransX2 + rTransY2 + rTransZ2);
 
-				externalPhi = 0.;
-				if(nBunches_ != 0){
-					for (int iBunch = -nBunches_/2; iBunch <= nBunches_/2; iBunch++){
-						if(iBunch == 0){
-							continue;
+					double externalPhi = 0.;
+					if(nBunches_ != 0){
+						for (int iBunch = -nBunches_/2; iBunch <= nBunches_/2; iBunch++){
+							if(iBunch == 0){
+								continue;
+							}
+							double const rTransZ_tmp = rTransZ + iBunch*lambda_;
+							double const rTotExt = sqrt(rTransX2 + rTransY2 + rTransZ_tmp*rTransZ_tmp);
+							//this is protection for iX, iY, = 0, iZ = zSize2_/2, and iBunch = -1
+							//Rememeber, here we do not have control over lambda value
+							if(rTotExt > 1.0e-10) externalPhi += 1.0/rTotExt;
 						}
-						rTransZ_tmp = rTransZ + iBunch*lambda_;
-						rTotExt = sqrt(rTransX2 + rTransY2 + rTransZ_tmp*rTransZ_tmp);
-						//this is protection for iX, iY, = 0, iZ = zSize2_/2, and iBunch = -1
-						//Rememeber, here we do not have control over lambda value
-						if(rTotExt > 1.0e-10) externalPhi += 1.0/rTotExt;
+					}
+
+					if(iX != 0 || iY != 0 || iZ != 0){
+						greensF_[iX][iY][iZ] = 1./rTot + externalPhi;
+					} else {
+						greensF_[iX][iY][iZ] = externalPhi;
 					}
 				}
 
-				if(iX != 0 || iY != 0 || iZ != 0){
-					greensF_[iX][iY][iZ] = 1./rTot + externalPhi;
-				}
-				else{
-					greensF_[iX][iY][iZ] = externalPhi;
+				for (int iX = xSize2_/2+1; iX < xSize2_; iX++){
+					greensF_[iX][iY][iZ] = greensF_[xSize2_-iX][iY][iZ];
 				}
 			}
 
-			for (iX = xSize2_/2+1; iX < xSize2_; iX++)
-			{
-				greensF_[iX][iY][iZ] = greensF_[xSize2_-iX][iY][iZ];
+			for (int iY = ySize2_/2+1; iY < ySize2_; iY++) {
+				for (int iX = 0; iX < xSize2_; iX++) {
+					greensF_[iX][iY][iZ] = greensF_[iX][ySize2_-iY][iZ];
+				}
 			}
 		}
 
-		for (iY = ySize2_/2+1; iY < ySize2_; iY++)
-		{
-			for (iX = 0; iX < xSize2_; iX++)
-			{
-				greensF_[iX][iY][iZ] = greensF_[iX][ySize2_-iY][iZ];
+		#pragma omp for
+		for (int iZ = zSize2_/2+1; iZ < zSize2_; iZ++) {
+			for (int iX = 0; iX < xSize2_; iX++) {
+				for (int iY = 0; iY < ySize2_; iY++) {
+					greensF_[iX][iY][iZ] = greensF_[iX][iY][zSize2_-iZ];
+				}
+			}
+		}
+
+		// Calculate the FFT of the Greens Function:
+		#pragma omp for
+		for (int i = 0; i < xSize2_; i++) {
+			for (int j = 0; j < ySize2_; j++) {
+				for (int k = 0; k < zSize2_; k++) {
+					in_[k + zSize2_*j + zSize2_*ySize2_*i] = greensF_[i][j][k];
+				}
 			}
 		}
 	}
 
-	for (iZ = zSize2_/2+1; iZ < zSize2_; iZ++)
-	{
-		for (iX = 0; iX < xSize2_; iX++)
-		{
-			for (iY = 0; iY < ySize2_; iY++){
-				greensF_[iX][iY][iZ] = greensF_[iX][iY][zSize2_-iZ];
-			}
-		}
-	}
-	//   Calculate the FFT of the Greens Function:
+	fftw_execute(planForward_greenF_);
 
-	for (i = 0; i < xSize2_; i++)
-		for (j = 0; j < ySize2_; j++)
-		  for (k = 0; k < zSize2_; k++)
-		  {
-        in_[k + zSize2_*j + zSize2_*ySize2_*i] = greensF_[i][j][k];
-		  }
-
-		fftw_execute(planForward_greenF_);
-
-		for (i = 0; i < xSize2_; i++)
-			for (j = 0; j < ySize2_; j++)
-			  for (k = 0; k < zSize2_; k++)
-			  {
-				  in_[k + zSize2_*j + zSize2_*ySize2_*i] = 0.0;
-			  }
-
+	std::memset(in_, 0, xSize2_*ySize2_*zSize2_*sizeof(double));
 }
 
 void PoissonSolverFFT3D::findPotential(Grid3D* rhoGrid,Grid3D*  phiGrid)
@@ -305,42 +300,44 @@ void PoissonSolverFFT3D::findPotential(Grid3D* rhoGrid,Grid3D*  phiGrid)
 
 	double scale_coeff = dx_/rhoGrid->getStepX();
 
-  int i, j, k, index;
-
   //define the the rho for FFT
-  for (i = 0; i < xSize_; i++)
-  for (j = 0; j < ySize_; j++)
-	for (k = 0; k < zSize_; k++)
-  {
-    in_[k + zSize2_*(j + ySize2_*i)] = rhosc[k][i][j];
-  }
+	#pragma omp parallel for
+  for (int i = 0; i < xSize_; i++) {
+  	for (int j = 0; j < ySize_; j++) {
+			for (int k = 0; k < zSize_; k++) {
+    		in_[k + zSize2_*(j + ySize2_*i)] = rhosc[k][i][j];
+  		}
+		}
+	}
 
 	fftw_execute(planForward_);
 
   //do convolution with the FFT of the Green's function
-	double gr_re = 0.;
-	double gr_im = 0.;
-  for (i = 0; i < xSize2_; i++)
-  for (j = 0; j < ySize2_; j++)
-	for (k = 0; k < zSize2_/2+1; k++)
-  {
-    index = k + (zSize2_/2+1)*(j + ySize2_*i);
-		gr_re = out_green_[index][0];
-		gr_im = out_green_[index][1];
-		//std::cout<<" debug gr_re="<<gr_re<<" gr_im="<<gr_im<<std::endl;
-    out_res_[index][0] = out_[index][0]*gr_re - out_[index][1]*gr_im;
-    out_res_[index][1] = out_[index][0]*gr_im + out_[index][1]*gr_re;
-  }
+	#pragma omp parallel for
+  for (int i = 0; i < xSize2_; i++) {
+		for (int j = 0; j < ySize2_; j++) {
+			for (int k = 0; k < zSize2_/2+1; k++) {
+				int const index = k + (zSize2_/2+1)*(j + ySize2_*i);
+				double const gr_re = out_green_[index][0];
+				double const gr_im = out_green_[index][1];
+				//std::cout<<" debug gr_re="<<gr_re<<" gr_im="<<gr_im<<std::endl;
+				out_res_[index][0] = out_[index][0]*gr_re - out_[index][1]*gr_im;
+				out_res_[index][1] = out_[index][0]*gr_im + out_[index][1]*gr_re;
+			}
+		}
+	}
 
   //do backward FFT
 	fftw_execute(planBackward_);
 
   //set the potential
-  double denom =  scale_coeff/ (xSize2_*ySize2_*zSize2_);
-  for (i = 0; i < xSize_; i++)
-  for (j = 0; j < ySize_; j++)
-	for (k = 0; k < zSize_; k++)
-  {
-    phisc[k][i][j] = denom * in_res_[k + zSize2_*(j + ySize2_*i)];
+  double const denom = scale_coeff/ (xSize2_*ySize2_*zSize2_);
+	#pragma omp parallel for
+  for (int i = 0; i < xSize_; i++) {
+  	for (int j = 0; j < ySize_; j++) {
+			for (int k = 0; k < zSize_; k++) {
+    		phisc[k][i][j] = denom * in_res_[k + zSize2_*(j + ySize2_*i)];
+			}
+		}
   }
 }

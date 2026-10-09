@@ -52,49 +52,49 @@ public:
   Grid2D* getGrid2D(int zInd);
 
   /** Returns the grid size in x-direction */
-  int getSizeX();
+  int getSizeX() const;
 
   /** Returns the grid size in y-direction */
-  int getSizeY();
+  int getSizeY() const;
 
   /** Returns the grid size in z-direction */
-  int getSizeZ();
+  int getSizeZ() const;
 
   /** Returns the grid point x-coordinate for this index. */
-  double getGridX(int index);
+  double getGridX(int index) const;
 
   /** Returns the grid point y-coordinate for this index. */
-  double getGridY(int index);
+  double getGridY(int index) const;
 
   /** Returns the grid point z-coordinate for this index. */
-  double getGridZ(int index);
+  double getGridZ(int index) const;
 
   /** Returns the grid step along x-axis */
-  double getStepX();
+  double getStepX() const;
 
 	/** Returns the grid step along y-axis */
-  double getStepY();
+  double getStepY() const;
 
 	/** Returns the grid step along z-axis */
-  double getStepZ();
+  double getStepZ() const;
 
   /** Returns the maximal value of the grid in x-axis */
-  double getMaxX();
+  double getMaxX() const;
 
   /** Returns the minimal value of the grid in x-axis */
-  double getMinX();
+  double getMinX() const;
 
   /** Returns the maximal value of the grid in y-axis */
-  double getMaxY();
+  double getMaxY() const;
 
   /** Returns the minimal value of the grid in y-axis */
-  double getMinY();
+  double getMinY() const;
 
   /** Returns the maximal value of the grid in z-axis */
-  double getMaxZ();
+  double getMaxZ() const;
 
   /** Returns the minimal value of the grid in z-axis */
-  double getMinZ();
+  double getMinZ() const;
 
   /** Sets the limits for the x-grid */
   void setGridX(double xMin, double xMax);
@@ -154,13 +154,18 @@ public:
    */
     void binValueSlice2D(double macroSize, double x, double y, double z);    
 
+  std::size_t array_index(int iz, int ix, int iy) const;
+
+  /** Bins the value onto grid contained in arr and indexed by index_arr */
+  void binValue(double* arr, double macroSize, double x, double y, double z) const;
+
   /** Bins the value onto grid */
   void binValue(double macroSize, double x, double y, double z);
 
   /** Calculates gradient of Arr3D. gradX = gradient_x(Arr3D), and so on */
   void calcGradient(double x,double& gradX,
 	      double y,double& gradY,
-		    double z,double& gradZ);
+		    double z,double& gradZ) const;
 
   /** Calculates value at the point with coordinates x,y,z */
   double getValue(double x,double y,double z);
@@ -177,6 +182,11 @@ public:
   /** synchronize MPI */
   void synchronizeMPI(pyORBIT_MPI_Comm* pyComm);
 
+#ifdef WITH_OPENMP
+  /** Charge density cache for each thread */
+  std::vector<double> rho;
+#endif
+
 protected:
   //---------------------------------------
   //the protected methods of the Grid3D class
@@ -190,15 +200,15 @@ protected:
 
   double calcSheetGradient(int iZ,int iX,int iY,
 			   double xm,double x0,double xp,
-			   double ym,double y0,double yp);
+			   double ym,double y0,double yp) const;
 
-	void getIndAndFracX(double x, int& ind, double& frac);
+	void getIndAndFracX(double x, int& ind, double& frac) const;
 
-	void getIndAndFracY(double y, int& ind, double& frac);
+	void getIndAndFracY(double y, int& ind, double& frac) const;
 
   void getGridIndAndFrac(double x, int& xInd, double& xFrac,
 			 double y, int& yInd, double& yFrac,
-			 double z, int& zInd, double& zFrac);
+			 double z, int& zInd, double& zFrac) const;
 
 protected:
   //---------------------------------------
