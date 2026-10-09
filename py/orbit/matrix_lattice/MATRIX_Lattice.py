@@ -102,13 +102,15 @@ class MATRIX_Lattice(AccLattice):
         res_dict["momentum [GeV/c]"] = momentum
         res_dict["mass [GeV]"] = mass
         res_dict["Ekin [GeV]"] = Ekin
+
         # longitudinal params
         c = 2.99792458e8
         ring_length = self.getLength()
         T = ring_length / (beta * c)
         res_dict["period [sec]"] = T
         res_dict["frequency [Hz]"] = 1.0 / T
-        # transverse twiss parameters
+
+        # Transverse twiss parameters
         mt = self.oneTurnMatrix
         res_dict["fractional tune x"] = None
         res_dict["fractional tune y"] = None
@@ -124,6 +126,8 @@ class MATRIX_Lattice(AccLattice):
         res_dict["dispersion y [m]"] = None
         res_dict["dispersion prime x"] = None
         res_dict["dispersion prime y"] = None
+
+        # Phase advance/tune
         cos_phi_x = (mt.get(0, 0) + mt.get(1, 1)) / 2.0
         cos_phi_y = (mt.get(2, 2) + mt.get(3, 3)) / 2.0
         if abs(cos_phi_x) >= 1.0 or abs(cos_phi_y) >= 1.0:
@@ -134,10 +138,12 @@ class MATRIX_Lattice(AccLattice):
         sign_y = +1.0
         if abs(mt.get(2, 3)) != 0.0:
             sign_y = mt.get(2, 3) / abs(mt.get(2, 3))
-        sin_phi_x = math.sqrt(1.0 - cos_phi_x * cos_phi_x) * sign_x
-        sin_phi_y = math.sqrt(1.0 - cos_phi_y * cos_phi_y) * sign_y
-        nux = math.acos(cos_phi_x) / (2 * math.pi) * sign_x
-        nuy = math.acos(cos_phi_y) / (2 * math.pi) * sign_y
+        sin_phi_x = math.sqrt(1.0 - cos_phi_x ** 2) * sign_x
+        sin_phi_y = math.sqrt(1.0 - cos_phi_y ** 2) * sign_y
+        nux = math.atan2(sin_phi_x, cos_phi_x) / (2.0 * math.pi)
+        nuy = math.atan2(sin_phi_y, cos_phi_y) / (2.0 * math.pi)
+        nux %= 1.0
+        nuy %= 1.0
         res_dict["fractional tune x"] = nux
         res_dict["fractional tune y"] = nuy
 
@@ -152,14 +158,15 @@ class MATRIX_Lattice(AccLattice):
         res_dict["fractional tune 1"] = float(nu[0])
         res_dict["fractional tune 2"] = float(nu[1])
 
-        # alpha, beta, gamma
+        # Alpha, beta, gamma
         beta_x = mt.get(0, 1) / sin_phi_x
         beta_y = mt.get(2, 3) / sin_phi_y
         alpha_x = (mt.get(0, 0) - mt.get(1, 1)) / (2 * sin_phi_x)
         alpha_y = (mt.get(2, 2) - mt.get(3, 3)) / (2 * sin_phi_y)
         gamma_x = -mt.get(1, 0) / sin_phi_x
         gamma_y = -mt.get(3, 2) / sin_phi_y
-        # dispersion and dispersion prime
+
+        # Dispersion and dispersion prime
         m_coeff = momentum * momentum / Etotal
         disp_x = m_coeff * (mt.get(0, 5) * (1 - mt.get(1, 1)) + mt.get(0, 1) * mt.get(1, 5)) / (2 - mt.get(0, 0) - mt.get(1, 1))
         disp_y = m_coeff * (mt.get(2, 5) * (1 - mt.get(3, 3)) + mt.get(2, 3) * mt.get(3, 5)) / (2 - mt.get(2, 2) - mt.get(3, 3))
@@ -175,7 +182,8 @@ class MATRIX_Lattice(AccLattice):
         res_dict["dispersion y [m]"] = disp_y
         res_dict["dispersion prime x"] = disp_pr_x
         res_dict["dispersion prime y"] = disp_pr_y
-        # more longitudinal params
+
+        # More longitudinal parameters
         termx = mt.get(4, 0) * disp_x
         termxp = mt.get(4, 1) * disp_pr_x
         termy = mt.get(4, 2) * disp_y
@@ -261,7 +269,11 @@ class MATRIX_Lattice(AccLattice):
                 track_m.set(2, 2, mt.get(ind1, ind1) * mt.get(ind1, ind1))
                 alpha_0 = track_v.get(0)
                 beta_0 = track_v.get(1)
-                delta_phi = math.atan(mt.get(ind0, ind1) / (beta_0 * mt.get(ind0, ind0) - alpha_0 * mt.get(ind0, ind1)))
+                delta_phi = math.atan2(
+                    mt.get(ind0, ind1),
+                    beta_0 * mt.get(ind0, ind0) - alpha_0 * mt.get(ind0, ind1)
+                )
+                delta_phi = delta_phi % (2.0 * math.pi)
                 phi = phi + delta_phi
                 track_v = track_m.mult(track_v)
                 position = position + matrixNode.getLength()
