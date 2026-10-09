@@ -6,14 +6,17 @@ instead of k1 = 1/(B*rho)*(dB/dr).
 The abstract AbstractRF_Gap class is a parent class for all RF gap model classes.
 """
 
-import os
+import copy
 import math
+import os
+import types
 
 # import the finalization function
 from orbit.utils import orbitFinalize
 
 # import general accelerator elements and lattice
 from orbit.lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
+from orbit.lattice.AccLattice import _iter_slot_descriptors
 
 # import teapot base functions from wrapper around C++ functions
 from orbit.teapot_base import TPB
@@ -41,25 +44,55 @@ class BaseLinacNode(AccNodeBunchTracker):
         self.setType("baseLinacNode")
         self.setParam("pos", 0.0)
         self.__linacSeqence = None
-        #-------------------------------------------------
-        # XML data adaptor of this node. 
-        #-------------------------------------------------
+        # -------------------------------------------------
+        # XML data adaptor of this node.
+        # -------------------------------------------------
         self.data_adaptor = None
         # by default we use the TEAPOT tracker module
         self.tracking_module = TPB
-        
-    def setDataAdaptor(self,data_adaptor):
+
+    def __deepcopy__(self, memo):
+        """
+        Recursively copy node state while sharing built-in tracking modules.
+
+        A user-supplied dispatcher follows its own deep-copy policy; unsupported
+        native state is allowed to fail rather than being shared implicitly.
+        """
+        if id(self) in memo:
+            return memo[id(self)]
+
+        copied = object.__new__(type(self))
+        memo[id(self)] = copied
+        copied_dict = object.__getattribute__(copied, "__dict__")
+        for name, value in self.__dict__.items():
+            if name == "tracking_module" and isinstance(value, types.ModuleType):
+                copied_dict[name] = value
+            else:
+                copied_dict[name] = copy.deepcopy(value, memo)
+        for name, descriptor in _iter_slot_descriptors(type(self)):
+            try:
+                value = descriptor.__get__(self, type(self))
+            except AttributeError:
+                continue
+            if name == "tracking_module" and isinstance(value, types.ModuleType):
+                copied_value = value
+            else:
+                copied_value = copy.deepcopy(value, memo)
+            descriptor.__set__(copied, copied_value)
+        return copied
+
+    def setDataAdaptor(self, data_adaptor):
         """
         Sets the XML data adaptor of this node.
         """
         self.data_adaptor = data_adaptor
-        
+
     def getDataAdaptor(self):
         """
         Returns the XML data adaptor of this node.
         """
         return self.data_adaptor
-        
+
     def setLinacTracker(self, switch=True):
         """
         This method will switch tracker module to the linac specific traker by default
@@ -545,7 +578,7 @@ class Bend(LinacMagnetNode):
             e = node.getParam("ea1")
             rho = node.getParam("rho")
             poleArr = node.getParam("poles")
-            klArr = [-x * bunch.charge() * length for x in self.getParam("kls")]
+            klArr = [-x * bunch.charge() * length for x in node.getParam("kls")]
             skewArr = node.getParam("skews")
             nParts = paramsDict["parentNode"].getnParts()
             if e != 0.0:
@@ -591,7 +624,7 @@ class Bend(LinacMagnetNode):
             e = node.getParam("ea2")
             rho = node.getParam("rho")
             poleArr = node.getParam("poles")
-            klArr = [-x * bunch.charge() * length for x in self.getParam("kls")]
+            klArr = [-x * bunch.charge() * length for x in node.getParam("kls")]
             skewArr = node.getParam("skews")
             nParts = paramsDict["parentNode"].getnParts()
             if e != 0.0:
@@ -865,6 +898,7 @@ class ThickKick(LinacMagnetNode):
         self.tracking_module.kick(bunch, kickX, kickY, 0.0)
         self.tracking_module.drift(bunch, length / 2.0)
 
+
 class Solenoid(BaseLinacNode):
     """
     Solenoid TEAPOT based element.
@@ -891,6 +925,7 @@ class Solenoid(BaseLinacNode):
         if "useCharge" in paramsDict:
             useCharge = paramsDict["useCharge"]
         TPB.soln(bunch, length, B, useCharge)
+
 
 class AbstractRF_Gap(BaseLinacNode):
     """

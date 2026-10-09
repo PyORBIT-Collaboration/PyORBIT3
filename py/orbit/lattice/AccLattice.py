@@ -1,5 +1,6 @@
-import sys
+import copy
 import os
+import sys
 
 from ..utils import orbitFinalize
 from ..utils import NamedObject
@@ -9,9 +10,35 @@ from ..lattice import AccActionsContainer
 from ..lattice import AccNode
 
 
+def _iter_slot_descriptors(cls):
+    """Yield the populated-state descriptors declared through ``__slots__``."""
+    for base in cls.__mro__:
+        slots = base.__dict__.get("__slots__", ())
+        if isinstance(slots, str):
+            slots = (slots,)
+        for name in slots:
+            if name in ("__dict__", "__weakref__"):
+                continue
+            if name.startswith("__") and not name.endswith("__"):
+                class_name = base.__name__.lstrip("_")
+                if class_name:
+                    name = f"_{class_name}{name}"
+            descriptor = base.__dict__.get(name)
+            if descriptor is not None:
+                yield name, descriptor
+
+
 class AccLattice(NamedObject, TypedObject):
     """
     Class. The accelerator lattice class contains child nodes.
+
+    A shallow copy owns separate top-level node and position containers but
+    shares the nodes and all other reachable state. A deep copy recursively
+    copies reachable state according to each object's copy policy and raises
+    ``TypeError`` for unsupported native resources. Neither operation calls a
+    constructor or ``initialize()``. Safe global behavior providers, such as
+    functions, classes, or modules, may remain shared when their owner defines
+    that policy.
     """
 
     ENTRANCE = AccActionsContainer.ENTRANCE
@@ -31,6 +58,55 @@ class AccLattice(NamedObject, TypedObject):
         self.__isInitialized = False
         self.__children = []
         self.__childPositions = {}
+
+    def __copy__(self):
+        """
+        Return a shallow copy with independent top-level lattice containers.
+
+        Nodes remain shared, so operations that mutate or initialize them are
+        visible through both lattices.
+        """
+        copied = object.__new__(type(self))
+        copied_dict = object.__getattribute__(copied, "__dict__")
+        copied_dict.update(self.__dict__)
+        copied_dict["_AccLattice__children"] = self.__children.copy()
+        copied_dict["_AccLattice__childPositions"] = self.__childPositions.copy()
+        for _, descriptor in _iter_slot_descriptors(type(self)):
+            try:
+                value = descriptor.__get__(self, type(self))
+            except AttributeError:
+                continue
+            descriptor.__set__(copied, value)
+        return copied
+
+    def __deepcopy__(self, memo):
+        """
+        Return a strict recursive copy without constructing or initializing it.
+
+        Contained objects must define their own safe copy behavior. Unsupported
+        state raises ``TypeError`` rather than being silently shared.
+        """
+        if id(self) in memo:
+            return memo[id(self)]
+
+        copied = object.__new__(type(self))
+        memo[id(self)] = copied
+        copied_dict = object.__getattribute__(copied, "__dict__")
+        for name, value in self.__dict__.items():
+            try:
+                copied_dict[name] = copy.deepcopy(value, memo)
+            except TypeError as exc:
+                raise TypeError(f"cannot deep-copy {type(self).__name__} attribute {name!r}: {exc}") from exc
+        for name, descriptor in _iter_slot_descriptors(type(self)):
+            try:
+                value = descriptor.__get__(self, type(self))
+            except AttributeError:
+                continue
+            try:
+                descriptor.__set__(copied, copy.deepcopy(value, memo))
+            except TypeError as exc:
+                raise TypeError(f"cannot deep-copy {type(self).__name__} attribute {name!r}: {exc}") from exc
+        return copied
 
     def initialize(self):
         """

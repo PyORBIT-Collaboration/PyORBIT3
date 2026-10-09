@@ -754,12 +754,13 @@ class MultipoleTEAPOT(NodeTEAPOT):
             usageIN = node.getUsage()
             if not usageIN:
                 return
-            length = paramsDict["parentNode"].getLength()
+            parentNode = paramsDict["parentNode"]
+            length = parentNode.getLength()
             if length == 0.0:
                 return
             strength = 1.0
-            if self.waveform:
-                strength = self.waveform.getStrength()
+            if parentNode.waveform:
+                strength = parentNode.waveform.getStrength()
             poleArr = node.getParam("poles")
             klArr = node.getParam("kls")
             skewArr = node.getParam("skews")
@@ -777,12 +778,13 @@ class MultipoleTEAPOT(NodeTEAPOT):
             usageOUT = node.getUsage()
             if not usageOUT:
                 return
-            length = paramsDict["parentNode"].getLength()
+            parentNode = paramsDict["parentNode"]
+            length = parentNode.getLength()
             if length == 0.0:
                 return
             strength = 1.0
-            if self.waveform:
-                strength = self.waveform.getStrength()
+            if parentNode.waveform:
+                strength = parentNode.waveform.getStrength()
             poleArr = node.getParam("poles")
             klArr = node.getParam("kls")
             skewArr = node.getParam("skews")
@@ -905,14 +907,15 @@ class QuadTEAPOT(NodeTEAPOT):
             usageIN = node.getUsage()
             if not usageIN:
                 return
+            parentNode = paramsDict["parentNode"]
             strength = 1.0
-            if self.waveform:
-                strength = self.waveform.getStrength()
+            if parentNode.waveform:
+                strength = parentNode.waveform.getStrength()
             kq = strength * node.getParam("kq")
             poleArr = node.getParam("poles")
             klArr = node.getParam("kls")
             skewArr = node.getParam("skews")
-            length = paramsDict["parentNode"].getLength()
+            length = parentNode.getLength()
             bunch = paramsDict["bunch"]
             useCharge = 1
             if "useCharge" in paramsDict:
@@ -930,14 +933,15 @@ class QuadTEAPOT(NodeTEAPOT):
             usageOUT = node.getUsage()
             if not usageOUT:
                 return
+            parentNode = paramsDict["parentNode"]
             strength = 1.0
-            if self.waveform:
-                strength = self.waveform.getStrength()
+            if parentNode.waveform:
+                strength = parentNode.waveform.getStrength()
             kq = strength * node.getParam("kq")
             poleArr = node.getParam("poles")
             klArr = node.getParam("kls")
             skewArr = node.getParam("skews")
-            length = paramsDict["parentNode"].getLength()
+            length = parentNode.getLength()
             bunch = paramsDict["bunch"]
             useCharge = 1
             if "useCharge" in paramsDict:
