@@ -173,6 +173,20 @@ extern "C" {
 		return Py_BuildValue("i",n_long_smoothing);;
   }
 
+	static PyObject* SpaceChargeCalc2p5Drb_setUseIntegratedGreenFunction(PyObject *self, PyObject *args){
+		int use_integrated;
+		if(!PyArg_ParseTuple(args,"p:setUseIntegratedGreenFunction",&use_integrated)) return NULL;
+		SpaceChargeCalc2p5Drb* calculator = (SpaceChargeCalc2p5Drb*) ((pyORBIT_Object*) self)->cpp_obj;
+		calculator->setUseIntegratedGreenFunction(use_integrated != 0);
+		Py_RETURN_NONE;
+	}
+
+	static PyObject* SpaceChargeCalc2p5Drb_getUseIntegratedGreenFunction(PyObject *self, PyObject *args){
+		if(!PyArg_ParseTuple(args,":getUseIntegratedGreenFunction")) return NULL;
+		SpaceChargeCalc2p5Drb* calculator = (SpaceChargeCalc2p5Drb*) ((pyORBIT_Object*) self)->cpp_obj;
+		return PyBool_FromLong(calculator->getUseIntegratedGreenFunction());
+	}
+
   //-----------------------------------------------------
   //destructor for python SpaceChargeCalc2p5Drb class (__del__ method).
   //-----------------------------------------------------
@@ -194,6 +208,8 @@ extern "C" {
 		{ "getLongDerivativeGrid", 	SpaceChargeCalc2p5Drb_getLongDerivativeGrid, METH_VARARGS,"returns the Grid1D with a derivative of longitudinal space charge density"},
 		{ "setLongAveragingPointsN",	SpaceChargeCalc2p5Drb_setLongAveragingPointsN, METH_VARARGS,"sets the number of smoothing points for derivative calculation."},
 		{ "getLongAveragingPointsN",	SpaceChargeCalc2p5Drb_getLongAveragingPointsN, METH_VARARGS,"returns the number of smoothing points for derivative calculation."},
+		{ "setUseIntegratedGreenFunction", SpaceChargeCalc2p5Drb_setUseIntegratedGreenFunction, METH_VARARGS,"selects the cell-integrated Green function"},
+		{ "getUseIntegratedGreenFunction", SpaceChargeCalc2p5Drb_getUseIntegratedGreenFunction, METH_VARARGS,"returns whether the cell-integrated Green function is selected"},
 		{NULL}
   };
 

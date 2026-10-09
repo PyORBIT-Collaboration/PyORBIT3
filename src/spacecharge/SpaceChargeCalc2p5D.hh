@@ -36,6 +36,11 @@ public:
 	/** Destructor */
 	virtual ~SpaceChargeCalc2p5D();
 
+	SpaceChargeCalc2p5D(const SpaceChargeCalc2p5D&) = delete;
+	SpaceChargeCalc2p5D& operator=(const SpaceChargeCalc2p5D&) = delete;
+	SpaceChargeCalc2p5D(SpaceChargeCalc2p5D&&) = delete;
+	SpaceChargeCalc2p5D& operator=(SpaceChargeCalc2p5D&&) = delete;
+
 	/** Calculates space charge and applies the transverse and
 	longitudinal SC kicks to the macro-particles in the bunch. */
 	void trackBunch(Bunch* bunch, double length, BaseBoundary2D* boundary);
@@ -49,16 +54,19 @@ public:
 	/** Returns the 1D grid with a longitudinal density. **/
 	Grid1D* getLongGrid();
 
+	void setUseIntegratedGreenFunction(bool use_integrated);
+	bool getUseIntegratedGreenFunction() const;
+
 private:
 	/** Analyses the bunch and does bining. */
  void bunchAnalysis(Bunch* bunch, double& totalMacrosize, BaseBoundary2D* boundary);
 
 protected:
-	PoissonSolverFFT2D* poissonSolver;
+	PoissonSolverFFT2D poissonSolver;
 	Grid2D* rhoGrid;
 	Grid2D* phiGrid;
 	Grid1D* zGrid;
-	OrbitUtils::BunchExtremaCalculator* bunchExtremaCalc;
+	OrbitUtils::BunchExtremaCalculator bunchExtremaCalc;
 
 	double xy_ratio;
 };

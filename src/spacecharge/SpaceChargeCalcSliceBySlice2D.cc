@@ -21,28 +21,23 @@
 
 using namespace OrbitUtils;
 
-SpaceChargeCalcSliceBySlice2D::SpaceChargeCalcSliceBySlice2D(int xSize, int ySize, int zSize, double xy_ratio_in): CppPyWrapper(NULL)
+SpaceChargeCalcSliceBySlice2D::SpaceChargeCalcSliceBySlice2D(int xSize, int ySize, int zSize, double xy_ratio_in): CppPyWrapper(NULL), poissonSolver(xSize, ySize, -xy_ratio_in, xy_ratio_in, -1.0, 1.0)
 {
 	xy_ratio = xy_ratio_in;
 	useLongTracking = 0;
-	poissonSolver = new PoissonSolverFFT2D(xSize, ySize, -xy_ratio, xy_ratio, -1.0, 1.0);
 	rhoGrid3D = new Grid3D(xSize, ySize, zSize);
 	phiGrid3D = new Grid3D(xSize, ySize, zSize);
-	bunchExtremaCalc = new BunchExtremaCalculator();
 }
 
-SpaceChargeCalcSliceBySlice2D::SpaceChargeCalcSliceBySlice2D(int xSize, int ySize, int zSize): CppPyWrapper(NULL)
+SpaceChargeCalcSliceBySlice2D::SpaceChargeCalcSliceBySlice2D(int xSize, int ySize, int zSize): CppPyWrapper(NULL), poissonSolver(xSize, ySize, -1.0, 1.0, -1.0, 1.0)
 {
 	xy_ratio = 1.0;
 	useLongTracking = 0;
-	poissonSolver = new PoissonSolverFFT2D(xSize, ySize, -xy_ratio, xy_ratio, -1.0, 1.0);
 	rhoGrid3D = new Grid3D(xSize, ySize, zSize);
 	phiGrid3D = new Grid3D(xSize, ySize, zSize);
-	bunchExtremaCalc = new BunchExtremaCalculator();
 }
 
 SpaceChargeCalcSliceBySlice2D::~SpaceChargeCalcSliceBySlice2D(){
-	delete poissonSolver;
 	if(rhoGrid3D->getPyWrapper() != NULL){
 		Py_DECREF(rhoGrid3D->getPyWrapper());
 	} else {
@@ -53,7 +48,6 @@ SpaceChargeCalcSliceBySlice2D::~SpaceChargeCalcSliceBySlice2D(){
 	} else {
 		delete phiGrid3D;
 	}
-	delete bunchExtremaCalc;
 }
 
 void SpaceChargeCalcSliceBySlice2D::longTracking(int useLongTracking){
@@ -63,6 +57,14 @@ void SpaceChargeCalcSliceBySlice2D::longTracking(int useLongTracking){
 int SpaceChargeCalcSliceBySlice2D::getLongitudinalTracking()
 {
 	return useLongTracking;
+}
+
+void SpaceChargeCalcSliceBySlice2D::setUseIntegratedGreenFunction(bool use_integrated){
+	poissonSolver.setUseIntegratedGreenFunction(use_integrated);
+}
+
+bool SpaceChargeCalcSliceBySlice2D::getUseIntegratedGreenFunction() const{
+	return poissonSolver.getUseIntegratedGreenFunction();
 }
 
 Grid3D* SpaceChargeCalcSliceBySlice2D::getRhoGrid(){
@@ -92,7 +94,7 @@ void SpaceChargeCalcSliceBySlice2D::trackBunch(Bunch* bunch, double length, Base
 	for(int iz = 0; iz < nZ; iz++){
 		if(rank == iz%size){
 			// calculate the potential on the temporary 2D phiGrid
-			poissonSolver->findPotential(rhoGrid3D->getGrid2D(iz), phiGrid3D->getGrid2D(iz));
+			poissonSolver.findPotential(rhoGrid3D->getGrid2D(iz), phiGrid3D->getGrid2D(iz));
 			if(boundary != NULL){
 				//update potential with boundary condition
 				boundary->addBoundaryPotential(rhoGrid3D->getGrid2D(iz), phiGrid3D->getGrid2D(iz));
@@ -147,7 +149,7 @@ void SpaceChargeCalcSliceBySlice2D::bunchAnalysis(Bunch* bunch, double& totalMac
 
 	if(boundary == NULL){
 
-		bunchExtremaCalc->getExtremaXYZ(bunch, xMin, xMax, yMin, yMax, zMin, zMax);
+		bunchExtremaCalc.getExtremaXYZ(bunch, xMin, xMax, yMin, yMax, zMin, zMax);
 
 		//check if the beam size is not zero
 		if( xMin >=  xMax || yMin >=  yMax || zMin >=  zMax){
@@ -189,7 +191,7 @@ void SpaceChargeCalcSliceBySlice2D::bunchAnalysis(Bunch* bunch, double& totalMac
 		}
 		else{
 			xy_ratio = xy_ratio_beam;
-			poissonSolver->setGridXY(xMin,xMax,yMin,yMax);
+			poissonSolver.setGridXY(xMin,xMax,yMin,yMax);
 			//std::cerr << "debug v0 grid changed r="<<xy_ratio<< std::endl;
 		}
 	}
@@ -201,7 +203,7 @@ void SpaceChargeCalcSliceBySlice2D::bunchAnalysis(Bunch* bunch, double& totalMac
 
 		xy_ratio = (xMax - xMin)/(yMax - yMin);
 
-		bunchExtremaCalc->getExtremaZ(bunch, zMin, zMax);
+		bunchExtremaCalc.getExtremaZ(bunch, zMin, zMax);
 
 		//check if the beam size is not zero
 		if(zMin >=  zMax){
@@ -227,13 +229,13 @@ void SpaceChargeCalcSliceBySlice2D::bunchAnalysis(Bunch* bunch, double& totalMac
 
 
 	//this one just for case boundary != null, and will work only once
-	double solver_xMin = poissonSolver->getMinX();
-	double solver_xMax = poissonSolver->getMaxX();
-	double solver_yMin = poissonSolver->getMinY();
-	double solver_yMax = poissonSolver->getMaxY();
+	double solver_xMin = poissonSolver.getMinX();
+	double solver_xMax = poissonSolver.getMaxX();
+	double solver_yMin = poissonSolver.getMinY();
+	double solver_yMax = poissonSolver.getMaxY();
 	double shape_diff_limit = 0.00000001;
 	if(fabs((solver_xMax-solver_xMin)/(solver_yMax-solver_yMin)- xy_ratio) > shape_diff_limit){
-		poissonSolver->setGridXY(xMin,xMax,yMin,yMax);
+		poissonSolver.setGridXY(xMin,xMax,yMin,yMax);
 		//std::cerr << "debug v1 grid changed r="<<xy_ratio<< std::endl;
 	}
 
