@@ -1,3 +1,4 @@
+import copy
 import os
 import sys
 import re
@@ -365,8 +366,11 @@ class MADX_Parser:
 
         self.collect_madx_lines(fileName, self.madxFilePath)
 
+        sequence_elem_dict = {}
+
         for str_local in self._madxLines:
             loc_flag_elem = True
+            sequence_elem = None
 
             # Parse element/variable":="/sequence definition
             if "=" in str_local and ":" not in str_local.split("=")[0]:  # here we avoid the variable parsing twice
@@ -380,8 +384,8 @@ class MADX_Parser:
                     # we have the defined elem with additional params at the positioning !! not a variable, but can't be parsed as an elem !!
                     tokens = str_local.split(",")
                     name = tokens[0]
-                    elem_tmp = self._accElemDict[name]
-                    elem = self.parseParameters(str_local, elem_tmp)
+                    sequence_elem = copy.deepcopy(self._accElemDict[name])
+                    self.parseParameters(str_local, sequence_elem)
 
             if re.search(r"[\w]* *:.*", str_local):
                 if str_local.rfind("sequence") >= 0:
@@ -441,7 +445,10 @@ class MADX_Parser:
                     aux = [x.split("at=")[-1] for x in tmp if "at=" in x]
                     position = eval(aux[0])
 
-                latt_elem = self._accElemDict[elem_name]
+                if sequence_elem is None:
+                    sequence_elem = copy.deepcopy(self._accElemDict[elem_name])
+
+                latt_elem = sequence_elem
                 # he have the element, let's replace variables in parameters by numerical values here
                 latt_elem = self.recalculateParameters(latt_elem, localValDict)
 
@@ -453,10 +460,11 @@ class MADX_Parser:
 
                 if "from" in list(latt_elem.getParameters().keys()):
                     refer_elem_name = latt_elem.getParameter("from")
-                    refer_elem = self._accElemDict[refer_elem_name]
+                    refer_elem = sequence_elem_dict[refer_elem_name]
                     position += refer_elem.getParameter("position")
 
                 latt_elem.addParameter("position", position)
+                sequence_elem_dict[elem_name] = latt_elem
                 if latt_elem.hasParameter("apertype"):
                     latt_aper_entry = self.makeAperture(latt_elem)
                     latt_aper_entry.addParameter("position", position - length / 2.0)

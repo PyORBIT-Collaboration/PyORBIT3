@@ -1,0 +1,7 @@
+bpm: monitor;
+probe: marker;
+ring: sequence, l=3.0;
+bpm, at=1.0;
+bpm, at=2.0;
+probe, at=0.5, from=bpm;
+endsequence;
