@@ -38,7 +38,7 @@ class SC3D_AccNode(SC_Base_AccNode):
         self.sc_calculator.trackBunch(bunch, self.sc_length)
 
 
-class SC_UniformEllipses_AccNode(SC_Base_AccNode):
+class SCUnifEllipse_AccNode(SC_Base_AccNode):
     """
     The subclass of the AccNodeBunchTracker class. It uses SpaceChargeCalcUnifEllipse wrapper for the c++ space charge calculator.
     """

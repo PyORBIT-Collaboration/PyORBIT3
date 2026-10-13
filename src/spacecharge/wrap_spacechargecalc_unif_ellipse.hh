@@ -7,9 +7,9 @@
 extern "C" {
 #endif
 
-  namespace wrap_spacecharge{
-    void initSpaceChargeCalcUniformEllipse(PyObject* module);
-  }
+namespace wrap_spacecharge {
+void initSpaceChargeCalcUnifEllipse(PyObject *module);
+}
 
 #ifdef __cplusplus
 }
