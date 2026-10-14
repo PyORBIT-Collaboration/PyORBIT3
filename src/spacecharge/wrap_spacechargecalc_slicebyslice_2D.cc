@@ -154,6 +154,20 @@ extern "C" {
   	  return Py_BuildValue("i",useLongTracking);
   }
 
+	static PyObject* SpaceChargeCalcSliceBySlice2D_setUseIntegratedGreenFunction(PyObject *self, PyObject *args){
+		int use_integrated;
+		if(!PyArg_ParseTuple(args,"p:setUseIntegratedGreenFunction",&use_integrated)) return NULL;
+		SpaceChargeCalcSliceBySlice2D* calculator = (SpaceChargeCalcSliceBySlice2D*) ((pyORBIT_Object*) self)->cpp_obj;
+		calculator->setUseIntegratedGreenFunction(use_integrated != 0);
+		Py_RETURN_NONE;
+	}
+
+	static PyObject* SpaceChargeCalcSliceBySlice2D_getUseIntegratedGreenFunction(PyObject *self, PyObject *args){
+		if(!PyArg_ParseTuple(args,":getUseIntegratedGreenFunction")) return NULL;
+		SpaceChargeCalcSliceBySlice2D* calculator = (SpaceChargeCalcSliceBySlice2D*) ((pyORBIT_Object*) self)->cpp_obj;
+		return PyBool_FromLong(calculator->getUseIntegratedGreenFunction());
+	}
+
   //-----------------------------------------------------
   //destructor for python SpaceChargeCalcSliceBySlice2D class (__del__ method).
   //-----------------------------------------------------
@@ -172,6 +186,8 @@ extern "C" {
 		{ "getRhoGrid",    SpaceChargeCalcSliceBySlice2D_getRhoGrid,   METH_VARARGS,"returns the Grid3D with a space charge density"},
 		{ "getPhiGrid",    SpaceChargeCalcSliceBySlice2D_getPhiGrid,   METH_VARARGS,"returns the Grid3D with a space charge potential"},
 		{ "longTracking",  SpaceChargeCalcSliceBySlice2D_longTracking, METH_VARARGS,"sets or returns True or False parameter for logitudinal field use"},
+		{ "setUseIntegratedGreenFunction", SpaceChargeCalcSliceBySlice2D_setUseIntegratedGreenFunction, METH_VARARGS,"selects the cell-integrated Green function"},
+		{ "getUseIntegratedGreenFunction", SpaceChargeCalcSliceBySlice2D_getUseIntegratedGreenFunction, METH_VARARGS,"returns whether the cell-integrated Green function is selected"},
 		{NULL}
   };
 

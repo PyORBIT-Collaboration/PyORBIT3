@@ -169,6 +169,26 @@ extern "C" {
     return Py_None;
 	}
 
+	static PyObject* PoissonSolverFFT3D_setUseIntegratedGreenFunction(PyObject *self, PyObject *args){
+		int use_integrated;
+		if(!PyArg_ParseTuple(args,"p:setUseIntegratedGreenFunction",&use_integrated)){
+			return NULL;
+		}
+		pyORBIT_Object* pyPoissonSolverFFT3D = (pyORBIT_Object*) self;
+		PoissonSolverFFT3D* cpp_PoissonSolverFFT3D = (PoissonSolverFFT3D*) pyPoissonSolverFFT3D->cpp_obj;
+		cpp_PoissonSolverFFT3D->setUseIntegratedGreenFunction(use_integrated != 0);
+		Py_RETURN_NONE;
+	}
+
+	static PyObject* PoissonSolverFFT3D_getUseIntegratedGreenFunction(PyObject *self, PyObject *args){
+		if(!PyArg_ParseTuple(args,":getUseIntegratedGreenFunction")){
+			return NULL;
+		}
+		pyORBIT_Object* pyPoissonSolverFFT3D = (pyORBIT_Object*) self;
+		PoissonSolverFFT3D* cpp_PoissonSolverFFT3D = (PoissonSolverFFT3D*) pyPoissonSolverFFT3D->cpp_obj;
+		return PyBool_FromLong(cpp_PoissonSolverFFT3D->getUseIntegratedGreenFunction());
+	}
+
 	//findPotential(Grid3D* rhoGrid3D,Grid3D* phiGrid3D)
   static PyObject* PoissonSolverFFT3D_findPotential(PyObject *self, PyObject *args){
     pyORBIT_Object* pyPoissonSolverFFT3D = (pyORBIT_Object*) self;
@@ -220,6 +240,8 @@ extern "C" {
 		{ "getStepY",            PoissonSolverFFT3D_getStepY,            METH_VARARGS,"returns grid step in y-direction"},
 		{ "getStepZ",            PoissonSolverFFT3D_getStepZ,            METH_VARARGS,"returns grid step in z-direction"},
 		{ "updateGeenFunction",  PoissonSolverFFT3D_updateGreenFunction, METH_VARARGS,"updates the Green function FFT"},
+		{ "setUseIntegratedGreenFunction", PoissonSolverFFT3D_setUseIntegratedGreenFunction, METH_VARARGS,"selects the cell-integrated Green function"},
+		{ "getUseIntegratedGreenFunction", PoissonSolverFFT3D_getUseIntegratedGreenFunction, METH_VARARGS,"returns whether the cell-integrated Green function is selected"},
 		{ "findPotential",       PoissonSolverFFT3D_findPotential,       METH_VARARGS,"findPotential(Grid3D rhoGrid3D,Grid3D phiGrid3D)"},
     {NULL}
   };
