@@ -28,6 +28,23 @@ static std::size_t ORBIT_MPI_Type_size(MPI_Datatype data) {
 }
 #endif
 
+#if USE_MPI > 0
+// MPI_Finalize hook for Py_AtExit to propagate error codes.
+static void ORBIT_MPI_Finalize_AtExit() {
+  int initialized = 0;
+  if (MPI_Initialized(&initialized) != MPI_SUCCESS || !initialized) {
+    return;
+  }
+
+  int finalized = 0;
+  if (MPI_Finalized(&finalized) != MPI_SUCCESS || finalized) {
+    return;
+  }
+
+  MPI_Finalize();
+}
+#endif
+
 /** A C wrapper around MPI_Init. */
 int ORBIT_MPI_Init(){
 #if USE_MPI > 0
@@ -35,7 +52,7 @@ int ORBIT_MPI_Init(){
   MPI_Init(NULL, NULL);
 
   // Registering MPI finalize method at cleanup stage
-  Py_AtExit(ORBIT_MPI_Finalize);
+  Py_AtExit(ORBIT_MPI_Finalize_AtExit);
 #endif
   return MPI_SUCCESS;
 }
@@ -557,6 +574,39 @@ int ORBIT_MPI_Allreduce(void* ar1, void* ar2, int n, MPI_Datatype data, MPI_Op o
     std::memcpy(ar2, ar1, nbytes);
   }
 
+  return MPI_SUCCESS;
+#endif
+}
+
+int ORBIT_MPI_Gather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                     void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm) {
+#if USE_MPI > 0
+  return MPI_Gather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm);
+#else
+  if (sendbuf == ORBIT_MPI_IN_PLACE || sendbuf == recvbuf) {
+    return MPI_SUCCESS;
+  }
+
+  if (sendcount > 0) {
+    std::memcpy(recvbuf, sendbuf, static_cast<std::size_t>(sendcount) * ORBIT_MPI_Type_size(sendtype));
+  }
+
+  return MPI_SUCCESS;
+#endif
+}
+
+int ORBIT_MPI_Allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                         void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm) {
+#if USE_MPI > 0
+    return MPI_Allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
+#else
+  if (sendbuf == ORBIT_MPI_IN_PLACE || sendbuf == recvbuf) {
+    return MPI_SUCCESS;
+  }
+
+  if (sendcount > 0) {
+    std::memcpy(recvbuf, sendbuf, static_cast<std::size_t>(sendcount) * ORBIT_MPI_Type_size(sendtype));
+  }
   return MPI_SUCCESS;
 #endif
 }
