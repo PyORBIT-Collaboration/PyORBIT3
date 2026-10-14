@@ -4,4 +4,3 @@ pip install -U pip
 pip install -r requirements.txt
 pip install -U setuptools
 pip install --no-build-isolation --editable .
-pip install ".[numpy]"

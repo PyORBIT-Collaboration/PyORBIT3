@@ -31,13 +31,17 @@ extern "C" {
 	  spacechargeMethods
   };
 
-  PyMODINIT_FUNC initspacecharge(){
-    //create new module
-    PyObject* module = PyModule_Create(&cModPyDem);
-		//add the other classes init
-		wrap_spacecharge::initGrid1D(module);
-		wrap_spacecharge::initGrid2D(module);
-		wrap_spacecharge::initGrid3D(module);
+	PyMODINIT_FUNC initspacecharge(){
+	  //create new module
+	  PyObject* module = PyModule_Create(&cModPyDem);
+		if(module == NULL) return NULL;
+			//add the other classes init
+			wrap_spacecharge::initGrid1D(module);
+			wrap_spacecharge::initGrid2D(module);
+			if(wrap_spacecharge::initGrid3D(module) < 0){
+				Py_DECREF(module);
+				return NULL;
+			}
 		wrap_spacecharge::initUniformEllipsoidFieldCalculator(module);
 		wrap_spacecharge::initSpaceChargeCalcUniformEllipse(module);
 		wrap_spacecharge::initPoissonSolverFFT2D(module);

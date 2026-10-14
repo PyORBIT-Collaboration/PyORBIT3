@@ -1,26 +1,19 @@
 [build-system]
 build-backend = 'mesonpy'
-requires = ['meson-python', "setuptools>=45", "wheel", "setuptools_scm"]
+requires = ['meson-python', "setuptools>=45", "wheel", "setuptools_scm", "numpy>=2.0"]
 
 [project]
 name = 'PyORBIT'
 dynamic = ["version"]
 description = 'Use meson-python to build c++ anf python modules.'
 requires-python = '>=3.9'
-#dependencies = [
-#'setuptools',
-#'setuptools-scm'
-#]
+dependencies = [
+    'numpy>=2.0',
+]
 authors = [
   {name = 'Alexander Zhukov', email = 'zhukovap@ornl.gov'},
 ]
 
 
 [tool.setuptools_scm]
-
-[project.optional-dependencies]
-numpy = [
-    "numpy",
-]
-
 

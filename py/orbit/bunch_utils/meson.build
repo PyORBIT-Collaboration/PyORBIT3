@@ -3,6 +3,7 @@
 
 py_sources = files([
     '__init__.py',
+    'numpy_utils.py',
     'particleidnumber.py',
     'serialize.py',
 ])
