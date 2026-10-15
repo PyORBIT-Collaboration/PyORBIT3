@@ -92,11 +92,15 @@ void RfGapThreePointTTF_slow::trackBunch(Bunch* bunch, double dz, double Em, dou
 	double prime_coeff = (beta_in * gamma_in)/(beta_out * gamma_out);
 	double x, y, r, I0,I1, phase_in , phase_out, phase_rf, d_rp;
 	double sin_phRf, cos_phRf;
-	double dE, Ekin, p2, p, p_z, beta_z, gamma, kappa;
+	double dE, Ekin, p2, p_z, beta_z, gamma, kappa;
 	double xp,yp;
 	// (wave momentum)/beta   phase_coeff - phase coeff   trans_coeff -  transverse coeff
 	double Kr, kappa_Kr, phase_coeff, trans_coeff;
-	for(int i = 0, n = bunch->getSize(); i < n; i++){
+	int const n = bunch->getSize();
+	#pragma omp parallel for private(xp, yp, dE, Ekin, p2, p_z, beta_z, gamma, \
+		kappa, Kr, kappa_Kr, phase_coeff, trans_coeff, ttf_tp, ttf_sp, \
+		x, y, r, I0, I1, phase_in, phase_rf, sin_phRf, cos_phRf, phase_out, d_rp)
+	for(int i = 0; i < n; i++){
 
 		xp = bunch->xp(i);
 		yp = bunch->yp(i);
@@ -104,7 +108,6 @@ void RfGapThreePointTTF_slow::trackBunch(Bunch* bunch, double dz, double Em, dou
  		dE = bunch->dE(i);
 		Ekin = eKin_in + dE;
 		p2 = Ekin*(Ekin+2.0*mass);
-		p = sqrt(p2);
 		p_z = sqrt(p2 - p_s*p_s*(xp*xp+yp*yp));
 		beta_z = p_z/(Ekin+mass);
 		gamma = 1.0 + Ekin/mass;
@@ -145,7 +148,6 @@ void RfGapThreePointTTF_slow::trackBunch(Bunch* bunch, double dz, double Em, dou
 		dE = bunch->dE(i);
 		Ekin = eKin_out + dE;
 		p2 = Ekin*(Ekin+2.0*mass);
-		p = sqrt(p2);
 		p_z = sqrt(p2 - p_s*p_s*(xp*xp+yp*yp));
 		beta_z = p_z/(Ekin+mass);
 		kappa = 2.0*OrbitConst::PI*rf_frequency/(OrbitConst::c*beta_z);

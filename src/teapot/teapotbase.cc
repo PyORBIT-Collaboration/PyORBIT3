@@ -86,6 +86,7 @@ void rotatexy(Bunch* bunch, double anglexy)
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
 
+    #pragma omp parallel for private(xtemp, pxtemp, ytemp, pytemp)
     for(int i = 0; i < bunch->getSize(); i++)
     {
         xtemp  = arr[i][0];
@@ -170,6 +171,7 @@ void drift(Bunch* bunch, double length)
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
 
+    #pragma omp parallel for private(KNL, phifac, dp_p) shared(dp_p_coeff, length, gamma2i)
     for(int i = 0; i < bunch->getSize(); i++)
     {
         dp_p = arr[i][5] * dp_p_coeff;
@@ -236,6 +238,7 @@ void kick(Bunch* bunch, double kx, double ky, double kE, int useCharge)
     double** arr = bunch->coordArr();
     if(kx != 0.)
     {
+        #pragma omp parallel for
         for(int i = 0; i < bunch->getSize(); i++)
         {
             arr[i][1] += kx;
@@ -243,6 +246,7 @@ void kick(Bunch* bunch, double kx, double ky, double kE, int useCharge)
     }
     if(ky != 0.)
     {
+        #pragma omp parallel for
         for(int i = 0; i < bunch->getSize(); i++)
         {
             arr[i][3] += ky;
@@ -250,6 +254,7 @@ void kick(Bunch* bunch, double kx, double ky, double kE, int useCharge)
     }
     if(kE != 0.)
     {
+        #pragma omp parallel for
         for(int i = 0; i < bunch->getSize(); i++)
         {
             arr[i][5] += kE;
@@ -348,6 +353,7 @@ void multp(Bunch* bunch, int pole, double kl, int skew, int useCharge)
 
     kl1 = klc / factorial[pole];
 
+    #pragma omp parallel for private(z, zn)
     for(int i = 0; i < bunch->getSize(); i++)
     {
         z = std::complex<double>(arr[i][0], arr[i][2]);
@@ -433,6 +439,7 @@ void multpfringeIN(Bunch* bunch, int pole, double kl, int skew, int useCharge)
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
 
+    #pragma omp parallel for private(dp_p, KNL)
     for(int i = 0; i < bunch->getSize(); i++)
     {
         double x = arr[i][0];
@@ -546,6 +553,7 @@ void multpfringeOUT(Bunch* bunch, int pole, double kl, int skew, int useCharge)
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
 
+    #pragma omp parallel for private(dp_p, KNL)
     for(int i = 0; i < bunch->getSize(); i++)
     {
         double x = arr[i][0];
@@ -684,6 +692,7 @@ void quad1(Bunch* bunch, double length, double kq, int useCharge)
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
 
+    #pragma omp parallel for private(dp_p, x_init, xp_init, y_init, yp_init)
     for(int i = 0; i < bunch->getSize(); i++)
     {
         dp_p    = arr[i][5] * dp_p_coeff;
@@ -729,6 +738,7 @@ void quad2(Bunch* bunch, double length)
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
 
+    #pragma omp parallel for private(dp_p, KNL, phifac) 
     for(int i = 0; i < bunch->getSize(); i++)
     {
         dp_p = arr[i][5] * dp_p_coeff;
@@ -798,6 +808,7 @@ void quadfringeIN(Bunch* bunch, double kq, int useCharge)
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
 
+    #pragma omp parallel for private(dp_p, KNL, x_init, xp_init, y_init, yp_init, detM)
     for(int i = 0; i < bunch->getSize(); i++)
     {
         dp_p    = arr[i][5] * dp_p_coeff;
@@ -868,6 +879,7 @@ void quadfringeOUT(Bunch* bunch, double kq, int useCharge)
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
 
+    #pragma omp parallel for private(dp_p, KNL, x_init, xp_init, y_init, yp_init, detM)
     for(int i = 0; i < bunch->getSize(); i++)
     {
         dp_p    = arr[i][5] * dp_p_coeff;
@@ -936,6 +948,7 @@ void wedgerotate(Bunch* bunch, double e, int frinout)
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
 
+    #pragma parallel for private(dp_p, xp_temp, p0_temp, p0, dp_p)
     for(int i = 0; i < bunch->getSize(); i++)
     {
         if(frinout == 0)
@@ -998,6 +1011,7 @@ void wedgedrift(Bunch* bunch, double e, int inout)
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
 
+    #pragma omp parallel for private(dp_p, tn, s)
     for(int i = 0; i < bunch->getSize(); i++)
     {
         if(inout == 0)
@@ -1052,6 +1066,7 @@ void wedgebend(Bunch* bunch, double e, int inout, double rho, int nsteps)
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
 
+    #pragma omp parallel for private(s, dp_p, tn, sm, sm2)
     for(int i = 0; i < bunch->getSize(); i++)
     {
         if(inout == 0)
@@ -1132,6 +1147,7 @@ void bend1(Bunch* bunch, double length, double th)
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
 
+    #pragma omp parallel for private(dp_p, x_init, xp_init)
     for(int i = 0; i < bunch->getSize(); i++)
     {
         dp_p   = arr[i][5] * dp_p_coeff;
@@ -1174,6 +1190,7 @@ void bend2(Bunch* bunch, double length)
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
 
+    #pragma omp parallel for private(dp_p, KNL, phifac)
     for(int i = 0; i < bunch->getSize(); i++)
     {
         dp_p = arr[i][5] * dp_p_coeff;
@@ -1218,6 +1235,7 @@ void bend3(Bunch* bunch, double th)
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
 
+    #pragma omp parallel for private(dp_p, KNL, phifac)
     for(int i = 0; i < bunch->getSize(); i++)
     {
         dp_p = arr[i][5] * dp_p_coeff;
@@ -1260,6 +1278,7 @@ void bend4(Bunch* bunch, double th)
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
 
+    #pragma omp parallel for private(dp_p, KNL, xfac, phifac)
     for(int i = 0; i < bunch->getSize(); i++)
     {
         dp_p = arr[i][5] * dp_p_coeff;
@@ -1299,6 +1318,7 @@ void bendfringeIN(Bunch* bunch, double rho)
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
 
+    #pragma omp parallel for private(dp_p, KNL)
     for(int i = 0; i < bunch->getSize(); i++)
     {
         dp_p    = arr[i][5] * dp_p_coeff;
@@ -1468,6 +1488,7 @@ void wedgebendCF(Bunch* bunch, double e, int inout,
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
 
+    #pragma omp parallel for private(s, dp_p, tn, sm, sm2, klint)
     for(int i = 0; i < bunch->getSize(); i++)
     {
         if(inout == 0)
@@ -1556,6 +1577,7 @@ void RingRF(Bunch* bunch, double ring_length, int harmonic_numb,
     //coordinate array [part. index][x,xp,y,yp,z,dE]
     double** arr = bunch->coordArr();
 
+    #pragma omp parallel for private(deltaV)
     for(int i = 0; i < bunch->getSize(); i++)
     {
         deltaV = voltage * ( sin(harmonic_numb*Factor*arr[i][4] + phase_s));

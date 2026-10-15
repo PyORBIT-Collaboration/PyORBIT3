@@ -82,9 +82,13 @@ void BaseRfGap_slow::trackBunch(Bunch* bunch, double frequency, double E0TL, dou
   double kappa, d_rp, kr;
   double I0, I1;
   double dE, xp, yp, Ekin, p2, p_z2, beta_z, gamma_z,beta_z_out,gamma_z_out;
-  for(int i = 0, n = bunch->getSize(); i < n; i++)
+  int const n = bunch->getSize();
+  #pragma omp parallel for private( \
+    dE, xp, yp, Ekin, p2, p_z2, beta_z, gamma_z, kr, \
+    x, y, r, I0, I1, d_phi, beta_z_out, gamma_z_out, \
+    kappa, d_rp)
+  for(int i = 0; i < n; i++)
   {
-
 		dE = bunch->dE(i);
 		xp = bunch->xp(i);
 		yp = bunch->yp(i);
