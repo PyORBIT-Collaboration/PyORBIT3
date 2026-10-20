@@ -103,6 +103,26 @@ extern "C" {
 		return Py_BuildValue("d",cpp_PoissonSolverFFT2D->getStepY());
 	}
 
+	static PyObject* PoissonSolverFFT2D_setUseIntegratedGreenFunction(PyObject *self, PyObject *args){
+		int use_integrated;
+		if(!PyArg_ParseTuple(args,"p:setUseIntegratedGreenFunction",&use_integrated)){
+			return NULL;
+		}
+		pyORBIT_Object* pyPoissonSolverFFT2D = (pyORBIT_Object*) self;
+		PoissonSolverFFT2D* cpp_PoissonSolverFFT2D = (PoissonSolverFFT2D*) pyPoissonSolverFFT2D->cpp_obj;
+		cpp_PoissonSolverFFT2D->setUseIntegratedGreenFunction(use_integrated != 0);
+		Py_RETURN_NONE;
+	}
+
+	static PyObject* PoissonSolverFFT2D_getUseIntegratedGreenFunction(PyObject *self, PyObject *args){
+		if(!PyArg_ParseTuple(args,":getUseIntegratedGreenFunction")){
+			return NULL;
+		}
+		pyORBIT_Object* pyPoissonSolverFFT2D = (pyORBIT_Object*) self;
+		PoissonSolverFFT2D* cpp_PoissonSolverFFT2D = (PoissonSolverFFT2D*) pyPoissonSolverFFT2D->cpp_obj;
+		return PyBool_FromLong(cpp_PoissonSolverFFT2D->getUseIntegratedGreenFunction());
+	}
+
 	//findPotential(Grid2D* rhoGrid2D,Grid2D* phiGrid2D)
   static PyObject* PoissonSolverFFT2D_findPotential(PyObject *self, PyObject *args){
     pyORBIT_Object* pyPoissonSolverFFT2D = (pyORBIT_Object*) self;
@@ -147,6 +167,8 @@ extern "C" {
 		{ "getMinY",             PoissonSolverFFT2D_getMinY,             METH_VARARGS,"returns min grid value in y-direction"},
 		{ "getStepX",            PoissonSolverFFT2D_getStepX,            METH_VARARGS,"returns grid step in x-direction"},
 		{ "getStepY",            PoissonSolverFFT2D_getStepY,            METH_VARARGS,"returns grid step in y-direction"},
+		{ "setUseIntegratedGreenFunction", PoissonSolverFFT2D_setUseIntegratedGreenFunction, METH_VARARGS,"selects the cell-integrated Green function"},
+		{ "getUseIntegratedGreenFunction", PoissonSolverFFT2D_getUseIntegratedGreenFunction, METH_VARARGS,"returns whether the cell-integrated Green function is selected"},
 		{ "findPotential",       PoissonSolverFFT2D_findPotential,       METH_VARARGS,"findPotential(Grid2D rhoGrid2D,Grid2D phiGrid2D)"},
     {NULL}
   };
