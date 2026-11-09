@@ -3,7 +3,7 @@ Module. Includes functions that will modify the accelerator lattice by inserting
 """
 
 # import SC acc. nodes
-from orbit.space_charge.sc2p5d import SC2p5D_AccNode, SC2p5Drb_AccNode
+from orbit.space_charge.sc2p5d import SC2p5D_AccNode, SC2p5Drb_AccNode, SCUnifEllipse2D_AccNode
 
 # import general accelerator elements and lattice
 from orbit.lattice import AccLattice, AccNode, AccActionsContainer, AccNodeBunchTracker
@@ -43,5 +43,13 @@ def setSC2p5DrbAccNodes(lattice, sc_path_length_min, space_charge_calculator, pi
         scNode.setName(scNode.getName() + "SC2p5Drb")
         scNode.setPipeRadius(pipe_radius)
     # initialize the lattice
+    lattice.initialize()
+    return scNodes_arr
+
+
+def setSCUnifEllipse2DAccNodes(lattice, sc_path_length_min, space_charge_calculator):
+    scNodes_arr = setSC_General_AccNodes(lattice, sc_path_length_min, space_charge_calculator, SCUnifEllipse2D_AccNode)
+    for scNode in scNodes_arr:
+        scNode.setName(scNode.getName() + "SCUnifEllipse2D")
     lattice.initialize()
     return scNodes_arr

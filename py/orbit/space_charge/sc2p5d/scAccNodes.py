@@ -88,3 +88,15 @@ class SC2p5Drb_AccNode(SC_Base_AccNode):
             return
         bunch = paramsDict["bunch"]
         self.sc_calculator.trackBunch(bunch, self.sc_length, self.pipe_radius)
+
+
+class SCUnifEllipse2D_AccNode(SC_Base_AccNode):
+    def __init__(self, sc_calculator, name="no name"):
+        SC_Base_AccNode.__init__(self, sc_calculator, name)
+        self.setType("UnifEllsSC2D")
+
+    def track(self, paramsDict):
+        if self.switcher != True:
+            return
+        bunch = paramsDict["bunch"]
+        self.sc_calculator.trackBunch(bunch, self.sc_length)
