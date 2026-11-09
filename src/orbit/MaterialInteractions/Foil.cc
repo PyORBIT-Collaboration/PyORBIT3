@@ -44,6 +44,8 @@ Foil::Foil(double xmin, double xmax, double ymin, double ymax, double thick): Cp
 	thick_ = thick;
 	length_ = 0.0;
 	ma_ = 0;
+	nHits = 0;
+    nLost = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -605,4 +607,20 @@ void Foil::loseParticle(Bunch* bunch, Bunch* lostbunch, int ip, int& nLost, int&
 	foil_flag = 0;
 	zrl = -1.;
 
+}
+
+///////////////////////////////////////////////////////////////////////////
+//
+// NAME
+//
+//   Foil::getnHits
+//
+// DESCRIPTION
+//
+//   Returns the accumulated number of foil hits.
+//
+///////////////////////////////////////////////////////////////////////////
+
+int Foil::getnHits(){
+	return nHits;
 }

@@ -48,3 +48,7 @@ class TeapotFoilNode(DriftTEAPOT):
 
     def setScatterChoice(self, choice):
         self.scatterChoice = choice
+
+    def getnHits(self):
+        #returns the particle foil hits
+        return self.foil.getnHits()
