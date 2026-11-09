@@ -80,6 +80,12 @@ extern "C" {
 		return Py_None;
 	}
 
+    /** Returns the accumulated number of foil hits. */
+    static PyObject* Foil_getnHits(PyObject *self, PyObject *args){
+        Foil* cpp_Foil = (Foil*)((pyORBIT_Object*) self)->cpp_obj;
+        return PyLong_FromLong(cpp_Foil->getnHits());
+    }
+
 
 
   //-----------------------------------------------------
@@ -96,6 +102,7 @@ extern "C" {
 	static PyMethodDef FoilClassMethods[] = {
 		{ "traverseFoilFullScatter", Foil_traverseFoilFullScatter, METH_VARARGS,"Performs the foil scatter of the bunch."},
 		{ "traverseFoilSimpleScatter", Foil_traverseFoilSimpleScatter, METH_VARARGS,"Performs the foil scatter of the bunch."},
+        {"getnHits", Foil_getnHits, METH_NOARGS, "Returns the accumulated number of foil hits. "},
    {NULL}
   	};
 
