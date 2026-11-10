@@ -84,7 +84,6 @@ sources = files([
 	'linac/rfgap/RfGapThreePointTTF_slow.cc',
 	'linac/rfgap/wrap_RfGapTTF.cc',
 	'linac/rfgap/wrap_MatrixRfGap.cc',
-	'orbit/OrbitConst.cc',
 	'orbit/wrap_bunch.cc',
 	'orbit/wrap_syncpart.cc',
 	'orbit/Bunch.cc',
