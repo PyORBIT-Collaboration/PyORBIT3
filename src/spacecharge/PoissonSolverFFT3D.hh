@@ -50,10 +50,10 @@ class PoissonSolverFFT3D: public PoissonSolver3D
 		void setSpacingOfExternalBunches(double lambda);
 
 		/** Get number of bunches from both sides for space charge calculations */
-		int getNumberOfExternalBunches();
+		int getNumberOfExternalBunches() const;
 
 		/** Get distance between bunches */
-		double getSpacingOfExternalBunches();
+		double getSpacingOfExternalBunches() const;
 
 	  void setGridX(double xMin, double xMax);
 	  void setGridY(double yMin, double yMax);
@@ -62,6 +62,12 @@ class PoissonSolverFFT3D: public PoissonSolver3D
 
 		/** Updates the Green function FFT */
 		void updateGreenFunction();
+
+		/** Selects the cell-integrated Green function kernel. */
+		void setUseIntegratedGreenFunction(bool use_integrated);
+
+		/** Returns whether the cell-integrated Green function kernel is selected. */
+		bool getUseIntegratedGreenFunction() const;
 
 		/** Solves the Poisson problem for an external charge distribution and
 		puts results into an external potential grid
@@ -87,9 +93,6 @@ class PoissonSolverFFT3D: public PoissonSolver3D
 		int ySize2_;
 		int zSize2_;
 
-		//Green function
-		double*** greensF_;
-
 		//FFT arrays
 		double* in_;
 		double* in_res_;
@@ -108,6 +111,8 @@ class PoissonSolverFFT3D: public PoissonSolver3D
 
 		//The distance between centers of the neighboring bunches
 		double lambda_;
+
+		bool useIntegratedGreenFunction_;
 };
 //end of SC_POISSON_SOLVER_FFT_3D_H ifdef
 #endif

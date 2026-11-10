@@ -154,6 +154,26 @@ extern "C" {
 		return Py_BuildValue("d",ratioLimit);;
   }
 
+	static PyObject* SpaceChargeCalc3D_setUseIntegratedGreenFunction(PyObject *self, PyObject *args){
+		int use_integrated;
+		if(!PyArg_ParseTuple(args,"p:setUseIntegratedGreenFunction",&use_integrated)){
+			return NULL;
+		}
+		pyORBIT_Object* pySpaceChargeCalc3D = (pyORBIT_Object*) self;
+		SpaceChargeCalc3D* cpp_SpaceChargeCalc3D = (SpaceChargeCalc3D*) pySpaceChargeCalc3D->cpp_obj;
+		cpp_SpaceChargeCalc3D->setUseIntegratedGreenFunction(use_integrated != 0);
+		Py_RETURN_NONE;
+	}
+
+	static PyObject* SpaceChargeCalc3D_getUseIntegratedGreenFunction(PyObject *self, PyObject *args){
+		if(!PyArg_ParseTuple(args,":getUseIntegratedGreenFunction")){
+			return NULL;
+		}
+		pyORBIT_Object* pySpaceChargeCalc3D = (pyORBIT_Object*) self;
+		SpaceChargeCalc3D* cpp_SpaceChargeCalc3D = (SpaceChargeCalc3D*) pySpaceChargeCalc3D->cpp_obj;
+		return PyBool_FromLong(cpp_SpaceChargeCalc3D->getUseIntegratedGreenFunction());
+	}
+
   //-----------------------------------------------------
   //destructor for python SpaceChargeCalc3D class (__del__ method).
   //-----------------------------------------------------
@@ -175,6 +195,8 @@ extern "C" {
 		{ "getPhiGrid",     SpaceChargeCalc3D_getPhiGrid,    METH_VARARGS,"returns the Grid3D with a space charge potential"},
 		{ "setRatioLimit",	SpaceChargeCalc3D_setRatioLimit, METH_VARARGS,"sets the ratio change of x to y and x to z to recalculate Green Functions."},
 		{ "getRatioLimit",	SpaceChargeCalc3D_getRatioLimit, METH_VARARGS,"returns the ratio change of x to y and x to z to recalculate Green Functions."},
+		{ "setUseIntegratedGreenFunction", SpaceChargeCalc3D_setUseIntegratedGreenFunction, METH_VARARGS,"selects the cell-integrated Green function"},
+		{ "getUseIntegratedGreenFunction", SpaceChargeCalc3D_getUseIntegratedGreenFunction, METH_VARARGS,"returns whether the cell-integrated Green function is selected"},
 		{NULL}
   };
 

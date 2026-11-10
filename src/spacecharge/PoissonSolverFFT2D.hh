@@ -45,6 +45,9 @@ class PoissonSolverFFT2D: public PoissonSolver2D
 	  void setGridY(double yMin, double yMax);
 		void setGridXY(double xMin, double xMax, double yMin, double yMax);
 
+		void setUseIntegratedGreenFunction(bool use_integrated);
+		bool getUseIntegratedGreenFunction() const;
+
 		/** Solves the Poisson problem for an external charge distribution and
 		puts results into an external potential grid
 		*/
@@ -67,9 +70,6 @@ class PoissonSolverFFT2D: public PoissonSolver2D
 			int xSize2_;
 			int ySize2_;
 
-			//Green function
-			double** greensF_;
-
 			//FFT arrays
 			double* in_;
 			double* in_res_;
@@ -83,6 +83,8 @@ class PoissonSolverFFT2D: public PoissonSolver2D
 			fftw_plan planForward_greenF_;
 			fftw_plan planForward_;
 			fftw_plan planBackward_;
+
+			bool useIntegratedGreenFunction_;
 };
 //end of SC_POISSON_SOLVER_FFT_2D_H ifdef
 #endif
