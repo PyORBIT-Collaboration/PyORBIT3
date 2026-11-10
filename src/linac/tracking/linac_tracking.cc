@@ -59,7 +59,7 @@ namespace linac_tracking
         SyncPart* syncPart = bunch->getSyncPart();
 
         const double beta_s = syncPart->getBeta();
-        const double delta_t = length / (OrbitConst::c *beta_s);
+        const double delta_t = length / (OrbitConst::c * beta_s);
 
         syncPart->setTime(syncPart->getTime() + delta_t);
 
@@ -83,7 +83,7 @@ namespace linac_tracking
             const double Etotal = Ekin_s + dE + mass;
             const double p2 = Ekin*(Etotal + mass);
 
-            const double length_over_pz = length / std::sqrt(std::fabs(p2 - px*px + py*py));
+            const double length_over_pz = length / std::sqrt(std::fabs(p2 - px*px - py*py));
 
             arr[i][0] += length_over_pz * px;
             arr[i][2] += length_over_pz * py;
