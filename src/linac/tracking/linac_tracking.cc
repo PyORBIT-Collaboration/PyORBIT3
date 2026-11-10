@@ -54,53 +54,40 @@ namespace linac_tracking
 
     void linac_drift(Bunch* bunch, double length)
     {
-        SyncPart* syncPart = bunch->getSyncPart();
-
-        double beta_s = syncPart->getBeta();
-        double v_s = OrbitConst::c * beta_s;
-        double beta1_s = 1.0/beta_s;
         if(length <= 0.) return;
 
-        double delta_t = length / v_s;
-        double delta_tc = delta_t*OrbitConst::c;
+        SyncPart* syncPart = bunch->getSyncPart();
+
+        const double beta_s = syncPart->getBeta();
+        const double delta_t = length / (OrbitConst::c *beta_s);
 
         syncPart->setTime(syncPart->getTime() + delta_t);
 
-        double mass = syncPart->getMass();
-        double Ekin_s = syncPart->getEnergy();
-        double p_s = syncPart->getMomentum();
-        double p2_s = p_s*p_s;
-        double p2 = 0.;
-        double dE = 0.;
-        double xp = 0.;
-        double yp = 0.;
-        double coeff = 0.;
-        double Ekin = 0.;
-        double Etotal = 0.;
-        double p_z2 = 0.;
-        double beta_z = 0.;
-        double beta_x = 0.;
-        double beta_y = 0.;
+        const double mass = syncPart->getMass();
+        const double Ekin_s = syncPart->getEnergy();
+        const double p_s = syncPart->getMomentum();
 
         //coordinate array [part. index][x,xp,y,yp,z,dE]
         //sqrt(fabs(p_z2)) - fabs function is a protection for case when xp and yp are too big for dE
         //It means the particles are nonphysical and simulations do not make sense
         double** arr = bunch->coordArr();
-        for(int i = 0; i < bunch->getSize(); i++)
+        const int bunch_size = bunch->getSize();
+
+        #pragma omp parallel for
+        for(int i = 0; i < bunch_size; ++i)
         {
-            dE = arr[i][5];
-            xp = arr[i][1];
-            yp = arr[i][3];
-            Ekin = Ekin_s+dE;
-            Etotal = Ekin + mass;
-            p2 = Ekin*(Etotal + mass);
-            beta_x = (xp*p_s)/Etotal;
-            beta_y = (yp*p_s)/Etotal;
-            p_z2 = p2 - (xp*xp + yp*yp)*p2_s;
-            beta_z = sqrt(fabs(p_z2))/Etotal;
-            arr[i][0] += beta_x * delta_tc;
-            arr[i][2] += beta_y * delta_tc;
-            arr[i][4] += (beta_z - beta_s) * delta_tc;
+            const double dE = arr[i][5];
+            const double px = arr[i][1]*p_s;
+            const double py = arr[i][3]*p_s;
+            const double Ekin = Ekin_s + dE;
+            const double Etotal = Ekin_s + dE + mass;
+            const double p2 = Ekin*(Etotal + mass);
+
+            const double length_over_pz = length / std::sqrt(std::fabs(p2 - px*px + py*py));
+
+            arr[i][0] += length_over_pz * px;
+            arr[i][2] += length_over_pz * py;
+            arr[i][4] += length - length_over_pz * beta_s * Etotal;
         }
     }
 
