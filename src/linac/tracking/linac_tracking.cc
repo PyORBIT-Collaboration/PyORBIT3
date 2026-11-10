@@ -54,53 +54,40 @@ namespace linac_tracking
 
     void linac_drift(Bunch* bunch, double length)
     {
-        SyncPart* syncPart = bunch->getSyncPart();
-
-        double beta_s = syncPart->getBeta();
-        double v_s = OrbitConst::c * beta_s;
-        double beta1_s = 1.0/beta_s;
         if(length <= 0.) return;
 
-        double delta_t = length / v_s;
-        double delta_tc = delta_t*OrbitConst::c;
+        SyncPart* syncPart = bunch->getSyncPart();
+
+        const double beta_s = syncPart->getBeta();
+        const double delta_t = length / (OrbitConst::c * beta_s);
 
         syncPart->setTime(syncPart->getTime() + delta_t);
 
-        double mass = syncPart->getMass();
-        double Ekin_s = syncPart->getEnergy();
-        double p_s = syncPart->getMomentum();
-        double p2_s = p_s*p_s;
-        double p2 = 0.;
-        double dE = 0.;
-        double xp = 0.;
-        double yp = 0.;
-        double coeff = 0.;
-        double Ekin = 0.;
-        double Etotal = 0.;
-        double p_z2 = 0.;
-        double beta_z = 0.;
-        double beta_x = 0.;
-        double beta_y = 0.;
+        const double mass = syncPart->getMass();
+        const double Ekin_s = syncPart->getEnergy();
+        const double p_s = syncPart->getMomentum();
 
         //coordinate array [part. index][x,xp,y,yp,z,dE]
         //sqrt(fabs(p_z2)) - fabs function is a protection for case when xp and yp are too big for dE
         //It means the particles are nonphysical and simulations do not make sense
         double** arr = bunch->coordArr();
-        for(int i = 0; i < bunch->getSize(); i++)
+        const int bunch_size = bunch->getSize();
+
+        #pragma omp parallel for schedule(static)
+        for(int i = 0; i < bunch_size; ++i)
         {
-            dE = arr[i][5];
-            xp = arr[i][1];
-            yp = arr[i][3];
-            Ekin = Ekin_s+dE;
-            Etotal = Ekin + mass;
-            p2 = Ekin*(Etotal + mass);
-            beta_x = (xp*p_s)/Etotal;
-            beta_y = (yp*p_s)/Etotal;
-            p_z2 = p2 - (xp*xp + yp*yp)*p2_s;
-            beta_z = sqrt(fabs(p_z2))/Etotal;
-            arr[i][0] += beta_x * delta_tc;
-            arr[i][2] += beta_y * delta_tc;
-            arr[i][4] += (beta_z - beta_s) * delta_tc;
+            const double dE = arr[i][5];
+            const double px = arr[i][1]*p_s;
+            const double py = arr[i][3]*p_s;
+            const double Ekin = Ekin_s + dE;
+            const double Etotal = Ekin_s + dE + mass;
+            const double p2 = Ekin*(Etotal + mass);
+
+            const double length_over_pz = length / std::sqrt(std::fabs(p2 - px*px - py*py));
+
+            arr[i][0] += length_over_pz * px;
+            arr[i][2] += length_over_pz * py;
+            arr[i][4] += length - length_over_pz * beta_s * Etotal;
         }
     }
 
@@ -123,115 +110,82 @@ namespace linac_tracking
     //
     ///////////////////////////////////////////////////////////////////////////
 
-    void linac_quad1(Bunch* bunch, double length, double kq, int useCharge)
+    void linac_quad1(Bunch* bunch, double length, double kq, int /*useCharge*/)
     {
-    if(kq == 0. || bunch->getCharge() == 0.)
-    {
-        linac_drift(bunch,length);
-        return;
-    }
-
-    double x_init, xp_init, y_init, yp_init;
-    double sqrt_kq, kqlength;
-    double cx, sx, cy, sy;
-    double m11 = 0., m12 = 0., m21 = 0., m22 = 0.;
-    double m33 = 0., m34 = 0., m43 = 0., m44 = 0.;
-
-    SyncPart* syncPart = bunch->getSyncPart();
-    double beta_s = syncPart->getBeta();
-        double beta1_s = 1.0/beta_s;
-        double v_s = OrbitConst::c * beta_s;
-
-         double delta_t = length / v_s;
-        double delta_tc = delta_t*OrbitConst::c;
-
-    if(length > 0.)
-    {
-        syncPart->setTime(syncPart->getTime() + delta_t);
-    }
-
-         // ==== B*rho = 3.335640952*momentum/charge [T*m] if momentum in GeV/c ===
-         double dB_dr = kq*bunch->getB_Rho();
-
-         double mass = syncPart->getMass();
-        double Ekin_s = syncPart->getEnergy();
-        double p_s = syncPart->getMomentum();
-        double p2_s = p_s*p_s;
-        double p2 = 0.;
-        double dE = 0.;
-        double p = 0.;
-        double Ekin = 0.;
-        double Etotal = 0.;
-        double coeff = 0.;
-
-        double p_z2 = 0.;
-        double beta_z = 0.;
-
-    //coordinate array [part. index][x,xp,y,yp,z,dE]
-    double** arr = bunch->coordArr();
-    int nParts = bunch->getSize();
-
-    double kqc = 0.;
-
-    for(int i = 0; i < nParts; i++)
-    {
-
-             dE = arr[i][5];
-            Ekin = Ekin_s+dE;
-            Etotal = Ekin + mass;
-            p2 = Ekin*(Ekin+2.0*mass);
-            p = sqrt(p2);
-        kqc = dB_dr/(3.335640952*p/bunch->getCharge());
-            beta_z = p/Etotal;
-
-        sqrt_kq  = sqrt(fabs(kqc));
-        kqlength = sqrt_kq * length;
-
-        if(kqc > 0.)
+        if(kq == 0. || bunch->getCharge() == 0.)
         {
-            cx = cos(kqlength);
-            sx = sin(kqlength);
-            cy = cosh(kqlength);
-            sy = sinh(kqlength);
-            m21 = -sx * sqrt_kq;
-            m43 = sy * sqrt_kq;
-        }
-        else
-        {
-            cx = cosh(kqlength);
-            sx = sinh(kqlength);
-            cy = cos(kqlength);
-            sy = sin(kqlength);
-            m21 = sx * sqrt_kq;
-            m43 = -sy * sqrt_kq;
+            linac_drift(bunch, length);
+            return;
         }
 
-        m11 = cx;
-        m12 = sx / sqrt_kq;
-        m22 = cx;
-        m33 = cy;
-        m34 = sy / sqrt_kq;
-        m44 = cy;
+        SyncPart* syncPart = bunch->getSyncPart();
+        const double beta_s = syncPart->getBeta();
+        if(length > 0.)
+        {
+            const double delta_t = length / (OrbitConst::c * beta_s);
+            syncPart->setTime(syncPart->getTime() + delta_t);
+        }
 
-         xp_init = arr[i][1];
-        yp_init = arr[i][3];
+        const double mass = syncPart->getMass();
+        const double Ekin_s = syncPart->getEnergy();
+        const double p_s = syncPart->getMomentum();
+        const bool focus_x = kq > 0.;
 
-        // coeff = p_s/p
-          coeff = p_s/p;
+        // Coordinate array [particle index][x,xp,y,yp,z,dE].
+        double** arr = bunch->coordArr();
+        const int nParts = bunch->getSize();
 
-        x_init  = arr[i][0];
-        xp_init = xp_init*coeff;
-        y_init  = arr[i][2];
-        yp_init = yp_init*coeff;
+        #pragma omp parallel for schedule(static)
+        for(int i = 0; i < nParts; ++i)
+        {
+            double* part = arr[i];
+            const double xp = part[1], yp = part[3];
+            const double Ekin = Ekin_s + part[5];
+            const double Etotal = Ekin + mass;
+            const double p = std::sqrt(Ekin * (Ekin + 2.0 * mass));
+            // Rigidity constants and charge cancel: kqc = kq * p_s / p.
+            const double coeff = p_s / p;
 
-        arr[i][0]  = x_init * m11 + xp_init * m12;
-        arr[i][1]  = (x_init * m21 + xp_init * m22)/coeff;
-        arr[i][2]  = y_init * m33 + yp_init * m34;
-        arr[i][3]  = (y_init * m43 + yp_init * m44)/coeff;
+            // Same time-of-flight expression and entrance momenta as drift.
+            // fabs protects nonphysical slopes, matching linac_drift.
+            const double px = xp * p_s, py = yp * p_s;
+            const double length_over_pz = length / std::sqrt(std::fabs(
+                Ekin * (Etotal + mass) - px*px - py*py));
+            const double sqrt_kq = std::sqrt(std::fabs(kq * coeff));
+            const double phase = sqrt_kq * length;
 
-        arr[i][4] += (beta_z - beta_s) * delta_tc;
+            double cx, sx, cy, sy, m21, m43;
+            if(focus_x)
+            {
+                cx = std::cos(phase);
+                sx = std::sin(phase);
+                cy = std::cosh(phase);
+                sy = std::sinh(phase);
+                m21 = -sx * sqrt_kq;
+                m43 = sy * sqrt_kq;
+            }
+            else
+            {
+                cx = std::cosh(phase);
+                sx = std::sinh(phase);
+                cy = std::cos(phase);
+                sy = std::sin(phase);
+                m21 = sx * sqrt_kq;
+                m43 = -sy * sqrt_kq;
+            }
+            const double m12 = sx / sqrt_kq;
+            const double m34 = sy / sqrt_kq;
+            const double xp_scaled = xp * coeff;
+            const double yp_scaled = yp * coeff;
+
+            const double x = part[0], y = part[2];
+            part[0] = x * cx + xp_scaled * m12;
+            part[1] = (x * m21 + xp_scaled * cx) / coeff;
+            part[2] = y * cy + yp_scaled * m34;
+            part[3] = (y * m43 + yp_scaled * cy) / coeff;
+            part[4] += length - length_over_pz * beta_s * Etotal;
+        }
     }
-  }
 
   ///////////////////////////////////////////////////////////////////////////
   // NAME
@@ -249,7 +203,7 @@ namespace linac_tracking
   //
   ///////////////////////////////////////////////////////////////////////////
 
-  void linac_quad2(Bunch* bunch, double length)
+  void linac_quad2(Bunch* /*bunch*/, double /*length*/)
   {
       //there are no non-linear components
   }
@@ -321,7 +275,7 @@ namespace linac_tracking
 //
 ///////////////////////////////////////////////////////////////////////////
 
-    void kick(Bunch* bunch, double kx, double ky, double kE, int useCharge)
+    void kick(Bunch* bunch, double kx, double ky, double kE, int /*useCharge*/)
     {
         SyncPart* syncPart = bunch->getSyncPart();
 
