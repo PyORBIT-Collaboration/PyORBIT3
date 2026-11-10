@@ -144,7 +144,7 @@ def test_getnHits_counts_and_accumulates():
     assert foil_node.getnHits() == 0
     print(f"Before tracking:{foil_node.getnHits()}")
     foil_node.track(params)
-    print(f"Foil Hit after tracking:{foil_node.getnHits()}")
+    print(f"Foil Hit after tracking:{foil_node.getnHits()}")   #add particle coordinates after tracking through foil
     assert foil_node.getnHits() == 2
     assert foil_node.getnHits() == 2  # Reading doesn't reset it
 
