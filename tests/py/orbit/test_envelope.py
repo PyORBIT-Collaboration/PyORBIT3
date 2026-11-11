@@ -9,6 +9,8 @@ from orbit.envelope import Envelope
 from orbit.envelope import EnvelopeAnalysis
 from orbit.envelope import fit_transfer_matrix
 from orbit.lattice import AccNode
+from orbit.lattice import AccActionsContainer
+from orbit.lattice import AccNodeBunchTracker
 from orbit.lattice import AccLattice
 from orbit.py_linac.lattice import Drift
 from orbit.py_linac.lattice import Quad
@@ -31,9 +33,19 @@ class EnvelopeMonitor:
     def __init__(self):
         self.history = {}
 
-    def __call__(self, envelope, s):
+    def __call__(self, params):
+        envelope, s = params["envelope"], params["path_length"]
         for key, value in {"s": s, **EnvelopeAnalysis(envelope).to_dict()}.items():
             self.history.setdefault(key, []).append(value)
+
+
+def monitor_actions(monitor):
+    if monitor is None:
+        return None
+    actions = AccActionsContainer()
+    actions.addAction(monitor, AccActionsContainer.ENTRANCE)
+    actions.addAction(monitor, AccActionsContainer.EXIT)
+    return actions
 
 
 def get_lorentz_factors(kin_energy: float, mass: float) -> tuple[float, float]:
@@ -447,10 +459,10 @@ def test_track_static_history():
 
     expected_monitor = EnvelopeMonitor()
     actual_monitor = EnvelopeMonitor()
-    lattice.trackEnvelope(envelope.copy(), callback=expected_monitor, fit=False)
+    lattice.trackEnvelope(envelope.copy(), actionContainer=monitor_actions(expected_monitor), fit=False)
     lattice.trackEnvelope(
         envelope.copy(),
-        callback=actual_monitor,
+        actionContainer=monitor_actions(actual_monitor),
         fit=False,
         static=True,
     )
@@ -571,17 +583,17 @@ def test_envelope_fit_fallback(static, history):
     envelope = Envelope(sync_part=bunch.getSyncParticle())
     with pytest.raises(NotImplementedError, match="No analytic matrix"):
         lattice.trackEnvelope(
-            envelope.copy(), fit=False, static=static,
-            callback=EnvelopeMonitor() if history else None,
+            envelope.copy(), fit=False, fallback=False, static=static,
+            actionContainer=monitor_actions(EnvelopeMonitor() if history else None),
         )
     expected = envelope.copy()
     expected_monitor = EnvelopeMonitor() if history else None
-    assert lattice.trackEnvelope(expected, fit=True, callback=expected_monitor) is None
+    assert lattice.trackEnvelope(expected, fit=True, actionContainer=monitor_actions(expected_monitor)) is None
     for _ in range(2):  # Also exercise reuse of the static cache.
         actual = envelope.copy()
         actual_monitor = EnvelopeMonitor() if history else None
         result = lattice.trackEnvelope(
-            actual, fit=False, fallback=True, static=static, callback=actual_monitor,
+            actual, fit=False, fallback=True, static=static, actionContainer=monitor_actions(actual_monitor),
         )
         assert np.allclose(actual.cov_matrix, expected.cov_matrix)
         assert actual.sync_part.time() == pytest.approx(expected.sync_part.time())
@@ -619,12 +631,12 @@ def test_static_envelope_sync_updates(sc, history, fit):
     envelope = Envelope(sync_part=bunch.getSyncParticle(), intensity=1e7)
     expected = envelope.copy()
     expected_monitor = EnvelopeMonitor() if history else None
-    assert lattice.trackEnvelope(expected, sc=sc, callback=expected_monitor) is None
+    assert lattice.trackEnvelope(expected, sc=sc, actionContainer=monitor_actions(expected_monitor)) is None
     for _ in range(2):
         actual = envelope.copy()
         actual_monitor = EnvelopeMonitor() if history else None
         result = lattice.trackEnvelope(
-            actual, static=True, sc=sc, callback=actual_monitor, fit=fit, fallback=True,
+            actual, static=True, sc=sc, actionContainer=monitor_actions(actual_monitor), fit=fit, fallback=True,
         )
         assert np.allclose(actual.cov_matrix, expected.cov_matrix)
         assert actual.kin_energy == pytest.approx(expected.kin_energy)
@@ -661,65 +673,6 @@ def test_envelope_fallback_only_handles_missing_matrices(monkeypatch):
     monkeypatch.setattr(node, "getMatrix", broken_matrix)
     with pytest.raises(RuntimeError, match="Invalid node parameters"):
         lattice.trackEnvelope(envelope, fit=False, fallback=True)
-
-
-@pytest.mark.parametrize("static", [False, True])
-@pytest.mark.parametrize("fit", [False, True])
-def test_custom_envelope_callback(static, fit):
-    lattice = make_lattice([
-        DriftTEAPOT(length=0.4),
-        DriftTEAPOT(length=0.6, nparts=2),
-    ])
-    bunch = Bunch()
-    bunch.getSyncParticle().kinEnergy(1.3)
-    envelope = Envelope(sync_part=bunch.getSyncParticle())
-    envelope.centroid[1] = 0.1
-    positions = []
-    centroids = []
-
-    def callback(current, s):
-        assert current is envelope
-        positions.append(s)
-        centroids.append(current.centroid.copy())
-        # Arbitrary return values are ignored, including non-copyable objects.
-        return iter([s]) if s == 0 else object()
-
-    result = lattice.trackEnvelope(
-        envelope, index_start=1, callback=callback, static=static, fit=fit,
-    )
-    assert result is None
-    assert np.allclose(positions, [0.0, 0.3, 0.6])
-    assert np.allclose(np.array(centroids)[:, 0], [0.0, 0.03, 0.06])
-    assert lattice.trackEnvelope(envelope, static=static, fit=fit) is None
-
-
-@pytest.mark.parametrize("static", [False, True])
-def test_envelope_callback_empty_range(static):
-    lattice = make_lattice([DriftTEAPOT(length=0.1)])
-    bunch = Bunch()
-    bunch.getSyncParticle().kinEnergy(1.3)
-    envelope = Envelope(sync_part=bunch.getSyncParticle())
-    positions = []
-    result = lattice.trackEnvelope(
-        envelope, index_start=1, static=static,
-        callback=lambda e, s: positions.append(s),
-    )
-    assert result is None
-    assert positions == [0.0]
-
-
-def test_envelope_callback_exception_propagates():
-    lattice = make_lattice([DriftTEAPOT(length=0.1)])
-    bunch = Bunch()
-    bunch.getSyncParticle().kinEnergy(1.3)
-    envelope = Envelope(sync_part=bunch.getSyncParticle())
-
-    def callback(envelope, s):
-        if s > 0:
-            raise RuntimeError("Stop tracking")
-
-    with pytest.raises(RuntimeError, match="Stop tracking"):
-        lattice.trackEnvelope(envelope, callback=callback)
 
 
 def test_envelope_analysis():
@@ -767,3 +720,212 @@ def test_envelope_analysis_coupled_and_cold_modes():
     envelope.cov_matrix = np.zeros((6, 6))
     assert np.array_equal(analysis.eigenemittances(), np.zeros(3))
     assert analysis.to_dict()["eps_3"] == 0.0
+
+
+class ActionTestNode(AccNodeBunchTracker):
+    """Affine transport with observable centroid and reference-time changes."""
+
+    def track(self, params):
+        bunch = params["bunch"]
+        length = self.getLength(self.getActivePartIndex())
+        for i in range(bunch.getSize()):
+            bunch.x(i, bunch.x(i) + length)
+        sync = bunch.getSyncParticle()
+        sync.time(sync.time() + length)
+
+    def getMatrix(self, sync_part, part_index=-1):
+        length = self.getLength(part_index)
+        sync_part.time(sync_part.time() + length)
+        matrix = np.eye(7)
+        matrix[0, 6] = length
+        return matrix
+
+
+def make_action_lattice():
+    def node(name, length):
+        result = ActionTestNode(name)
+        result.setLength(length)
+        return result
+
+    parent = node("parent", 0.6)
+    parent.setnParts(2)
+    entrance = node("entrance", 0.02)
+    entrance.addChildNode(node("nested", 0.01), AccNode.EXIT)
+    parent.addChildNode(entrance, AccNode.ENTRANCE)
+    parent.addChildNode(node("before", 0.03), AccNode.BODY, 0, AccNode.BEFORE)
+    parent.addChildNode(node("after", 0.04), AccNode.BODY, 1, AccNode.AFTER)
+    parent.addChildNode(node("exit", 0.05), AccNode.EXIT)
+    return make_lattice([parent])
+
+
+def capture_actions(events, beam_key):
+    actions = AccActionsContainer()
+    for place in (AccNode.ENTRANCE, AccNode.BODY, AccNode.EXIT):
+        for order in (0, 1):
+            def action(params, place=place, order=order):
+                beam = params[beam_key]
+                sync = beam.getSyncParticle() if beam_key == "bunch" else beam.sync_part
+                x = beam.x(0) if beam_key == "bunch" else beam.centroid[0]
+                node = params["node"]
+                assert params["actions"] is actions
+                assert params["custom"] == "retained"
+                events.append((node.getName(), params["parentNode"].getName(),
+                               node.getActivePartIndex(), place, order,
+                               params["path_length"], sync.time(), x))
+                return object()  # Ignored by the action container.
+            actions.addAction(action, place)
+    return actions
+
+
+@pytest.mark.parametrize("static", [False, True])
+@pytest.mark.parametrize("fit", [False, True])
+def test_envelope_actions_match_bunch_tracking(static, fit):
+    lattice = make_action_lattice()
+    bunch = Bunch()
+    bunch.getSyncParticle().kinEnergy(1.3)
+    bunch.addParticle(0., 0., 0., 0., 0., 0.)
+    envelope = Envelope(sync_part=bunch.getSyncParticle()).copy()
+    expected = []
+    bunch_actions = capture_actions(expected, "bunch")
+    lattice.trackBunch(bunch, paramsDict={"custom": "retained", "path_length": 2.0},
+                       actionContainer=bunch_actions)
+    for _ in range(2):  # Cached traversal must replay every action.
+        actual = []
+        actions = capture_actions(actual, "envelope")
+        original_actions = [list(actions.getActions(p)) for p in (0, 1, 2)]
+        params = {"custom": "retained", "path_length": 2.0}
+        tracked = envelope.copy()
+        assert lattice.trackEnvelope(
+            tracked, paramsDict=params, actionContainer=actions, static=static, fit=fit,
+        ) is None
+        assert len(actual) == len(expected)
+        for observed, reference in zip(actual, expected):
+            assert observed[:5] == reference[:5]
+            assert np.allclose(observed[5:], reference[5:], atol=1e-10)
+        assert params["envelope"] is tracked
+        assert params["lattice"] is lattice
+        assert params["path_length"] == pytest.approx(expected[-1][5])
+        assert [actions.getActions(p) for p in (0, 1, 2)] == original_actions
+
+
+@pytest.mark.parametrize("static", [False, True])
+def test_envelope_empty_range_actions(static):
+    lattice = make_action_lattice()
+    bunch = Bunch()
+    bunch.getSyncParticle().kinEnergy(1.3)
+    envelope = Envelope(sync_part=bunch.getSyncParticle())
+    events = []
+    actions = capture_actions(events, "envelope")
+    params = {"custom": "retained", "path_length": 3.0}
+    assert lattice.trackEnvelope(envelope, index_start=1, paramsDict=params,
+                                  actionContainer=actions, static=static) is None
+    assert events == []
+    assert params["path_length"] == 3.0
+
+
+def test_envelope_action_exception_preserves_container():
+    lattice = make_action_lattice()
+    bunch = Bunch()
+    bunch.getSyncParticle().kinEnergy(1.3)
+    actions = AccActionsContainer()
+
+    def fail(params):
+        raise RuntimeError("Stop tracking")
+
+    actions.addAction(fail, AccNode.BODY)
+    with pytest.raises(RuntimeError, match="Stop tracking"):
+        lattice.trackEnvelope(Envelope(sync_part=bunch.getSyncParticle()), actionContainer=actions)
+    assert actions.getActions(AccNode.BODY) == [fail]
+
+
+@pytest.mark.parametrize("fit", [False, True])
+def test_envelope_body_actions_can_update_beam(fit):
+    lattice = make_lattice([ActionTestNode("node")])
+    bunch = Bunch()
+    bunch.getSyncParticle().kinEnergy(1.3)
+    envelope = Envelope(sync_part=bunch.getSyncParticle())
+    actions = AccActionsContainer()
+
+    def change_beam(params):
+        beam = params["envelope"]
+        beam.centroid[0] += 0.2
+        beam.sync_part.kinEnergy(beam.kin_energy + 0.1)
+
+    actions.addAction(change_beam, AccNode.BODY)
+    lattice.trackEnvelope(envelope, actionContainer=actions, fit=fit)
+    assert envelope.centroid[0] == pytest.approx(0.2)
+    assert envelope.kin_energy == pytest.approx(1.4)
+
+
+@pytest.mark.parametrize("static", [False, True])
+def test_envelope_uses_node_traversal_overrides(static):
+    class CustomTraversalNode(ActionTestNode):
+        def __init__(self):
+            super().__init__("custom")
+            self.visits = 0
+
+        def trackActions(self, actionsContainer, paramsDict):
+            self.visits += 1
+            super().trackActions(actionsContainer, paramsDict)
+
+    node = CustomTraversalNode()
+    lattice = make_lattice([node])
+    node.visits = 0  # Lattice initialization also uses the node traversal.
+    bunch = Bunch()
+    bunch.getSyncParticle().kinEnergy(1.3)
+    envelope = Envelope(sync_part=bunch.getSyncParticle())
+    actions = monitor_actions(EnvelopeMonitor())
+    for _ in range(2):
+        lattice.trackEnvelope(envelope.copy(), actionContainer=actions, static=static)
+    assert node.visits == 2
+
+
+def test_envelope_cached_matrices_and_combined_fast_path(monkeypatch):
+    node = ActionTestNode("cached")
+    node.setLength(0.1)
+    lattice = make_lattice([node])
+    bunch = Bunch()
+    bunch.getSyncParticle().kinEnergy(1.3)
+    envelope = Envelope(sync_part=bunch.getSyncParticle())
+    monitor = EnvelopeMonitor()
+    actions = monitor_actions(monitor)
+    lattice.trackEnvelope(envelope.copy(), static=True, fit=False, actionContainer=actions)
+
+    def unexpected_matrix(*args, **kwargs):
+        pytest.fail("Cached tracking should reuse the existing node matrix")
+
+    monkeypatch.setattr(node, "getMatrix", unexpected_matrix)
+    lattice.trackEnvelope(envelope.copy(), static=True, fit=False, actionContainer=actions)
+    assert len(monitor.history["s"]) == 4
+
+    # Reuse the node cache to build the combined matrix, then use its fast path.
+    expected = envelope.copy()
+    lattice.trackEnvelope(expected, static=True, fit=False)
+    tracked = envelope.copy()
+    params = {"path_length": 2.0}
+    lattice.trackEnvelope(tracked, static=True, fit=False, paramsDict=params)
+    assert np.allclose(tracked.centroid, expected.centroid)
+    assert np.allclose(tracked.cov_matrix, expected.cov_matrix)
+    assert tracked.sync_part.time() == expected.sync_part.time()
+    assert params["path_length"] == pytest.approx(2.1)
+    assert params["node"] is node
+
+
+@pytest.mark.parametrize("static", [False, True])
+def test_static_time_advances_across_reused_matrices(static):
+    lattice = make_lattice([ActionTestNode("periodic")])
+    bunch = Bunch()
+    bunch.getSyncParticle().kinEnergy(1.3)
+    envelope = Envelope(sync_part=bunch.getSyncParticle())
+    first = envelope.copy()
+    lattice.trackEnvelope(first, static=static, fit=False)
+    initial_time = first.sync_part.time()
+    lattice.trackEnvelope(first, static=static, fit=False)
+
+    reference = envelope.copy()
+    lattice.trackEnvelope(reference, fit=False)
+    lattice.trackEnvelope(reference, fit=False)
+    assert first.sync_part.time() == pytest.approx(2 * initial_time)
+    assert first.sync_part.time() == pytest.approx(reference.sync_part.time())
+    assert np.allclose(first.centroid, reference.centroid)
+    assert np.allclose(first.cov_matrix, reference.cov_matrix)

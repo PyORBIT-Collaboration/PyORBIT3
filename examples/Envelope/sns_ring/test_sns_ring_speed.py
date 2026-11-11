@@ -35,6 +35,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sc-grid", type=int, default=64)
     parser.add_argument("--fringe", type=int, default=0)
     parser.add_argument("--fit", type=int, default=1)
+    parser.add_argument("--static", type=int, default=1)
     return parser.parse_args()
 
 
@@ -103,7 +104,7 @@ def main(args: argparse.Namespace) -> None:
     profiler.enable()
 
     for turn in trange(args.turns):
-        lattice.trackEnvelope(envelope, sc=envelope_sc, fit=args.fit, static=True)
+        lattice.trackEnvelope(envelope, sc=envelope_sc, fit=args.fit, static=args.static)
 
     time_per_turn = (time.time() - start_time) / args.turns
 

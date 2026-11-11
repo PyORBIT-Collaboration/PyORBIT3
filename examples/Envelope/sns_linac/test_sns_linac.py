@@ -153,7 +153,11 @@ class EnvelopeMonitor:
     def __init__(self) -> None:
         self.history = {}
 
-    def __call__(self, envelope: Envelope, s: float) -> None:
+    def __call__(self, params_dict: dict) -> None:
+        envelope = params_dict["envelope"]
+        s = params_dict["path_length"]
+        if self.history and self.history["s"][-1] == s:
+            return
         parameters = {"s": s, **EnvelopeAnalysis(envelope).to_dict()}
         for key, value in parameters.items():
             self.history.setdefault(key, []).append(value)
@@ -175,9 +179,12 @@ def main(args: argparse.Namespace) -> None:
     lattice.trackDesignBunch(bunch)
 
     envelope_monitor = EnvelopeMonitor()
+    envelope_actions = AccActionsContainer()
+    envelope_actions.addAction(envelope_monitor, AccActionsContainer.ENTRANCE)
+    envelope_actions.addAction(envelope_monitor, AccActionsContainer.EXIT)
     lattice.trackEnvelope(
         envelope,
-        callback=envelope_monitor,
+        actionContainer=envelope_actions,
         sc=("3d" if args.sc else None),
         fit=args.fit,
     )
