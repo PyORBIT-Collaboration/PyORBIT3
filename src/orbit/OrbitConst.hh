@@ -44,6 +44,7 @@ constexpr double elementary_charge_MKS = 1.60217565e-19;
 
 // GeV/c to Tm
 constexpr double GeV_per_c_to_T_m = 1.0e9 / c;
+constexpr double GeV_per_c_to_T_m_inv = c * 1.0e-9;
 
 //coeffitient for magnetic field strength
 //to shift from Tesla to H(CGS)/e(SGS) in 1/m^2
