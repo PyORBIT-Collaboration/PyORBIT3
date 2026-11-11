@@ -25,6 +25,9 @@ public:
 	/** Routine for transfering particles through a foil with simplified scattering. No particle loss. */
 	void traverseFoilSimpleScatter(Bunch* bunch);
 
+	/** Returns the accumulated number of foil hits. */
+	int getnHits();
+
 
 private:
 
