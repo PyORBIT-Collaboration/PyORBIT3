@@ -11,7 +11,6 @@ from .utils import gen_dist
 from .utils import get_classical_radius
 from .utils import proj_cov_matrix
 from .matrix_fitting import bunch_from_sync_particle
-from .matrix_fitting import copy_sync_particle
 
 
 def get_bunch_cov_matrix(bunch: Bunch) -> np.ndarray:
@@ -80,6 +79,7 @@ class Envelope:
             intensity = bunch.getSize() * bunch.macroSize()
 
         self.sync_part = sync_part
+        self._reference_bunch = bunch
 
         self.centroid = centroid
         if self.centroid is None:
@@ -100,13 +100,14 @@ class Envelope:
     def copy(self):
         new_bunch = bunch_from_sync_particle(self.sync_part)
         new_sync_part = new_bunch.getSyncParticle()
-        copy_sync_particle(self.sync_part, new_sync_part)
-        return Envelope(
+        new_envelope = Envelope(
             sync_part=new_sync_part,
             cov_matrix=self.cov_matrix.copy(),
             centroid=self.centroid.copy(),
             intensity=self.intensity
         )
+        new_envelope._reference_bunch = new_bunch
+        return new_envelope
 
     @property
     def kin_energy(self) -> float:
