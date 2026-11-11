@@ -6,6 +6,7 @@ from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.linac import MatrixRfGap
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
+from orbit.envelope import EnvelopeAnalysis
 from orbit.envelope import fit_transfer_matrix
 from orbit.lattice import AccNode
 from orbit.lattice import AccLattice
@@ -24,6 +25,10 @@ from orbit.teapot import SolenoidTEAPOT
 from orbit.teapot import TiltTEAPOT
 from orbit.teapot import TEAPOT_Lattice
 from orbit.utils.consts import mass_proton
+
+
+def observe_envelope(envelope, s):
+    return {"s": s, **EnvelopeAnalysis(envelope).to_dict()}
 
 
 def get_lorentz_factors(kin_energy: float, mass: float) -> tuple[float, float]:
@@ -435,10 +440,10 @@ def test_track_static_history():
         cov_matrix=make_default_cov_matrix(),
     )
 
-    expected = lattice.trackEnvelope(envelope.copy(), history=True, fit=False)
+    expected = lattice.trackEnvelope(envelope.copy(), observe=observe_envelope, fit=False)
     actual = lattice.trackEnvelope(
         envelope.copy(),
-        history=True,
+        observe=observe_envelope,
         fit=False,
         static=True,
     )
@@ -470,3 +475,262 @@ def test_get_total_matrix(charge: float) -> None:
     envelope_out_b = envelope.copy()
     envelope_out_b.transform(matrix)
     assert np.all(np.isclose(envelope_out_a.cov_matrix, envelope_out_b.cov_matrix))
+
+
+def test_envelope_copy_reference_state():
+    import gc
+
+    bunch = Bunch()
+    bunch.mass(mass_proton)
+    bunch.charge(-1.0)
+    sync = bunch.getSyncParticle()
+    sync.rVector((1.0, 2.0, 3.0))
+    sync.pVector((0.1, 0.2, 1.3))
+    sync.nxVector((1.0, 0.0, 0.0))
+    sync.time(2.5)
+    original = Envelope(bunch=bunch)
+    original.centroid = np.arange(6, dtype=float)
+    original.cov_matrix = make_default_cov_matrix()
+    original.intensity = 1234.0
+    original.rms_bunch_length_factor = 4.0
+    copied = original.copy()
+
+    for attr in ("mass", "charge", "kinEnergy", "time", "rVector", "pVector", "nxVector", "nyVector"):
+        assert np.allclose(getattr(copied.sync_part, attr)(), getattr(sync, attr)())
+    assert copied.rms_bunch_length_factor == 4.0
+    assert np.array_equal(copied.centroid, original.centroid)
+    assert np.array_equal(copied.cov_matrix, original.cov_matrix)
+    assert copied.intensity == original.intensity
+    assert copied.classical_radius == original.classical_radius
+    copied.centroid[0] = 9.0
+    copied.cov_matrix[0, 0] = 9.0
+    copied.sync_part.time(7.0)
+    copied.sync_part.kinEnergy(0.5)
+    assert original.centroid[0] == 0.0
+    assert original.cov_matrix[0, 0] != 9.0
+    assert sync.time() == 2.5
+    assert sync.kinEnergy() != 0.5
+    del original, bunch, sync
+    gc.collect()
+    assert copied.sync_part.kinEnergy() == pytest.approx(0.5)
+    assert copied.copy().sync_part.time() == 7.0
+
+
+@pytest.mark.parametrize("bend_class", [Bend, BendTEAPOT])
+@pytest.mark.parametrize("edges", [(0.1, 0.0), (0.0, -0.1), (0.1, -0.1)])
+@pytest.mark.parametrize("fringe", [False, True])
+def test_edge_bends_always_fit(bend_class, edges, fringe, monkeypatch):
+    node = bend_class()
+    node.setLength(1.0)
+    node.setnParts(5)
+    node.setParam("theta", 0.2)
+    node.setParam("ea1", edges[0])
+    node.setParam("ea2", edges[1])
+    lattice = make_lattice([DriftTEAPOT(length=0.2), node, DriftTEAPOT(length=0.3)])
+    node.setUsageFringeFieldIN(fringe)
+    node.setUsageFringeFieldOUT(fringe)
+    bunch = Bunch()
+    bunch.getSyncParticle().kinEnergy(1.3)
+    envelope = Envelope(sync_part=bunch.getSyncParticle())
+    expected = fit_transfer_matrix(lattice, bunch)
+    expected_per_node = lattice.getEnvelopeTransferMatrix(envelope, fit=True)
+
+    def unexpected_analytic(*args, **kwargs):
+        pytest.fail("Edge bend should use fitting even with fit=False")
+
+    monkeypatch.setattr(node, "getMatrix", unexpected_analytic)
+    actual = lattice.getEnvelopeTransferMatrix(envelope, fit=False)
+    assert np.allclose(actual, expected_per_node, atol=1e-12)
+    # Finite probe amplitudes give slightly different linearizations when
+    # fitting each element separately versus fitting the full nonlinear map.
+    assert np.allclose(actual, expected, atol=3e-8)
+
+
+class UnsupportedEnvelopeDrift(DriftTEAPOT):
+    def getMatrix(self, sync_part, part_index=-1):
+        raise NotImplementedError("No analytic matrix")
+
+
+@pytest.mark.parametrize("static", [False, True])
+@pytest.mark.parametrize("history", [False, True])
+def test_envelope_fit_fallback(static, history):
+    lattice = make_lattice([
+        DriftTEAPOT(length=0.1),
+        UnsupportedEnvelopeDrift(length=0.2, nparts=2),
+        DriftTEAPOT(length=0.3),
+    ])
+    bunch = Bunch()
+    bunch.getSyncParticle().kinEnergy(1.3)
+    envelope = Envelope(sync_part=bunch.getSyncParticle())
+    with pytest.raises(NotImplementedError, match="No analytic matrix"):
+        lattice.trackEnvelope(envelope.copy(), fit=False, static=static, observe=observe_envelope if history else None)
+    expected = envelope.copy()
+    expected_history = lattice.trackEnvelope(expected, fit=True, observe=observe_envelope if history else None)
+    for _ in range(2):  # Also exercise reuse of the static cache.
+        actual = envelope.copy()
+        actual_history = lattice.trackEnvelope(
+            actual, fit=False, fallback=True, static=static, observe=observe_envelope if history else None,
+        )
+        assert np.allclose(actual.cov_matrix, expected.cov_matrix)
+        assert actual.sync_part.time() == pytest.approx(expected.sync_part.time())
+        if history:
+            for key in expected_history:
+                assert np.allclose(actual_history[key], expected_history[key])
+    assert np.allclose(
+        lattice.getEnvelopeTransferMatrix(envelope, fit=False, fallback=True),
+        lattice.getEnvelopeTransferMatrix(envelope, fit=True),
+    )
+
+
+class AcceleratingEnvelopeNode(AccNode):
+    def getMatrix(self, sync_part, part_index=-1):
+        sync_part.kinEnergy(sync_part.kinEnergy() + 0.1)
+        sync_part.time(sync_part.time() + 1.0)
+        return np.identity(7)
+
+    def track(self, params):
+        sync = params["bunch"].getSyncParticle()
+        sync.kinEnergy(sync.kinEnergy() + 0.1)
+        sync.time(sync.time() + 1.0)
+
+
+@pytest.mark.parametrize("sc", [None, "2d", "3d"])
+@pytest.mark.parametrize("history", [False, True])
+@pytest.mark.parametrize("fit", [False, True])
+def test_static_envelope_sync_updates(sc, history, fit):
+    lattice = make_lattice([
+        AcceleratingEnvelopeNode(), UnsupportedEnvelopeDrift(length=0.1),
+    ])
+    bunch = Bunch()
+    bunch.getSyncParticle().kinEnergy(1.3)
+    envelope = Envelope(sync_part=bunch.getSyncParticle(), intensity=1e7)
+    expected = envelope.copy()
+    expected_history = lattice.trackEnvelope(expected, sc=sc, observe=observe_envelope if history else None)
+    for _ in range(2):
+        actual = envelope.copy()
+        actual_history = lattice.trackEnvelope(
+            actual, static=True, sc=sc, observe=observe_envelope if history else None, fit=fit, fallback=True,
+        )
+        assert np.allclose(actual.cov_matrix, expected.cov_matrix)
+        assert actual.kin_energy == pytest.approx(expected.kin_energy)
+        assert actual.sync_part.time() == pytest.approx(expected.sync_part.time())
+        if history:
+            for key in expected_history:
+                assert np.allclose(actual_history[key], expected_history[key])
+    assert envelope.kin_energy == pytest.approx(1.3)
+    lattice.getEnvelopeTransferMatrix(envelope, sc=sc)
+    assert envelope.kin_energy == pytest.approx(1.3)
+    assert envelope.sync_part.time() == 0.0
+
+
+def test_envelope_fallback_only_handles_missing_matrices(monkeypatch):
+    node = DriftTEAPOT(length=0.1)
+    lattice = make_lattice([node])
+    bunch = Bunch()
+    bunch.getSyncParticle().kinEnergy(1.3)
+    envelope = Envelope(sync_part=bunch.getSyncParticle())
+
+    def no_matrix(*args, **kwargs):
+        return None
+
+    monkeypatch.setattr(node, "getMatrix", no_matrix)
+    unchanged = envelope.copy()
+    lattice.trackEnvelope(unchanged, fit=False, fallback=True)
+    assert np.array_equal(unchanged.cov_matrix, envelope.cov_matrix)
+    assert unchanged.sync_part.time() == envelope.sync_part.time()
+
+    def broken_matrix(*args, **kwargs):
+        raise RuntimeError("Invalid node parameters")
+
+    monkeypatch.setattr(node, "getMatrix", broken_matrix)
+    with pytest.raises(RuntimeError, match="Invalid node parameters"):
+        lattice.trackEnvelope(envelope, fit=False, fallback=True)
+
+
+@pytest.mark.parametrize("static", [False, True])
+@pytest.mark.parametrize("fit", [False, True])
+def test_custom_envelope_observer(static, fit):
+    lattice = make_lattice([
+        DriftTEAPOT(length=0.4),
+        DriftTEAPOT(length=0.6, nparts=2),
+    ])
+    bunch = Bunch()
+    bunch.getSyncParticle().kinEnergy(1.3)
+    envelope = Envelope(sync_part=bunch.getSyncParticle())
+    envelope.centroid[1] = 0.1
+    calls = []
+    shared_values = []
+
+    def observe(current, s):
+        assert current is envelope
+        calls.append(s)
+        shared_values.append(s)
+        return {"position": s, "x": current.centroid[0], "shared": shared_values}
+
+    result = lattice.trackEnvelope(
+        envelope, index_start=1, observe=observe, static=static, fit=fit,
+    )
+    assert set(result) == {"position", "x", "shared"}
+    assert np.allclose(calls, [0.0, 0.3, 0.6])
+    assert np.allclose(result["position"], calls)
+    assert np.allclose(result["x"], [0.0, 0.03, 0.06])
+    assert [len(value) for value in result["shared"]] == [1, 2, 3]
+    assert lattice.trackEnvelope(envelope, static=static, fit=fit) is None
+
+
+def test_envelope_observer_empty_range_and_consistent_keys():
+    lattice = make_lattice([DriftTEAPOT(length=0.1)])
+    bunch = Bunch()
+    bunch.getSyncParticle().kinEnergy(1.3)
+    envelope = Envelope(sync_part=bunch.getSyncParticle())
+    result = lattice.trackEnvelope(envelope, index_start=1, observe=lambda e, s: {"s": s})
+    assert result == {"s": [0.0]}
+    with pytest.raises(ValueError, match="same keys"):
+        lattice.trackEnvelope(envelope, observe=lambda e, s: {} if s == 0 else {"s": s})
+
+
+def test_envelope_analysis():
+    bunch = Bunch()
+    bunch.getSyncParticle().kinEnergy(1.3)
+    cov = np.diag([1., 4., 9., 16., 25., 36.])
+    envelope = Envelope(sync_part=bunch.getSyncParticle(), cov_matrix=cov)
+    analysis = EnvelopeAnalysis(envelope)
+    assert np.allclose(analysis.rms(), [1., 3., 5.])
+    assert analysis.rms(1) == 3.0
+    assert np.allclose(analysis.emittances(), [2., 12., 30.])
+    assert np.allclose(analysis.eigenemittances(), [2., 12., 30.])
+    expected_normalized = np.array([2., 12., 30.]) * [
+        envelope.beta * envelope.gamma, envelope.beta * envelope.gamma, 1 / envelope.beta,
+    ]
+    assert np.allclose(analysis.emittances(normalized=True), expected_normalized)
+    data = analysis.to_dict()
+    assert data["rms_z"] == 5.0
+    assert data["eps_y"] == 12.0
+    assert data["eps_z_n"] == pytest.approx(expected_normalized[2])
+    assert data["eps_3"] == 30.0
+    data["cov"][0, 0] = 99.0
+    data["mean"][0] = 99.0
+    assert envelope.cov_matrix[0, 0] == 1.0
+    assert envelope.centroid[0] == 0.0
+    envelope.cov_matrix = np.eye(6) * 4.0
+    assert np.allclose(analysis.rms(), [2., 2., 2.])
+
+
+def test_envelope_analysis_coupled_and_cold_modes():
+    bunch = Bunch()
+    bunch.getSyncParticle().kinEnergy(1.3)
+    rotation = np.eye(6)
+    angle = 0.4
+    for i, j in [(0, 2), (1, 3)]:
+        rotation[i, i] = rotation[j, j] = np.cos(angle)
+        rotation[i, j] = np.sin(angle)
+        rotation[j, i] = -np.sin(angle)
+    envelope = Envelope(
+        sync_part=bunch.getSyncParticle(),
+        cov_matrix=rotation @ np.diag([1., 4., 9., 16., 0., 0.]) @ rotation.T,
+    )
+    analysis = EnvelopeAnalysis(envelope)
+    assert np.allclose(analysis.eigenemittances(), [0., 2., 12.])
+    envelope.cov_matrix = np.zeros((6, 6))
+    assert np.array_equal(analysis.eigenemittances(), np.zeros(3))
+    assert analysis.to_dict()["eps_3"] == 0.0

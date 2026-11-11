@@ -32,6 +32,7 @@ from orbit.bunch_generators import GaussDist3D
 from orbit.bunch_generators import KVDist3D
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
+from orbit.envelope import EnvelopeAnalysis
 from orbit.lattice import AccLattice
 from orbit.lattice import AccNode
 from orbit.lattice import AccActionsContainer
@@ -160,10 +161,13 @@ def main(args: argparse.Namespace) -> None:
     lattice = make_lattice(args)
     lattice.trackDesignBunch(bunch)
 
+    def observe(envelope, s):
+        return {"s": s, **EnvelopeAnalysis(envelope).to_dict()}
+
     histories = {}
     histories["envelope"] = lattice.trackEnvelope(
         envelope,
-        history=True,
+        observe=observe,
         sc=("3d" if args.sc else None),
         fit=True,
     )
@@ -260,7 +264,7 @@ def main(args: argparse.Namespace) -> None:
     particles = collect_bunch(bunch)["coords"]
     particles *= 1e3
 
-    env_cov_matrix = envelope.cov_matrix
+    env_cov_matrix = EnvelopeAnalysis(envelope).covariance()
     env_cov_matrix *= 1e6
 
     env_centroid = envelope.centroid

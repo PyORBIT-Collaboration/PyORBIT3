@@ -15,6 +15,7 @@ from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
+from orbit.envelope import EnvelopeAnalysis
 from orbit.lattice import AccLattice
 from orbit.lattice import AccNode
 from orbit.core.spacecharge import SpaceChargeCalc2p5D
@@ -145,30 +146,22 @@ def main(args: argparse.Namespace) -> None:
 
     envelope_sc = "2d" if args.sc else None
 
-    history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
+    analysis = EnvelopeAnalysis(envelope)
+    history = {key: [] for key in ('xrms', 'yrms', 'xavg', 'yavg')}
     for turn in range(args.turns):
         if turn > 0:
-            lattice.trackEnvelope(envelope, sc=envelope_sc, fit=args.fit, static=True)
+            lattice.trackEnvelope(
+                envelope, sc=envelope_sc, fit=args.fit, static=True,
+            )
 
-        cov_matrix = envelope.cov_matrix
-        centroid = envelope.centroid
+        rms = 1000.0 * analysis.rms()
+        mean = 1000.0 * analysis.centroid()
+        parameters = {"xrms": rms[0], "yrms": rms[1], "xavg": mean[0], "yavg": mean[2]}
+        for key, value in parameters.items():
+            history[key].append(value)
+        print(f"turn={turn}", parameters)
 
-        xrms = 1000.0 * math.sqrt(cov_matrix[0, 0])
-        yrms = 1000.0 * math.sqrt(cov_matrix[2, 2])
-        xavg = 1000.0 * centroid[0]
-        yavg = 1000.0 * centroid[2]
-
-        print(
-            f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} xavg={xavg:0.3f} yavg={yavg:0.3f}"
-        )
-
-        history["xrms"].append(xrms)
-        history["yrms"].append(yrms)
-        history["xavg"].append(xavg)
-        history["yavg"].append(yavg)
-
-    histories = {}
-    histories["envelope"] = copy.deepcopy(history)
+    histories = {"envelope": history}
 
     # Track bunch
     # ------------------------------------------------------------------------------
@@ -271,7 +264,7 @@ def main(args: argparse.Namespace) -> None:
     particles = collect_bunch(bunch)["coords"]
     particles[:, :4] *= 1000.0
 
-    env_cov_matrix = envelope.cov_matrix
+    env_cov_matrix = EnvelopeAnalysis(envelope).covariance()
     env_cov_matrix[:4, :4] *= 1000.0**2
 
     env_centroid = envelope.centroid

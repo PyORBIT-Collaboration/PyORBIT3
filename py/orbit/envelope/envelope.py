@@ -104,9 +104,11 @@ class Envelope:
             sync_part=new_sync_part,
             cov_matrix=self.cov_matrix.copy(),
             centroid=self.centroid.copy(),
-            intensity=self.intensity
+            intensity=self.intensity,
         )
         new_envelope._reference_bunch = new_bunch
+        new_envelope.rms_bunch_length_factor = self.rms_bunch_length_factor
+        new_envelope.classical_radius = self.classical_radius
         return new_envelope
 
     @property
