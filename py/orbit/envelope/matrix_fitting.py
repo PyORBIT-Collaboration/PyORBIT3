@@ -49,6 +49,7 @@ def fit_node_transfer_matrix(
 
     if matrix_generator is None:
         matrix_generator = MatrixGenerator()
+
     if lost_bunch is None:
         lost_bunch = Bunch()
         bunch.copyEmptyBunchTo(lost_bunch)
@@ -57,18 +58,18 @@ def fit_node_transfer_matrix(
     matrix.unit()
     matrix_generator.initBunch(bunch)
 
-    params = {} if params_dict is None else params_dict.copy()
-    params["bunch"] = bunch
-    params["lostbunch"] = lost_bunch
-    params["node"] = node
+    params_dict = {} if params_dict is None else params_dict.copy()
+    params_dict["bunch"] = bunch
+    params_dict["lostbunch"] = lost_bunch
+    params_dict["node"] = node
     if parent_node is not None:
-        params["parentNode"] = parent_node
+        params_dict["parentNode"] = parent_node
 
     active_part_index = node.getActivePartIndex()
     if part_index >= 0:
         node.setActivePartIndex(part_index)
     try:
-        node.track(params)
+        node.track(params_dict)
     finally:
         node.setActivePartIndex(active_part_index)
 

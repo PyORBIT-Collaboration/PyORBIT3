@@ -45,7 +45,7 @@ def build_diag_matrix_from_xyz_eig(eigenvectors: np.ndarray) -> np.ndarray:
 
 
 class Envelope:
-    """Represents beam envelope/centroid.
+    """Represents the phase space covariance matrix and centroid.
 
     Attributes:
         sync_part: Synchronous particle.
@@ -139,7 +139,7 @@ class Envelope:
     def sc_factor(self) -> float:
         return 2.0 * self.intensity * self.classical_radius / (self.beta ** 2 * self.gamma ** 3)
 
-    def rms(self, axis: int = None) -> float | np.ndarray:
+    def rms(self, axis: int | None = None) -> float | np.ndarray:
         rms_arr = np.sqrt(np.diag(self.cov_matrix))
         return rms_arr[axis]
 
