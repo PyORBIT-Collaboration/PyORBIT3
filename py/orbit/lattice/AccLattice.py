@@ -1,4 +1,5 @@
 import os
+from dataclasses import dataclass
 
 import numpy as np
 
@@ -7,6 +8,7 @@ from orbit.envelope import Envelope
 from orbit.envelope.matrix_fitting import bunch_from_sync_particle
 from orbit.envelope.matrix_fitting import copy_sync_particle
 from orbit.envelope.matrix_fitting import fit_node_transfer_matrix
+from orbit.envelope.matrix_fitting import EnvelopeCache
 
 from orbit.utils import orbitFinalize
 from orbit.utils import NamedObject
@@ -38,16 +40,17 @@ class AccLattice(NamedObject, TypedObject):
         self.__isInitialized = False
         self.__children = []
         self.__childPositions = {}
+
         self._envelope_matrices = {}
         self._envelope_total_matrix = None
-        self._envelope_cache_key = None
+        self._envelope_cache = None
         self._envelope_cache_time = None
 
     def initialize(self):
         """
         Method. Initializes the lattice and child node structures.
         """
-        self._envelope_cache_key = None
+        self._envelope_cache = None
         self._envelope_total_matrix = None
         self._envelope_cache_time = None
         res_dict = {}
@@ -365,19 +368,19 @@ class AccLattice(NamedObject, TypedObject):
         start, stop, _ = slice(index_start, None if index_stop is None else index_stop + 1).indices(len(self.__children))
 
         if static:
-            cache_key = (
-                start,
-                stop,
-                fit,
-                fallback,
-                sync_part.mass(),
-                sync_part.charge(),
-                sync_part.rVector(),
-                sync_part.pVector(),
-                sync_part.nxVector(),
+            envelope_cache = EnvelopeCache(
+                index_start=start,
+                index_stop=stop,
+                fit=fit,
+                fallback=fallback,
+                mass=sync_part.mass(),
+                charge=sync_part.charge(),
+                sync_r_vector=sync_part.rVector(),
+                sync_p_vector=sync_part.pVector(),
+                sync_nx_vector=sync_part.nxVector(),
             )
-            if self._envelope_cache_key != cache_key:
-                self._envelope_cache_key = cache_key
+            if self._envelope_cache != envelope_cache:
+                self._envelope_cache = envelope_cache
                 self._envelope_matrices = {}
                 self._envelope_total_matrix = None
                 self._envelope_cache_time = sync_part.time()
