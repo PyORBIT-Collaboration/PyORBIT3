@@ -65,6 +65,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--current", type=float, default=0.038)
     parser.add_argument("--show", type=int, default=0)
     parser.add_argument("--seq-stop", type=str, default="CCL2")
+    parser.add_argument("--fit", type=int, default=1)
     return parser.parse_args()
 
 
@@ -146,6 +147,18 @@ def make_bunch(args: argparse.Namespace) -> Bunch:
     return bunch
 
 
+class EnvelopeMonitor:
+    """Collect envelope parameters versus position for plotting."""
+
+    def __init__(self) -> None:
+        self.history = {}
+
+    def __call__(self, envelope: Envelope, s: float) -> None:
+        parameters = {"s": s, **EnvelopeAnalysis(envelope).to_dict()}
+        for key, value in parameters.items():
+            self.history.setdefault(key, []).append(value)
+
+
 def main(args: argparse.Namespace) -> None:
 
     path = pathlib.Path(__file__)
@@ -161,16 +174,14 @@ def main(args: argparse.Namespace) -> None:
     lattice = make_lattice(args)
     lattice.trackDesignBunch(bunch)
 
-    def observe(envelope, s):
-        return {"s": s, **EnvelopeAnalysis(envelope).to_dict()}
-
-    histories = {}
-    histories["envelope"] = lattice.trackEnvelope(
+    envelope_monitor = EnvelopeMonitor()
+    lattice.trackEnvelope(
         envelope,
-        observe=observe,
+        callback=envelope_monitor,
         sc=("3d" if args.sc else None),
-        fit=True,
+        fit=args.fit,
     )
+    histories = {"envelope": envelope_monitor.history}
 
     # Track bunch
     bunch = make_bunch(args)

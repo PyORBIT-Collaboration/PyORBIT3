@@ -4,8 +4,8 @@ import argparse
 import copy
 import math
 import os
-import pathlib
 import time
+from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -61,8 +61,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main(args: argparse.Namespace) -> None:
-    path = pathlib.Path(__file__)
-    output_dir = os.path.join("outputs", path.stem, time.strftime("%Y%m%d_%H%M%S"))
+    output_dir = os.path.join("outputs", Path(__file__).stem, time.strftime("%Y%m%d_%H%M%S"))
     os.makedirs(output_dir, exist_ok=True)
 
     # Create lattice

@@ -1,5 +1,4 @@
 import os
-from copy import deepcopy
 from typing import Any
 from typing import Callable
 
@@ -385,7 +384,7 @@ class AccLattice(NamedObject, TypedObject):
         envelope: Envelope,
         elements,
         sc: str | None = None,
-        observe: Callable[[Envelope, float], None] | None = None,
+        callback: Callable[[Envelope, float], Any] | None = None,
         calculate_matrix: bool = False,
     ) -> np.ndarray | None:
         """Apply envelope operations and optionally return their combined matrix."""
@@ -395,8 +394,8 @@ class AccLattice(NamedObject, TypedObject):
         for element_type, value in elements:
             if element_type == "position":
                 path_length += value
-                if observe is not None:
-                    observe(envelope, path_length)
+                if callback is not None:
+                    callback(envelope, path_length)
                 continue
 
             if element_type == "sync":
@@ -424,11 +423,11 @@ class AccLattice(NamedObject, TypedObject):
         index_start: int = 0,
         index_stop: int = None,
         sc: str | None = None,
-        observe: Callable[[Envelope, float], dict[str, Any]] | None = None,
+        callback: Callable[[Envelope, float], Any] | None = None,
         fit: bool = True,
         static: bool = False,
-        fallback: bool = False,
-    ) -> None | dict[str, list]:
+        fallback: bool = True,
+    ) -> None:
         """Track envelope through the lattice.
 
         Args:
@@ -436,17 +435,16 @@ class AccLattice(NamedObject, TypedObject):
             index_start: Index of first node in sublattice.
             index_stop: Index of last node in sublattice.
             sc: Whether to include space charge kicks.
-            observe: Optional callback observe(envelope, s) returning a dictionary
-                with the same keys at every sample. Called at s=0 before tracking
-                and after each body part, before its AFTER/EXIT children, matching
-                the tracking order. Positions are relative to the selected range.
-                Values are copied and collected into a dictionary of lists;
-                include "s" in the returned dictionary to record positions.
-                With no observer, return None. Observers should not mutate the
-                envelope. Use orbit.envelope.EnvelopeAnalysis for beam quantities.
+            callback: Optional callable callback(envelope, s). Called at s=0
+                before tracking and after each body part, before its AFTER/EXIT
+                children. Positions are relative to the selected range. The
+                callback owns any analysis, logging, or history collection;
+                its return value is ignored. This method always returns None.
             fit: Whether to fit all transfer matrices. With False, use analytic
                 matrices, except bends with nonzero ea1 or ea2 (including their
-                children), which always use fitted matrices.
+                children), which always use fitted matrices. This is set True
+                by default for more accurate simlations with nonlinear elements,
+                but it should be turned off to increase speed in linear lattices.
             fallback: With fit=False, fit nodes whose getMatrix raises
                 NotImplementedError. A None matrix is an intentional no-op.
             static: Whether to pre-compute transfer matrices before
@@ -472,7 +470,7 @@ class AccLattice(NamedObject, TypedObject):
                 self._envelope_cache_key = cache_key
                 self._envelope_total_matrix = None
             elements = self._envelope_elements
-            if not sc and observe is None:
+            if not sc and callback is None:
                 if self._envelope_total_matrix is None:
                     total = np.identity(7)
                     for kind, value in elements:
@@ -486,26 +484,9 @@ class AccLattice(NamedObject, TypedObject):
                         break
                 return None
 
-        records = {} if observe is not None else None
-        record_keys = None
-
-        def record(envelope: Envelope, s: float) -> None:
-            nonlocal record_keys
-            parameters = observe(envelope, s)
-            if record_keys is None:
-                record_keys = set(parameters)
-            elif parameters.keys() != record_keys:
-                raise ValueError("Envelope observer must return the same keys at every sample")
-            for key, value in parameters.items():
-                records.setdefault(key, []).append(deepcopy(value))
-
-        if observe is not None:
-            record(envelope, 0.0)
-        self._applyEnvelopeElements(
-            envelope, elements, sc=sc,
-            observe=record if observe is not None else None,
-        )
-        return records
+        if callback is not None:
+            callback(envelope, 0.0)
+        self._applyEnvelopeElements(envelope, elements, sc=sc, callback=callback)
 
     def getEnvelopeTransferMatrix(
         self,

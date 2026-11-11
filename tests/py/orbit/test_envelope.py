@@ -27,8 +27,13 @@ from orbit.teapot import TEAPOT_Lattice
 from orbit.utils.consts import mass_proton
 
 
-def observe_envelope(envelope, s):
-    return {"s": s, **EnvelopeAnalysis(envelope).to_dict()}
+class EnvelopeMonitor:
+    def __init__(self):
+        self.history = {}
+
+    def __call__(self, envelope, s):
+        for key, value in {"s": s, **EnvelopeAnalysis(envelope).to_dict()}.items():
+            self.history.setdefault(key, []).append(value)
 
 
 def get_lorentz_factors(kin_energy: float, mass: float) -> tuple[float, float]:
@@ -440,17 +445,19 @@ def test_track_static_history():
         cov_matrix=make_default_cov_matrix(),
     )
 
-    expected = lattice.trackEnvelope(envelope.copy(), observe=observe_envelope, fit=False)
-    actual = lattice.trackEnvelope(
+    expected_monitor = EnvelopeMonitor()
+    actual_monitor = EnvelopeMonitor()
+    lattice.trackEnvelope(envelope.copy(), callback=expected_monitor, fit=False)
+    lattice.trackEnvelope(
         envelope.copy(),
-        observe=observe_envelope,
+        callback=actual_monitor,
         fit=False,
         static=True,
     )
 
-    assert actual.keys() == expected.keys()
-    for key in actual:
-        assert np.allclose(actual[key], expected[key])
+    assert actual_monitor.history.keys() == expected_monitor.history.keys()
+    for key in actual_monitor.history:
+        assert np.allclose(actual_monitor.history[key], expected_monitor.history[key])
 
 
 @pytest.mark.parametrize("charge", [1.0, -1.0])
@@ -563,19 +570,25 @@ def test_envelope_fit_fallback(static, history):
     bunch.getSyncParticle().kinEnergy(1.3)
     envelope = Envelope(sync_part=bunch.getSyncParticle())
     with pytest.raises(NotImplementedError, match="No analytic matrix"):
-        lattice.trackEnvelope(envelope.copy(), fit=False, static=static, observe=observe_envelope if history else None)
+        lattice.trackEnvelope(
+            envelope.copy(), fit=False, static=static,
+            callback=EnvelopeMonitor() if history else None,
+        )
     expected = envelope.copy()
-    expected_history = lattice.trackEnvelope(expected, fit=True, observe=observe_envelope if history else None)
+    expected_monitor = EnvelopeMonitor() if history else None
+    assert lattice.trackEnvelope(expected, fit=True, callback=expected_monitor) is None
     for _ in range(2):  # Also exercise reuse of the static cache.
         actual = envelope.copy()
-        actual_history = lattice.trackEnvelope(
-            actual, fit=False, fallback=True, static=static, observe=observe_envelope if history else None,
+        actual_monitor = EnvelopeMonitor() if history else None
+        result = lattice.trackEnvelope(
+            actual, fit=False, fallback=True, static=static, callback=actual_monitor,
         )
         assert np.allclose(actual.cov_matrix, expected.cov_matrix)
         assert actual.sync_part.time() == pytest.approx(expected.sync_part.time())
+        assert result is None
         if history:
-            for key in expected_history:
-                assert np.allclose(actual_history[key], expected_history[key])
+            for key in expected_monitor.history:
+                assert np.allclose(actual_monitor.history[key], expected_monitor.history[key])
     assert np.allclose(
         lattice.getEnvelopeTransferMatrix(envelope, fit=False, fallback=True),
         lattice.getEnvelopeTransferMatrix(envelope, fit=True),
@@ -605,18 +618,21 @@ def test_static_envelope_sync_updates(sc, history, fit):
     bunch.getSyncParticle().kinEnergy(1.3)
     envelope = Envelope(sync_part=bunch.getSyncParticle(), intensity=1e7)
     expected = envelope.copy()
-    expected_history = lattice.trackEnvelope(expected, sc=sc, observe=observe_envelope if history else None)
+    expected_monitor = EnvelopeMonitor() if history else None
+    assert lattice.trackEnvelope(expected, sc=sc, callback=expected_monitor) is None
     for _ in range(2):
         actual = envelope.copy()
-        actual_history = lattice.trackEnvelope(
-            actual, static=True, sc=sc, observe=observe_envelope if history else None, fit=fit, fallback=True,
+        actual_monitor = EnvelopeMonitor() if history else None
+        result = lattice.trackEnvelope(
+            actual, static=True, sc=sc, callback=actual_monitor, fit=fit, fallback=True,
         )
         assert np.allclose(actual.cov_matrix, expected.cov_matrix)
         assert actual.kin_energy == pytest.approx(expected.kin_energy)
         assert actual.sync_part.time() == pytest.approx(expected.sync_part.time())
+        assert result is None
         if history:
-            for key in expected_history:
-                assert np.allclose(actual_history[key], expected_history[key])
+            for key in expected_monitor.history:
+                assert np.allclose(actual_monitor.history[key], expected_monitor.history[key])
     assert envelope.kin_energy == pytest.approx(1.3)
     lattice.getEnvelopeTransferMatrix(envelope, sc=sc)
     assert envelope.kin_energy == pytest.approx(1.3)
@@ -649,7 +665,7 @@ def test_envelope_fallback_only_handles_missing_matrices(monkeypatch):
 
 @pytest.mark.parametrize("static", [False, True])
 @pytest.mark.parametrize("fit", [False, True])
-def test_custom_envelope_observer(static, fit):
+def test_custom_envelope_callback(static, fit):
     lattice = make_lattice([
         DriftTEAPOT(length=0.4),
         DriftTEAPOT(length=0.6, nparts=2),
@@ -658,35 +674,52 @@ def test_custom_envelope_observer(static, fit):
     bunch.getSyncParticle().kinEnergy(1.3)
     envelope = Envelope(sync_part=bunch.getSyncParticle())
     envelope.centroid[1] = 0.1
-    calls = []
-    shared_values = []
+    positions = []
+    centroids = []
 
-    def observe(current, s):
+    def callback(current, s):
         assert current is envelope
-        calls.append(s)
-        shared_values.append(s)
-        return {"position": s, "x": current.centroid[0], "shared": shared_values}
+        positions.append(s)
+        centroids.append(current.centroid.copy())
+        # Arbitrary return values are ignored, including non-copyable objects.
+        return iter([s]) if s == 0 else object()
 
     result = lattice.trackEnvelope(
-        envelope, index_start=1, observe=observe, static=static, fit=fit,
+        envelope, index_start=1, callback=callback, static=static, fit=fit,
     )
-    assert set(result) == {"position", "x", "shared"}
-    assert np.allclose(calls, [0.0, 0.3, 0.6])
-    assert np.allclose(result["position"], calls)
-    assert np.allclose(result["x"], [0.0, 0.03, 0.06])
-    assert [len(value) for value in result["shared"]] == [1, 2, 3]
+    assert result is None
+    assert np.allclose(positions, [0.0, 0.3, 0.6])
+    assert np.allclose(np.array(centroids)[:, 0], [0.0, 0.03, 0.06])
     assert lattice.trackEnvelope(envelope, static=static, fit=fit) is None
 
 
-def test_envelope_observer_empty_range_and_consistent_keys():
+@pytest.mark.parametrize("static", [False, True])
+def test_envelope_callback_empty_range(static):
     lattice = make_lattice([DriftTEAPOT(length=0.1)])
     bunch = Bunch()
     bunch.getSyncParticle().kinEnergy(1.3)
     envelope = Envelope(sync_part=bunch.getSyncParticle())
-    result = lattice.trackEnvelope(envelope, index_start=1, observe=lambda e, s: {"s": s})
-    assert result == {"s": [0.0]}
-    with pytest.raises(ValueError, match="same keys"):
-        lattice.trackEnvelope(envelope, observe=lambda e, s: {} if s == 0 else {"s": s})
+    positions = []
+    result = lattice.trackEnvelope(
+        envelope, index_start=1, static=static,
+        callback=lambda e, s: positions.append(s),
+    )
+    assert result is None
+    assert positions == [0.0]
+
+
+def test_envelope_callback_exception_propagates():
+    lattice = make_lattice([DriftTEAPOT(length=0.1)])
+    bunch = Bunch()
+    bunch.getSyncParticle().kinEnergy(1.3)
+    envelope = Envelope(sync_part=bunch.getSyncParticle())
+
+    def callback(envelope, s):
+        if s > 0:
+            raise RuntimeError("Stop tracking")
+
+    with pytest.raises(RuntimeError, match="Stop tracking"):
+        lattice.trackEnvelope(envelope, callback=callback)
 
 
 def test_envelope_analysis():
