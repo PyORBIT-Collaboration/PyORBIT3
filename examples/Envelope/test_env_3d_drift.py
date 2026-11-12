@@ -20,6 +20,7 @@ from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.spacecharge import SpaceChargeCalc3D
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
+from orbit.envelope import EnvelopeAnalysis
 from orbit.space_charge.sc3d import setSC3DAccNodes
 from orbit.teapot import DriftTEAPOT
 from orbit.teapot import TEAPOT_Lattice
@@ -134,25 +135,24 @@ def main(args: argparse.Namespace) -> None:
 
     envelope_sc = "3d" if args.sc else None
 
-    history = {"xrms": [], "yrms": [], "zrms": []}
+    analysis = EnvelopeAnalysis(envelope)
+    history = {key: [] for key in ('s', 'xrms', 'yrms', 'zrms')}
     for turn in range(args.turns):
         if turn > 0:
-            lattice.trackEnvelope(envelope, sc=envelope_sc, fit=args.fit)
+            lattice.trackEnvelope(
+                envelope, sc=envelope_sc, fit=args.fit,
+            )
 
-        cov_matrix = envelope.cov_matrix
+        rms = 1000.0 * analysis.rms()
+        parameters = {
+            "s": turn * lattice.getLength(),
+            "xrms": rms[0], "yrms": rms[1], "zrms": rms[2] * envelope.gamma,
+        }
+        for key, value in parameters.items():
+            history[key].append(value)
+        print(f"turn={turn}", parameters)
 
-        xrms = 1000.0 * math.sqrt(cov_matrix[0, 0])
-        yrms = 1000.0 * math.sqrt(cov_matrix[2, 2])
-        zrms = 1000.0 * math.sqrt(cov_matrix[4, 4]) * envelope.gamma
-
-        history["xrms"].append(xrms)
-        history["yrms"].append(yrms)
-        history["zrms"].append(zrms)
-
-        print(f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} zrms={zrms:0.3f}")
-
-    histories = {}
-    histories["envelope"] = copy.deepcopy(history)
+    histories = {"envelope": history}
 
     # Track bunch
     # ------------------------------------------------------------------------------
@@ -175,7 +175,7 @@ def main(args: argparse.Namespace) -> None:
         sc_path_length_min = 0.01
         sc_nodes = setSC3DAccNodes(lattice, sc_path_length_min, sc_calc)
 
-    history = {"xrms": [], "yrms": [], "zrms": []}
+    history = {"s": [], "xrms": [], "yrms": [], "zrms": []}
     for turn in range(args.turns):
         if turn > 0:
             lattice.trackBunch(bunch)
@@ -193,6 +193,7 @@ def main(args: argparse.Namespace) -> None:
         yrms = 1000.0 * math.sqrt(cov_matrix[2, 2])
         zrms = 1000.0 * math.sqrt(cov_matrix[4, 4]) * bunch.getSyncParticle().gamma()
 
+        history["s"].append(turn * lattice.getLength())
         history["xrms"].append(xrms)
         history["yrms"].append(yrms)
         history["zrms"].append(zrms)
@@ -221,9 +222,10 @@ def main(args: argparse.Namespace) -> None:
         for i, model in enumerate(["envelope", "bunch"]):
             color = ["black", "red"][i]
             lw = [None, 0][i]
-            ax.plot(histories[model][key], marker=".", lw=lw, color=color, label=model)
+            ax.plot(histories[model]["s"], histories[model][key],
+                    marker=".", lw=lw, color=color, label=model)
         ax.set_ylim(0.0, ax.get_ylim()[1] * 1.2)
-        ax.set_xlabel("s [mm]")
+        ax.set_xlabel("s [m]")
         ax.set_ylabel("rms size [mm]")
         ax.legend(loc="upper left")
         plt.savefig(os.path.join(output_dir, f"fig_{key}"))
@@ -233,7 +235,7 @@ def main(args: argparse.Namespace) -> None:
     particles = collect_bunch(bunch)["coords"]
     particles *= 1e3
 
-    env_cov_matrix = envelope.cov_matrix
+    env_cov_matrix = EnvelopeAnalysis(envelope).covariance()
     env_cov_matrix *= 1e6
 
     env_centroid = envelope.centroid

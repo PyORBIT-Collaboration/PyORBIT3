@@ -16,6 +16,7 @@ from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
+from orbit.envelope import EnvelopeAnalysis
 from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.space_charge.sc2p5d import setSC2p5DAccNodes
 from orbit.teapot import TEAPOT_Ring
@@ -58,6 +59,7 @@ def parse_args() -> argparse.Namespace:
 
     parser.add_argument("--fit", type=int, default=1)
     parser.add_argument("--fringe", type=int, default=0)
+    parser.add_argument("--static", type=int, default=1)
     return parser.parse_args()
 
 
@@ -158,57 +160,27 @@ def main(args: argparse.Namespace) -> None:
         intensity=args.intensity,
     )
 
-    history_keys = [
-        "rms_x",
-        "rms_y",
-        "avg_x",
-        "avg_y",
-        "eps_x",
-        "eps_y",
-    ]
-    history = {key: [] for key in history_keys}
-
-    start_time = time.time()
-
+    analysis = EnvelopeAnalysis(envelope)
+    history = {key: [] for key in ('rms_x', 'rms_y', 'avg_x', 'avg_y', 'eps_x', 'eps_y')}
     for turn in range(args.turns + 1):
         if turn > 0:
             lattice.trackEnvelope(
-                envelope,
-                sc=("2d" if args.sc else None),
-                fit=args.fit,
-                static=True,
+                envelope, sc=("2d" if args.sc else None), fit=args.fit, static=args.static,
             )
 
-        cov_matrix = envelope.cov_matrix
-        centroid = envelope.centroid
+        rms = 1000.0 * analysis.rms()
+        mean = 1000.0 * analysis.centroid()
+        eps = 1e6 * analysis.emittances()
+        parameters = {
+            "rms_x": rms[0], "rms_y": rms[1],
+            "avg_x": mean[0], "avg_y": mean[2],
+            "eps_x": eps[0], "eps_y": eps[1],
+        }
+        for key, value in parameters.items():
+            history[key].append(value)
+        print(f"turn={turn}", parameters)
 
-        rms_x = 1000.0 * math.sqrt(cov_matrix[0, 0])
-        rms_y = 1000.0 * math.sqrt(cov_matrix[2, 2])
-        avg_x = 1000.0 * centroid[0]
-        avg_y = 1000.0 * centroid[2]
-        eps_x = 1e6 * np.sqrt(np.linalg.det(cov_matrix[0:2, 0:2]))
-        eps_y = 1e6 * np.sqrt(np.linalg.det(cov_matrix[2:4, 2:4]))
-
-        message = ""
-        message += " turn={}".format(turn)
-        message += " time={:0.3f}".format(time.time() - start_time)
-        message += " eps_x={:0.2f}".format(eps_x)
-        message += " eps_y={:0.2f}".format(eps_y)
-        message += " xrms={:0.2f}".format(rms_x)
-        message += " yrms={:0.2f}".format(rms_y)
-        message += " xavg={:0.2f}".format(avg_x)
-        message += " yavg={:0.2f}".format(avg_y)
-        print(message)
-
-        history["rms_x"].append(rms_x)
-        history["rms_y"].append(rms_y)
-        history["avg_x"].append(avg_x)
-        history["avg_y"].append(avg_y)
-        history["eps_x"].append(eps_x)
-        history["eps_y"].append(eps_y)
-
-    histories = {}
-    histories["envelope"] = copy.deepcopy(history)
+    histories = {"envelope": history}
 
     # Track bunch
     # ------------------------------------------------------------------------------
@@ -345,7 +317,7 @@ def main(args: argparse.Namespace) -> None:
     particles = collect_bunch(bunch)["coords"]
     particles[:, :4] *= 1000.0
 
-    env_cov_matrix = envelope.cov_matrix
+    env_cov_matrix = EnvelopeAnalysis(envelope).covariance()
     env_cov_matrix[:4, :4] *= 1000.0**2
 
     env_centroid = envelope.centroid

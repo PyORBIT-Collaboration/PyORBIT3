@@ -11,7 +11,6 @@ from .utils import gen_dist
 from .utils import get_classical_radius
 from .utils import proj_cov_matrix
 from .matrix_fitting import bunch_from_sync_particle
-from .matrix_fitting import copy_sync_particle
 
 
 def get_bunch_cov_matrix(bunch: Bunch) -> np.ndarray:
@@ -46,7 +45,7 @@ def build_diag_matrix_from_xyz_eig(eigenvectors: np.ndarray) -> np.ndarray:
 
 
 class Envelope:
-    """Represents beam envelope/centroid.
+    """Represents the phase space covariance matrix and centroid.
 
     Attributes:
         sync_part: Synchronous particle.
@@ -80,6 +79,7 @@ class Envelope:
             intensity = bunch.getSize() * bunch.macroSize()
 
         self.sync_part = sync_part
+        self._reference_bunch = bunch
 
         self.centroid = centroid
         if self.centroid is None:
@@ -100,13 +100,16 @@ class Envelope:
     def copy(self):
         new_bunch = bunch_from_sync_particle(self.sync_part)
         new_sync_part = new_bunch.getSyncParticle()
-        copy_sync_particle(self.sync_part, new_sync_part)
-        return Envelope(
+        new_envelope = Envelope(
             sync_part=new_sync_part,
             cov_matrix=self.cov_matrix.copy(),
             centroid=self.centroid.copy(),
-            intensity=self.intensity
+            intensity=self.intensity,
         )
+        new_envelope._reference_bunch = new_bunch
+        new_envelope.rms_bunch_length_factor = self.rms_bunch_length_factor
+        new_envelope.classical_radius = self.classical_radius
+        return new_envelope
 
     @property
     def kin_energy(self) -> float:
@@ -136,7 +139,7 @@ class Envelope:
     def sc_factor(self) -> float:
         return 2.0 * self.intensity * self.classical_radius / (self.beta ** 2 * self.gamma ** 3)
 
-    def rms(self, axis: int = None) -> float | np.ndarray:
+    def rms(self, axis: int | None = None) -> float | np.ndarray:
         rms_arr = np.sqrt(np.diag(self.cov_matrix))
         return rms_arr[axis]
 
@@ -270,3 +273,11 @@ class Envelope:
 
         # Convert from z' to dE
         return convert_matrix_zp_to_dE(M, self.sync_part)
+
+    def sc_matrix(self, length: float, model: str) -> np.ndarray:
+        if model == "2d":
+            return self.sc_matrix_2d(length)
+        elif model == "3d":
+            return self.sc_matrix_3d(length)
+        else:
+            raise ValueError(f"Unknown space charge model {model}")

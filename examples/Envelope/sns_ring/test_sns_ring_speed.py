@@ -29,12 +29,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--kin-energy", type=float, default=1.300)
     parser.add_argument("--intensity", type=float, default=2e14)
 
-    parser.add_argument("--nparts", type=int, default=10_000)
+    parser.add_argument("--nparts", type=int, default=25_000)
     parser.add_argument("--turns", type=int, default=25)
     parser.add_argument("--sc", type=int, default=0)
     parser.add_argument("--sc-grid", type=int, default=64)
     parser.add_argument("--fringe", type=int, default=0)
     parser.add_argument("--fit", type=int, default=1)
+    parser.add_argument("--static", type=int, default=1)
     return parser.parse_args()
 
 
@@ -50,11 +51,6 @@ def main(args: argparse.Namespace) -> None:
             node.setUsageFringeFieldOUT(False)
         except:
             pass
-
-    for node in lattice.getNodes():
-        if type(node) is BendTEAPOT:
-            node.setParam("ea1", 0.0)
-            node.setParam("ea2", 0.0)
 
     for node in lattice.getNodes():
         max_length = 1.0
@@ -95,7 +91,6 @@ def main(args: argparse.Namespace) -> None:
         cov_matrix=cov_matrix_init,
         intensity=args.intensity,
     )
-    envelope_sc = "2d" if args.sc else None
 
     start_time = time.time()
 
@@ -103,7 +98,12 @@ def main(args: argparse.Namespace) -> None:
     profiler.enable()
 
     for turn in trange(args.turns):
-        lattice.trackEnvelope(envelope, sc=envelope_sc, fit=args.fit, static=True)
+        lattice.trackEnvelope(
+            envelope,
+            static=args.static,
+            fit=args.fit,
+            sc=("2d" if args.sc else None)
+        )
 
     time_per_turn = (time.time() - start_time) / args.turns
 

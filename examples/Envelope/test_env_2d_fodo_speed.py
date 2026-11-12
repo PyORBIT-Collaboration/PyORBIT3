@@ -94,6 +94,7 @@ profiler = cProfile.Profile()
 profiler.enable()
 
 for turn in trange(args.turns):
+    # No observer: measure tracking without collecting diagnostics.
     lattice.trackEnvelope(envelope, sc=envelope_sc, fit=args.fit, static=True)
 
 time_per_turn = (time.time() - start_time) / args.turns

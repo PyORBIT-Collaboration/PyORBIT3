@@ -32,6 +32,7 @@ from orbit.bunch_generators import GaussDist3D
 from orbit.bunch_generators import KVDist3D
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
+from orbit.envelope import EnvelopeAnalysis
 from orbit.lattice import AccLattice
 from orbit.lattice import AccNode
 from orbit.lattice import AccActionsContainer
@@ -64,6 +65,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--current", type=float, default=0.038)
     parser.add_argument("--show", type=int, default=0)
     parser.add_argument("--seq-stop", type=str, default="CCL2")
+    parser.add_argument("--fit", type=int, default=1)
     return parser.parse_args()
 
 
@@ -145,6 +147,22 @@ def make_bunch(args: argparse.Namespace) -> Bunch:
     return bunch
 
 
+class EnvelopeMonitor:
+    """Collect envelope parameters versus position for plotting."""
+
+    def __init__(self) -> None:
+        self.history = {}
+
+    def __call__(self, params_dict: dict) -> None:
+        envelope = params_dict["envelope"]
+        s = params_dict["path_length"]
+        if self.history and self.history["s"][-1] == s:
+            return
+        parameters = {"s": s, **EnvelopeAnalysis(envelope).to_dict()}
+        for key, value in parameters.items():
+            self.history.setdefault(key, []).append(value)
+
+
 def main(args: argparse.Namespace) -> None:
 
     path = pathlib.Path(__file__)
@@ -160,13 +178,17 @@ def main(args: argparse.Namespace) -> None:
     lattice = make_lattice(args)
     lattice.trackDesignBunch(bunch)
 
-    histories = {}
-    histories["envelope"] = lattice.trackEnvelope(
+    envelope_monitor = EnvelopeMonitor()
+    envelope_actions = AccActionsContainer()
+    envelope_actions.addAction(envelope_monitor, AccActionsContainer.ENTRANCE)
+    envelope_actions.addAction(envelope_monitor, AccActionsContainer.EXIT)
+    lattice.trackEnvelope(
         envelope,
-        history=True,
+        action_container=envelope_actions,
         sc=("3d" if args.sc else None),
-        fit=True,
+        fit=args.fit,
     )
+    histories = {"envelope": envelope_monitor.history}
 
     # Track bunch
     bunch = make_bunch(args)
@@ -260,7 +282,7 @@ def main(args: argparse.Namespace) -> None:
     particles = collect_bunch(bunch)["coords"]
     particles *= 1e3
 
-    env_cov_matrix = envelope.cov_matrix
+    env_cov_matrix = EnvelopeAnalysis(envelope).covariance()
     env_cov_matrix *= 1e6
 
     env_centroid = envelope.centroid
