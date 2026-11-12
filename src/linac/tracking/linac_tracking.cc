@@ -86,6 +86,7 @@ namespace linac_tracking
         //sqrt(fabs(p_z2)) - fabs function is a protection for case when xp and yp are too big for dE
         //It means the particles are nonphysical and simulations do not make sense
         double** arr = bunch->coordArr();
+        #pragma omp parallel for private(dE, xp, yp, Ekin, Etotal, p2, beta_x, beta_y, p_z2, beta_z)
         for(int i = 0; i < bunch->getSize(); i++)
         {
             dE = arr[i][5];
@@ -173,6 +174,10 @@ namespace linac_tracking
 
     double kqc = 0.;
 
+    #pragma omp parallel for private( \
+        dE, Ekin, Etotal, p2, p, kqc, beta_z, sqrt_kq, kqlength, \
+        cx, sx, cy, sy, m11, m12, m21, m22, m33, m34, m43, m44, \
+        xp_init, yp_init, coeff, x_init, y_init)
     for(int i = 0; i < nParts; i++)
     {
 
@@ -296,6 +301,7 @@ namespace linac_tracking
 
     double coef_xy = 0.;
 
+    #pragma omp parallel for private(coef_xy)
     for(int i = 0; i < nParts; i++){
         coef_xy = kick_coeff*arr[i][0]*arr[i][2];
         arr[i][1]  +=  arr[i][3]*coef_xy;
@@ -339,6 +345,7 @@ namespace linac_tracking
         double** arr = bunch->coordArr();
         if(kx != 0.)
         {
+            #pragma omp parallel for private(dE, Ekin, p2, p_z, coeff)
             for(int i = 0; i < bunch->getSize(); i++)
             {
                 dE = arr[i][5];
@@ -351,6 +358,7 @@ namespace linac_tracking
         }
         if(ky != 0.)
         {
+            #pragma omp parallel for private(dE, Ekin, p2, p_z, coeff)
             for(int i = 0; i < bunch->getSize(); i++)
             {
                 dE = arr[i][5];
@@ -363,6 +371,7 @@ namespace linac_tracking
         }
         if(kE != 0.)
         {
+            #pragma omp parallel for
             for(int i = 0; i < bunch->getSize(); i++)
             {
                 arr[i][5] += kE;

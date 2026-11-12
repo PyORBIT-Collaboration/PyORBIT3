@@ -129,7 +129,9 @@ void SpaceChargeCalc3D::trackBunch(Bunch* bunch, double length){
 
 	double z_center = (phiGrid->getMaxZ() + phiGrid->getMinZ())/2.0;
 
-	for (int i = 0, n = bunch->getSize(); i < n; i++){
+	int const n = bunch->getSize();
+	#pragma omp parallel for private(x, y, z, ex, ey, ez)
+	for (int i = 0; i < n; i++){
 		x = bunch->x(i);
 		y = bunch->y(i);
 		z = (bunch->z(i) - z_center)*gamma + z_center;

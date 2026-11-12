@@ -129,3 +129,10 @@ Meson uses PKG_CONFIG to discover packages. It could be useful to help it to fin
 ```bash
 PKG_CONFIG_PATH=/opt/lib/pkgconfig pip install --verbose .
 ```
+
+## 6. Activating OpenMP
+OpenMP (multithreading) support has been added to certain elements: the Linac gap elements, the 3D FFT space charge solver, bunch Twiss analysis and the teapot transforms. It needs to be manually activated during the installation using
+```bash
+pip install --config-settings=setup-args="-DUSE_OPENMP=true" --config-settings=setup-args="-DUSE_FFTW_THREADS=true" .
+```
+The latter requires a multithreaded FFTW3 library, usually part of the the standard FFTW package. When enabled, the FFT will also be calculated in parallel. When disabled, all threads calculate the full transform in parallel (as in the MPI version).
