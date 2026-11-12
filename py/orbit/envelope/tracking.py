@@ -2,11 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any
-from typing import Callable
 from typing import TYPE_CHECKING
 
 import numpy as np
-from numpy.typing import NDArray
 
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import SyncParticle
@@ -29,12 +27,16 @@ ParamsDict = dict[str, Any]
 @dataclass
 class NodeMap:
     matrix: np.ndarray | None
-    reference_bunch: Bunch
+    reference_position: tuple[float, float, float]
+    reference_momentum: tuple[float, float, float]
+    reference_x_axis: tuple[float, float, float]
     time_advance: float
 
     def update_sync_particle(self, sync_part: SyncParticle) -> None:
         current_time = sync_part.time()
-        copy_sync_particle(self.reference_bunch.getSyncParticle(), sync_part)
+        sync_part.rVector(self.reference_position)
+        sync_part.pVector(self.reference_momentum)
+        sync_part.nxVector(self.reference_x_axis)
         sync_part.time(current_time + self.time_advance)
 
 
@@ -60,7 +62,9 @@ class EnvelopeTracker:
 
         self.fit = fit
         self.fallback = fallback
+        
         self._node_maps = None
+        self._reference_bunch = None
         self._matrix_generator = None
 
     def track(
@@ -70,7 +74,7 @@ class EnvelopeTracker:
         params_dict: ParamsDict | None = None,
         action_container: AccActionsContainer | None = None,
         return_matrix: bool = False
-    ) -> Matrix | None:
+    ) -> np.ndarray | None:
         return self._run(
             envelope=envelope,
             sc=sc,
@@ -80,64 +84,60 @@ class EnvelopeTracker:
         )
 
     def precompute(self, envelope: Envelope, params_dict: ParamsDict | None = None) -> None:
-        node_maps = {}
-
-        def get_node_map(params_dict: ParamsDict) -> NodeMap:
-            node = params_dict["node"]
-            node_map = self._calculate_node_map(params_dict)
-            node_maps[node, node.getActivePartIndex()] = node_map
-            return node_map
-
         self._run(
             envelope=envelope.copy(),
-            get_node_map=get_node_map,
             params_dict=None if params_dict is None else params_dict.copy(),
+            precompute=True,
         )
-        self._node_maps = node_maps
 
-    def _calculate_node_map(self, params_dict: ParamsDict) -> NodeMap:
+    def _get_node_map(self, params_dict: ParamsDict) -> NodeMap:
         node = params_dict["node"]
         sync_part = params_dict["envelope"].sync_part
-        reference_bunch = bunch_from_sync_particle(sync_part)
-        reference_sync_part = reference_bunch.getSyncParticle()
+        if self._reference_bunch is None:
+            self._reference_bunch = bunch_from_sync_particle(sync_part)
+        reference_sync_part = self._reference_bunch.getSyncParticle()
+        copy_sync_particle(sync_part, reference_sync_part)
         start_time = sync_part.time()
         part_index = node.getActivePartIndex()
+        use_fit = self.fit
 
-        if not self.fit:
+        if not use_fit:
             try:
                 matrix = node.getMatrix(reference_sync_part, part_index=part_index)
-                return NodeMap(matrix, reference_bunch, reference_sync_part.time() - start_time)
             except NotImplementedError:
                 if not self.fallback:
                     raise
                 copy_sync_particle(sync_part, reference_sync_part)
+                use_fit = True
 
-        if self._matrix_generator is None:
-            self._matrix_generator = MatrixGenerator()
+        if use_fit:
+            if self._matrix_generator is None:
+                self._matrix_generator = MatrixGenerator()
+            matrix = fit_node_transfer_matrix(
+                node=node,
+                bunch=self._reference_bunch,
+                part_index=part_index,
+                parent_node=params_dict["parentNode"],
+                matrix_generator=self._matrix_generator,
+                params_dict=params_dict,
+            )
 
-        matrix = fit_node_transfer_matrix(
-            node=node,
-            bunch=reference_bunch,
-            part_index=part_index,
-            parent_node=params_dict["parentNode"],
-            matrix_generator=self._matrix_generator,
-            params_dict=params_dict,
-        )
-        # Store only the reference particle, not the fitting probe particles.
         return NodeMap(
-            matrix,
-            bunch_from_sync_particle(reference_sync_part),
-            reference_sync_part.time() - start_time,
+            matrix=matrix,
+            reference_position=tuple(reference_sync_part.rVector()),
+            reference_momentum=tuple(reference_sync_part.pVector()),
+            reference_x_axis=tuple(reference_sync_part.nxVector()),
+            time_advance=reference_sync_part.time() - start_time,
         )
 
     def _run(
         self,
         envelope: Envelope,
-        get_node_map: Callable[[ParamsDict], NodeMap] | None = None,
         sc: str | None = None,
         params_dict: ParamsDict | None = None,
         action_container: AccActionsContainer | None = None,
         return_matrix: bool = False,
+        precompute: bool = False,
     ) -> np.ndarray | None:
 
         from orbit.lattice import AccActionsContainer
@@ -165,7 +165,10 @@ class EnvelopeTracker:
         if return_matrix:
             total_matrix = np.eye(7)
 
+        self._reference_bunch = None
         self._matrix_generator = None
+
+        node_maps = {} if precompute else self._node_maps
 
         def apply_matrix(matrix: np.ndarray | None) -> None:
             nonlocal total_matrix
@@ -180,24 +183,24 @@ class EnvelopeTracker:
             if sc and length > 0:
                 apply_matrix(envelope.sc_matrix(length, model=sc))
             part_index = node.getActivePartIndex()
-            if get_node_map is not None:
-                node_map = get_node_map(params_dict)
-            elif self._node_maps is not None:
-                node_map = self._node_maps[node, part_index]
+            if node_maps is not None and not precompute:
+                node_map = node_maps[node, part_index]
             else:
-                node_map = self._calculate_node_map(params_dict)
+                node_map = self._get_node_map(params_dict)
+                if precompute:
+                    node_maps[node, part_index] = node_map
             node_map.update_sync_particle(envelope.sync_part)
             apply_matrix(node_map.matrix)
 
         action_container.addAction(push_envelope, AccNode.BODY)
-        try:
-            if self.index_start < self.index_stop:
-                self.lattice.trackActions(
-                    action_container,
-                    params_dict,
-                    self.index_start,
-                    self.index_stop - 1,
-                )
-        finally:
-            action_container.removeAction(push_envelope, AccNode.BODY)
+        if self.index_start < self.index_stop:
+            self.lattice.trackActions(
+                action_container,
+                params_dict,
+                self.index_start,
+                self.index_stop - 1,
+            )
+        action_container.removeAction(push_envelope, AccNode.BODY)
+        if precompute:
+            self._node_maps = node_maps
         return total_matrix
