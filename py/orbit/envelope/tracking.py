@@ -193,14 +193,16 @@ class EnvelopeTracker:
             apply_matrix(node_map.matrix)
 
         action_container.addAction(push_envelope, AccNode.BODY)
-        if self.index_start < self.index_stop:
-            self.lattice.trackActions(
-                action_container,
-                params_dict,
-                self.index_start,
-                self.index_stop - 1,
-            )
-        action_container.removeAction(push_envelope, AccNode.BODY)
+        try:
+            if self.index_start < self.index_stop:
+                self.lattice.trackActions(
+                    action_container,
+                    params_dict,
+                    self.index_start,
+                    self.index_stop - 1,
+                )
+        finally:
+            action_container.removeAction(push_envelope, AccNode.BODY)
         if precompute:
             self._node_maps = node_maps
         return total_matrix

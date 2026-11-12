@@ -294,7 +294,7 @@ class AccLattice(NamedObject, TypedObject):
             fit: Whether to use best-fit transfer matrices instead of analytic matrices.
             fallback: When fit=False, fall back to best-fit transfer matrix for nodes
                 without analytic matrix.
-            static: If True, precomput transfer matrices and reuse on future calls.
+            static: If True, precompute transfer matrices and reuse on future calls.
                 This assumes there are no time-dependent nodes in the lattice and
                 no acceleration. Call initialize() or track once with static=False
                 to clear matrices after changing the lattice or reference beam.
@@ -313,11 +313,16 @@ class AccLattice(NamedObject, TypedObject):
         )
 
         if static:
-            if self._envelope_tracker is not None:
-                tracker = self._envelope_tracker
-            else:
+            if self._envelope_tracker is None or (
+                self._envelope_tracker.index_start != tracker.index_start
+                or self._envelope_tracker.index_stop != tracker.index_stop
+                or self._envelope_tracker.fit != fit
+                or self._envelope_tracker.fallback != fallback
+            ):
                 tracker.precompute(envelope, params_dict=params_dict)
                 self._envelope_tracker = tracker
+            else:
+                tracker = self._envelope_tracker
         else:
             self._envelope_tracker = None
 

@@ -734,6 +734,9 @@ class Bend(LinacMagnetNode):
         return
 
     def getMatrix(self, sync_part: SyncParticle, part_index: int = -1) -> np.ndarray | None:
+        if self.getParam("ea1") != 0.0 or self.getParam("ea2") != 0.0:
+            raise NotImplementedError("Bends with edge angles require a fitted matrix")
+
         length = self.getLength(part_index)
         if length <= 0:
             return None
@@ -1104,6 +1107,9 @@ class FringeField(BaseLinacNode):
             self.__trackFunc(self, paramsDict)
 
     def getMatrix(self, sync_part: SyncParticle, part_index: int = -1) -> np.ndarray | None:
+        params_dict = self.getParamsDict()
+        if params_dict.get("ea1", 0.0) != 0.0 or params_dict.get("ea2", 0.0) != 0.0:
+            raise NotImplementedError("Bend edge fringes require a fitted matrix")
         return None
 
     def setFringeFieldFunction(self, trackFunction=None):
