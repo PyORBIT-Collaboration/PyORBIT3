@@ -73,21 +73,87 @@ class EnvelopeTracker:
         sc: str | None = None,
         params_dict: ParamsDict | None = None,
         action_container: AccActionsContainer | None = None,
-        return_matrix: bool = False
+        return_matrix: bool = False,
+        store_maps: bool = False,
     ) -> np.ndarray | None:
-        return self._run(
+
+        from orbit.lattice import AccActionsContainer
+        from orbit.lattice import AccLattice
+        from orbit.lattice import AccNode
+
+        if sc not in (None, False, "2d", "3d"):
+            raise ValueError(f"Invalid envelope space charge option `{sc}`")
+
+        if params_dict is None:
+            params_dict = {}
+
+        if action_container is None:
+            action_container = AccActionsContainer()
+
+        params_dict.update(
             envelope=envelope,
-            sc=sc,
-            params_dict=params_dict,
-            action_container=action_container,
-            return_matrix=return_matrix,
+            lattice=self.lattice,
+            action_container=action_container
         )
+        params_dict.setdefault("path_length", 0.0)
+        if hasattr(self.lattice, "getUseRealCharge"):
+            params_dict.setdefault("useCharge", self.lattice.getUseRealCharge())
+
+        total_matrix = None
+        if return_matrix:
+            total_matrix = np.eye(7)
+
+        self._reference_bunch = None
+        self._matrix_generator = None
+
+        node_maps = {} if store_maps else self._node_maps
+        identity_matrix = np.eye(7) if store_maps else None
+
+        def apply_matrix(matrix: np.ndarray | None) -> None:
+            nonlocal total_matrix
+            if matrix is not None:
+                envelope.transform(matrix)
+                if total_matrix is not None:
+                    total_matrix = matrix @ total_matrix
+
+        def push_envelope(params_dict: ParamsDict) -> None:
+            node = params_dict["node"]
+            part_index = node.getActivePartIndex()
+            if sc:
+                length = node.getLength(part_index)
+                if length > 0:
+                    apply_matrix(envelope.sc_matrix(length, model=sc))
+            if node_maps is not None and not store_maps:
+                node_map = node_maps[node, part_index]
+            else:
+                node_map = self._get_node_map(params_dict)
+                if store_maps:
+                    if node_map.matrix is not None and np.array_equal(node_map.matrix, identity_matrix):
+                        node_map.matrix = None
+                    node_maps[node, part_index] = node_map
+            node_map.update_sync_particle(envelope.sync_part)
+            apply_matrix(node_map.matrix)
+
+        action_container.addAction(push_envelope, AccNode.BODY)
+        try:
+            if self.index_start < self.index_stop:
+                self.lattice.trackActions(
+                    action_container,
+                    params_dict,
+                    self.index_start,
+                    self.index_stop - 1,
+                )
+        finally:
+            action_container.removeAction(push_envelope, AccNode.BODY)
+        if store_maps:
+            self._node_maps = node_maps
+        return total_matrix
 
     def precompute(self, envelope: Envelope, params_dict: ParamsDict | None = None) -> None:
-        self._run(
+        self.track(
             envelope=envelope.copy(),
             params_dict=None if params_dict is None else params_dict.copy(),
-            precompute=True,
+            store_maps=True,
         )
 
     def _get_node_map(self, params_dict: ParamsDict) -> NodeMap:
@@ -129,80 +195,3 @@ class EnvelopeTracker:
             reference_x_axis=tuple(reference_sync_part.nxVector()),
             time_advance=reference_sync_part.time() - start_time,
         )
-
-    def _run(
-        self,
-        envelope: Envelope,
-        sc: str | None = None,
-        params_dict: ParamsDict | None = None,
-        action_container: AccActionsContainer | None = None,
-        return_matrix: bool = False,
-        precompute: bool = False,
-    ) -> np.ndarray | None:
-
-        from orbit.lattice import AccActionsContainer
-        from orbit.lattice import AccNode
-
-        if sc not in (None, False, "2d", "3d"):
-            raise ValueError(f"Invalid envelope space charge option `{sc}`")
-
-        if params_dict is None:
-            params_dict = {}
-
-        if action_container is None:
-            action_container = AccActionsContainer()
-
-        params_dict.update(
-            envelope=envelope,
-            lattice=self.lattice,
-            action_container=action_container
-        )
-        params_dict.setdefault("path_length", 0.0)
-        if hasattr(self.lattice, "getUseRealCharge"):
-            params_dict.setdefault("useCharge", self.lattice.getUseRealCharge())
-
-        total_matrix = None
-        if return_matrix:
-            total_matrix = np.eye(7)
-
-        self._reference_bunch = None
-        self._matrix_generator = None
-
-        node_maps = {} if precompute else self._node_maps
-
-        def apply_matrix(matrix: np.ndarray | None) -> None:
-            nonlocal total_matrix
-            if matrix is not None:
-                envelope.transform(matrix)
-                if total_matrix is not None:
-                    total_matrix = matrix @ total_matrix
-
-        def push_envelope(params_dict: ParamsDict) -> None:
-            node = params_dict["node"]
-            length = node.getLength(node.getActivePartIndex())
-            if sc and length > 0:
-                apply_matrix(envelope.sc_matrix(length, model=sc))
-            part_index = node.getActivePartIndex()
-            if node_maps is not None and not precompute:
-                node_map = node_maps[node, part_index]
-            else:
-                node_map = self._get_node_map(params_dict)
-                if precompute:
-                    node_maps[node, part_index] = node_map
-            node_map.update_sync_particle(envelope.sync_part)
-            apply_matrix(node_map.matrix)
-
-        action_container.addAction(push_envelope, AccNode.BODY)
-        try:
-            if self.index_start < self.index_stop:
-                self.lattice.trackActions(
-                    action_container,
-                    params_dict,
-                    self.index_start,
-                    self.index_stop - 1,
-                )
-        finally:
-            action_container.removeAction(push_envelope, AccNode.BODY)
-        if precompute:
-            self._node_maps = node_maps
-        return total_matrix
