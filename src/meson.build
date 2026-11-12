@@ -16,7 +16,7 @@ dep_fftw = dependency('fftw3', version: '>= 3.0.0', required: true)
 dependencies += dep_fftw
 
 # Enable OpenMP if available
-dep_openmp = dependency('openmp')
+dep_openmp = dependency('openmp', required: get_option('USE_OPENMP'))
 if get_option('USE_OPENMP') and dep_openmp.found()
 		add_global_arguments('-DWITH_OPENMP', language : 'cpp')
 		dependencies += dep_openmp
