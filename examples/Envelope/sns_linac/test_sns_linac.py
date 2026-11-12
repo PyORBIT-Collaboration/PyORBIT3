@@ -184,7 +184,7 @@ def main(args: argparse.Namespace) -> None:
     envelope_actions.addAction(envelope_monitor, AccActionsContainer.EXIT)
     lattice.trackEnvelope(
         envelope,
-        actionContainer=envelope_actions,
+        action_container=envelope_actions,
         sc=("3d" if args.sc else None),
         fit=args.fit,
     )

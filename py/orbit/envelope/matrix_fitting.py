@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -106,21 +105,3 @@ def fit_transfer_matrix(
     )
     matrix_generator.calculateMatrix(bunch_out, matrix)
     return orbit_matrix_to_numpy(matrix)
-
-
-@dataclass(frozen=True)
-class EnvelopeCache:
-    """Inputs that determine reusable envelope transport matrices.
-
-    Absolute time is omitted because static tracking assumes time-independent
-    nodes; synchronous-particle time advances by the cached per-node increments.
-    """
-    index_start: int
-    index_stop: int
-    fit: bool
-    fallback: bool
-    mass: float
-    charge: float
-    sync_r_vector: tuple[float, float, float]
-    sync_p_vector: tuple[float, float, float]
-    sync_nx_vector: tuple[float, float, float]

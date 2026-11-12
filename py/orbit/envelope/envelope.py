@@ -273,3 +273,11 @@ class Envelope:
 
         # Convert from z' to dE
         return convert_matrix_zp_to_dE(M, self.sync_part)
+
+    def sc_matrix(self, length: float, model: str) -> np.ndarray:
+        if model == "2d":
+            return self.sc_matrix_2d(length)
+        elif model == "3d":
+            return self.sc_matrix_3d(length)
+        else:
+            raise ValueError(f"Unknown space charge model {model}")

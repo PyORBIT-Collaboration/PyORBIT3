@@ -1,14 +1,9 @@
 import os
-from dataclasses import dataclass
 
 import numpy as np
 
-from orbit.core.teapot_base import MatrixGenerator
 from orbit.envelope import Envelope
-from orbit.envelope.matrix_fitting import bunch_from_sync_particle
-from orbit.envelope.matrix_fitting import copy_sync_particle
-from orbit.envelope.matrix_fitting import fit_node_transfer_matrix
-from orbit.envelope.matrix_fitting import EnvelopeCache
+from orbit.envelope import EnvelopeTracker
 
 from orbit.utils import orbitFinalize
 from orbit.utils import NamedObject
@@ -40,19 +35,12 @@ class AccLattice(NamedObject, TypedObject):
         self.__isInitialized = False
         self.__children = []
         self.__childPositions = {}
-
-        self._envelope_matrices = {}
-        self._envelope_total_matrix = None
-        self._envelope_cache = None
-        self._envelope_cache_time = None
+        self._envelope_tracker: EnvelopeTracker | None = None
 
     def initialize(self):
         """
         Method. Initializes the lattice and child node structures.
         """
-        self._envelope_cache = None
-        self._envelope_total_matrix = None
-        self._envelope_cache_time = None
         res_dict = {}
         for node in self.__children:
             if node in res_dict:
@@ -74,6 +62,8 @@ class AccLattice(NamedObject, TypedObject):
         actions = AccActionsContainer()
         d = [0.0]
         posn = {}
+
+        self._envelope_tracker = None
 
         def accNodeExitAction(paramsDict):
             """
@@ -283,224 +273,58 @@ class AccLattice(NamedObject, TypedObject):
         self,
         envelope: Envelope,
         index_start: int = 0,
-        index_stop: int = None,
-        sc: str | None = None,
-        paramsDict: dict | None = None,
-        actionContainer: AccActionsContainer | None = None,
-        fit: bool = True,
-        static: bool = False,
-        fallback: bool = True,
-    ) -> None:
-        """Track envelope through the lattice.
-
-        Args:
-            envelope: Envelope to track.
-            index_start: Index of first node in sublattice.
-            index_stop: Index of last node in sublattice.
-            sc: Whether to include space charge kicks.
-            paramsDict: Shared action context. Populated with envelope, lattice,
-                actions, node, parentNode, and path_length (default 0). An existing
-                path_length is continued, as in bunch tracking.
-            actionContainer: AccActionsContainer with user actions. ENTRANCE runs
-                before entrance children; BODY runs before each part's space
-                charge and transport; EXIT runs after exit children. Actions also
-                run on child nodes, in registration order. Return values are ignored.
-            fit: Whether to fit all transfer matrices. With False, use analytic
-                matrices, except bends with nonzero ea1 or ea2 (including their
-                children), which always use fitted matrices. This is set True
-                by default for more accurate simulations with nonlinear elements,
-                but it should be turned off to increase speed in linear lattices.
-            fallback: With fit=False, fit nodes whose getMatrix raises
-                NotImplementedError. A None matrix is an intentional no-op.
-            static: Whether to cache transfer matrices during tracking and
-                reuse them for the same incoming synchronous-particle state.
-                Assumes the lattice has no time-dependent or accelerating nodes.
-                Synchronous-particle time still advances on each traversal.
-                Changes to node parameters require reinitializing the lattice
-                to invalidate the cache.
-        """
-        self._trackEnvelope(
-            envelope,
-            index_start,
-            index_stop,
-            sc,
-            paramsDict,
-            actionContainer,
-            fit,
-            static,
-            fallback,
-        )
-
-    def _trackEnvelope(
-        self,
-        envelope: Envelope,
-        index_start: int = 0,
         index_stop: int | None = None,
         sc: str | None = None,
-        paramsDict: dict | None = None,
-        actionContainer: AccActionsContainer | None = None,
+        params_dict: dict | None = None,
+        action_container: AccActionsContainer | None = None,
         fit: bool = True,
-        static: bool = False,
         fallback: bool = True,
-        calculate_matrix: bool = False,
-    ):
-        from orbit.py_linac.lattice.LinacAccNodes import Bend
-        from orbit.teapot.teapot import BendTEAPOT
+        static: bool = False,
+        return_matrix: bool = False,
+    ) -> np.ndarray | None:
+        """Tracks envelope through the lattice.
 
-        if sc not in (None, False, "2d", "3d"):
-            raise ValueError(f"Invalid envelope space charge option `{sc}`")
+        Args:
+            envelope: Beam envelope.
+            index_start: First node index.
+            index_stop: Last node index.
+            sc: Space charge model {None, "2d", "3d"}.
+            params_dict: Parameter dictionary.
+            action_container: AccActions container.
+            fit: Whether to use best-fit transfer matrices instead of analytic matrices.
+            fallback: When fit=False, fall back to best-fit transfer matrix for nodes
+                without analytic matrix.
+            static: If True, precomput transfer matrices and reuse on future calls.
+                This assumes there are no time-dependent nodes in the lattice and
+                no acceleration. Call initialize() or track once with static=False
+                to clear matrices after changing the lattice or reference beam.
+            return_matrix: Whether to compute total transfer matrix.
 
-        params = {} if paramsDict is None else paramsDict
-        actions = actionContainer if actionContainer is not None else AccActionsContainer()
-
-        params["envelope"] = envelope
-        params["lattice"] = self
-        params["actions"] = actions
-        params.setdefault("path_length", 0.0)
-        if hasattr(self, "getUseRealCharge"):
-            params.setdefault("useCharge", self.getUseRealCharge())
-
-        start_position = params["path_length"]
-        sync_part = envelope.sync_part
-        combine = static and not sc and not any(actions.getActions(p) for p in (0, 1, 2))
-        total_matrix = np.eye(7) if calculate_matrix or combine else None
-
-        start, stop, _ = slice(index_start, None if index_stop is None else index_stop + 1).indices(len(self.__children))
-
-        if static:
-            envelope_cache = EnvelopeCache(
-                index_start=start,
-                index_stop=stop,
-                fit=fit,
-                fallback=fallback,
-                mass=sync_part.mass(),
-                charge=sync_part.charge(),
-                sync_r_vector=sync_part.rVector(),
-                sync_p_vector=sync_part.pVector(),
-                sync_nx_vector=sync_part.nxVector(),
-            )
-            if self._envelope_cache != envelope_cache:
-                self._envelope_cache = envelope_cache
-                self._envelope_matrices = {}
-                self._envelope_total_matrix = None
-                self._envelope_cache_time = sync_part.time()
-            time_offset = sync_part.time() - self._envelope_cache_time
-            if combine and self._envelope_total_matrix is not None:
-                envelope.transform(self._envelope_total_matrix)
-                reference, distance, last_node, last_parent = self._envelope_end_state
-                copy_sync_particle(reference.getSyncParticle(), sync_part)
-                sync_part.time(sync_part.time() + time_offset)
-                params["path_length"] += distance
-                if last_node is not None:
-                    params["node"], params["parentNode"] = last_node, last_parent
-                return self._envelope_total_matrix if calculate_matrix else None
-
-        probe_bunch = None
-        generator = None
-        fit_stack = [fit]
-
-        def enter(context):
-            node = context["node"]
-            edge_bend = isinstance(node, (Bend, BendTEAPOT)) and (
-                node.getParam("ea1") != 0.0 or node.getParam("ea2") != 0.0
-            )
-            fit_stack.append(fit_stack[-1] or edge_bend)
-
-        def exit(context):
-            fit_stack.pop()
-
-        def apply(matrix):
-            nonlocal total_matrix
-            if matrix is not None:
-                envelope.transform(matrix)
-                if total_matrix is not None:
-                    total_matrix = matrix @ total_matrix
-
-        def transport(context):
-            nonlocal probe_bunch, generator
-            node = context["node"]
-            part = node.getActivePartIndex()
-            length = node.getLength(part)
-            if sc and length > 0:
-                apply(
-                    envelope.sc_matrix_2d(length) if sc == "2d" else envelope.sc_matrix_3d(length)
-                )
-
-            key = (node, part)
-            if static and key in self._envelope_matrices:
-                matrix, reference = self._envelope_matrices[key]
-                copy_sync_particle(reference.getSyncParticle(), sync_part)
-                sync_part.time(sync_part.time() + time_offset)
-            else:
-                use_fit = fit_stack[-1]
-                if not use_fit:
-                    try:
-                        matrix = node.getMatrix(sync_part, part_index=part)
-                    except NotImplementedError:
-                        if not fallback:
-                            raise
-                        use_fit = True
-                if use_fit:
-                    if probe_bunch is None:
-                        probe_bunch = bunch_from_sync_particle(sync_part)
-                        generator = MatrixGenerator()
-                    copy_sync_particle(sync_part, probe_bunch.getSyncParticle())
-                    matrix = fit_node_transfer_matrix(
-                        node,
-                        probe_bunch,
-                        part_index=part,
-                        parent_node=context["parentNode"],
-                        matrix_generator=generator,
-                        params_dict=context,
-                    )
-                    copy_sync_particle(probe_bunch.getSyncParticle(), sync_part)
-                if static:
-                    self._envelope_matrices[key] = (
-                        matrix,
-                        bunch_from_sync_particle(sync_part),
-                    )
-            apply(matrix)
-
-        # Append transport after user BODY actions, exactly as trackBunch does.
-        internal_actions = (
-            (enter, AccNode.ENTRANCE),
-            (transport, AccNode.BODY),
-            (exit, AccNode.EXIT),
-        )
-        for action, place in internal_actions:
-            actions.addAction(action, place)
-        try:
-            if start < stop:
-                self.trackActions(actions, params, start, stop - 1)
-        finally:
-            for action, place in internal_actions:
-                actions.removeAction(action, place)
-
-        if combine:
-            self._envelope_total_matrix = total_matrix
-            self._envelope_end_state = (
-                bunch_from_sync_particle(sync_part),
-                params["path_length"] - start_position,
-                params.get("node"),
-                params.get("parentNode"),
-            )
-        return total_matrix
-
-    def getEnvelopeTransferMatrix(
-        self,
-        envelope: Envelope,
-        index_start: int = 0,
-        index_stop: int = None,
-        sc: str | None = None,
-        fit: bool = True,
-        fallback: bool = False,
-    ) -> np.ndarray:
-        return self._trackEnvelope(
-            envelope.copy(),
-            index_start,
-            index_stop,
-            sc,
+        Returns:
+            If `return_matrix`, returns the total transfer matrix (including linear
+            space charge). Otherwise, returns None.
+        """
+        tracker = EnvelopeTracker(
+            self,
+            index_start=index_start,
+            index_stop=index_stop,
             fit=fit,
             fallback=fallback,
-            calculate_matrix=True,
+        )
+
+        if static:
+            if self._envelope_tracker is not None:
+                tracker = self._envelope_tracker
+            else:
+                tracker.precompute(envelope, params_dict=params_dict)
+                self._envelope_tracker = tracker
+        else:
+            self._envelope_tracker = None
+
+        return tracker.track(
+            envelope,
+            sc=sc,
+            params_dict=params_dict,
+            action_container=action_container,
+            return_matrix=return_matrix,
         )
