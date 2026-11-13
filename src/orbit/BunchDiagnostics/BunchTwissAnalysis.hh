@@ -6,7 +6,8 @@
 
 #include "Bunch.hh"
 
-using namespace std;
+#include <vector>
+
 
 /**
   The BunchTwissAnalysis class calculates the average of 6D coordinates and they correlations.
@@ -95,21 +96,19 @@ class BunchTwissAnalysis: public OrbitUtils::CppPyWrapper
 		double total_macrosize;
 
 		/** array with average values for 6D coordinates */
-		double* avg_arr;
-		double* avg_arr_MPI;
+		double avg_arr[6] = {};
 
 		/** array with correlations between 6D coordinates.
 		    It is a packed 1D array 6*6 = 36.
 				To reach i,j = 0-5 coerrelation use [i+6*j]
 		    It is excessive because <x*y> = <y*x> etc.*/
-		double* corr_arr;
-		double* corr_arr_MPI;
+		double corr_arr[36] = {};
 
-		/** array with XY Moments */
-		double** momentXY;
+		/** Contiguous XY moments, indexed by j * (_order + 1) + i. */
+		std::vector<double> momentXY;
 
 		/** order for the moments **/
-		double _order;
+		int _order;
 
 		/** bunch parameters */
 		double bunch_momentum;
