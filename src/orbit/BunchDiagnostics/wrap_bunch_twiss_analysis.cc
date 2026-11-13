@@ -82,7 +82,7 @@ extern "C" {
     }
 
     static PyObject* getIndexedValue(PyObject* self, PyObject* arg,
-                                    double (BunchTwissAnalysis::*method)(int))
+                                    double (BunchTwissAnalysis::*method)(int) const)
     {
         int index;
         if (!asInt(arg, index))
