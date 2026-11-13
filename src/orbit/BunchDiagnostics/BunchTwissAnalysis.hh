@@ -37,55 +37,55 @@ class BunchTwissAnalysis: public OrbitUtils::CppPyWrapper
 		 * @param jc Index of the second component (y).
 		 * @return The centered correlation value as a double.
 		 */
-		double getCorrelation(int ic, int jc);
+		double getCorrelation(int ic, int jc) const;
 
 		/** Returns the average value for coordinate with index ic */
-		double getAverage(int ic);
+		double getAverage(int ic) const;
 
 		/** Returns the total number of analysed macroparticles */
-		int getGlobalCount();
+		int getGlobalCount() const;
 
 		/** Returns the total macrosize */
-		double getGlobalMacrosize();
+		double getGlobalMacrosize() const;
 
 		/** Returns the emittance for index 0,1,2 - x,y,z planes. */
-		double getEffectiveEmittance(int ic);
+		double getEffectiveEmittance(int ic) const;
 
 		/** Returns Twiss alpha for index 0,1,2 - x,y,z planes.*/
-		double getEffectiveAlpha(int ic);
+		double getEffectiveAlpha(int ic) const;
 
 		/** Returns Twiss beta for index 0,1,2 - x,y,z planes.*/
-		double getEffectiveBeta(int ic);
+		double getEffectiveBeta(int ic) const;
 
 		/** Returns Twiss gamma for index 0,1,2 - x,y,z planes.*/
-		double getEffectiveGamma(int ic);
+		double getEffectiveGamma(int ic) const;
 
 		/** Returns the pure betatron emittance for index 0,1 - x,y planes. */
-		double getEmittance(int ic);
+		double getEmittance(int ic) const;
 
 		/** Returns the normalized pure betatron emittance for index 0,1 - x,y planes. */
-		double getEmittanceNormalized(int ic);
+		double getEmittanceNormalized(int ic) const;
 
 		/** Returns Twiss alpha without dispersive part for index 0,1 - x,y planes.*/
-		double getAlpha(int ic);
+		double getAlpha(int ic) const;
 
 		/** Returns Twiss beta without dispersive part for index 0,1 - x,y planes.*/
-		double getBeta(int ic);
+		double getBeta(int ic) const;
 
 		/** Returns Twiss gamma without dispersive part for index 0,1 - x,y planes.*/
-		double getGamma(int ic);
+		double getGamma(int ic) const;
 
 		/** Returns Twiss dispersion function for index 0,1 - x,y planes.*/
-		double getDispersion(int ic);
+		double getDispersion(int ic) const;
 
 		/** Returns Twiss dispersion_prime function for index 0,1 - x,y planes.*/
-		double getDispersionDerivative(int ic);
+		double getDispersionDerivative(int ic) const;
 
 		/** Computes the XY moments of the bunch up to a prescribed order */
 		void computeBunchMoments(Bunch* bunch, int order, int dispersionflag, int emitnormflag);
 
 		/** Returns the XY moment of the beam */
-		double getBunchMoment(int i, int j);
+		double getBunchMoment(int i, int j) const;
 
 	private:
 

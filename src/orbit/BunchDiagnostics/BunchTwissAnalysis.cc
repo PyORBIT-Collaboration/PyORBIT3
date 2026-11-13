@@ -255,7 +255,7 @@ void BunchTwissAnalysis::computeBunchMoments(Bunch* bunch, int order, int disper
     }
 }
 
-double BunchTwissAnalysis::getCorrelation(int ic, int jc)
+double BunchTwissAnalysis::getCorrelation(int ic, int jc) const
 {
     if (ic < 0 || ic > 5 || jc < 0 || jc > 5)
         return 0.;
@@ -263,7 +263,7 @@ double BunchTwissAnalysis::getCorrelation(int ic, int jc)
 }
 
 /** Returns the XY moment of the beam */
-double BunchTwissAnalysis::getBunchMoment(int i, int j)
+double BunchTwissAnalysis::getBunchMoment(int i, int j) const
 {
     if (i < 0 || i > _order || j < 0 || j > _order || momentXY.empty())
         return 0.;
@@ -271,7 +271,7 @@ double BunchTwissAnalysis::getBunchMoment(int i, int j)
 }
 
 /** Returns the average value for coordinate with index ic */
-double BunchTwissAnalysis::getAverage(int ic)
+double BunchTwissAnalysis::getAverage(int ic) const
 {
     if (ic < 0 || ic > 5)
         return 0.;
@@ -279,19 +279,19 @@ double BunchTwissAnalysis::getAverage(int ic)
 }
 
 /** Returns the total number of analysed macroparticles */
-int BunchTwissAnalysis::getGlobalCount()
+int BunchTwissAnalysis::getGlobalCount() const
 {
     return count;
 }
 
 /** Returns the total macrosize */
-double BunchTwissAnalysis::getGlobalMacrosize()
+double BunchTwissAnalysis::getGlobalMacrosize() const
 {
     return total_macrosize;
 }
 
 /** Returns the emittance for index 0,1,2 - x,y,z planes. */
-double BunchTwissAnalysis::getEmittance(int ic)
+double BunchTwissAnalysis::getEmittance(int ic) const
 {
     // for x and y the pure betatron emittance is computed (subtracting the dispersive contribution)
     if (ic < 0 || ic > 2)
@@ -318,7 +318,7 @@ double BunchTwissAnalysis::getEmittance(int ic)
 }
 
 /** Returns the normalized betatron emittance for index 0,1 - x,y planes. */
-double BunchTwissAnalysis::getEmittanceNormalized(int ic)
+double BunchTwissAnalysis::getEmittanceNormalized(int ic) const
 {
     if (ic < 0 || ic > 2)
         return 0.;
@@ -328,7 +328,7 @@ double BunchTwissAnalysis::getEmittanceNormalized(int ic)
 }
 
 /** Returns Twiss alpha (without dispersive part for x,y) for index 0,1,2 - x,y,z planes.*/
-double BunchTwissAnalysis::getAlpha(int ic)
+double BunchTwissAnalysis::getAlpha(int ic) const
 {
     if (ic < 0 || ic > 2)
         return 0.;
@@ -349,7 +349,7 @@ double BunchTwissAnalysis::getAlpha(int ic)
 }
 
 /** Returns Twiss beta (without dispersive part for x,y) for index 0,1,2 - x,y,z planes.*/
-double BunchTwissAnalysis::getBeta(int ic)
+double BunchTwissAnalysis::getBeta(int ic) const
 {
     if (ic < 0 || ic > 2)
         return 0.;
@@ -370,7 +370,7 @@ double BunchTwissAnalysis::getBeta(int ic)
 }
 
 /** Returns Twiss gamma (without dispersive part for x,y) for index 0,1,2 - x,y,z planes.*/
-double BunchTwissAnalysis::getGamma(int ic)
+double BunchTwissAnalysis::getGamma(int ic) const
 {
     if (ic < 0 || ic > 2)
         return 0.;
@@ -390,7 +390,7 @@ double BunchTwissAnalysis::getGamma(int ic)
 }
 
 /** Returns Twiss dispersion function for index 0,1 - x,y planes.*/
-double BunchTwissAnalysis::getDispersion(int ic)
+double BunchTwissAnalysis::getDispersion(int ic) const
 {
     if (ic < 0 || ic > 1)
         return 0.;
@@ -401,7 +401,7 @@ double BunchTwissAnalysis::getDispersion(int ic)
 }
 
 /** Returns Twiss dispersion_prime function for index 0,1 - x,y planes.*/
-double BunchTwissAnalysis::getDispersionDerivative(int ic)
+double BunchTwissAnalysis::getDispersionDerivative(int ic) const
 {
     if (ic < 0 || ic > 1)
         return 0.;
@@ -412,7 +412,7 @@ double BunchTwissAnalysis::getDispersionDerivative(int ic)
 }
 
 /** Returns the effective emittance for index 0,1 - x,y planes. */
-double BunchTwissAnalysis::getEffectiveEmittance(int ic)
+double BunchTwissAnalysis::getEffectiveEmittance(int ic) const
 {
     if (ic < 0 || ic > 2)
         return 0.;
@@ -426,7 +426,7 @@ double BunchTwissAnalysis::getEffectiveEmittance(int ic)
 }
 
 /** Returns effective Twiss alpha for index 0,1 - x,y planes.*/
-double BunchTwissAnalysis::getEffectiveAlpha(int ic)
+double BunchTwissAnalysis::getEffectiveAlpha(int ic) const
 {
     if (ic < 0 || ic > 2)
         return 0.;
@@ -444,7 +444,7 @@ double BunchTwissAnalysis::getEffectiveAlpha(int ic)
 }
 
 /** Returns effective Twiss beta for index 0,1 - x,y planes.*/
-double BunchTwissAnalysis::getEffectiveBeta(int ic)
+double BunchTwissAnalysis::getEffectiveBeta(int ic) const
 {
     if (ic < 0 || ic > 2)
         return 0.;
@@ -462,7 +462,7 @@ double BunchTwissAnalysis::getEffectiveBeta(int ic)
 }
 
 /** Returns effective Twiss gamma for index 0,1 - x,y planes.*/
-double BunchTwissAnalysis::getEffectiveGamma(int ic)
+double BunchTwissAnalysis::getEffectiveGamma(int ic) const
 {
     if (ic < 0 || ic > 2)
         return 0.;
