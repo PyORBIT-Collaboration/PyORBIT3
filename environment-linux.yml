@@ -1,0 +1,17 @@
+name: pyorbit
+channels:
+  - conda-forge
+dependencies:
+  - cxx-compiler
+  - libgomp
+  - python>=3.10,<3.16
+  - fftw
+  - numpy
+  - scipy
+  - matplotlib
+  - meson
+  - pkg-config
+  - ninja
+  - setuptools
+  - setuptools_scm
+  - meson-python

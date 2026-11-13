@@ -16,17 +16,19 @@ dep_fftw = dependency('fftw3', version: '>= 3.0.0', required: true)
 dependencies += dep_fftw
 
 # Enable OpenMP if available
-dep_openmp = dependency('openmp', required: get_option('USE_OPENMP'))
-if get_option('USE_OPENMP') and dep_openmp.found()
-		add_global_arguments('-DWITH_OPENMP', language : 'cpp')
-		dependencies += dep_openmp
+use_openmp = get_option('USE_OPENMP')
+dep_openmp = dependency('openmp', required: use_openmp)
+
+if use_openmp
+  add_global_arguments('-DWITH_OPENMP', language : 'cpp')
+  dependencies += dep_openmp
 endif
 
 # Enable OpenMP if requested
 if get_option('USE_FFTW_THREADS')
-		add_global_arguments('-DWITH_FFTW3_THREADS', language : 'cpp')
-		dep_fftw_threads = cpp.find_library('fftw3_threads', dirs: [dep_fftw.get_variable('libdir')])
-		dependencies += dep_fftw_threads
+  add_global_arguments('-DWITH_FFTW3_THREADS', language : 'cpp')
+  dep_fftw_threads = cpp.find_library('fftw3_threads', dirs: [dep_fftw.get_variable('libdir')])
+  dependencies += dep_fftw_threads
 endif
 # Detecting if MPICH or OPENMPI are installed and enabling support if present
 

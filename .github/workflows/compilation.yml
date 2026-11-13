@@ -41,11 +41,13 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: quay.io/centos/centos:stream9
+    env:
+      PYTHON: python3.14
     steps:
          - name: Install packages
            run: |
              dnf group install -y "Development Tools"
-             dnf install -y python3-devel fftw3-devel
+             dnf install -y ${PYTHON}-devel fftw3-devel
 
          - uses: actions/checkout@v4
            with:
@@ -162,11 +164,13 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: quay.io/centos/centos:stream9
+    env:
+      PYTHON: python3.14
     steps:
          - name: Install packages
            run: |
              dnf group install -y "Development Tools"
-             dnf install -y python3-devel fftw3-devel mpich-devel hwloc-devel
+             dnf install -y ${PYTHON}-devel fftw3-devel mpich-devel hwloc-devel
 
          - uses: actions/checkout@v4
            with:
