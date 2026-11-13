@@ -1,4 +1,4 @@
-python3 -m venv .po3
+"${PYTHON:-python3}" -m venv .po3
 . .po3/bin/activate
 pip install -U pip
 pip install -r requirements.txt
