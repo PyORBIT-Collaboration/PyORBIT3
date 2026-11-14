@@ -34,8 +34,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sc", type=int, default=0)
     parser.add_argument("--sc-grid", type=int, default=64)
     parser.add_argument("--fringe", type=int, default=0)
-    parser.add_argument("--fit", type=int, default=1)
+    parser.add_argument("--fit", type=int, default=0)
     parser.add_argument("--static", type=int, default=1)
+    parser.add_argument("--fallback", type=int, default=1)
     return parser.parse_args()
 
 
@@ -105,7 +106,8 @@ def main(args: argparse.Namespace) -> None:
             envelope,
             static=args.static,
             fit=args.fit,
-            sc=("2d" if args.sc else None)
+            fallback=args.fallback,
+            sc=("2d" if args.sc else None),
         )
 
     time_per_turn = (time.time() - start_time) / args.turns
