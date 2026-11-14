@@ -27,10 +27,6 @@ from orbit.py_linac.lattice.LinacAccNodes import Solenoid
 from orbit.py_linac.lattice.LinacAccNodes import TiltElement
 from orbit.py_linac.lattice.LinacAccNodes import FringeField
 from orbit.py_linac.lattice.LinacRfGapNodes import BaseRF_Gap
-from orbit.space_charge.sc3d import SC3D_AccNode
-from orbit.space_charge.sc3d import SC_UniformEllipses_AccNode
-from orbit.space_charge.sc2p5d import SC2p5D_AccNode
-from orbit.space_charge.sc2dslicebyslice import SC2DSliceBySlice_AccNode
 
 from .envelope import Envelope
 from .matrix import get_matrix_bend
@@ -54,10 +50,6 @@ def get_node_matrix(node, envelope: Envelope, part_index: int = -1) -> np.ndarra
 @get_node_matrix.register(MonitorTEAPOT)
 @get_node_matrix.register(TurnCounterTEAPOT)
 @get_node_matrix.register(MarkerLinacNode)
-@get_node_matrix.register(SC3D_AccNode)
-@get_node_matrix.register(SC_UniformEllipses_AccNode)
-@get_node_matrix.register(SC2p5D_AccNode)
-@get_node_matrix.register(SC2DSliceBySlice_AccNode)
 def _matrix_identity(node, envelope: Envelope, part_index: int = -1) -> np.ndarray | None:
     return None
 
