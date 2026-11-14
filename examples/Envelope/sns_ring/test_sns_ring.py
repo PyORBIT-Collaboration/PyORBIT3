@@ -57,7 +57,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sc", type=int, default=0)
     parser.add_argument("--sc-grid", type=int, default=64)
 
-    parser.add_argument("--fit", type=int, default=1)
+    parser.add_argument("--fit", type=int, default=0)
+    parser.add_argument("--fallback", type=int, default=0)
     parser.add_argument("--fringe", type=int, default=0)
     parser.add_argument("--static", type=int, default=1)
     return parser.parse_args()
@@ -168,7 +169,7 @@ def main(args: argparse.Namespace) -> None:
     for turn in range(args.turns + 1):
         if turn > 0:
             lattice.trackEnvelope(
-                envelope, sc=("2d" if args.sc else None), fit=args.fit, static=args.static,
+                envelope, sc=("2d" if args.sc else None), fit=args.fit, static=args.static, fallback=args.fallback
             )
 
         rms = 1000.0 * analysis.rms()
