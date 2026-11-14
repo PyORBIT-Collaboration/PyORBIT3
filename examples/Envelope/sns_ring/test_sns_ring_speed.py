@@ -36,7 +36,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--fringe", type=int, default=0)
     parser.add_argument("--fit", type=int, default=0)
     parser.add_argument("--static", type=int, default=1)
-    parser.add_argument("--fallback", type=int, default=1)
+    parser.add_argument("--fallback", type=int, default=0)
     return parser.parse_args()
 
 
