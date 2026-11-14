@@ -88,6 +88,7 @@ class EnvelopeTracker:
         total_matrix = np.eye(7) if return_matrix else None
         node_maps = {} if store else self._node_maps
         identity_matrix = np.eye(7) if store else None
+        handlers = {}
 
         def apply_matrix(matrix: np.ndarray | None) -> None:
             nonlocal total_matrix
@@ -106,13 +107,14 @@ class EnvelopeTracker:
             if node_maps and not store:
                 node_map = node_maps[node, part_index]
                 node_map.update_envelope(envelope)
+                matrix = node_map.matrix
             else:
-                node_map = self._get_node_map(params_dict)
+                matrix = self._get_node_matrix(params_dict, part_index, handlers)
                 if store:
-                    if node_map.matrix is not None and np.array_equal(node_map.matrix, identity_matrix):
-                        node_map.matrix = None
-                    node_maps[node, part_index] = node_map
-            apply_matrix(node_map.matrix)
+                    if matrix is not None and np.array_equal(matrix, identity_matrix):
+                        matrix = None
+                    node_maps[node, part_index] = NodeMap(matrix, envelope.kin_energy, envelope.time)
+            apply_matrix(matrix)
 
         action_container.addAction(push_envelope, AccNode.BODY)
         try:
@@ -136,18 +138,20 @@ class EnvelopeTracker:
             store=True,
         )
 
-    def _get_node_map(self, params_dict: ParamsDict) -> NodeMap:
+    def _get_node_matrix(self, params_dict: ParamsDict, part_index: int, handlers: dict) -> np.ndarray | None:
         node = params_dict["node"]
         envelope = params_dict["envelope"]
         initial_kinetic_energy = envelope.kin_energy
         initial_time = envelope.time
 
-        part_index = node.getActivePartIndex()
         use_fit = self.fit
 
         if not use_fit:
+            handler = handlers.get(type(node))
+            if handler is None:
+                handler = handlers[type(node)] = get_node_matrix.dispatch(type(node))
             try:
-                matrix = get_node_matrix(node, envelope, part_index=part_index)
+                matrix = handler(node, envelope, part_index=part_index)
             except NotImplementedError:
                 envelope.kin_energy = initial_kinetic_energy
                 envelope.time = initial_time
@@ -175,8 +179,4 @@ class EnvelopeTracker:
             envelope.kin_energy = sync_particle.kinEnergy()
             envelope.time = sync_particle.time()
 
-        return NodeMap(
-            matrix=matrix,
-            kin_energy=envelope.kin_energy,
-            time=envelope.time,
-        )
+        return matrix
