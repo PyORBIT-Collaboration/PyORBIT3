@@ -24,6 +24,7 @@ cd sns_ring
 python test_sns_ring.py --sc 0
 python test_sns_ring.py --sc 1
 python test_sns_ring.py --sc 1 --tilt 45.0
+python test_sns_ring.py --sc 1 --sol 1
 python test_sns_ring_speed.py --sc 0
 python test_sns_ring_speed.py --sc 1
 cd ..
