@@ -12,7 +12,6 @@ from orbit.core.teapot_base import MatrixGenerator
 from .envelope import Envelope
 from .node_matrices import get_node_matrix
 from .matrix_fitting import fit_node_matrix
-from .utils import get_classical_radius
 
 if TYPE_CHECKING:
     from orbit.lattice import AccActionsContainer
@@ -106,13 +105,13 @@ class EnvelopeTracker:
                     apply_matrix(envelope.sc_matrix(length, model=sc))
             if node_maps and not store:
                 node_map = node_maps[node, part_index]
+                node_map.update_envelope(envelope)
             else:
                 node_map = self._get_node_map(params_dict)
                 if store:
                     if node_map.matrix is not None and np.array_equal(node_map.matrix, identity_matrix):
                         node_map.matrix = None
                     node_maps[node, part_index] = node_map
-            node_map.update_envelope(envelope)
             apply_matrix(node_map.matrix)
 
         action_container.addAction(push_envelope, AccNode.BODY)
@@ -140,15 +139,18 @@ class EnvelopeTracker:
     def _get_node_map(self, params_dict: ParamsDict) -> NodeMap:
         node = params_dict["node"]
         envelope = params_dict["envelope"]
-        envelope_out = envelope.copy()
+        initial_kinetic_energy = envelope.kin_energy
+        initial_time = envelope.time
 
         part_index = node.getActivePartIndex()
         use_fit = self.fit
 
         if not use_fit:
             try:
-                matrix = get_node_matrix(node, envelope_out, part_index=part_index)
+                matrix = get_node_matrix(node, envelope, part_index=part_index)
             except NotImplementedError:
+                envelope.kin_energy = initial_kinetic_energy
+                envelope.time = initial_time
                 if not self.fallback:
                     raise
                 use_fit = True
@@ -170,13 +172,11 @@ class EnvelopeTracker:
                 matrix_generator=self._matrix_generator,
                 params_dict=params_dict,
             )
-            envelope_out.kin_energy = sync_particle.kinEnergy()
-            envelope_out.mass = self._bunch.mass()
-            envelope_out.charge = self._bunch.charge()
-            envelope_out.time = sync_particle.time()
+            envelope.kin_energy = sync_particle.kinEnergy()
+            envelope.time = sync_particle.time()
 
         return NodeMap(
             matrix=matrix,
-            kin_energy=envelope_out.kin_energy,
-            time=envelope_out.time,
+            kin_energy=envelope.kin_energy,
+            time=envelope.time,
         )
