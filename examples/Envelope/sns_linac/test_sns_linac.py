@@ -11,17 +11,16 @@ currently assumes an upright ellipsoid.)
 import argparse
 import math
 import os
-import pathlib
 import random
 import sys
 import time
+from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTwissAnalysis
-from orbit.core.bunch import SyncParticle
 from orbit.core.linac import BaseRfGap
 from orbit.core.linac import MatrixRfGap
 from orbit.core.spacecharge import SpaceChargeCalcUnifEllipse
@@ -44,9 +43,6 @@ from orbit.utils.consts import mass_proton
 from orbit.utils.consts import mass_electron
 from orbit.utils.consts import charge_electron
 
-# local
-from diagnostics import BunchMonitor
-
 sys.path.append("..")
 from plot import plot_corner
 from plot import plot_rms_ellipse
@@ -60,12 +56,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dist", type=str, default="kv")
     parser.add_argument("--nparts", type=int, default=20_000)
     parser.add_argument("--sc", type=int, default=0)
-    parser.add_argument("--sc-model", type=str, default="ellipsoid")
+    parser.add_argument("--sc-model", type=str, default="ellipsoid", choices=("ellipsoid", "fft"))
+    parser.add_argument("--sc-ellipsoid-n", type=int, default=1)
     parser.add_argument("--sc-path-length-min", type=float, default=0.01)
     parser.add_argument("--current", type=float, default=0.038)
     parser.add_argument("--show", type=int, default=0)
     parser.add_argument("--seq-stop", type=str, default="CCL2")
-    parser.add_argument("--fit", type=int, default=1)
+    parser.add_argument("--fit", type=int, default=1, help="Use best-fit transfer matrices")
     return parser.parse_args()
 
 
@@ -148,8 +145,6 @@ def make_bunch(args: argparse.Namespace) -> Bunch:
 
 
 class EnvelopeMonitor:
-    """Collect envelope parameters versus position for plotting."""
-
     def __init__(self) -> None:
         self.history = {}
 
@@ -162,13 +157,74 @@ class EnvelopeMonitor:
         for key, value in parameters.items():
             self.history.setdefault(key, []).append(value)
 
+        message = ""
+        message += " s={:0.3f}".format(s)
+        message += " rms_x={:0.3f}".format(1000.0 * parameters["rms_x"])
+        message += " rms_y={:0.3f}".format(1000.0 * parameters["rms_y"])
+        message += " rms_z={:0.3f}".format(1000.0 * parameters["rms_z"])
+        message += " node={}".format(params_dict["node"].getName())
+        print(message)
+
+
+class BunchMonitor:
+    def __init__(self) -> None:
+        self.position_start = 0.0
+
+        keys = [
+            "s",
+            "kin_energy",
+            "gamma",
+            "beta",
+            "rms_x",
+            "rms_y",
+            "rms_z",
+            "eps_x",
+            "eps_x_n",
+            "eps_y",
+            "eps_y_n",
+            "eps_z",
+            "eps_z_n",
+            "eps_1",
+            "eps_2",
+            "eps_3",
+        ]
+        self.history = {key: [] for key in keys}
+
+    def __call__(self, params_dict: dict) -> None:
+        bunch = params_dict["bunch"]
+        node = params_dict["node"]
+        position = params_dict["path_length"]
+
+        if params_dict["old_pos"] == position:
+            return
+        if params_dict["old_pos"] + params_dict["pos_step"] > position:
+            return
+        params_dict["old_pos"] = position
+        params_dict["count"] += 1
+
+        analysis = EnvelopeAnalysis(Envelope(bunch=bunch))
+        results = {"s": position, **analysis.to_dict()}
+        for key in self.history:
+            self.history[key].append(results[key])
+
+        message = ""
+        message += " s={:0.3f}".format(position + self.position_start)
+        message += " rms_x={:0.3f}".format(1000.0 * results["rms_x"])
+        message += " rms_y={:0.3f}".format(1000.0 * results["rms_y"])
+        message += " rms_z={:0.3f}".format(1000.0 * results["rms_z"])
+        message += " node={}".format(node.getName())
+        print(message)
+
+
+def make_output_dir(args: argparse.Namespace) -> str:
+    output_dir = time.strftime("%Y%m%d_%H%M%S")
+    output_dir = os.path.join("outputs", Path(__file__).stem, output_dir)
+    os.makedirs(output_dir, exist_ok=True)
+    return output_dir
+
 
 def main(args: argparse.Namespace) -> None:
-
-    path = pathlib.Path(__file__)
-    output_dir = os.path.join("outputs", path.stem, time.strftime("%Y%m%d_%H%M%S"))
-    os.makedirs(output_dir, exist_ok=True)
-
+    output_dir = make_output_dir(args)
     random.seed(23)
 
     # Track envelope
@@ -178,40 +234,37 @@ def main(args: argparse.Namespace) -> None:
     lattice = make_lattice(args)
     lattice.trackDesignBunch(bunch)
 
-    envelope_monitor = EnvelopeMonitor()
-    envelope_actions = AccActionsContainer()
-    envelope_actions.addAction(envelope_monitor, AccActionsContainer.ENTRANCE)
-    envelope_actions.addAction(envelope_monitor, AccActionsContainer.EXIT)
+    monitor = EnvelopeMonitor()
+    action_container = AccActionsContainer()
+    action_container.addAction(monitor, AccActionsContainer.ENTRANCE)
+    action_container.addAction(monitor, AccActionsContainer.EXIT)
     lattice.trackEnvelope(
         envelope,
-        action_container=envelope_actions,
+        action_container=action_container,
         sc=("3d" if args.sc else None),
         fit=args.fit,
     )
-    histories = {"envelope": envelope_monitor.history}
+    histories = {"envelope": monitor.history}
 
     # Track bunch
     bunch = make_bunch(args)
     lattice = make_lattice(args)
     lattice.trackDesignBunch(bunch)
-
     if args.sc:
         if args.sc_model == "ellipsoid":
-            n_ellipsoids = 1
+            n_ellipsoids = args.sc_ellipsoid_n
             sc_calc = SpaceChargeCalcUnifEllipse(n_ellipsoids)
             sc_nodes = setUniformEllipsesSCAccNodes(
                 lattice, args.sc_path_length_min, sc_calc
             )
-        if args.sc_model == "3d":
+        if args.sc_model == "fft":
             sc_calc = SpaceChargeCalc3D(64, 64, 64)
             sc_nodes = setSC3DAccNodes(lattice, args.sc_path_length_min, sc_calc)
 
     monitor = BunchMonitor()
-
     action_container = AccActionsContainer()
     action_container.addAction(monitor, AccActionsContainer.ENTRANCE)
     action_container.addAction(monitor, AccActionsContainer.EXIT)
-
     params_dict = {"old_pos": -1.0, "count": 0, "pos_step": args.sc_path_length_min}
     lattice.trackBunch(bunch, paramsDict=params_dict, actionContainer=action_container)
     histories["bunch"] = monitor.history
@@ -219,7 +272,6 @@ def main(args: argparse.Namespace) -> None:
     # Analysis
     # --------------------------------------------------------------------------------
 
-    # Process history arrays
     for mode in histories:
         for key in histories[mode]:
             histories[mode][key] = np.array(histories[mode][key])

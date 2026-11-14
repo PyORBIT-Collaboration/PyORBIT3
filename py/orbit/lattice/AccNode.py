@@ -3,7 +3,6 @@ from __future__ import annotations
 import sys
 import os
 import math
-from typing import TYPE_CHECKING
 
 from ..utils import orbitFinalize
 from ..utils import NamedObject
@@ -11,10 +10,6 @@ from ..utils import TypedObject
 from ..utils import ParamsDictObject
 
 from .AccActionsContainer import AccActionsContainer
-
-if TYPE_CHECKING:
-    import numpy as np
-    from orbit.core.bunch import SyncParticle
 
 
 class AccNode(NamedObject, TypedObject, ParamsDictObject):
@@ -151,12 +146,6 @@ class AccNode(NamedObject, TypedObject, ParamsDictObject):
         distribution of body parts is not uniform.
         """
         pass
-
-    def getMatrix(self, sync_part: SyncParticle, part_index: int = -1) -> np.ndarray | None:
-        """
-        Return the transfer matrix for this node and update the synchronous particle.
-        """
-        raise NotImplementedError(str(self))
 
     def getNumberOfChildren(self):
         """

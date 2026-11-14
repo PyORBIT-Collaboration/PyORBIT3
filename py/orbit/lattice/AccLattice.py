@@ -1,9 +1,9 @@
+from __future__ import annotations
+
 import os
+from typing import TYPE_CHECKING
 
 import numpy as np
-
-from orbit.envelope import Envelope
-from orbit.envelope import EnvelopeTracker
 
 from orbit.utils import orbitFinalize
 from orbit.utils import NamedObject
@@ -11,6 +11,10 @@ from orbit.utils import TypedObject
 
 from .AccActionsContainer import AccActionsContainer
 from .AccNode import AccNode
+
+if TYPE_CHECKING:
+    from orbit.envelope.envelope import Envelope
+    from orbit.envelope.tracking import EnvelopeTracker
 
 
 class AccLattice(NamedObject, TypedObject):
@@ -62,8 +66,6 @@ class AccLattice(NamedObject, TypedObject):
         actions = AccActionsContainer()
         d = [0.0]
         posn = {}
-
-        self._envelope_tracker = None
 
         def accNodeExitAction(paramsDict):
             """
@@ -304,6 +306,8 @@ class AccLattice(NamedObject, TypedObject):
             If `return_matrix`, returns the total transfer matrix (including linear
             space charge). Otherwise, returns None.
         """
+        from orbit.envelope.tracking import EnvelopeTracker
+
         tracker = EnvelopeTracker(
             self,
             index_start=index_start,

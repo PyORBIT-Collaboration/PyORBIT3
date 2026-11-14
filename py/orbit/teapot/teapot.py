@@ -19,7 +19,6 @@ from __future__ import annotations
 import sys
 import os
 import math
-import numpy as np
 from typing import Any
 from typing import Callable
 from typing import Union
@@ -34,17 +33,9 @@ from orbit.parsers.mad_parser import MAD_Parser
 from orbit.parsers.mad_parser import MAD_LattElement
 from orbit.parsers.madx_parser import MADX_Parser
 from orbit.parsers.madx_parser import MADX_LattElement
-from orbit.utils.matrix import get_matrix_bend
-from orbit.utils.matrix import get_matrix_cf
-from orbit.utils.matrix import get_matrix_drift
-from orbit.utils.matrix import get_matrix_kick
-from orbit.utils.matrix import get_matrix_quad
-from orbit.utils.matrix import get_matrix_solenoid
-from orbit.utils.matrix import get_matrix_tilt
 
 from orbit.core.aperture import Aperture
 from orbit.core.bunch import Bunch
-from orbit.core.bunch import SyncParticle
 from orbit.core.bunch import BunchTwissAnalysis
 
 
@@ -449,10 +440,6 @@ class TurnCounterTEAPOT(BaseTEAPOT):
             turn = bunch.bunchAttrInt("TurnNumber")
             bunch.bunchAttrInt("TurnNumber", turn + 1)
 
-    def getMatrix(self, sync_part: SyncParticle, part_index: int = -1) -> np.ndarray | None:
-        return None
-
-
 class NodeTEAPOT(BaseTEAPOT):
     def __init__(self, name: str = "no name") -> None:
         """
@@ -475,11 +462,6 @@ class NodeTEAPOT(BaseTEAPOT):
         self.addChildNode(self.__tiltNodeOUT, AccNode.EXIT)
         self.addParam("tilt", self.__tiltNodeIN.getTiltAngle())
         self.setType("node teapot")
-
-    def getMatrix(self, sync_part: SyncParticle, part_index: int = -1) -> np.ndarray | None:
-        if type(self) is NodeTEAPOT:
-            return None
-        return super().getMatrix(sync_part, part_index=part_index)
 
     def setTiltAngle(self, angle: float = 0.0) -> None:
         """
@@ -599,13 +581,6 @@ class DriftTEAPOT(NodeTEAPOT):
         bunch = paramsDict["bunch"]
         TPB.drift(bunch, length)
 
-    def getMatrix(self, sync_part: SyncParticle, part_index: int = -1) -> np.ndarray | None:
-        length = self.getLength(part_index)
-        if length <= 0:
-            return None
-        return get_matrix_drift(sync_part, length)
-
-
 class ApertureTEAPOT(NodeTEAPOT):
     """
     Aperture TEAPOT element.
@@ -645,10 +620,6 @@ class ApertureTEAPOT(NodeTEAPOT):
         lostbunch = paramsDict["lostbunch"]
         self.aperture.checkBunch(bunch, lostbunch)
 
-    def getMatrix(self, sync_part: SyncParticle, part_index: int = -1) -> np.ndarray | None:
-        return None
-
-
 class MonitorTEAPOT(NodeTEAPOT):
     """
     Monitor TEAPOT element.
@@ -675,10 +646,6 @@ class MonitorTEAPOT(NodeTEAPOT):
         self.addParam("yAvg", self.twiss.getAverage(2))
         self.addParam("ypAvg", self.twiss.getAverage(3))
 
-    def getMatrix(self, sync_part: SyncParticle, part_index: int = -1) -> np.ndarray | None:
-        return None
-
-
 class BunchWrapTEAPOT(NodeTEAPOT):
     """
     Drift TEAPOT element.
@@ -701,10 +668,6 @@ class BunchWrapTEAPOT(NodeTEAPOT):
         bunch = paramsDict["bunch"]
         length = self.getParam("ring_length")
         TPB.wrapbunch(bunch, length)
-
-    def getMatrix(self, sync_part: SyncParticle, part_index: int = -1) -> np.ndarray | None:
-        return None
-
 
 class SolenoidTEAPOT(NodeTEAPOT):
     """
@@ -752,19 +715,6 @@ class SolenoidTEAPOT(NodeTEAPOT):
         Sets the time dependent waveform function
         """
         self.waveform = waveform
-
-    def getMatrix(self, sync_part: SyncParticle, part_index: int = -1) -> np.ndarray | None:
-        length = self.getLength(part_index)
-        if length <= 0:
-            return None
-
-        B = self.getParam("B")
-        if self.waveform:
-            B *= self.waveform.getStrength()
-        B *= np.sign(sync_part.charge())
-
-        return get_matrix_solenoid(sync_part, length=length, B=B)
-
 
 class MultipoleTEAPOT(NodeTEAPOT):
     """
@@ -914,17 +864,6 @@ class MultipoleTEAPOT(NodeTEAPOT):
         Sets the time dependent waveform function
         """
         self.waveform = waveform
-
-    def getMatrix(self, sync_part: SyncParticle, part_index: int = -1) -> np.ndarray | None:
-        length = self.getLength(part_index)
-        if length <= 0:
-            return None
-
-        if np.all(np.abs(self.getParam("kls")) == 0):
-            return get_matrix_drift(sync_part, length)
-
-        raise NotImplementedError(str(self))
-
 
 class QuadTEAPOT(NodeTEAPOT):
     """
@@ -1088,18 +1027,6 @@ class QuadTEAPOT(NodeTEAPOT):
         """
         self.waveform = waveform
 
-    def getMatrix(self, sync_part: SyncParticle, part_index: int = -1) -> np.ndarray | None:
-        length = self.getLength(part_index)
-        if length <= 0:
-            return None
-
-        kq = self.getParam("kq")
-        if self.waveform:
-            kq *= self.waveform.getStrength()
-
-        return get_matrix_quad(sync_part, length=length, kq=kq)
-
-
 class BendTEAPOT(NodeTEAPOT):
     """
     Bend Combined Functions TEAPOT element.
@@ -1128,6 +1055,8 @@ class BendTEAPOT(NodeTEAPOT):
 
         self.addParam("ea1", ea1)
         self.addParam("ea2", ea2)
+        self.getNodeFringeFieldIN().setType("bend fringe in")
+        self.getNodeFringeFieldOUT().setType("bend fringe out")
         self.addParam("theta", theta)
 
         self.setnParts(nparts)
@@ -1313,25 +1242,6 @@ class BendTEAPOT(NodeTEAPOT):
             TPB.bend1(bunch, length, theta / 2.0)
         return
 
-    def getMatrix(self, sync_part: SyncParticle, part_index: int = -1) -> np.ndarray | None:
-        if self.getParam("ea1") != 0.0 or self.getParam("ea2") != 0.0:
-            raise NotImplementedError("Bends with edge angles require a fitted matrix")
-
-        length = self.getLength(part_index)
-        if length <= 0:
-            return None
-
-        nparts = self.getnParts()
-        if part_index < 0:
-            theta = self.getParam("theta")
-        else:
-            theta = self.getParam("theta") / (nparts - 1)
-            if part_index == 0 or part_index == nparts - 1:
-                theta *= 0.5
-
-        return get_matrix_bend(sync_part, length=length, theta=theta)
-
-
 class RingRFTEAPOT(NodeTEAPOT):
     """
     Ring RF TEAPOT element.
@@ -1497,27 +1407,6 @@ class KickTEAPOT(NodeTEAPOT):
         """
         self.waveform = waveform
 
-    def getMatrix(self, sync_part: SyncParticle, part_index: int = -1) -> np.ndarray | None:
-        length = self.getLength(part_index)
-        nparts = self.getnParts()
-
-        scale = 1.0
-        if self.waveform is not None:
-            scale = self.waveform.getStrength()
-
-        scale /= nparts - 1
-        kx = scale * self.getParam("kx")
-        ky = scale * self.getParam("ky")
-        kE = self.getParam("dE")
-
-        if abs(kx) > 0 or abs(ky) > 0 or abs(kE) > 0:
-            return np.matmul(
-                get_matrix_kick(kx=kx, ky=ky, kE=kE),
-                get_matrix_drift(sync_part, length),
-            )
-        return get_matrix_drift(sync_part, length)
-
-
 class TiltTEAPOT(BaseTEAPOT):
     """
     The class to do tilt at the entrance of an TEAPOT element.
@@ -1552,13 +1441,6 @@ class TiltTEAPOT(BaseTEAPOT):
             bunch = paramsDict["bunch"]
             TPB.rotatexy(bunch, self.__angle)
 
-    def getMatrix(self, sync_part: SyncParticle, part_index: int = -1) -> np.ndarray | None:
-        angle = self.getTiltAngle()
-        if angle == 0:
-            return None
-        return get_matrix_tilt(angle)
-
-
 class FringeFieldTEAPOT(BaseTEAPOT):
     """
     The class is a base class for the fringe field classes for others TEAPOT elements.
@@ -1586,12 +1468,6 @@ class FringeFieldTEAPOT(BaseTEAPOT):
         """
         if self.__trackFunc != None:
             self.__trackFunc(self, paramsDict)
-
-    def getMatrix(self, sync_part: SyncParticle, part_index: int = -1) -> np.ndarray | None:
-        params_dict = self.getParamsDict()
-        if params_dict.get("ea1", 0.0) != 0.0 or params_dict.get("ea2", 0.0) != 0.0:
-            raise NotImplementedError("Bend edge fringes require a fitted matrix")
-        return None
 
     def setFringeFieldFunction(self, trackFunction: Callable) -> None:
         """
@@ -1710,14 +1586,3 @@ class ContinuousLinearFocusingTEAPOT(NodeTEAPOT):
 
     def setWaveform(self, waveform):
         self.waveform = waveform
-
-    def getMatrix(self, sync_part: SyncParticle, part_index: int = -1) -> np.ndarray | None:
-        length = self.getLength(part_index)
-        if length <= 0:
-            return None
-
-        kq = self.getParam("kq")
-        if self.waveform:
-            kq *= self.waveform.getStrength()
-
-        return get_matrix_cf(sync_part, length=length, kq=kq)

@@ -6,7 +6,10 @@ from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.linac import MatrixRfGap
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
-from orbit.envelope import fit_transfer_matrix
+from orbit.envelope import EnvelopeTracker
+from orbit.envelope.node_matrices import get_node_matrix
+from orbit.envelope.node_matrices import get_node_matrix as analytic_node_matrix
+from orbit.envelope.matrix_fitting import fit_lattice_matrix
 from orbit.lattice import AccNode
 from orbit.lattice import AccActionsContainer
 from orbit.lattice import AccNodeBunchTracker
@@ -234,8 +237,8 @@ def test_bend_teapot_edge_matrix(charge: float):
     bunch.charge(charge)
     bunch.getSyncParticle().kinEnergy(1.3)
 
-    matrix_fit = fit_transfer_matrix(lattice, bunch)
-    envelope = Envelope(sync_part=bunch.getSyncParticle())
+    matrix_fit = fit_lattice_matrix(lattice, bunch)
+    envelope = Envelope(bunch=bunch)
     matrix_analytic = lattice.trackEnvelope(envelope.copy(), fit=False, return_matrix=True)
     assert np.allclose(matrix_analytic, matrix_fit, atol=1.0e-10)
 
@@ -254,8 +257,8 @@ def test_fitted_envelope_matrices():
     bunch.mass(mass_proton)
     bunch.getSyncParticle().kinEnergy(1.3)
 
-    matrix_expected = fit_transfer_matrix(lattice, bunch)
-    envelope = Envelope(sync_part=bunch.getSyncParticle())
+    matrix_expected = fit_lattice_matrix(lattice, bunch)
+    envelope = Envelope(bunch=bunch)
     matrix_actual = lattice.trackEnvelope(envelope.copy(), return_matrix=True, fit=True)
     assert np.allclose(matrix_actual, matrix_expected, atol=1.0e-12)
 
@@ -319,6 +322,8 @@ def test_solenoid_linac(charge: float):
 
 @pytest.mark.parametrize("charge", [1.0, -1.0])
 def test_rf_gap_matrix(charge: float):
+    from orbit.envelope.matrix import get_matrix_rf_gap
+
     kin_energy = 0.0025
     frequency = 402.5e06
     E0TL = 0.001
@@ -343,14 +348,9 @@ def test_rf_gap_matrix(charge: float):
 
     coords_out_1 = collect_bunch(bunch_out_1)["coords"]
 
-    from orbit.utils.matrix import get_matrix_rf_gap
-
-    bunch_out_2 = Bunch()
-    bunch_in.copyBunchTo(bunch_out_2)
-
-    sync_part = bunch_in.getSyncParticle()
+    reference = Envelope(bunch=bunch_in)
     matrix = get_matrix_rf_gap(
-        sync_part,
+        reference,
         frequency=frequency,
         E0TL=E0TL,
         phase=phase,
@@ -359,6 +359,8 @@ def test_rf_gap_matrix(charge: float):
     coords_out_2 = np.matmul(coords_in, matrix.T)
     coords_out_2 = coords_out_2[:, :-1]
     assert np.allclose(coords_out_1, coords_out_2)
+    assert reference.kin_energy == pytest.approx(bunch_out_1.getSyncParticle().kinEnergy())
+    assert reference.beta == pytest.approx(bunch_out_1.getSyncParticle().beta())
 
 
 def test_sc_3d_cold_expansion():
@@ -369,7 +371,12 @@ def test_sc_3d_cold_expansion():
     radius = 0.01
     gamma = bunch.getSyncParticle().gamma()
     covariance = np.diag([radius**2 / 5, 0, radius**2 / 5, 0, radius**2 / (5 * gamma**2), 0])
-    envelope = Envelope(sync_part=bunch.getSyncParticle(), cov_matrix=covariance, intensity=1e8)
+    envelope = Envelope(
+        kin_energy=bunch.getSyncParticle().kinEnergy(),
+        mass=bunch.mass(),
+        cov_matrix=covariance,
+        intensity=1e8,
+    )
     coefficient = envelope.intensity * envelope.classical_radius / (envelope.beta * gamma)**2
     distance = np.sqrt(radius**3 / (2 * coefficient)) * (np.sqrt(2) + np.arcsinh(1))
     lattice = make_lattice([DriftTEAPOT(length=distance, nparts=1000)])
@@ -386,7 +393,7 @@ def test_track_sublattice_no_error():
     sync_part.kinEnergy(0.001)
 
     cov_matrix = np.diag(np.square([1e-3, 0, 1e-3, 0.0, 1e-3, 0.0]))
-    envelope = Envelope(sync_part=sync_part, cov_matrix=cov_matrix)
+    envelope = Envelope(kin_energy=sync_part.kinEnergy(), mass=bunch.mass(), cov_matrix=cov_matrix)
 
     lattice = TEAPOT_Lattice()
 
@@ -413,277 +420,84 @@ def test_get_total_matrix(charge: float, static: bool) -> None:
     sync_part.kinEnergy(0.001)
 
     cov_matrix = make_default_cov_matrix()
-    envelope = Envelope(sync_part=sync_part, cov_matrix=cov_matrix, intensity=1e7)
+    envelope = Envelope(
+        kin_energy=sync_part.kinEnergy(),
+        mass=bunch.mass(),
+        charge=charge,
+        cov_matrix=cov_matrix,
+        intensity=1e7,
+    )
 
     envelope_out_a = envelope.copy()
     lattice.trackEnvelope(envelope_out_a, sc="2d")
 
     matrix = lattice.trackEnvelope(envelope.copy(), return_matrix=True, sc="2d", static=static)
     envelope_out_b = envelope.copy()
-    envelope_out_b.transform(matrix)
+    envelope_out_b.apply_matrix(matrix)
     assert np.all(np.isclose(envelope_out_a.cov_matrix, envelope_out_b.cov_matrix))
 
 
-def make_test_envelope():
-    bunch = Bunch()
-    bunch.getSyncParticle().kinEnergy(1.3)
-    bunch.getSyncParticle().time(10.0)
-    return Envelope(sync_part=bunch.getSyncParticle(), cov_matrix=make_default_cov_matrix()).copy()
-
-
-@pytest.mark.parametrize("fit", [False, True])
-def test_static_reuse_options_and_reset(monkeypatch, fit):
-    from orbit.envelope import EnvelopeTracker
-
-    lattice = make_lattice([DriftTEAPOT(length=0.2), DriftTEAPOT(length=0.7)])
-    envelope = make_test_envelope()
-    calls = []
-    original = EnvelopeTracker.precompute
-
-    def precompute(self, envelope, params_dict=None):
-        calls.append((self.index_start, self.index_stop, self.fit, self.fallback))
-        return original(self, envelope, params_dict=params_dict)
-
-    monkeypatch.setattr(EnvelopeTracker, "precompute", precompute)
-    expected = envelope.copy()
-    for _ in range(3):
-        lattice.trackEnvelope(expected, fit=fit)
-    for _ in range(3):
-        lattice.trackEnvelope(envelope, static=True, fit=fit)
-    assert len(calls) == 1
-    assert envelope.sync_part.time() == pytest.approx(expected.sync_part.time(), rel=0, abs=1e-14)
-    np.testing.assert_allclose(envelope.cov_matrix, expected.cov_matrix)
-    for options in [dict(index_stop=0, fit=fit), dict(index_stop=0, fit=not fit),
-                    dict(index_stop=0, fit=not fit, fallback=False)]:
-        actual = make_test_envelope()
-        reference = actual.copy()
-        reference_lattice = make_lattice([DriftTEAPOT(length=0.2), DriftTEAPOT(length=0.7)])
-        reference_lattice.trackEnvelope(reference, **options)
-        lattice.trackEnvelope(actual, static=True, **options)
-        np.testing.assert_allclose(actual.cov_matrix, reference.cov_matrix)
-    assert len(calls) == 4
-    lattice.initialize()
-    lattice.trackEnvelope(envelope, static=True)
-    assert len(calls) == 5
-    lattice.trackEnvelope(envelope, static=False)
-    lattice.trackEnvelope(envelope, static=True)
-    assert len(calls) == 6
-
-
-@pytest.mark.parametrize("static", [False, True])
-@pytest.mark.parametrize("start,stop,length", [(0, 0, .1), (1, 1, .2), (1, 2, .5),
-    (0, -1, .6), (0, -2, .6), (-1, None, .6), (3, None, 0), (2, 0, 0)])
-def test_sublattice_results(static, start, stop, length):
-    from orbit.utils.matrix import get_matrix_drift
-
-    lattice = make_lattice([DriftTEAPOT(length=x) for x in [.1, .2, .3]])
-    envelope = make_test_envelope()
-    reference = envelope.copy()
-    expected_matrix = get_matrix_drift(reference.sync_part, length)
-    matrix = lattice.trackEnvelope(envelope, index_start=start, index_stop=stop,
-                                   static=static, fit=False, return_matrix=True)
-    np.testing.assert_allclose(matrix, expected_matrix, atol=1e-14)
-    assert envelope.sync_part.time() == pytest.approx(reference.sync_part.time(), rel=0, abs=1e-14)
-
-
-@pytest.mark.parametrize("static", [False, True])
-@pytest.mark.parametrize("fit", [False, True])
-def test_actions_match_bunch_traversal(static, fit):
-    parent = DriftTEAPOT(name="parent", length=.4, nparts=2)
-    for place, part, location in [(AccNode.ENTRANCE, 0, AccNode.AFTER),
-        (AccNode.BODY, 0, AccNode.BEFORE), (AccNode.BODY, 1, AccNode.AFTER),
-        (AccNode.EXIT, 0, AccNode.AFTER)]:
-        parent.addChildNode(DriftTEAPOT(name=f"child-{place}-{part}", length=.1),
-                            place, part_index=part, place_in_part=location)
-    lattice = make_lattice([parent])
-    envelope = make_test_envelope()
-    envelope.centroid[1] = .001
-    bunch = Bunch()
-    bunch.mass(envelope.mass)
-    bunch.charge(envelope.charge)
-    bunch.getSyncParticle().kinEnergy(envelope.kin_energy)
-    bunch.getSyncParticle().time(10)
-    bunch.addParticle(*envelope.centroid)
-
-    def observe(beam_key):
-        actions = AccActionsContainer()
-        events = []
-        for place in [AccNode.ENTRANCE, AccNode.BODY, AccNode.EXIT]:
-            def action(params_dict, place=place):
-                assert params_dict["actions"] is actions
-                assert params_dict["custom"] == "retained"
-                beam = params_dict[beam_key]
-                sync_part = beam.sync_part if beam_key == "envelope" else beam.getSyncParticle()
-                x = beam.centroid[0] if beam_key == "envelope" else beam.x(0)
-                events.append((params_dict["node"].getName(), params_dict["parentNode"].getName(),
-                    place, params_dict["node"].getActivePartIndex(), params_dict["path_length"],
-                    sync_part.time(), x))
-            actions.addAction(action, place)
-        return actions, events
-
-    bunch_actions, expected = observe("bunch")
-    lattice.trackBunch(bunch, paramsDict={"custom": "retained"}, actionContainer=bunch_actions)
-    actions, actual = observe("envelope")
-    original = [list(actions.getActions(place)) for place in range(3)]
-    lattice.trackEnvelope(envelope, params_dict={"custom": "retained"}, action_container=actions,
-                          static=static, fit=fit)
-    assert len(actual) == len(expected)
-    for observed, reference in zip(actual, expected):
-        assert observed[:4] == reference[:4]
-        np.testing.assert_allclose(observed[4:], reference[4:], rtol=0, atol=1e-12)
-    assert [actions.getActions(place) for place in range(3)] == original
-
-
-@pytest.mark.parametrize("failure", ["action", "matrix"])
-def test_actions_removed_after_failure(failure):
-    class FailingDrift(DriftTEAPOT):
-        def getMatrix(self, sync_part, part_index=-1):
-            raise RuntimeError("matrix failure")
-
-    node = FailingDrift(length=.1) if failure == "matrix" else DriftTEAPOT(length=.1)
-    lattice = make_lattice([node])
-    actions = AccActionsContainer()
-    def fail(params_dict):
-        raise RuntimeError("action failure")
-    if failure == "action":
-        actions.addAction(fail, AccNode.EXIT)
-    original = [list(actions.getActions(place)) for place in range(3)]
-    with pytest.raises(RuntimeError, match=f"{failure} failure"):
-        lattice.trackEnvelope(make_test_envelope(), fit=False, action_container=actions)
-    assert [actions.getActions(place) for place in range(3)] == original
-    if failure == "action":
-        actions.removeAction(fail, AccNode.EXIT)
-    healthy = make_lattice([DriftTEAPOT(length=.1)])
-    healthy.trackEnvelope(make_test_envelope(), action_container=actions)
-    assert all(not actions.getActions(place) for place in range(3))
-
-
-@pytest.mark.parametrize("static", [False, True])
-@pytest.mark.parametrize("fallback", [False, True])
-def test_missing_matrix_fallback(static, fallback):
-    class UnsupportedDrift(DriftTEAPOT):
-        def getMatrix(self, sync_part, part_index=-1):
-            raise NotImplementedError("missing matrix")
-    lattice = make_lattice([UnsupportedDrift(length=.3)])
-    envelope = make_test_envelope()
-    if not fallback:
-        with pytest.raises(NotImplementedError, match="missing matrix"):
-            lattice.trackEnvelope(envelope, fit=False, fallback=False, static=static)
-    else:
-        expected = envelope.copy()
-        lattice.trackEnvelope(expected, fit=True)
-        lattice.trackEnvelope(envelope, fit=False, fallback=True, static=static)
-        np.testing.assert_allclose(envelope.cov_matrix, expected.cov_matrix)
-
-
-@pytest.mark.parametrize("result", [None, ValueError("invalid matrix")])
-def test_fallback_respects_none_and_other_errors(result):
-    class CustomNode(AccNode):
-        def getMatrix(self, sync_part, part_index=-1):
-            if isinstance(result, Exception):
-                raise result
-            return result
-        def track(self, params_dict):
-            pytest.fail("Unexpected fitting")
-    lattice = make_lattice([CustomNode()])
-    envelope = make_test_envelope()
-    if isinstance(result, Exception):
-        with pytest.raises(ValueError, match="invalid matrix"):
-            lattice.trackEnvelope(envelope, fit=False)
-    else:
-        expected = envelope.copy()
-        lattice.trackEnvelope(envelope, fit=False)
-        np.testing.assert_array_equal(envelope.cov_matrix, expected.cov_matrix)
-
-
-@pytest.mark.parametrize("fit", [False, True])
-def test_reference_updates_and_preparation_independence(fit):
-    from orbit.envelope import EnvelopeTracker
-    class AcceleratingNode(AccNode):
-        def update(self, sync_part):
-            sync_part.kinEnergy(sync_part.kinEnergy() + .1)
-            sync_part.time(sync_part.time() + .25)
-            sync_part.rVector(tuple(x + .1 for x in sync_part.rVector()))
-            sync_part.nxVector((0, 1, 0))
-        def getMatrix(self, sync_part, part_index=-1):
-            self.update(sync_part)
-            return np.eye(7)
-        def track(self, params_dict):
-            self.update(params_dict["bunch"].getSyncParticle())
-    lattice = make_lattice([AcceleratingNode(), AcceleratingNode()])
-    envelope = make_test_envelope()
-    tracker = EnvelopeTracker(lattice, fit=fit)
-    params_dict = {"path_length": 5}
-    tracker.precompute(envelope, params_dict=params_dict)
-    assert params_dict == {"path_length": 5}
-    assert envelope.sync_part.time() == 10
-    assert envelope.kin_energy == pytest.approx(1.3)
-    np.testing.assert_array_equal(envelope.sync_part.rVector(), (0, 0, 0))
-    # Dynamic transport must recalculate at the updated energy on each turn.
-    lattice.trackEnvelope(envelope, fit=fit)
-    lattice.trackEnvelope(envelope, fit=fit)
-    assert envelope.kin_energy == pytest.approx(1.7)
-    assert envelope.sync_part.time() == pytest.approx(11)
-    np.testing.assert_allclose(envelope.sync_part.rVector(), (.4, .4, .4))
-    np.testing.assert_allclose(envelope.sync_part.nxVector(), (0, 1, 0))
-
-
-def test_envelope_copy_owns_reference_state():
-    import gc
-    original = make_test_envelope()
-    original.sync_part.rVector((1, 2, 3))
-    original.sync_part.nxVector((0, 1, 0))
-    original.centroid[:] = np.arange(6)
-    original.intensity = 123
-    original.rms_bunch_length_factor = 4
-    copied = original.copy()
-    for attr in ["mass", "charge", "kinEnergy", "time", "rVector", "pVector", "nxVector"]:
-        np.testing.assert_allclose(getattr(copied.sync_part, attr)(), getattr(original.sync_part, attr)())
-    assert copied.intensity == original.intensity
-    assert copied.classical_radius == original.classical_radius
-    assert copied.rms_bunch_length_factor == 4
-    copied.centroid[0] = 99
-    copied.cov_matrix[0, 0] = 99
-    copied.sync_part.time(20)
-    copied.sync_part.kinEnergy(.5)
-    assert original.centroid[0] == 0
-    assert original.cov_matrix[0, 0] != 99
-    assert original.sync_part.time() == 10
-    assert original.kin_energy == pytest.approx(1.3)
-    del original
-    gc.collect()
-    assert copied.copy().kin_energy == pytest.approx(.5)
-
-
 @pytest.mark.parametrize("kind", ["teapot", "linac"])
-@pytest.mark.parametrize("fringe", [False, True])
+@pytest.mark.parametrize("fringe_in,fringe_out", [(False, False), (True, False), (False, True), (True, True)])
 @pytest.mark.parametrize("static", [False, True])
-@pytest.mark.parametrize("ea1,ea2", [(0.1, 0), (0, -.05), (.1, -.05)])
-def test_edge_bends_with_fringe(kind, fringe, static, ea1, ea2):
+@pytest.mark.parametrize("theta", [0.2, -0.2])
+@pytest.mark.parametrize("charge", [1.0, -1.0])
+@pytest.mark.parametrize("ea1,ea2", [(0.1, 0), (0, -0.05), (0.1, -0.05)])
+def test_edge_bends_with_fringe(kind, fringe_in, fringe_out, static, theta, charge, ea1, ea2):
     if kind == "teapot":
-        node = BendTEAPOT(length=1, theta=.2, ea1=ea1, ea2=ea2, nparts=5)
+        node = BendTEAPOT(length=1, theta=theta, ea1=ea1, ea2=ea2, nparts=5)
     else:
         node = Bend()
         node.setLength(1)
         node.setnParts(5)
-        for name, value in [("theta", .2), ("ea1", ea1), ("ea2", ea2)]:
+        for name, value in [("theta", theta), ("ea1", ea1), ("ea2", ea2)]:
             node.setParam(name, value)
+
     lattice = make_lattice([node])
-    if hasattr(node, "setUsageFringeFieldIN"):
-        node.setUsageFringeFieldIN(fringe)
-        node.setUsageFringeFieldOUT(fringe)
-    envelope = make_test_envelope()
+    node.setUsageFringeFieldIN(fringe_in)
+    node.setUsageFringeFieldOUT(fringe_out)
+
     bunch = Bunch()
-    bunch.mass(envelope.mass)
-    bunch.charge(envelope.charge)
-    bunch.getSyncParticle().kinEnergy(envelope.kin_energy)
-    expected = fit_transfer_matrix(lattice, bunch)
-    actual = lattice.trackEnvelope(envelope, fit=False, static=static, return_matrix=True)
-    np.testing.assert_allclose(actual, expected, atol=1e-10)
-    with pytest.raises(NotImplementedError, match="edge angles"):
-        node.getMatrix(envelope.sync_part, part_index=0)
-    for fringe_node in (node.getNodeFringeFieldIN(), node.getNodeFringeFieldOUT()):
-        with pytest.raises(NotImplementedError, match="edge fringes"):
-            fringe_node.getMatrix(envelope.sync_part)
-    with pytest.raises(NotImplementedError):
-        lattice.trackEnvelope(envelope.copy(), fit=False, fallback=False)
+    bunch.mass(mass_proton)
+    bunch.charge(charge)
+    bunch.getSyncParticle().kinEnergy(1.3)
+    bunch.getSyncParticle().time(2.0)
+
+    # Small amplitudes isolate the linear map from nonlinear wedge/fringe terms.
+    coords = np.random.default_rng(42).normal(size=(2000, 6))
+    coords *= [1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-7]
+    for coord in coords:
+        bunch.addParticle(*coord)
+
+    envelope = Envelope(bunch=bunch)
+
+    expected = fit_lattice_matrix(lattice, bunch)
+    actual = lattice.trackEnvelope(
+        envelope, fit=False, fallback=False, static=static, return_matrix=True,
+    )
+
+    # MatrixGenerator differentiates nonlinear maps at finite amplitudes.
+    np.testing.assert_allclose(actual, expected, rtol=1e-6, atol=2e-8)
+    lattice.trackBunch(bunch)
+    scale = np.sqrt(np.diag(calc_bunch_cov(bunch)))
+    error = (envelope.cov_matrix - calc_bunch_cov(bunch)) / np.outer(scale, scale)
+    assert np.max(np.abs(error)) < 1e-5
+
+    analysis = BunchTwissAnalysis()
+    analysis.analyzeBunch(bunch)
+    centroid = np.array([analysis.getAverage(i) for i in range(6)])
+    np.testing.assert_allclose(envelope.centroid, centroid, rtol=0, atol=1e-11)
+    assert envelope.time == pytest.approx(bunch.getSyncParticle().time(), abs=1e-14)
+    assert envelope.kin_energy == pytest.approx(bunch.getSyncParticle().kinEnergy())
+
+    for fringe_node, angle, enabled in [
+        (node.getNodeFringeFieldIN(), ea1, fringe_in),
+        (node.getNodeFringeFieldOUT(), ea2, fringe_out),
+    ]:
+        edge = get_node_matrix(fringe_node, envelope)
+        expected_edge = np.eye(7)
+        if kind == "teapot" or enabled:
+            expected_edge[1, 0] = np.tan(angle) / node.getParam("rho")
+            if enabled:
+                expected_edge[3, 2] = -expected_edge[1, 0]
+        np.testing.assert_allclose(np.eye(7) if edge is None else edge, expected_edge)

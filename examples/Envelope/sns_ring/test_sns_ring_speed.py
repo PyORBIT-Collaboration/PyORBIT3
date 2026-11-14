@@ -34,8 +34,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sc", type=int, default=0)
     parser.add_argument("--sc-grid", type=int, default=64)
     parser.add_argument("--fringe", type=int, default=0)
-    parser.add_argument("--fit", type=int, default=1)
+    parser.add_argument("--fit", type=int, default=0)
     parser.add_argument("--static", type=int, default=1)
+    parser.add_argument("--fallback", type=int, default=0)
+
+    parser.add_argument("--bunch", action="store_true")
     return parser.parse_args()
 
 
@@ -87,7 +90,10 @@ def main(args: argparse.Namespace) -> None:
     print("ENVELOPE")
 
     envelope = Envelope(
-        sync_part=sync_part,
+        kin_energy=sync_part.kinEnergy(),
+        mass=bunch.mass(),
+        charge=bunch.charge(),
+        time=sync_part.time(),
         cov_matrix=cov_matrix_init,
         intensity=args.intensity,
     )
@@ -102,7 +108,8 @@ def main(args: argparse.Namespace) -> None:
             envelope,
             static=args.static,
             fit=args.fit,
-            sc=("2d" if args.sc else None)
+            fallback=args.fallback,
+            sc=("2d" if args.sc else None),
         )
 
     time_per_turn = (time.time() - start_time) / args.turns
@@ -116,44 +123,45 @@ def main(args: argparse.Namespace) -> None:
     profiler_stats.print_stats(10)
 
     # Track bunch
-    print("BUNCH")
+    if args.bunch:
+        print("BUNCH")
 
-    rng = np.random.default_rng()
+        rng = np.random.default_rng()
 
-    bunch_coords = np.zeros((args.nparts, 6))
-    bunch_coords[:, :4] = gen_dist(
-        size=args.nparts, cov_matrix=cov_matrix_init[0:4, 0:4], name="kv"
-    )
-    bunch_coords[:, 4] = args.bunch_length * rng.uniform(-0.5, 0.5, size=args.nparts)
+        bunch_coords = np.zeros((args.nparts, 6))
+        bunch_coords[:, :4] = gen_dist(
+            size=args.nparts, cov_matrix=cov_matrix_init[0:4, 0:4], name="kv"
+        )
+        bunch_coords[:, 4] = args.bunch_length * rng.uniform(-0.5, 0.5, size=args.nparts)
 
-    for i in range(bunch_coords.shape[0]):
-        bunch.addParticle(*bunch_coords[i])
+        for i in range(bunch_coords.shape[0]):
+            bunch.addParticle(*bunch_coords[i])
 
-    if args.sc:
-        sc_calc = SpaceChargeCalc2p5D(64, 64, 1)
-        sc_path_length_min = 1.00e-06
-        sc_nodes = setSC2p5DAccNodes(lattice, sc_path_length_min, sc_calc)
+        if args.sc:
+            sc_calc = SpaceChargeCalc2p5D(64, 64, 1)
+            sc_path_length_min = 1.00e-06
+            sc_nodes = setSC2p5DAccNodes(lattice, sc_path_length_min, sc_calc)
 
-        bunch_size = bunch.getSizeGlobal()
-        bunch.macroSize(args.intensity / bunch_size)
+            bunch_size = bunch.getSizeGlobal()
+            bunch.macroSize(args.intensity / bunch_size)
 
-    start_time = time.time()
+        start_time = time.time()
 
-    profiler = cProfile.Profile()
-    profiler.enable()
+        profiler = cProfile.Profile()
+        profiler.enable()
 
-    for turn in trange(args.turns):
-        lattice.trackBunch(bunch)
+        for turn in trange(args.turns):
+            lattice.trackBunch(bunch)
 
-    time_per_turn = (time.time() - start_time) / args.turns
+        time_per_turn = (time.time() - start_time) / args.turns
 
-    profiler.disable()
+        profiler.disable()
 
-    print("Time per turn:", time_per_turn)
+        print("Time per turn:", time_per_turn)
 
-    profiler_stats = pstats.Stats(profiler)
-    profiler_stats.sort_stats(pstats.SortKey.TIME)
-    profiler_stats.print_stats(10)
+        profiler_stats = pstats.Stats(profiler)
+        profiler_stats.sort_stats(pstats.SortKey.TIME)
+        profiler_stats.print_stats(10)
 
 
 if __name__ == "__main__":
