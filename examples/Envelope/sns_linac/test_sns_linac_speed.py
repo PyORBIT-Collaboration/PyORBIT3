@@ -1,6 +1,8 @@
 """Time envelope and particle tracking through the SNS linac."""
 
 import argparse
+import cProfile
+import pstats
 import random
 import time
 
@@ -29,7 +31,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--current", type=float, default=0.038)
     parser.add_argument("--turns", type=int, default=5)
     parser.add_argument("--seq-stop", default="CCL2")
-    parser.add_argument("--sc", action="store_true")
+    parser.add_argument("--sc", type=int, default=0)
     parser.add_argument("--sc-model", choices=("ellipsoid", "fft"), default="ellipsoid")
     parser.add_argument("--sc-grid", type=int, default=64)
     parser.add_argument("--sc-ellipsoid-n", type=int, default=1)
@@ -37,6 +39,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--fit", type=int, default=0)
     parser.add_argument("--fallback", type=int, default=0)
     parser.add_argument("--static", type=int, default=0)
+    parser.add_argument("--bunch", action="store_true", help="Also benchmark particle tracking")
     return parser.parse_args()
 
 
@@ -116,25 +119,36 @@ def main(args: argparse.Namespace) -> None:
     lattice.trackDesignBunch(envelope_bunch)
     envelope = Envelope(bunch=envelope_bunch)
     configure_space_charge(lattice, envelope_bunch, args)
-    envelope_time = time_tracking(
-        lambda: lattice.trackEnvelope(
-            envelope, sc=("3d" if args.sc else None), fit=args.fit, static=args.static, fallback=args.fallback
-        ),
-        args.turns,
+    track_envelope = lambda: lattice.trackEnvelope(
+        envelope, sc=("3d" if args.sc else None), fit=args.fit, static=args.static, fallback=args.fallback
     )
+    track_envelope()  # warm-up outside the timed interval
+    profiler = cProfile.Profile()
+    profiler.enable()
+    start = time.perf_counter()
+    for _ in range(args.turns):
+        track_envelope()
+    envelope_time = (time.perf_counter() - start) / args.turns
+    profiler.disable()
 
-    particle_lattice = make_lattice(args)
-    bunch = make_bunch(args)
-    particle_lattice.trackDesignBunch(bunch)
-    configure_space_charge(particle_lattice, bunch, args)
-    bunch_time = time_tracking(lambda: particle_lattice.trackBunch(bunch), args.turns)
+    particle_lattice = None
+    bunch_time = None
+    if args.bunch:
+        particle_lattice = make_lattice(args)
+        bunch = make_bunch(args)
+        particle_lattice.trackDesignBunch(bunch)
+        configure_space_charge(particle_lattice, bunch, args)
+        bunch_time = time_tracking(lambda: particle_lattice.trackBunch(bunch), args.turns)
 
     print(f"lattice nodes: {len(lattice.getNodes())}")
     print(f"particles: {args.nparts}")
     print(f"turns: {args.turns}")
     print(f"fit: {args.fit}; static: {args.static}; space charge: {args.sc_model if args.sc else 'off'}")
     print(f"envelope: {envelope_time:.6f} s/turn")
-    print(f"bunch:    {bunch_time:.6f} s/turn")
+    if bunch_time is not None:
+        print(f"bunch:    {bunch_time:.6f} s/turn")
+    print("\nEnvelope profile (top 10 by cumulative time):")
+    pstats.Stats(profiler).strip_dirs().sort_stats(pstats.SortKey.CUMULATIVE).print_stats(10)
 
 
 if __name__ == "__main__":
