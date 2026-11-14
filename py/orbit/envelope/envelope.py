@@ -1,6 +1,5 @@
-from __future__ import annotations
-
-from dataclasses import replace
+import copy
+import math
 
 import numpy as np
 import scipy.constants
@@ -10,16 +9,20 @@ from orbit.core.bunch import Bunch
 from orbit.core.bunch import BunchTwissAnalysis
 
 from .matrix import convert_matrix_zp_to_dE
-from .utils import gen_dist
 from .utils import get_classical_radius
-from .utils import proj_cov_matrix
-from .sync_particle import SyncParticleParams
+from .utils import project_covariance_matrix
+from .utils import sample_distribution
 
 
-def get_bunch_cov_matrix(bunch: Bunch) -> np.ndarray:
+# For a uniform one-dimensional distribution over length L, the standard
+# deviation is L / sqrt(12). This quantity is used to calculate the line
+# density for two-dimensional space charge kicks.
+RMS_BUNCH_LENGTH_FACTOR = math.sqrt(12.0)
+
+
+def get_bunch_covariance(bunch: Bunch) -> np.ndarray:
     twiss_calc = BunchTwissAnalysis()
     twiss_calc.analyzeBunch(bunch)
-
     cov_matrix = np.zeros((6, 6))
     for i in range(6):
         for j in range(6):
@@ -30,7 +33,6 @@ def get_bunch_cov_matrix(bunch: Bunch) -> np.ndarray:
 def get_bunch_centroid(bunch: Bunch) -> np.ndarray:
     twiss_calc = BunchTwissAnalysis()
     twiss_calc.analyzeBunch(bunch)
-
     centroid = np.zeros(6)
     for i in range(6):
         centroid[i] = twiss_calc.getAverage(i)
@@ -48,124 +50,99 @@ def build_diag_matrix_from_xyz_eig(eigenvectors: np.ndarray) -> np.ndarray:
 
 
 class Envelope:
-    """Represents the phase space covariance matrix and centroid."""
-
+    """Represents the first and second moments of a phase-space distribution.."""
     def __init__(
         self,
-        sync_params: SyncParticleParams | None = None,
-        cov_matrix: np.ndarray = None,
-        centroid: np.ndarray = None,
+        cov_matrix: np.ndarray | None = None,
+        centroid: np.ndarray | None = None,
+        kin_energy: float | None = None,
+        mass: float | None = None,
+        charge: float = 1.0,
+        time: float = 0.0,
         intensity: float = 0.0,
-        bunch: Bunch = None,
+        bunch: Bunch | None = None,
     ) -> None:
         """Constructor.
 
-        Args:
-            sync_params: Synchronous particle parameters.
+        Args:            
             cov_matrix: 6 x 6 covariance matrix.
             centroid: 6 x 1 centroid vector.
-            intensity: Total number of particles.
-            bunch: If provided, the parameters above are calculated from the bunch particles.
+            kin_energy: Synchronous particle kinetic energy [GeV].
+            mass: Particle mass [GeV / c^2].
+            charge: Particle charge [e].
+            time: Synchronous particle time [s].
+            intensity: Total number of particles in bunch.
+            bunch: If provided, the parameters above are calculated
+                from the bunch parameters and macroparticle coordiantes.
         """
-
         if bunch is not None:
-            sync_params = SyncParticleParams.from_bunch(bunch)
-            cov_matrix = get_bunch_cov_matrix(bunch)
+            cov_matrix = get_bunch_covariance(bunch)
             centroid = get_bunch_centroid(bunch)
-            intensity = bunch.getSize() * bunch.macroSize()
+            mass = bunch.mass()
+            charge = bunch.charge()
+            sync_part = bunch.getSyncParticle()
+            kin_energy = sync_part.kinEnergy()
+            time = sync_part.time()
+            intensity = bunch.macroSize() * bunch.getSizeGlobal()
 
-        self.sync_params = sync_params
-
-        self.centroid = centroid
-        if self.centroid is None:
-            self.centroid = np.zeros(6)
-
-        self.cov_matrix = cov_matrix
-        if self.cov_matrix is None:
-            self.cov_matrix = np.eye(6)
-
+        self.centroid = np.zeros(6) if centroid is None else centroid
+        self.cov_matrix = np.eye(6) if cov_matrix is None else cov_matrix
+        self.kin_energy = kin_energy
+        self.mass = mass
+        self.charge = charge
+        self.time = time
         self.intensity = intensity
         self.classical_radius = get_classical_radius(self.charge, self.mass)
+        self.rms_bunch_length_factor = RMS_BUNCH_LENGTH_FACTOR
 
-        # For a uniform one-dimensional distribution over length L, the standard
-        # deviation is L / sqrt(12). This quantity is used to calculate the line
-        # density for two-dimensional space charge kicks.
-        self.rms_bunch_length_factor = np.sqrt(12.0)
-
-    def copy(self):
-        new_envelope = Envelope(
-            sync_params=self.sync_params,
-            cov_matrix=self.cov_matrix.copy(),
-            centroid=self.centroid.copy(),
-            intensity=self.intensity,
-        )
-        new_envelope.rms_bunch_length_factor = self.rms_bunch_length_factor
-        new_envelope.classical_radius = self.classical_radius
-        return new_envelope
-
-    @property
-    def kin_energy(self) -> float:
-        return self.sync_params.kin_energy
-
-    @kin_energy.setter
-    def kin_energy(self, value: float) -> None:
-        self.sync_params.kin_energy = value
-
-    @property
-    def time(self) -> float:
-        return self.sync_params.time
-
-    @time.setter
-    def time(self, value: float) -> None:
-        self.sync_params.time = value
+    def copy(self) -> "Envelope":
+        return copy.deepcopy(self)
 
     @property
     def gamma(self) -> float:
-        return self.sync_params.gamma
+        return 1.0 + self.kin_energy / self.mass
 
     @property
     def beta(self) -> float:
-        return self.sync_params.beta
-
-    @property
-    def mass(self) -> float:
-        return self.sync_params.mass
-
-    @property
-    def charge(self) -> float:
-        return self.sync_params.charge
+        return self.momentum / (self.kin_energy + self.mass)
 
     @property
     def momentum(self) -> float:
-        return self.sync_params.momentum
+        return math.sqrt(self.kin_energy * (self.kin_energy + 2.0 * self.mass))
+
+    @property
+    def rigidity(self) -> float:
+        return 3.335640952 * self.momentum / self.charge
 
     @property
     def sc_factor(self) -> float:
         return 2.0 * self.intensity * self.classical_radius / (self.beta ** 2 * self.gamma ** 3)
 
     def rms(self, axis: int | None = None) -> float | np.ndarray:
-        rms_arr = np.sqrt(np.diag(self.cov_matrix))
-        return rms_arr[axis]
+        return np.sqrt(np.diag(self.cov_matrix))[axis]
 
-    def transform(self, matrix: np.ndarray) -> None:
+    def apply_matrix(self, matrix: np.ndarray) -> None:
         m = matrix[:-1, :-1]
         u = matrix[:-1, -1]
         self.cov_matrix = m @ self.cov_matrix @ m.T
-        self.centroid = np.matmul(m, self.centroid) + u
+        self.centroid = m @ self.centroid + u
 
     def sample(self, size: int, dist: str = "kv") -> np.ndarray:
-        particles = gen_dist(size=size, cov_matrix=self.cov_matrix, name=dist)
+        particles = sample_distribution(size=size, cov_matrix=self.cov_matrix, name=dist)
         particles = particles + self.centroid
         return particles
 
     def to_bunch(self, size: int, dist: str = "gauss") -> Bunch:
         bunch = Bunch()
-        self.sync_params.update_bunch(bunch)
+        bunch.mass(self.mass)
+        bunch.charge(self.charge)
+        bunch.getSyncParticle().kinEnergy(self.kin_energy)
+        bunch.getSyncParticle().time(self.time)
         bunch.macroSize(self.intensity / size)
-
-        particles = self.sample(size=size, dist=dist)
-        for i in range(particles.shape[0]):
-            bunch.addParticle(*particles[i])
+        if size > 0:
+            particles = self.sample(size=size, dist=dist)
+            for i in range(particles.shape[0]):
+                bunch.addParticle(*particles[i])
         return bunch
 
     def sc_matrix_2d(self, length: float) -> np.ndarray:
@@ -235,7 +212,7 @@ class Envelope:
         cov_matrix = L_inv[:-1, :-1] @ self.cov_matrix @ L_inv[:-1, :-1].T
 
         # Project covariance matrix onto x-y-z plane.
-        cov_matrix_proj = proj_cov_matrix(cov_matrix, axis=(0, 2, 4))
+        cov_matrix_proj = project_covariance_matrix(cov_matrix, axis=(0, 2, 4))
 
         # Compute eigenvalues and eigenvectors of x-y-z covariance matrix.
         cov_eig_res = np.linalg.eigh(cov_matrix_proj)

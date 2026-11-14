@@ -12,7 +12,6 @@ from tqdm import trange
 from orbit.core.bunch import Bunch
 from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.envelope import Envelope
-from orbit.envelope import SyncParticleParams
 from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.space_charge.sc2p5d import setSC2p5DAccNodes
 from orbit.teapot import TEAPOT_Ring
@@ -88,7 +87,10 @@ def main(args: argparse.Namespace) -> None:
     print("ENVELOPE")
 
     envelope = Envelope(
-        sync_params=SyncParticleParams.from_bunch(bunch),
+        kin_energy=sync_part.kinEnergy(),
+        mass=bunch.mass(),
+        charge=bunch.charge(),
+        time=sync_part.time(),
         cov_matrix=cov_matrix_init,
         intensity=args.intensity,
     )

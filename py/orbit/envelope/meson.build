@@ -1,12 +1,11 @@
 py_sources = files([
     '__init__.py',
-    'envelope.py',
-    'sync_particle.py',
-    'matrix.py',
-    'node_matrices.py',
     'analysis.py',
-    'tracking.py',
+    'envelope.py',
+    'matrix.py',
     'matrix_fitting.py',
+    'node_matrices.py',
+    'tracking.py',
     'utils.py'
 ])
 

@@ -20,7 +20,6 @@ from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.spacecharge import SpaceChargeCalc3D
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
-from orbit.envelope import SyncParticleParams
 from orbit.envelope import EnvelopeAnalysis
 from orbit.space_charge.sc3d import setSC3DAccNodes
 from orbit.teapot import DriftTEAPOT
@@ -94,7 +93,7 @@ def main(args: argparse.Namespace) -> None:
     # Create envelope
     # ------------------------------------------------------------------------------
 
-    sync_params = SyncParticleParams(kin_energy=args.kin_energy, mass=mass_proton)
+    gamma = 1.0 + args.kin_energy / mass_proton
 
     cov_matrix_init = np.zeros((6, 6))
 
@@ -107,7 +106,7 @@ def main(args: argparse.Namespace) -> None:
         [args.rms_x, args.rms_y, args.rms_z], rotation_matrix=rotation_matrix
     )
 
-    lorentz_matrix = np.diag([1.0, 1.0, 1.0 / sync_params.gamma])
+    lorentz_matrix = np.diag([1.0, 1.0, 1.0 / gamma])
     cov_matrix_xyz = lorentz_matrix @ cov_matrix_xyz @ lorentz_matrix.T
 
     spatial_idx = np.ix_([0, 2, 4], [0, 2, 4])
@@ -120,7 +119,8 @@ def main(args: argparse.Namespace) -> None:
     centroid_init = np.zeros(6)
 
     envelope = Envelope(
-        sync_params=sync_params,
+        kin_energy=args.kin_energy,
+        mass=mass_proton,
         cov_matrix=cov_matrix_init,
         centroid=centroid_init,
         intensity=args.intensity,
@@ -158,7 +158,8 @@ def main(args: argparse.Namespace) -> None:
     print("TRACK BUNCH")
 
     bunch = Bunch()
-    sync_params.update_bunch(bunch)
+    bunch.mass(mass_proton)
+    bunch.getSyncParticle().kinEnergy(args.kin_energy)
 
     bunch_coords = np.zeros((args.nparts, 6))
     bunch_coords[:, (0, 2, 4)] = gen_dist(

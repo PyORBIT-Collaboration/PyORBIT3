@@ -7,7 +7,6 @@ import numpy as np
 from orbit.core.bunch import Bunch
 from orbit.core.orbit_utils import Matrix
 from orbit.core.teapot_base import MatrixGenerator
-
 if TYPE_CHECKING:
     from orbit.lattice import AccLattice
     from orbit.lattice import AccNode
@@ -21,12 +20,10 @@ def orbit_matrix_to_numpy(matrix: Matrix) -> np.ndarray:
     return matrix_out
 
 
-
-def fit_node_transfer_matrix(
+def fit_node_matrix(
     node: AccNode,
     bunch: Bunch,
     part_index: int = -1,
-    parent_node: AccNode | AccLattice | None = None,
     matrix_generator: MatrixGenerator | None = None,
     lost_bunch: Bunch | None = None,
     params_dict: dict | None = None,
@@ -47,8 +44,6 @@ def fit_node_transfer_matrix(
     params_dict["bunch"] = bunch
     params_dict["lostbunch"] = lost_bunch
     params_dict["node"] = node
-    if parent_node is not None:
-        params_dict["parentNode"] = parent_node
 
     active_part_index = node.getActivePartIndex()
     if part_index >= 0:
@@ -62,7 +57,7 @@ def fit_node_transfer_matrix(
     return orbit_matrix_to_numpy(matrix)
 
 
-def fit_transfer_matrix(
+def fit_lattice_matrix(
     lattice: AccLattice,
     bunch: Bunch,
     index_start: int = 0,

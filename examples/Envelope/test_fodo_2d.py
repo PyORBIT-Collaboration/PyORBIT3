@@ -15,7 +15,6 @@ from orbit.core.bunch import BunchTwissAnalysis
 from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
-from orbit.envelope import SyncParticleParams
 from orbit.envelope import EnvelopeAnalysis
 from orbit.lattice import AccLattice
 from orbit.lattice import AccNode
@@ -133,7 +132,10 @@ def main(args: argparse.Namespace) -> None:
 
     # Create envelope
     envelope = Envelope(
-        sync_params=SyncParticleParams.from_bunch(bunch),
+        kin_energy=sync_part.kinEnergy(),
+        mass=bunch.mass(),
+        charge=bunch.charge(),
+        time=sync_part.time(),
         cov_matrix=cov_matrix_init,
         centroid=centroid_init,
         intensity=args.intensity,
