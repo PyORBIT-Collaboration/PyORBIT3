@@ -1055,6 +1055,8 @@ class BendTEAPOT(NodeTEAPOT):
 
         self.addParam("ea1", ea1)
         self.addParam("ea2", ea2)
+        self.getNodeFringeFieldIN().setType("bend fringe in")
+        self.getNodeFringeFieldOUT().setType("bend fringe out")
         self.addParam("theta", theta)
 
         self.setnParts(nparts)

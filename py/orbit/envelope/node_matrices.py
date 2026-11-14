@@ -30,6 +30,7 @@ from orbit.py_linac.lattice.LinacRfGapNodes import BaseRF_Gap
 
 from .envelope import Envelope
 from .matrix import get_matrix_bend
+from .matrix import get_matrix_bend_edge
 from .matrix import get_matrix_cf
 from .matrix import get_matrix_drift
 from .matrix import get_matrix_kick
@@ -104,8 +105,8 @@ def _matrix_quad_teapot(node, envelope: Envelope, part_index: int = -1) -> np.nd
 
 @get_node_matrix.register(BendTEAPOT)
 def _matrix_bend_teapot(node, envelope: Envelope, part_index: int = -1) -> np.ndarray | None:
-    if node.getParam("ea1") != 0.0 or node.getParam("ea2") != 0.0:
-        raise NotImplementedError("No analytic matrix implemented for bends with edge angles.")
+    if np.any(np.asarray(node.getParam("kls")) != 0):
+        raise NotImplementedError
 
     length = node.getLength(part_index)
     if length <= 0:
@@ -154,6 +155,18 @@ def _matrix_tilt(node, envelope: Envelope, part_index: int = -1) -> np.ndarray |
 @get_node_matrix.register(FringeFieldTEAPOT)
 @get_node_matrix.register(FringeField)
 def _matrix_fringe_field(node, envelope: Envelope, part_index: int = -1) -> np.ndarray | None:
+    if node.getType() in ("bend fringe in", "bend fringe out"):
+        usage = node.getUsage()
+        # Linac fringes skip their entire callback when disabled; TEAPOT
+        # fringes still apply the geometric wedge transformations.
+        if isinstance(node, FringeField) and not usage:
+            return None
+        if np.any(np.asarray(node.getParam("kls")) != 0):
+            raise NotImplementedError
+        angle = node.getParam("ea1" if node.getType() == "bend fringe in" else "ea2")
+        if angle == 0.0:
+            return None
+        return get_matrix_bend_edge(angle, node.getParam("rho"), fringe=usage)
     params_dict = node.getParamsDict()
     if params_dict.get("ea1", 0.0) != 0.0 or params_dict.get("ea2", 0.0) != 0.0:
         raise NotImplementedError("Bend edge fringes require a fitted matrix")
@@ -182,8 +195,8 @@ def _matrix_quad_linac(node, envelope: Envelope, part_index: int = -1) -> np.nda
 
 @get_node_matrix.register(Bend)
 def _matrix_bend_linac(node, envelope: Envelope, part_index: int = -1) -> np.ndarray | None:
-    if node.getParam("ea1") != 0.0 or node.getParam("ea2") != 0.0:
-        raise NotImplementedError("Bends with edge angles require a fitted matrix")
+    if np.any(np.asarray(node.getParam("kls")) != 0):
+        raise NotImplementedError("Combined-function bends require a fitted matrix")
     length = node.getLength(part_index)
     if length <= 0:
         return None

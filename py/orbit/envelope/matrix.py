@@ -116,6 +116,15 @@ def get_matrix_quad(envelope: Envelope, length: float, kq: float) -> np.ndarray:
     return M
 
 
+def get_matrix_bend_edge(angle: float, rho: float, fringe: bool = True) -> np.ndarray:
+    matrix = np.eye(7)
+    strength = math.tan(angle) / rho
+    matrix[1, 0] = strength
+    if fringe:
+        matrix[3, 2] = -strength
+    return matrix
+
+
 def get_matrix_bend(envelope: Envelope, length: float, theta: float) -> np.ndarray:
     rho = length / theta
     cx = math.cos(theta)

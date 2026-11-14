@@ -532,6 +532,8 @@ class Bend(LinacMagnetNode):
 
         self.addParam("ea1", 0.0)
         self.addParam("ea2", 0.0)
+        self.getNodeFringeFieldIN().setType("bend fringe in")
+        self.getNodeFringeFieldOUT().setType("bend fringe out")
         self.addParam("rho", 0.0)
         self.addParam("theta", 1.0e-36)
 

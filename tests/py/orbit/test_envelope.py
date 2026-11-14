@@ -438,42 +438,66 @@ def test_get_total_matrix(charge: float, static: bool) -> None:
 
 
 @pytest.mark.parametrize("kind", ["teapot", "linac"])
-@pytest.mark.parametrize("fringe", [False, True])
+@pytest.mark.parametrize("fringe_in,fringe_out", [(False, False), (True, False), (False, True), (True, True)])
 @pytest.mark.parametrize("static", [False, True])
-@pytest.mark.parametrize("ea1,ea2", [(0.1, 0), (0, -.05), (.1, -.05)])
-def test_edge_bends_with_fringe(kind, fringe, static, ea1, ea2):
+@pytest.mark.parametrize("theta", [0.2, -0.2])
+@pytest.mark.parametrize("charge", [1.0, -1.0])
+@pytest.mark.parametrize("ea1,ea2", [(0.1, 0), (0, -0.05), (0.1, -0.05)])
+def test_edge_bends_with_fringe(kind, fringe_in, fringe_out, static, theta, charge, ea1, ea2):
     if kind == "teapot":
-        node = BendTEAPOT(length=1, theta=.2, ea1=ea1, ea2=ea2, nparts=5)
+        node = BendTEAPOT(length=1, theta=theta, ea1=ea1, ea2=ea2, nparts=5)
     else:
         node = Bend()
         node.setLength(1)
         node.setnParts(5)
-        for name, value in [("theta", .2), ("ea1", ea1), ("ea2", ea2)]:
+        for name, value in [("theta", theta), ("ea1", ea1), ("ea2", ea2)]:
             node.setParam(name, value)
 
     lattice = make_lattice([node])
-    if hasattr(node, "setUsageFringeFieldIN"):
-        node.setUsageFringeFieldIN(fringe)
-        node.setUsageFringeFieldOUT(fringe)
-
-    envelope = Envelope(
-        kin_energy=1.3,
-        mass=mass_proton,
-        cov_matrix=make_default_cov_matrix(),
-    )
+    node.setUsageFringeFieldIN(fringe_in)
+    node.setUsageFringeFieldOUT(fringe_out)
 
     bunch = Bunch()
-    bunch.mass(envelope.mass)
-    bunch.charge(envelope.charge)
-    bunch.getSyncParticle().kinEnergy(envelope.kin_energy)
+    bunch.mass(mass_proton)
+    bunch.charge(charge)
+    bunch.getSyncParticle().kinEnergy(1.3)
+    bunch.getSyncParticle().time(2.0)
+
+    # Small amplitudes isolate the linear map from nonlinear wedge/fringe terms.
+    coords = np.random.default_rng(42).normal(size=(2000, 6))
+    coords *= [1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-7]
+    for coord in coords:
+        bunch.addParticle(*coord)
+
+    envelope = Envelope(bunch=bunch)
 
     expected = fit_lattice_matrix(lattice, bunch)
-    actual = lattice.trackEnvelope(envelope, fit=False, static=static, return_matrix=True)
-    np.testing.assert_allclose(actual, expected, atol=1e-10)
-    with pytest.raises(NotImplementedError, match="edge angles"):
-        get_node_matrix(node, envelope, part_index=0)
-    for fringe_node in (node.getNodeFringeFieldIN(), node.getNodeFringeFieldOUT()):
-        with pytest.raises(NotImplementedError, match="edge fringes"):
-            get_node_matrix(fringe_node, envelope)
-    with pytest.raises(NotImplementedError):
-        lattice.trackEnvelope(envelope.copy(), fit=False, fallback=False)
+    actual = lattice.trackEnvelope(
+        envelope, fit=False, fallback=False, static=static, return_matrix=True,
+    )
+
+    # MatrixGenerator differentiates nonlinear maps at finite amplitudes.
+    np.testing.assert_allclose(actual, expected, rtol=1e-6, atol=2e-8)
+    lattice.trackBunch(bunch)
+    scale = np.sqrt(np.diag(calc_bunch_cov(bunch)))
+    error = (envelope.cov_matrix - calc_bunch_cov(bunch)) / np.outer(scale, scale)
+    assert np.max(np.abs(error)) < 1e-5
+
+    analysis = BunchTwissAnalysis()
+    analysis.analyzeBunch(bunch)
+    centroid = np.array([analysis.getAverage(i) for i in range(6)])
+    np.testing.assert_allclose(envelope.centroid, centroid, rtol=0, atol=1e-11)
+    assert envelope.time == pytest.approx(bunch.getSyncParticle().time(), abs=1e-14)
+    assert envelope.kin_energy == pytest.approx(bunch.getSyncParticle().kinEnergy())
+
+    for fringe_node, angle, enabled in [
+        (node.getNodeFringeFieldIN(), ea1, fringe_in),
+        (node.getNodeFringeFieldOUT(), ea2, fringe_out),
+    ]:
+        edge = get_node_matrix(fringe_node, envelope)
+        expected_edge = np.eye(7)
+        if kind == "teapot" or enabled:
+            expected_edge[1, 0] = np.tan(angle) / node.getParam("rho")
+            if enabled:
+                expected_edge[3, 2] = -expected_edge[1, 0]
+        np.testing.assert_allclose(np.eye(7) if edge is None else edge, expected_edge)

@@ -10,8 +10,8 @@ from orbit.core.bunch import Bunch
 from orbit.core.teapot_base import MatrixGenerator
 
 from .envelope import Envelope
-from .node_matrices import get_node_matrix
 from .matrix_fitting import fit_node_matrix
+from .node_matrices import get_node_matrix
 
 if TYPE_CHECKING:
     from orbit.lattice import AccActionsContainer
