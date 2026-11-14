@@ -13,10 +13,8 @@ if TYPE_CHECKING:
 
 
 def orbit_matrix_to_numpy(matrix: Matrix) -> np.ndarray:
-    matrix_out = np.zeros(matrix.size())
-    for i in range(matrix_out.shape[0]):
-        for j in range(matrix_out.shape[1]):
-            matrix_out[i, j] = matrix.get(i, j)
+    matrix_out = np.empty(matrix.size(), dtype=np.float64)
+    matrix.copyToBuffer(matrix_out)
     return matrix_out
 
 
