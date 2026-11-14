@@ -135,12 +135,15 @@ def _matrix_kick_teapot(node, envelope: Envelope, part_index: int = -1) -> np.nd
     kx = scale * node.getParam("kx")
     ky = scale * node.getParam("ky")
     kE = node.getParam("dE")
-    if abs(kx) > 0 or abs(ky) > 0 or abs(kE) > 0:
-        return np.matmul(
-            get_matrix_kick(kx=kx, ky=ky, kE=kE),
-            get_matrix_drift(envelope, length),
-        )
-    return get_matrix_drift(envelope, length)
+
+    if abs(kx) == abs(ky) == abs(kE) == 0:
+        if length <= 0:
+            return None
+        return get_matrix_drift(envelope, length)
+
+    matrix_kick = get_matrix_kick(kx=kx, ky=ky, kE=kE)
+    matrix_drift = get_matrix_drift(envelope, length)
+    return matrix_kick @ matrix_drift
 
 
 @get_node_matrix.register(TiltTEAPOT)
