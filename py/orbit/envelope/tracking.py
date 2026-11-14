@@ -40,7 +40,7 @@ class EnvelopeTracker:
         index_start: int = 0,
         index_stop: int | None = None,
         fit: bool = True,
-        fallback: bool = True,
+        fallback: bool = False,
     ) -> None:
         self.lattice = lattice
         self.index_start = max(index_start, 0)
