@@ -283,24 +283,18 @@ def main(args: argparse.Namespace) -> None:
         plt.close()
 
     # Plot rms emittances
-    color_cycle = plt.rcParams["axes.prop_cycle"].by_key()["color"]
-
-    fig, ax = plt.subplots(figsize=(5, 3))
-    for key, color in zip(["eps_x", "eps_y"], color_cycle):
+    for key in ["eps_x", "eps_y"]:
+        fig, ax = plt.subplots(figsize=(5, 3))
         for i, model in enumerate(["envelope", "bunch"]):
-            if model == "envelope":
-                plot_kws = dict()
-            else:
-                plot_kws = dict(marker=".", lw=0)
-            label = key + "_" + model
-            ax.plot(histories[model][key], color=color, label=label, **plot_kws)
-
-    ymax = 2.0 * np.mean(histories["envelope"]["eps_x"])
-    ax.set_ylim(0.0, ymax)
-    ax.set_xlabel("Turn")
-    ax.set_ylabel("[mm mrad]")
-    plt.savefig(os.path.join(output_dir, f"fig_emittances"))
-    plt.close()
+            color = ["black", "red"][i]
+            lw = [None, 0][i]
+            ax.plot(histories[model][key], marker=".", lw=lw, color=color, label=model)
+        ax.set_ylim(0.0, ax.get_ylim()[1] * 2.0)
+        ax.set_xlabel("Turn")
+        ax.set_ylabel(key + " [mm mrad]")
+        ax.legend(loc="upper right")
+        plt.savefig(os.path.join(output_dir, f"fig_{key}"))
+        plt.close()
 
     # Plot centroids
     for key in ["avg_x", "avg_y"]:
