@@ -135,19 +135,19 @@ def _matrix_kick_teapot(node, envelope: Envelope, part_index: int = -1) -> np.nd
     length = node.getLength(part_index)
     nparts = node.getnParts()
 
+    if part_index == nparts - 1:
+        return get_matrix_drift(envelope, length) if length > 0 else None
+
     scale = 1.0
     if node.waveform is not None:
         scale = node.waveform.getStrength()
 
-    scale /= nparts - 1
-    kx = scale * node.getParam("kx")
-    ky = scale * node.getParam("ky")
-    kE = node.getParam("dE")
+    kx = scale * node.getParam("kx") / (nparts - 1)
+    ky = scale * node.getParam("ky") / (nparts - 1)
+    kE = node.getParam("dE") / (nparts - 1)
 
     if abs(kx) == abs(ky) == abs(kE) == 0:
-        if length <= 0:
-            return None
-        return get_matrix_drift(envelope, length)
+        return get_matrix_drift(envelope, length) if length > 0 else None
 
     matrix_kick = get_matrix_kick(kx=kx, ky=ky, kE=kE)
     matrix_drift = get_matrix_drift(envelope, length)
