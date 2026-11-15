@@ -1,12 +1,4 @@
-"""SNS linac benchmark.
-
-Note that there is no analytic benchmark with 3D space charge since there
-is no 3D KV equilibrium distribution. For comparison to particle tracking,
-we use the `SpaceChargeCalcUnifEllipse` space charge calculator, which
-approximates the charge distribution as a uniform-density ellipsoid with
-the same x-y-z covariance matrix as the real charge distribution. (It
-currently assumes an upright ellipsoid.)
-"""
+"""SNS linac benchmark."""
 
 import argparse
 import math
@@ -43,7 +35,6 @@ from orbit.utils.consts import mass_proton
 from orbit.utils.consts import mass_electron
 from orbit.utils.consts import charge_electron
 
-sys.path.append("..")
 from plot import plot_corner
 from plot import plot_rms_ellipse
 from utils import project_cov_matrix

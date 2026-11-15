@@ -1,11 +1,12 @@
-"""Test 2D envelope tracker in FODO lattice."""
+"""Test envelope tracker in SNS ring."""
 
 import argparse
 import copy
 import math
 import os
+import pathlib
+import sys
 import time
-from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -16,19 +17,17 @@ from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.bunch_utils import collect_bunch
 from orbit.envelope import Envelope
 from orbit.envelope import EnvelopeAnalysis
-from orbit.lattice import AccLattice
-from orbit.lattice import AccNode
 from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.space_charge.sc2p5d import setSC2p5DAccNodes
-from orbit.teapot import DriftTEAPOT
-from orbit.teapot import QuadTEAPOT
-from orbit.teapot import TEAPOT_Lattice
+from orbit.teapot import TEAPOT_Ring
 from orbit.teapot import TEAPOT_MATRIX_Lattice
+from orbit.teapot import teapot
 from orbit.utils.consts import mass_proton
 
+sys.path.append("..")
 from plot import plot_rms_ellipse
 from plot import plot_corner
-from utils import gen_dist
+from utils import sample_distribution
 from utils import build_rotation_matrix_xy
 from utils import project_cov_matrix
 
@@ -37,75 +36,78 @@ plt.style.use("style.mplstyle")
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--bunch-length", type=float, default=5.0)
-    parser.add_argument("--kin-energy", type=float, default=0.0025)
-    parser.add_argument("--intensity", type=float, default=5e9)
+    parser.add_argument("--bunch-length", type=float, default=120.0)
+    parser.add_argument("--kin-energy", type=float, default=1.300)
+    parser.add_argument("--intensity", type=float, default=2e14)
 
     parser.add_argument(
         "--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"]
     )
+    parser.add_argument("--eps-x", type=float, default=25.0)
+    parser.add_argument("--eps-y", type=float, default=25.0)
     parser.add_argument("--mismatch-x", type=float, default=0.0)
     parser.add_argument("--mismatch-y", type=float, default=0.0)
     parser.add_argument("--offset-x", type=float, default=0.0)
     parser.add_argument("--offset-y", type=float, default=0.0)
     parser.add_argument("--tilt", type=float, default=0)
 
-    parser.add_argument("--nslice", type=int, default=10)
-    parser.add_argument("--kq", type=float, default=0.25)
-
     parser.add_argument("--nparts", type=int, default=100_000)
     parser.add_argument("--turns", type=int, default=25)
+    parser.add_argument("--sol", type=int, default=0)
     parser.add_argument("--sc", type=int, default=0)
-    parser.add_argument("--fit", type=int, default=1)
+    parser.add_argument("--sc-grid", type=int, default=64)
+
+    parser.add_argument("--fit", type=int, default=0)
+    parser.add_argument("--fallback", type=int, default=0)
+    parser.add_argument("--fringe", type=int, default=0)
+    parser.add_argument("--static", type=int, default=1)
     return parser.parse_args()
 
 
 def main(args: argparse.Namespace) -> None:
-    output_dir = os.path.join(
-        "outputs", Path(__file__).stem, time.strftime("%Y%m%d_%H%M%S")
-    )
+    path = pathlib.Path(__file__)
+    output_dir = os.path.join("outputs", path.stem, time.strftime("%Y%m%d_%H%M%S"))
     os.makedirs(output_dir, exist_ok=True)
 
-    # Create lattice
+    # Lattice
     # ------------------------------------------------------------------------------
 
-    nodes = [
-        QuadTEAPOT(length=0.5, kq=+args.kq),
-        DriftTEAPOT(length=1.0),
-        QuadTEAPOT(length=1.0, kq=-args.kq),
-        DriftTEAPOT(length=1.0),
-        QuadTEAPOT(length=0.5, kq=+args.kq),
-    ]
-
-    lattice = TEAPOT_Lattice()
-    for node in nodes:
-        node.setnParts(args.nslice)
-        node.setUsageFringeFieldIN(False)
-        node.setUsageFringeFieldOUT(False)
-        lattice.addNode(node)
-
+    lattice = TEAPOT_Ring()
+    lattice.readMADX("inputs/sns_ring.lat", "rnginjsol")
     lattice.initialize()
 
-    # Create envelope
+    for node in lattice.getNodes():
+        if type(node) != teapot.TurnCounterTEAPOT:
+            node.setUsageFringeFieldIN(args.fringe)
+            node.setUsageFringeFieldOUT(args.fringe)
+
+    if args.sol:
+        for name in ["scbdsol_c13a", "scbdsol_c13b"]:
+            node = lattice.getNodeForName(name)
+            node.setParam("B", 0.15)
+
+    for node in lattice.getNodes():
+        max_length = 1.0
+        if node.getLength() > max_length:
+            node.setnParts(1 + int(node.getLength() / max_length))
+
+    # Bunch
     # ------------------------------------------------------------------------------
 
-    # Create bunch
     bunch = Bunch()
     bunch.mass(mass_proton)
     sync_part = bunch.getSyncParticle()
     sync_part.kinEnergy(args.kin_energy)
 
-    # Find periodic lattice parameters
     matrix_lattice = TEAPOT_MATRIX_Lattice(lattice, bunch)
     matrix_lattice_params = matrix_lattice.getRingParametersDict()
     alpha_x = matrix_lattice_params["alpha x"]
     alpha_y = matrix_lattice_params["alpha y"]
     beta_x = matrix_lattice_params["beta x [m]"]
     beta_y = matrix_lattice_params["beta y [m]"]
-    eps_x = 0.25e-06
-    eps_y = eps_x
+    eps_x = args.eps_x * 1e-6
+    eps_y = args.eps_y * 1e-6
 
-    # Generate covariance matrix
     cov_matrix = np.zeros((6, 6))
     cov_matrix[0, 0] = eps_x * beta_x
     cov_matrix[2, 2] = eps_y * beta_y
@@ -113,26 +115,45 @@ def main(args: argparse.Namespace) -> None:
     cov_matrix[2, 3] = cov_matrix[3, 2] = -eps_y * alpha_y
     cov_matrix[1, 1] = eps_x * (1.0 + alpha_x**2) / beta_x
     cov_matrix[3, 3] = eps_y * (1.0 + alpha_y**2) / beta_y
-    cov_matrix[4, 4] = args.bunch_length**2 / 12.0
+    cov_matrix[4, 4] = (args.bunch_length / 4.0) ** 2
     cov_matrix[5, 5] = 0.0
 
-    # Tilt
     if args.tilt:
         rot_matrix = np.identity(6)
         rot_matrix[:4, :4] = build_rotation_matrix_xy(angle=np.radians(args.tilt))
         cov_matrix = np.linalg.multi_dot([rot_matrix, cov_matrix, rot_matrix.T])
 
-    # Mismatch
-    cov_matrix[0, 0] *= (1.0 + args.mismatch_x) ** 2
-    cov_matrix[2, 2] *= (1.0 + args.mismatch_y) ** 2
-    cov_matrix_init = np.copy(cov_matrix)
+    if args.mismatch_x or args.mismatch_y:
+        cov_matrix[0, 0] *= (1.0 + args.mismatch_x) ** 2
+        cov_matrix[2, 2] *= (1.0 + args.mismatch_y) ** 2
 
-    # Offset
-    centroid_init = np.zeros(6)
-    centroid_init[0] += args.offset_x
-    centroid_init[2] += args.offset_y
+    centroid = np.zeros(6)
+    centroid[0] += args.offset_x
+    centroid[2] += args.offset_y
 
-    # Create envelope
+    rng = np.random.default_rng()
+    bunch_coords = np.zeros((args.nparts, 6))
+    bunch_coords[:, :4] = sample_distribution(
+        size=args.nparts, cov_matrix=cov_matrix[0:4, 0:4], name=args.dist
+    )
+    bunch_coords[:, 4] = args.bunch_length * rng.uniform(-0.5, 0.5, size=args.nparts)
+    bunch_coords[:, 5] *= 0.0
+    bunch_coords += centroid[None, :6]
+
+    for i in range(bunch_coords.shape[0]):
+        bunch.addParticle(*bunch_coords[i])
+
+    # Use covariance matrix from initial bunch, which is slightly
+    # different from the one used to generate the bunch due to
+    # finite statistics.
+    cov_matrix_init = np.cov(bunch_coords, rowvar=False)
+    centroid_init = np.mean(bunch_coords, axis=0)
+
+    # Track envelope
+    # ------------------------------------------------------------------------------
+
+    print("TRACK ENVELOPE")
+
     envelope = Envelope(
         kin_energy=sync_part.kinEnergy(),
         mass=bunch.mass(),
@@ -143,27 +164,31 @@ def main(args: argparse.Namespace) -> None:
         intensity=args.intensity,
     )
 
-    # Track envelope
-    # ------------------------------------------------------------------------------
-
-    print("TRACK ENVELOPE")
-
-    envelope_sc = "2d" if args.sc else None
-
     analysis = EnvelopeAnalysis(envelope)
-    history = {key: [] for key in ("xrms", "yrms", "xavg", "yavg")}
-    for turn in range(args.turns):
+    history = {
+        key: [] for key in ("rms_x", "rms_y", "avg_x", "avg_y", "eps_x", "eps_y")
+    }
+    for turn in range(args.turns + 1):
         if turn > 0:
             lattice.trackEnvelope(
                 envelope,
-                sc=envelope_sc,
+                sc=("2d" if args.sc else None),
                 fit=args.fit,
-                static=True,
+                static=args.static,
+                fallback=args.fallback,
             )
 
         rms = 1000.0 * analysis.rms()
         mean = 1000.0 * analysis.centroid()
-        parameters = {"xrms": rms[0], "yrms": rms[1], "xavg": mean[0], "yavg": mean[2]}
+        eps = 1e6 * analysis.emittances()
+        parameters = {
+            "rms_x": rms[0],
+            "rms_y": rms[1],
+            "avg_x": mean[0],
+            "avg_y": mean[2],
+            "eps_x": eps[0],
+            "eps_y": eps[1],
+        }
         for key, value in parameters.items():
             history[key].append(value)
         print(f"turn={turn}", parameters)
@@ -175,28 +200,27 @@ def main(args: argparse.Namespace) -> None:
 
     print("TRACK BUNCH")
 
-    rng = np.random.default_rng()
-
-    bunch_coords = np.zeros((args.nparts, 6))
-    bunch_coords[:, :4] = gen_dist(
-        size=args.nparts, cov_matrix=cov_matrix_init[0:4, 0:4], name=args.dist
-    )
-    bunch_coords[:, 4] = args.bunch_length * rng.uniform(-0.5, 0.5, size=args.nparts)
-    bunch_coords += centroid_init[None, :6]
-
-    for i in range(bunch_coords.shape[0]):
-        bunch.addParticle(*bunch_coords[i])
-
     if args.sc:
-        sc_calc = SpaceChargeCalc2p5D(128, 128, 1)
+        sc_calc = SpaceChargeCalc2p5D(64, 64, 1)
         sc_path_length_min = 1.00e-06
         sc_nodes = setSC2p5DAccNodes(lattice, sc_path_length_min, sc_calc)
 
         bunch_size = bunch.getSizeGlobal()
         bunch.macroSize(args.intensity / bunch_size)
 
-    history = {"xrms": [], "yrms": [], "xavg": [], "yavg": []}
-    for turn in range(args.turns):
+    history_keys = [
+        "rms_x",
+        "rms_y",
+        "avg_x",
+        "avg_y",
+        "eps_x",
+        "eps_y",
+    ]
+    history = {key: [] for key in history_keys}
+
+    start_time = time.time()
+
+    for turn in range(args.turns + 1):
         if turn > 0:
             lattice.trackBunch(bunch)
 
@@ -209,19 +233,34 @@ def main(args: argparse.Namespace) -> None:
                 cov_matrix[i, j] = twiss_calc.getCorrelation(j, i)
                 cov_matrix[j, i] = cov_matrix[i, j]
 
-        xrms = 1000.0 * math.sqrt(cov_matrix[0, 0])
-        yrms = 1000.0 * math.sqrt(cov_matrix[2, 2])
-        xavg = 1000.0 * twiss_calc.getAverage(0)
-        yavg = 1000.0 * twiss_calc.getAverage(2)
+        centroid = np.zeros(6)
+        for i in range(6):
+            centroid[i] = twiss_calc.getAverage(i)
 
-        print(
-            f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} xavg={xavg:0.3f} yavg={yavg:0.3f}"
-        )
+        rms_x = 1000.0 * math.sqrt(cov_matrix[0, 0])
+        rms_y = 1000.0 * math.sqrt(cov_matrix[2, 2])
+        avg_x = 1000.0 * centroid[0]
+        avg_y = 1000.0 * centroid[2]
+        eps_x = 1e6 * np.sqrt(np.linalg.det(cov_matrix[0:2, 0:2]))
+        eps_y = 1e6 * np.sqrt(np.linalg.det(cov_matrix[2:4, 2:4]))
 
-        history["xrms"].append(xrms)
-        history["yrms"].append(yrms)
-        history["xavg"].append(xavg)
-        history["yavg"].append(yavg)
+        message = ""
+        message += " turn={}".format(turn)
+        message += " time={:0.3f}".format(time.time() - start_time)
+        message += " eps_x={:0.2f}".format(eps_x)
+        message += " eps_y={:0.2f}".format(eps_y)
+        message += " xrms={:0.2f}".format(rms_x)
+        message += " yrms={:0.2f}".format(rms_y)
+        message += " xavg={:0.2f}".format(avg_x)
+        message += " yavg={:0.2f}".format(avg_y)
+        print(message)
+
+        history["rms_x"].append(rms_x)
+        history["rms_y"].append(rms_y)
+        history["avg_x"].append(avg_x)
+        history["avg_y"].append(avg_y)
+        history["eps_x"].append(eps_x)
+        history["eps_y"].append(eps_y)
 
     histories["bunch"] = copy.deepcopy(history)
 
@@ -240,7 +279,7 @@ def main(args: argparse.Namespace) -> None:
         print("avg_abs_delta:", np.mean(np.abs(deltas)))
 
     # Plot rms bunch sizes
-    for key in ["xrms", "yrms"]:
+    for key in ["rms_x", "rms_y"]:
         fig, ax = plt.subplots(figsize=(5, 3))
         for i, model in enumerate(["envelope", "bunch"]):
             color = ["black", "red"][i]
@@ -248,13 +287,27 @@ def main(args: argparse.Namespace) -> None:
             ax.plot(histories[model][key], marker=".", lw=lw, color=color, label=model)
         ax.set_ylim(0.0, ax.get_ylim()[1] * 2.0)
         ax.set_xlabel("Turn")
-        ax.set_ylabel("RMS [mm]")
+        ax.set_ylabel(key + " [mm]")
+        ax.legend(loc="upper right")
+        plt.savefig(os.path.join(output_dir, f"fig_{key}"))
+        plt.close()
+
+    # Plot rms emittances
+    for key in ["eps_x", "eps_y"]:
+        fig, ax = plt.subplots(figsize=(5, 3))
+        for i, model in enumerate(["envelope", "bunch"]):
+            color = ["black", "red"][i]
+            lw = [None, 0][i]
+            ax.plot(histories[model][key], marker=".", lw=lw, color=color, label=model)
+        ax.set_ylim(0.0, ax.get_ylim()[1] * 2.0)
+        ax.set_xlabel("Turn")
+        ax.set_ylabel(key + " [mm mrad]")
         ax.legend(loc="upper right")
         plt.savefig(os.path.join(output_dir, f"fig_{key}"))
         plt.close()
 
     # Plot centroids
-    for key in ["xavg", "yavg"]:
+    for key in ["avg_x", "avg_y"]:
         fig, ax = plt.subplots(figsize=(5, 3))
         for i, model in enumerate(["envelope", "bunch"]):
             color = ["black", "red"][i]
@@ -262,7 +315,7 @@ def main(args: argparse.Namespace) -> None:
             ax.plot(histories[model][key], marker=".", lw=lw, color=color, label=model)
         ax.set_ylim(-5.0, 5.0)
         ax.set_xlabel("Turn")
-        ax.set_ylabel("AVG [mm]")
+        ax.set_ylabel(key + " [mm]")
         ax.legend(loc="upper right")
         plt.savefig(os.path.join(output_dir, f"fig_{key}"))
         plt.close()

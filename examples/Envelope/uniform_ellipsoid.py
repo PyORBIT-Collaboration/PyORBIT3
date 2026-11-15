@@ -1,4 +1,4 @@
-"""Expansion of cold uniform spheroid in free space."""
+"""Uniform ellipsoid in drift - ODE benchmark."""
 
 import argparse
 from pathlib import Path

@@ -97,8 +97,8 @@ def main(args: argparse.Namespace) -> None:
     print("Corrector kicks [rad]:", result.x)
 
     fig, ax = plt.subplots(figsize=(6, 3))
-    ax.plot(s, 1e3 * before, label="Before")
-    ax.plot(s, 1e3 * after, label="After")
+    ax.plot(s, 1e3 * before, color="black", ls=":", label="Before")
+    ax.plot(s, 1e3 * after, color="black", ls="-", label="After")
     ax.set(xlabel="s [m]", ylabel="Horizontal closed orbit [mm]")
     ax.legend()
     fig.savefig(output_dir / "orbit.png")

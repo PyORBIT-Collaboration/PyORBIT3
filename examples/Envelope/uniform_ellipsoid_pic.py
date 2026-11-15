@@ -1,4 +1,4 @@
-"""Test 3D envelope tracker in drift
+"""Uniform ellipsoid in drift - PIC benchmark.
 
 The initial beam is a uniform-density ellipsoid in the x-y-z plane, with zero initial velocity.
 The ellipsoid can have arbitrary size and orientation.

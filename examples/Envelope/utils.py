@@ -193,25 +193,29 @@ def track_history(
 ) -> tuple[dict[str, np.ndarray], np.ndarray]:
 
     history = {}
-    history["s"] = [0.0]
-    history["covariance"] = [envelope.cov_matrix.copy()]
-    history["centroid"] = [envelope.centroid.copy()]
+    for key in ["s", "centroid", "covariance"]:
+        history[key] = []
 
-    def record(params: dict[str, Any]) -> None:
-        node = params["node"]
-        position = params["path_length"] + node.getLength(node.getActivePartIndex())
+    def monitor(params_dict: dict) -> None:
+        envelope = params_dict["envelope"]
+        position = params_dict["path_length"]
+        if history["s"] and history["s"][-1] == position:
+            return
         history["s"].append(position)
-        history["covariance"].append(envelope.cov_matrix.copy())
         history["centroid"].append(envelope.centroid.copy())
+        history["covariance"].append(envelope.cov_matrix.copy())
 
-    actions = AccActionsContainer()
-    actions.addAction(record, AccNode.BODY)
+    action_container = AccActionsContainer()
+    action_container.addAction(monitor, AccActionsContainer.ENTRANCE)
+    action_container.addAction(monitor, AccActionsContainer.BODY)
+    action_container.addAction(monitor, AccActionsContainer.EXIT)
+
     matrix = lattice.trackEnvelope(
         envelope,
         sc=sc,
         fit=False,
         static=static,
-        action_container=actions,
+        action_container=action_container,
         return_matrix=True,
     )
     for key in history:
