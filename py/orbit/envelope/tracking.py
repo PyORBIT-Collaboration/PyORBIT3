@@ -8,6 +8,7 @@ import numpy as np
 
 from orbit.core.bunch import Bunch
 from orbit.core.teapot_base import MatrixGenerator
+from orbit.space_charge import SC_Base_AccNode
 
 from .envelope import Envelope
 from .matrix_fitting import fit_node_matrix
@@ -148,6 +149,9 @@ class EnvelopeTracker:
         initial_kinetic_energy = envelope.kin_energy
         initial_time = envelope.time
 
+        if isinstance(node, SC_Base_AccNode):
+            raise NotImplementedError
+
         use_fit = self.fit
 
         if not use_fit:
@@ -171,8 +175,10 @@ class EnvelopeTracker:
             sync_particle = self._bunch.getSyncParticle()
             sync_particle.kinEnergy(envelope.kin_energy)
             sync_particle.time(envelope.time)
+
             if self._matrix_generator is None:
                 self._matrix_generator = MatrixGenerator()
+
             matrix = fit_node_matrix(
                 node=node,
                 bunch=self._bunch,
@@ -180,6 +186,7 @@ class EnvelopeTracker:
                 matrix_generator=self._matrix_generator,
                 params_dict=params_dict,
             )
+
             envelope.kin_energy = sync_particle.kinEnergy()
             envelope.time = sync_particle.time()
 
