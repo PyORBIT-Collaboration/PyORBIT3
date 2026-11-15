@@ -27,12 +27,12 @@ ParamsDict = dict[str, Any]
 @dataclass
 class NodeMap:
     matrix: np.ndarray | None
-    kin_energy: float
-    time: float
+    delta_kin_energy: float
+    delta_time: float
 
     def update_envelope(self, envelope: Envelope) -> None:
-        envelope.kin_energy = self.kin_energy
-        envelope.time = self.time
+        envelope.kin_energy += self.delta_kin_energy
+        envelope.time += self.delta_time
 
 
 class EnvelopeTracker:
@@ -113,12 +113,16 @@ class EnvelopeTracker:
                 node_map.update_envelope(envelope)
                 matrix = node_map.matrix
             else:
+                initial_kin_energy = envelope.kin_energy
+                initial_time = envelope.time
                 matrix = self._get_node_matrix(params_dict, part_index, handlers)
                 if store:
                     if matrix is not None and np.array_equal(matrix, identity_matrix):
                         matrix = None
                     node_maps[node, part_index] = NodeMap(
-                        matrix, envelope.kin_energy, envelope.time
+                        matrix,
+                        envelope.kin_energy - initial_kin_energy,
+                        envelope.time - initial_time,
                     )
             apply_matrix(matrix)
 
