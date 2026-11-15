@@ -279,8 +279,8 @@ class AccLattice(NamedObject, TypedObject):
         sc: str | None = None,
         params_dict: dict | None = None,
         action_container: AccActionsContainer | None = None,
-        fit: bool = True,
-        fallback: bool = True,
+        fit: bool = False,
+        fallback: bool = False,
         static: bool = False,
         return_matrix: bool = False,
     ) -> np.ndarray | None:
