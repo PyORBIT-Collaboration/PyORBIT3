@@ -39,7 +39,7 @@ def get_bunch_centroid(bunch: Bunch) -> np.ndarray:
 
 
 class Envelope:
-    """Represents the first and second moments of a phase-space distribution.."""
+    """Represents the first and second moments of the beam distribution."""
 
     def __init__(
         self,
