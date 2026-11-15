@@ -2,7 +2,9 @@ name: pyorbit
 channels:
   - conda-forge
 dependencies:
-  - python=3.10
+  - cxx-compiler
+  - llvm-openmp
+  - python>=3.10,<3.16
   - fftw
   - numpy
   - scipy
@@ -10,3 +12,6 @@ dependencies:
   - meson
   - pkg-config
   - ninja
+  - setuptools
+  - setuptools_scm
+  - meson-python

@@ -1,12 +1,7 @@
-import os
-import string
 import sys
-from numpy import *
-from scipy.optimize import fsolve
-from scipy.optimize import root
-from scipy.integrate import odeint
-from scipy.constants import c
-from matplotlib.pyplot import *
+
+import numpy as np
+from scipy import constants, optimize
 
 from ..teapot import TEAPOT_MATRIX_Lattice
 
@@ -49,7 +44,7 @@ class Optics:
         self.line.append(x)
 
     def print_line(self):
-        for j in range(0, len(self.line)):
+        for j in range(len(self.line)):
             print(
                 j,
                 self.line[j].data["keyword"],
@@ -95,7 +90,9 @@ class Optics:
         nodes = lattice.getNodes()
         for node in nodes:
             for j in range(len(arrPosBetaX)):
-                if round(lattice.getNodePositionsDict()[node][1], 4) == round(arrPosBetaX[j][0], 4):
+                if round(lattice.getNodePositionsDict()[node][1], 4) == round(
+                    arrPosBetaX[j][0], 4
+                ):
                     muX = arrmuX[j][1]
                     betaX = arrPosBetaX[j][1]
                     alphaX = arrPosAlphaX[j][1]
@@ -163,7 +160,11 @@ class EnvelopeSolver:
         f2 = y[3]
         f3 = (k1 / lj) * y[2] + emity**2 / y[2] ** 3 + 0.5 * Ksc / (y[0] + y[2])  # -
         f4 = y[5]
-        f5 = -(k1 / lj + (anglej / lj) ** 2) * y[4] + 0.5 * Ksc / (y[0] * (y[0] + y[2])) * y[4] + anglej / lj
+        f5 = (
+            -(k1 / lj + (anglej / lj) ** 2) * y[4]
+            + 0.5 * Ksc / (y[0] * (y[0] + y[2])) * y[4]
+            + anglej / lj
+        )
         return [f0, f1, f2, f3, f4, f5]
 
     def Dfunc_odeint(self, y, s, emitx, emity, sigma_p, Ksc):
@@ -185,12 +186,24 @@ class EnvelopeSolver:
             - y[4] * y[1] * sigma_p**2 * anglej / (y[0] ** 2 * lj)
         )
         a2 = (k1 / lj) * y[2] + emity**2 / y[2] ** 3 + 0.5 * Ksc / (y[0] + y[2])  # -
-        a3 = (k1 / lj) * y[3] - 3.0 * y[3] * emity**2 / y[2] ** 4 - 0.5 * Ksc * (y[1] + y[3]) / (y[0] + y[2]) ** 2  # -
-        a4 = -(k1 / lj + (anglej / lj) ** 2) * y[4] + 0.5 * Ksc / (y[0] * (y[0] + y[2])) * y[4] + anglej / lj
+        a3 = (
+            (k1 / lj) * y[3]
+            - 3.0 * y[3] * emity**2 / y[2] ** 4
+            - 0.5 * Ksc * (y[1] + y[3]) / (y[0] + y[2]) ** 2
+        )  # -
+        a4 = (
+            -(k1 / lj + (anglej / lj) ** 2) * y[4]
+            + 0.5 * Ksc / (y[0] * (y[0] + y[2])) * y[4]
+            + anglej / lj
+        )
         a5 = (
             -(k1 / lj + (anglej / lj) ** 2) * y[5]
             + 0.5 * Ksc / (y[0] * (y[0] + y[2])) * y[5]
-            - 0.5 * Ksc / (y[0] * (y[0] + y[2])) ** 2 * y[4] * (y[1] * (y[0] + y[2]) + y[0] * (y[1] + y[3]))
+            - 0.5
+            * Ksc
+            / (y[0] * (y[0] + y[2])) ** 2
+            * y[4]
+            * (y[1] * (y[0] + y[2]) + y[0] * (y[1] + y[3]))
         )
         return [a0, a1, a2, a3, a4, a5]
 
@@ -198,7 +211,7 @@ class EnvelopeSolver:
         Np = 1000
         Nb = len(self.beamline)
         Lb = self.beamline[Nb - 1].data["s"]
-        s = linspace(0.0, Lb, num=Np)
+        s = np.linspace(0.0, Lb, num=Np)
         sol = odeint(
             self.func_odeint,
             [x0, xs0, y0, ys0, Dx0, Dxs0],
@@ -223,9 +236,18 @@ class EnvelopeSolver:
     # this is the function for the root searching routine (fsolve)
 
     def func_fsolve(self, x, emitx, emity, sigma_p, Ksc):
-        envx, envxs, envy, envys, Dx, Dxs, s = self.envelope_odeint(emitx, emity, sigma_p, Ksc, x[0], x[1], x[2], x[3], x[4], x[5])
+        envx, envxs, envy, envys, Dx, Dxs, s = self.envelope_odeint(
+            emitx, emity, sigma_p, Ksc, x[0], x[1], x[2], x[3], x[4], x[5]
+        )
         Nb = len(envx)
-        return [envx[Nb - 1] - x[0], envxs[Nb - 1] - x[1], envy[Nb - 1] - x[2], envys[Nb - 1] - x[3], Dx[Nb - 1] - x[4], Dxs[Nb - 1] - x[5]]
+        return [
+            envx[Nb - 1] - x[0],
+            envxs[Nb - 1] - x[1],
+            envy[Nb - 1] - x[2],
+            envys[Nb - 1] - x[3],
+            Dx[Nb - 1] - x[4],
+            Dxs[Nb - 1] - x[5],
+        ]
 
     # root searching using fsolve and initial values from MADX
     # returns matched envelopes
@@ -233,23 +255,34 @@ class EnvelopeSolver:
     def match_root(self, emitx, emity, sigma_p, Ksc):
         Nb = len(self.beamline)
         # start values
-        x0 = sqrt(self.beamline[Nb - 1].data["betx"] * emitx)
-        gamx = (1.0 + (self.beamline[Nb - 1].data["alfx"]) ** 2) / self.beamline[Nb - 1].data["betx"]
-        xs0 = -copysign(sqrt(gamx * emitx), self.beamline[Nb - 1].data["alfx"])
-        y0 = sqrt(self.beamline[Nb - 1].data["bety"] * emity)
-        gamy = (1.0 + (self.beamline[Nb - 1].data["alfy"]) ** 2) / self.beamline[Nb - 1].data["bety"]
-        ys0 = -copysign(sqrt(gamy * emity), self.beamline[Nb - 1].data["alfy"])
+        x0 = np.sqrt(self.beamline[Nb - 1].data["betx"] * emitx)
+        gamx = (1.0 + (self.beamline[Nb - 1].data["alfx"]) ** 2) / self.beamline[
+            Nb - 1
+        ].data["betx"]
+        xs0 = -np.copysign(np.sqrt(gamx * emitx), self.beamline[Nb - 1].data["alfx"])
+        y0 = np.sqrt(self.beamline[Nb - 1].data["bety"] * emity)
+        gamy = (1.0 + (self.beamline[Nb - 1].data["alfy"]) ** 2) / self.beamline[
+            Nb - 1
+        ].data["bety"]
+        ys0 = -np.copysign(np.sqrt(gamy * emity), self.beamline[Nb - 1].data["alfy"])
         Dx0 = self.beamline[Nb - 1].data["Dx"]
         Dxs0 = self.beamline[Nb - 1].data["Dpx"]
         # solver
-        sol = root(self.func_fsolve, [x0, xs0, y0, ys0, Dx0, Dxs0], args=(emitx, emity, sigma_p, Ksc), method="hybr")
+        sol = optimize.root(
+            self.func_fsolve,
+            [x0, xs0, y0, ys0, Dx0, Dxs0],
+            args=(emitx, emity, sigma_p, Ksc),
+            method="hybr",
+        )
         x0 = sol.x[0]
         xs0 = sol.x[1]
         y0 = sol.x[2]
         ys0 = sol.x[3]
         Dx0 = sol.x[4]
         Dxs0 = sol.x[5]
-        envx, envxs, envy, envys, Dx, Dxs, s = self.envelope_odeint(emitx, emity, sigma_p, Ksc, x0, xs0, y0, ys0, Dx0, Dxs0)
+        envx, envxs, envy, envys, Dx, Dxs, s = self.envelope_odeint(
+            emitx, emity, sigma_p, Ksc, x0, xs0, y0, ys0, Dx0, Dxs0
+        )
         return envx, envxs, envy, envys, Dx, Dxs, s
 
     # returns the matchted twiss parameter at cell entrance
@@ -257,16 +290,25 @@ class EnvelopeSolver:
     def match_twiss(self, emitx, emity, sigma_p, Ksc):
         Nb = len(self.beamline)
         # start values
-        x0 = sqrt(self.beamline[Nb - 1].data["betx"] * emitx)
-        gamx = (1.0 + (self.beamline[Nb - 1].data["alfx"]) ** 2) / self.beamline[Nb - 1].data["betx"]
-        xs0 = -copysign(sqrt(gamx * emitx), self.beamline[Nb - 1].data["alfx"])
-        y0 = sqrt(self.beamline[Nb - 1].data["bety"] * emity)
-        gamy = (1.0 + (self.beamline[Nb - 1].data["alfy"]) ** 2) / self.beamline[Nb - 1].data["bety"]
-        ys0 = -copysign(sqrt(gamy * emity), self.beamline[Nb - 1].data["alfy"])
+        x0 = np.sqrt(self.beamline[Nb - 1].data["betx"] * emitx)
+        gamx = (1.0 + (self.beamline[Nb - 1].data["alfx"]) ** 2) / self.beamline[
+            Nb - 1
+        ].data["betx"]
+        xs0 = -np.copysign(np.sqrt(gamx * emitx), self.beamline[Nb - 1].data["alfx"])
+        y0 = np.sqrt(self.beamline[Nb - 1].data["bety"] * emity)
+        gamy = (1.0 + (self.beamline[Nb - 1].data["alfy"]) ** 2) / self.beamline[
+            Nb - 1
+        ].data["bety"]
+        ys0 = -np.copysign(np.sqrt(gamy * emity), self.beamline[Nb - 1].data["alfy"])
         Dx0 = self.beamline[Nb - 1].data["Dx"]
         Dxs0 = self.beamline[Nb - 1].data["Dpx"]
         # solver
-        sol = root(self.func_fsolve, [x0, xs0, y0, ys0, Dx0, Dxs0], args=(self.beamline, emitx, emity, sigma_p, Ksc), method="hybr")
+        sol = root(
+            self.func_fsolve,
+            [x0, xs0, y0, ys0, Dx0, Dxs0],
+            args=(self.beamline, emitx, emity, sigma_p, Ksc),
+            method="hybr",
+        )
         x0 = sol.x[0]
         xs0 = sol.x[1]
         y0 = sol.x[2]
@@ -276,8 +318,8 @@ class EnvelopeSolver:
         return (
             x0**2 / emitx,
             y0**2 / emity,
-            -copysign(sqrt(x0**2 * xs0**2 / emitx**2), xs0),
-            -copysign(sqrt(y0**2 * ys0**2 / emity**2), ys0),
+            -np.copysign(np.sqrt(x0**2 * xs0**2 / emitx**2), xs0),
+            -np.copysign(np.sqrt(y0**2 * ys0**2 / emity**2), ys0),
             Dx0,
             Dxs0,
         )
@@ -301,7 +343,12 @@ class EnvelopeSolver:
         x0 = (emitx**2 / kx) ** (1.0 / 4.0)
         y0 = (emity**2 / ky) ** (1.0 / 4.0)
 
-        sol = root(self.func_smooth, [x0, y0], args=(phase0x, phase0y, length, emitx, emity, Ksc), method="hybr")
+        sol = optimize.root(
+            self.func_smooth,
+            [x0, y0],
+            args=(phase0x, phase0y, length, emitx, emity, Ksc),
+            method="hybr",
+        )
 
         return sol.x[0] ** 2 / emitx, sol.x[1] ** 2 / emity  # beta functions
 
@@ -314,7 +361,7 @@ class EnvelopeSolver:
         phasex = 0.0
         phasey = 0.0
         ds = s[1] - s[0]
-        for j in range(0, Np):
+        for j in range(Np):
             phasex += ds * emitx / (envx[j] ** 2 - (Dx[j] * sigma_p) ** 2)
             phasey += ds * emity / envy[j] ** 2
         return phasex, phasey
@@ -333,8 +380,8 @@ class EnvelopeSolver:
         Np = len(s)
         ratet = 0.0
         ds = s[1] - s[0]
-        for j in range(0, Np):
+        for j in range(Np):
             Tx = envx[j] ** 2 / emitx**2
             Ty = envy[j] ** 2 / emity**2
-            ratet += ds / (beta0 * c) * 0.5 * (Tx - Ty) ** 2 / (Tx * Ty)
+            ratet += ds / (beta0 * constants.c) * 0.5 * (Tx - Ty) ** 2 / (Tx * Ty)
         return ratet
