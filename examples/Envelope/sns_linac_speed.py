@@ -1,4 +1,4 @@
-"""Profile envelope tracking in SNS linac."""
+"""Profile envelope tracking in SNS linac lattice."""
 
 import argparse
 import cProfile
@@ -33,9 +33,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--fit", type=int, default=0)
     parser.add_argument("--fallback", type=int, default=0)
     parser.add_argument("--static", type=int, default=0)
-    parser.add_argument(
-        "--bunch", action="store_true", help="Also benchmark particle tracking"
-    )
+    parser.add_argument("--bunch", action="store_true", help="Also benchmark particle tracking")
     return parser.parse_args()
 
 

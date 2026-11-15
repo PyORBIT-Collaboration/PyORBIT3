@@ -24,7 +24,6 @@ from orbit.teapot import TEAPOT_MATRIX_Lattice
 from orbit.teapot import teapot
 from orbit.utils.consts import mass_proton
 
-sys.path.append("..")
 from plot import plot_rms_ellipse
 from plot import plot_corner
 from utils import sample_distribution
@@ -40,9 +39,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--kin-energy", type=float, default=1.300)
     parser.add_argument("--intensity", type=float, default=2e14)
 
-    parser.add_argument(
-        "--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"]
-    )
+    parser.add_argument("--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"])
     parser.add_argument("--eps-x", type=float, default=25.0)
     parser.add_argument("--eps-y", type=float, default=25.0)
     parser.add_argument("--mismatch-x", type=float, default=0.0)
@@ -165,9 +162,7 @@ def main(args: argparse.Namespace) -> None:
     )
 
     analysis = EnvelopeAnalysis(envelope)
-    history = {
-        key: [] for key in ("rms_x", "rms_y", "avg_x", "avg_y", "eps_x", "eps_y")
-    }
+    history = {key: [] for key in ("rms_x", "rms_y", "avg_x", "avg_y", "eps_x", "eps_y")}
     for turn in range(args.turns + 1):
         if turn > 0:
             lattice.trackEnvelope(

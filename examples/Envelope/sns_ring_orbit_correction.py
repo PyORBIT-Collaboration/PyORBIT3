@@ -1,12 +1,8 @@
-"""Correct the horizontal closed orbit of the SNS ring using envelope centroids.
-
-Thin dipole errors and correctors are inserted at alternating ring locations.
-Use node exits as ideal BPMs. Space charge is disabled in this example.
-"""
+"""Correct horizontal closed orbit based on centroid tracking."""
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,10 +10,10 @@ import scipy.optimize
 
 from orbit.envelope import Envelope
 from orbit.lattice import AccNode
-from orbit.teapot import KickTEAPOT, TEAPOT_Ring
+from orbit.teapot import KickTEAPOT
+from orbit.teapot import TEAPOT_Ring
 from orbit.utils.consts import mass_proton
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from utils import make_output_dir
 from utils import track_history
 
@@ -27,9 +23,7 @@ def main(args: argparse.Namespace) -> None:
     plt.style.use("style.mplstyle")
 
     lattice = TEAPOT_Ring()
-    lattice.readMADX(
-        str(Path(__file__).with_name("inputs") / "sns_ring.lat"), "rnginjsol"
-    )
+    lattice.readMADX(str(Path(__file__).with_name("inputs") / "sns_ring.lat"), "rnginjsol")
     for node in lattice.getNodes():
         if hasattr(node, "setUsageFringeFieldIN"):
             node.setUsageFringeFieldIN(False)
@@ -39,13 +33,9 @@ def main(args: argparse.Namespace) -> None:
 
     nodes = lattice.getNodes()
     if not 1 <= args.correctors <= len(nodes) // 2:
-        raise ValueError(
-            "Corrector count must be between 1 and half the ring node count"
-        )
+        raise ValueError("Corrector count must be between 1 and half the ring node count")
 
-    positions = np.linspace(
-        0, len(nodes), 2 * args.correctors, endpoint=False, dtype=int
-    )
+    positions = np.linspace(0, len(nodes), 2 * args.correctors, endpoint=False, dtype=int)
     rng = np.random.default_rng(23)
     corrector_nodes = []
     for i, index in enumerate(positions):
@@ -108,9 +98,7 @@ def main(args: argparse.Namespace) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--correctors", type=int, default=12)
-    parser.add_argument(
-        "--error", type=float, default=1e-4, help="RMS injected dipole error [rad]"
-    )
+    parser.add_argument("--error", type=float, default=1e-4, help="RMS injected dipole error [rad]")
     parser.add_argument("--max-kick", type=float, default=1e-3)
     parser.add_argument("--delta", type=float, default=1e-6)
     main(parser.parse_args())

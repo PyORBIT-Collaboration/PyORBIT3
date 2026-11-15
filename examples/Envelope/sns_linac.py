@@ -47,17 +47,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dist", type=str, default="kv")
     parser.add_argument("--nparts", type=int, default=20_000)
     parser.add_argument("--sc", type=int, default=0)
-    parser.add_argument(
-        "--sc-model", type=str, default="ellipsoid", choices=("ellipsoid", "fft")
-    )
+    parser.add_argument("--sc-model", type=str, default="ellipsoid", choices=("ellipsoid", "fft"))
     parser.add_argument("--sc-ellipsoid-n", type=int, default=1)
     parser.add_argument("--sc-path-length-min", type=float, default=0.01)
     parser.add_argument("--current", type=float, default=0.038)
     parser.add_argument("--show", type=int, default=0)
     parser.add_argument("--seq-stop", type=str, default="CCL2")
-    parser.add_argument(
-        "--fit", type=int, default=1, help="Use best-fit transfer matrices"
-    )
+    parser.add_argument("--fit", type=int, default=1, help="Use best-fit transfer matrices")
     return parser.parse_args()
 
 
@@ -249,9 +245,7 @@ def main(args: argparse.Namespace) -> None:
         if args.sc_model == "ellipsoid":
             n_ellipsoids = args.sc_ellipsoid_n
             sc_calc = SpaceChargeCalcUnifEllipse(n_ellipsoids)
-            sc_nodes = setUniformEllipsesSCAccNodes(
-                lattice, args.sc_path_length_min, sc_calc
-            )
+            sc_nodes = setUniformEllipsesSCAccNodes(lattice, args.sc_path_length_min, sc_calc)
         if args.sc_model == "fft":
             sc_calc = SpaceChargeCalc3D(64, 64, 64)
             sc_nodes = setSC3DAccNodes(lattice, args.sc_path_length_min, sc_calc)
@@ -276,9 +270,7 @@ def main(args: argparse.Namespace) -> None:
     plot_kws["bunch"] = dict(color="black", lw=0, marker=".", ms=2)
     plot_kws["envelope"] = dict(color="red", lw=0, marker=".", ms=1)
 
-    fig, axs = plt.subplots(
-        nrows=3, figsize=(10, 5), sharex=True, constrained_layout=True
-    )
+    fig, axs = plt.subplots(nrows=3, figsize=(10, 5), sharex=True, constrained_layout=True)
     for mode in ["bunch", "envelope"]:
         history = histories[mode]
         for ax, key in zip(axs, ["rms_x", "rms_y", "rms_z"]):
@@ -295,9 +287,7 @@ def main(args: argparse.Namespace) -> None:
     plt.close()
 
     # History: rms emittance
-    fig, axs = plt.subplots(
-        nrows=3, figsize=(10, 5), sharex=True, constrained_layout=True
-    )
+    fig, axs = plt.subplots(nrows=3, figsize=(10, 5), sharex=True, constrained_layout=True)
     for mode in ["bunch", "envelope"]:
         history = histories[mode]
         for ax, key in zip(axs, ["eps_x_n", "eps_y_n", "eps_z_n"]):

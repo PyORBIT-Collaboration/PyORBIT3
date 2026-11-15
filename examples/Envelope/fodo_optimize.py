@@ -1,4 +1,4 @@
-"""Optimize quadrupoles in multi-cell FODO to reduce RMS size fluctuations."""
+"""Optimize quadrupoles to minimize RMS size fluctuations in FODO lattice."""
 
 import argparse
 import matplotlib.pyplot as plt

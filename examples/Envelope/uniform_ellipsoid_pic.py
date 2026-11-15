@@ -1,7 +1,8 @@
-"""Uniform ellipsoid in drift - PIC benchmark.
+"""Cold uniform ellipsoid in free space - PIC benchmark.
 
-The initial beam is a uniform-density ellipsoid in the x-y-z plane, with zero initial velocity.
-The ellipsoid can have arbitrary size and orientation.
+The initial beam is a uniform-density ellipsoid in the x-y-z plane,
+with zero initial velocity. The ellipsoid can have arbitrary aspect
+ratio and orientation.
 """
 
 import argparse
@@ -64,9 +65,7 @@ def rotation_matrix_3d(angle_x: float, angle_y: float, angle_z: float) -> np.nda
     ).as_matrix()
 
 
-def build_cov_matrix_xyz(
-    rms_sizes: np.ndarray, rotation_matrix: np.ndarray = None
-) -> np.ndarray:
+def build_cov_matrix_xyz(rms_sizes: np.ndarray, rotation_matrix: np.ndarray = None) -> np.ndarray:
     cov_matrix = np.diag(np.square(rms_sizes))
     if rotation_matrix is None:
         return cov_matrix

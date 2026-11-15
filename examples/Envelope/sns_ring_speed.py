@@ -1,4 +1,4 @@
-"""Test envelope tracker speed in SNS ring."""
+"""Profile envelope tracking in SNS ring lattice."""
 
 import argparse
 import time

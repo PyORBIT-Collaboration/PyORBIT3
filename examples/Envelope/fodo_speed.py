@@ -1,3 +1,5 @@
+"""Profile envelope tracking in FODO lattice."""
+
 import argparse
 import time
 import cProfile

@@ -31,9 +31,7 @@ def main(args: argparse.Namespace) -> None:
             np.linalg.norm(envelope.cov_matrix[:4, :4] - initial.cov_matrix[:4, :4])
             / np.linalg.norm(initial.cov_matrix[:4, :4])
         )
-    print(
-        f"Matching residual: {residual:.3g}; maximum relative closure error: {max(closure):.3g}"
-    )
+    print(f"Matching residual: {residual:.3g}; maximum relative closure error: {max(closure):.3g}")
 
     fig, ax = plt.subplots(figsize=(4, 3))
     ax.plot(history["s"], 1e3 * np.sqrt(history["covariance"][:, 0, 0]), label="x")

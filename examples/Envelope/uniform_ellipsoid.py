@@ -1,4 +1,4 @@
-"""Uniform ellipsoid in drift - ODE benchmark."""
+"""Cold uniform ellipsoid in free space - ODE benchmark."""
 
 import argparse
 from pathlib import Path
@@ -34,11 +34,7 @@ def main(args: argparse.Namespace) -> None:
     envelope.cov_matrix[0, 0] = radii[0] ** 2 / 5.0
     envelope.cov_matrix[2, 2] = radii[1] ** 2 / 5.0
     envelope.cov_matrix[4, 4] = (radii[2] / envelope.gamma) ** 2 / 5.0
-    coefficient = (
-        args.intensity
-        * envelope.classical_radius
-        / (envelope.beta * envelope.gamma) ** 2
-    )
+    coefficient = args.intensity * envelope.classical_radius / (envelope.beta * envelope.gamma) ** 2
 
     def derivative(s: float, state: np.ndarray) -> np.ndarray:
         a, b, c = state[:3] ** 2
