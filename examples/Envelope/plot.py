@@ -77,9 +77,7 @@ def plot_corner(
     if labels is None:
         labels = ndim * [""]
 
-    fig, axs = plt.subplots(
-        ncols=ndim, nrows=ndim, sharex=None, sharey=None, figsize=(8, 8)
-    )
+    fig, axs = plt.subplots(ncols=ndim, nrows=ndim, sharex=None, sharey=None, figsize=(8, 8))
     for i in range(ndim):
         for j in range(ndim):
             axis = (j, i)
@@ -99,9 +97,7 @@ def plot_corner(
                     shading="auto",
                 )
             elif i == j:
-                values, edges = np.histogram(
-                    particles[:, i], bins=bins, range=limits[i]
-                )
+                values, edges = np.histogram(particles[:, i], bins=bins, range=limits[i])
                 if blur:
                     values = scipy.ndimage.gaussian_filter(values, sigma=blur)
                 ax.stairs(values, edges, lw=1.5, color="black")

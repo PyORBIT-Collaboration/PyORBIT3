@@ -1,12 +1,4 @@
-"""SNS linac benchmark.
-
-Note that there is no analytic benchmark with 3D space charge since there
-is no 3D KV equilibrium distribution. For comparison to particle tracking,
-we use the `SpaceChargeCalcUnifEllipse` space charge calculator, which
-approximates the charge distribution as a uniform-density ellipsoid with
-the same x-y-z covariance matrix as the real charge distribution. (It
-currently assumes an upright ellipsoid.)
-"""
+"""SNS linac benchmark."""
 
 import argparse
 import math
@@ -43,7 +35,6 @@ from orbit.utils.consts import mass_proton
 from orbit.utils.consts import mass_electron
 from orbit.utils.consts import charge_electron
 
-sys.path.append("..")
 from plot import plot_corner
 from plot import plot_rms_ellipse
 from utils import project_cov_matrix
@@ -254,9 +245,7 @@ def main(args: argparse.Namespace) -> None:
         if args.sc_model == "ellipsoid":
             n_ellipsoids = args.sc_ellipsoid_n
             sc_calc = SpaceChargeCalcUnifEllipse(n_ellipsoids)
-            sc_nodes = setUniformEllipsesSCAccNodes(
-                lattice, args.sc_path_length_min, sc_calc
-            )
+            sc_nodes = setUniformEllipsesSCAccNodes(lattice, args.sc_path_length_min, sc_calc)
         if args.sc_model == "fft":
             sc_calc = SpaceChargeCalc3D(64, 64, 64)
             sc_nodes = setSC3DAccNodes(lattice, args.sc_path_length_min, sc_calc)
@@ -281,9 +270,7 @@ def main(args: argparse.Namespace) -> None:
     plot_kws["bunch"] = dict(color="black", lw=0, marker=".", ms=2)
     plot_kws["envelope"] = dict(color="red", lw=0, marker=".", ms=1)
 
-    fig, axs = plt.subplots(
-        nrows=3, figsize=(10, 5), sharex=True, constrained_layout=True
-    )
+    fig, axs = plt.subplots(nrows=3, figsize=(10, 5), sharex=True, constrained_layout=True)
     for mode in ["bunch", "envelope"]:
         history = histories[mode]
         for ax, key in zip(axs, ["rms_x", "rms_y", "rms_z"]):
@@ -300,9 +287,7 @@ def main(args: argparse.Namespace) -> None:
     plt.close()
 
     # History: rms emittance
-    fig, axs = plt.subplots(
-        nrows=3, figsize=(10, 5), sharex=True, constrained_layout=True
-    )
+    fig, axs = plt.subplots(nrows=3, figsize=(10, 5), sharex=True, constrained_layout=True)
     for mode in ["bunch", "envelope"]:
         history = histories[mode]
         for ax, key in zip(axs, ["eps_x_n", "eps_y_n", "eps_z_n"]):

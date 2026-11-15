@@ -70,7 +70,7 @@ def get_matrix_drift(envelope: Envelope, length: float) -> np.ndarray:
     M = np.identity(7)
     M[0, 1] = length
     M[2, 3] = length
-    M[4, 5] = length / (envelope.gamma ** 2)
+    M[4, 5] = length / (envelope.gamma**2)
     M[4, 5] *= get_dp_p_coeff(envelope)  # convert_matrix_dp_p_to_dE(M, envelope)
     envelope.time += length / (envelope.beta * speed_of_light)
     return M
@@ -140,7 +140,7 @@ def get_matrix_bend(envelope: Envelope, length: float, theta: float) -> np.ndarr
     M[2, 3] = length
     M[4, 0] = -sx
     M[4, 1] = -rho * (1.0 - cx)
-    M[4, 5] = -(envelope.beta ** 2) * length + rho * sx
+    M[4, 5] = -(envelope.beta**2) * length + rho * sx
     M[:5, 5] *= get_dp_p_coeff(envelope)  # convert_matrix_dp_p_to_dE(M, envelope)
 
     envelope.time += length / (envelope.beta * speed_of_light)
@@ -201,7 +201,9 @@ def get_matrix_cf(envelope: Envelope, length: float, kq: float) -> np.ndarray:
     return M
 
 
-def get_matrix_rf_gap(envelope: Envelope, frequency: float, E0TL: float, phase: float) -> np.ndarray:
+def get_matrix_rf_gap(
+    envelope: Envelope, frequency: float, E0TL: float, phase: float
+) -> np.ndarray:
     gamma = envelope.gamma
     beta = envelope.beta
     mass = envelope.mass

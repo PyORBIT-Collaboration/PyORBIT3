@@ -21,9 +21,7 @@ class EnvelopeAnalysis:
 
     def emittances(self, normalized: bool = False) -> np.ndarray:
         cov = self.envelope.cov_matrix
-        values = np.array(
-            [np.sqrt(np.linalg.det(cov[i : i + 2, i : i + 2])) for i in (0, 2, 4)]
-        )
+        values = np.array([np.sqrt(np.linalg.det(cov[i : i + 2, i : i + 2])) for i in (0, 2, 4)])
         if normalized:
             beta = self.envelope.beta
             values *= np.array([beta * self.envelope.gamma] * 2 + [1.0 / beta])

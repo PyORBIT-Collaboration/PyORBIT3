@@ -24,10 +24,9 @@ from orbit.teapot import TEAPOT_MATRIX_Lattice
 from orbit.teapot import teapot
 from orbit.utils.consts import mass_proton
 
-sys.path.append("..")
 from plot import plot_rms_ellipse
 from plot import plot_corner
-from utils import gen_dist
+from utils import sample_distribution
 from utils import build_rotation_matrix_xy
 from utils import project_cov_matrix
 
@@ -40,9 +39,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--kin-energy", type=float, default=1.300)
     parser.add_argument("--intensity", type=float, default=2e14)
 
-    parser.add_argument(
-        "--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"]
-    )
+    parser.add_argument("--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"])
     parser.add_argument("--eps-x", type=float, default=25.0)
     parser.add_argument("--eps-y", type=float, default=25.0)
     parser.add_argument("--mismatch-x", type=float, default=0.0)
@@ -133,7 +130,7 @@ def main(args: argparse.Namespace) -> None:
 
     rng = np.random.default_rng()
     bunch_coords = np.zeros((args.nparts, 6))
-    bunch_coords[:, :4] = gen_dist(
+    bunch_coords[:, :4] = sample_distribution(
         size=args.nparts, cov_matrix=cov_matrix[0:4, 0:4], name=args.dist
     )
     bunch_coords[:, 4] = args.bunch_length * rng.uniform(-0.5, 0.5, size=args.nparts)
@@ -165,20 +162,27 @@ def main(args: argparse.Namespace) -> None:
     )
 
     analysis = EnvelopeAnalysis(envelope)
-    history = {key: [] for key in ('rms_x', 'rms_y', 'avg_x', 'avg_y', 'eps_x', 'eps_y')}
+    history = {key: [] for key in ("rms_x", "rms_y", "avg_x", "avg_y", "eps_x", "eps_y")}
     for turn in range(args.turns + 1):
         if turn > 0:
             lattice.trackEnvelope(
-                envelope, sc=("2d" if args.sc else None), fit=args.fit, static=args.static, fallback=args.fallback
+                envelope,
+                sc=("2d" if args.sc else None),
+                fit=args.fit,
+                static=args.static,
+                fallback=args.fallback,
             )
 
         rms = 1000.0 * analysis.rms()
         mean = 1000.0 * analysis.centroid()
         eps = 1e6 * analysis.emittances()
         parameters = {
-            "rms_x": rms[0], "rms_y": rms[1],
-            "avg_x": mean[0], "avg_y": mean[2],
-            "eps_x": eps[0], "eps_y": eps[1],
+            "rms_x": rms[0],
+            "rms_y": rms[1],
+            "avg_x": mean[0],
+            "avg_y": mean[2],
+            "eps_x": eps[0],
+            "eps_y": eps[1],
         }
         for key, value in parameters.items():
             history[key].append(value)

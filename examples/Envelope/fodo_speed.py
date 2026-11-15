@@ -1,4 +1,4 @@
-"""Test envelope tracker speed in SNS ring."""
+"""Profile envelope tracking in FODO lattice."""
 
 import argparse
 import time
@@ -9,17 +9,13 @@ import numpy as np
 from tqdm import trange
 
 from orbit.core.bunch import Bunch
-from orbit.core.spacecharge import SpaceChargeCalc2p5D
 from orbit.envelope import Envelope
-from orbit.core.spacecharge import SpaceChargeCalc2p5D
-from orbit.space_charge.sc2p5d import setSC2p5DAccNodes
 from orbit.teapot import QuadTEAPOT
 from orbit.teapot import DriftTEAPOT
 from orbit.teapot import TEAPOT_Lattice
 from orbit.teapot import TEAPOT_MATRIX_Lattice
 from orbit.utils.consts import mass_proton
 
-from utils import gen_dist
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--bunch-length", type=float, default=5.0)
@@ -29,11 +25,10 @@ parser.add_argument("--intensity", type=float, default=2e14)
 parser.add_argument("--nslice", type=int, default=10)
 parser.add_argument("--kq", type=float, default=0.25)
 
-parser.add_argument("--nparts", type=int, default=10_000)
 parser.add_argument("--turns", type=int, default=500)
 parser.add_argument("--sc", type=int, default=0)
-parser.add_argument("--sc-grid", type=int, default=64)
 parser.add_argument("--fit", type=int, default=1)
+parser.add_argument("--static", type=int, default=1)
 args = parser.parse_args()
 
 nodes = [
@@ -76,76 +71,21 @@ cov_matrix[3, 3] = eps_y * (1.0 + alpha_y**2) / beta_y
 cov_matrix[4, 4] = args.bunch_length**2 / 12.0
 cov_matrix[5, 5] = 0.0
 
-cov_matrix_init = np.copy(cov_matrix)
-
-# Track envelope
-print("ENVELOPE")
-
 envelope = Envelope(
+    cov_matrix=cov_matrix,
     kin_energy=sync_part.kinEnergy(),
     mass=bunch.mass(),
     charge=bunch.charge(),
-    time=sync_part.time(),
-    cov_matrix=cov_matrix_init,
     intensity=args.intensity,
 )
-envelope_sc = "2d" if args.sc else None
-
-start_time = time.time()
+sc = "2d" if args.sc else None
 
 profiler = cProfile.Profile()
 profiler.enable()
-
 for turn in trange(args.turns):
-    # No observer: measure tracking without collecting diagnostics.
-    lattice.trackEnvelope(envelope, sc=envelope_sc, fit=args.fit, static=True)
-
-time_per_turn = (time.time() - start_time) / args.turns
-
+    lattice.trackEnvelope(envelope, sc=sc, fit=args.fit, static=args.static)
 profiler.disable()
 
-print("Time per turn:", time_per_turn)
-
-profiler_stats = pstats.Stats(profiler)
-profiler_stats.sort_stats(pstats.SortKey.TIME)
-profiler_stats.print_stats(10)
-
-# Track bunch
-print("BUNCH")
-
-rng = np.random.default_rng()
-
-bunch_coords = np.zeros((args.nparts, 6))
-bunch_coords[:, :4] = gen_dist(
-    size=args.nparts, cov_matrix=cov_matrix_init[0:4, 0:4], name="kv"
-)
-bunch_coords[:, 4] = args.bunch_length * rng.uniform(-0.5, 0.5, size=args.nparts)
-
-for i in range(bunch_coords.shape[0]):
-    bunch.addParticle(*bunch_coords[i])
-
-if args.sc:
-    sc_calc = SpaceChargeCalc2p5D(64, 64, 1)
-    sc_path_length_min = 1.00e-06
-    sc_nodes = setSC2p5DAccNodes(lattice, sc_path_length_min, sc_calc)
-
-    bunch_size = bunch.getSizeGlobal()
-    bunch.macroSize(args.intensity / bunch_size)
-
-start_time = time.time()
-
-profiler = cProfile.Profile()
-profiler.enable()
-
-for turn in trange(args.turns):
-    lattice.trackBunch(bunch)
-
-time_per_turn = (time.time() - start_time) / args.turns
-
-profiler.disable()
-
-print("Time per turn:", time_per_turn)
-
-profiler_stats = pstats.Stats(profiler)
-profiler_stats.sort_stats(pstats.SortKey.TIME)
-profiler_stats.print_stats(10)
+stats = pstats.Stats(profiler)
+stats.sort_stats(pstats.SortKey.TIME)
+stats.print_stats(10)

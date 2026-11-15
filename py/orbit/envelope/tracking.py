@@ -52,7 +52,7 @@ class EnvelopeTracker:
 
         self.fit = fit
         self.fallback = fallback
-        
+
         self._bunch = None
         self._matrix_generator = None
         self._node_maps = None
@@ -113,7 +113,9 @@ class EnvelopeTracker:
                 if store:
                     if matrix is not None and np.array_equal(matrix, identity_matrix):
                         matrix = None
-                    node_maps[node, part_index] = NodeMap(matrix, envelope.kin_energy, envelope.time)
+                    node_maps[node, part_index] = NodeMap(
+                        matrix, envelope.kin_energy, envelope.time
+                    )
             apply_matrix(matrix)
 
         action_container.addAction(push_envelope, AccNode.BODY)
@@ -138,7 +140,9 @@ class EnvelopeTracker:
             store=True,
         )
 
-    def _get_node_matrix(self, params_dict: ParamsDict, part_index: int, handlers: dict) -> np.ndarray | None:
+    def _get_node_matrix(
+        self, params_dict: ParamsDict, part_index: int, handlers: dict
+    ) -> np.ndarray | None:
         node = params_dict["node"]
         envelope = params_dict["envelope"]
         initial_kinetic_energy = envelope.kin_energy

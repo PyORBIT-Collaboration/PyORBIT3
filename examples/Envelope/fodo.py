@@ -28,7 +28,7 @@ from orbit.utils.consts import mass_proton
 
 from plot import plot_rms_ellipse
 from plot import plot_corner
-from utils import gen_dist
+from utils import sample_distribution
 from utils import build_rotation_matrix_xy
 from utils import project_cov_matrix
 
@@ -41,9 +41,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--kin-energy", type=float, default=0.0025)
     parser.add_argument("--intensity", type=float, default=5e9)
 
-    parser.add_argument(
-        "--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"]
-    )
+    parser.add_argument("--dist", type=str, default="kv", choices=["kv", "waterbag", "gauss"])
     parser.add_argument("--mismatch-x", type=float, default=0.0)
     parser.add_argument("--mismatch-y", type=float, default=0.0)
     parser.add_argument("--offset-x", type=float, default=0.0)
@@ -149,11 +147,14 @@ def main(args: argparse.Namespace) -> None:
     envelope_sc = "2d" if args.sc else None
 
     analysis = EnvelopeAnalysis(envelope)
-    history = {key: [] for key in ('xrms', 'yrms', 'xavg', 'yavg')}
+    history = {key: [] for key in ("xrms", "yrms", "xavg", "yavg")}
     for turn in range(args.turns):
         if turn > 0:
             lattice.trackEnvelope(
-                envelope, sc=envelope_sc, fit=args.fit, static=True,
+                envelope,
+                sc=envelope_sc,
+                fit=args.fit,
+                static=True,
             )
 
         rms = 1000.0 * analysis.rms()
@@ -172,15 +173,15 @@ def main(args: argparse.Namespace) -> None:
 
     rng = np.random.default_rng()
 
-    bunch_coords = np.zeros((args.nparts, 6))
-    bunch_coords[:, :4] = gen_dist(
+    particles = np.zeros((args.nparts, 6))
+    particles[:, :4] = sample_distribution(
         size=args.nparts, cov_matrix=cov_matrix_init[0:4, 0:4], name=args.dist
     )
-    bunch_coords[:, 4] = args.bunch_length * rng.uniform(-0.5, 0.5, size=args.nparts)
-    bunch_coords += centroid_init[None, :6]
+    particles[:, 4] = args.bunch_length * rng.uniform(-0.5, 0.5, size=args.nparts)
+    particles += centroid_init[None, :6]
 
-    for i in range(bunch_coords.shape[0]):
-        bunch.addParticle(*bunch_coords[i])
+    for i in range(particles.shape[0]):
+        bunch.addParticle(*particles[i])
 
     if args.sc:
         sc_calc = SpaceChargeCalc2p5D(128, 128, 1)
@@ -209,9 +210,7 @@ def main(args: argparse.Namespace) -> None:
         xavg = 1000.0 * twiss_calc.getAverage(0)
         yavg = 1000.0 * twiss_calc.getAverage(2)
 
-        print(
-            f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} xavg={xavg:0.3f} yavg={yavg:0.3f}"
-        )
+        print(f"turn={turn} xrms={xrms:0.3f} yrms={yrms:0.3f} xavg={xavg:0.3f} yavg={yavg:0.3f}")
 
         history["xrms"].append(xrms)
         history["yrms"].append(yrms)
