@@ -30,6 +30,7 @@ def phase_advances(matrix: np.ndarray) -> np.ndarray:
 def main(args: argparse.Namespace) -> None:
     out = make_output_dir(__file__)
     plt.style.use("style.mplstyle")
+
     rows = []
     failures = 0
     for kq in np.linspace(args.kq_min, args.kq_max, args.points):
@@ -41,6 +42,7 @@ def main(args: argparse.Namespace) -> None:
         except (RuntimeError, ValueError):
             failures += args.points
             continue
+
         matrix = lattice.trackEnvelope(
             bare.copy(), fit=False, static=True, return_matrix=True
         )
@@ -76,26 +78,21 @@ def main(args: argparse.Namespace) -> None:
             rows.append(
                 [kq, intensity, *bare_phase, *phase_advances(matrix), growth, error]
             )
+
     data = np.asarray(rows)
     if not len(data):
         raise RuntimeError("No matched solutions found in scan")
 
-    np.savetxt(
-        out / "stability.csv",
-        data,
-        delimiter=",",
-        header="kq,intensity,bare_x_deg,bare_y_deg,depressed_x_deg,depressed_y_deg,log_spectral_radius,match_residual",
-    )
     print(f"Matched points: {len(data)}; skipped/failed points: {failures}")
     print(
         f"Unstable points (growth > {args.growth_tol:g} per cell): {sum(data[:, 6] > args.growth_tol)}"
     )
     phase_grid = np.linspace(0.0, 120.0, args.grid_points)
     bare_grid, depressed_grid = np.meshgrid(phase_grid, phase_grid)
-    # The physics samples are uniform in kq and intensity, not phase advance.
-    # Interpolate only for display; retain the actual samples in stability.csv.
+
     if np.linalg.matrix_rank(data[:, [2, 4]] - data[0, [2, 4]]) < 2:
         raise RuntimeError("Heatmap requires samples spanning both phase axes")
+
     growth_grid = griddata(
         data[:, [2, 4]],
         np.maximum(data[:, 6], 0.0),
@@ -103,6 +100,7 @@ def main(args: argparse.Namespace) -> None:
         method="linear",
     )
     growth_grid[depressed_grid > bare_grid] = np.nan
+
     fig, ax = plt.subplots()
     image = ax.pcolormesh(
         bare_grid, depressed_grid, growth_grid, shading="auto", cmap="viridis"
