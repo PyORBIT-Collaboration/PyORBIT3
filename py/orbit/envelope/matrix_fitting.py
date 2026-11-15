@@ -26,6 +26,7 @@ def fit_node_matrix(
     matrix_generator: MatrixGenerator | None = None,
     lost_bunch: Bunch | None = None,
     params_dict: dict | None = None,
+    matrix: Matrix | None = None,
 ) -> np.ndarray:
 
     if matrix_generator is None:
@@ -35,8 +36,9 @@ def fit_node_matrix(
         lost_bunch = Bunch()
         bunch.copyEmptyBunchTo(lost_bunch)
 
-    matrix = Matrix(7, 7)
-    matrix.unit()
+    if matrix is None:
+        matrix = Matrix(7, 7)
+
     matrix_generator.initBunch(bunch)
 
     params_dict = {} if params_dict is None else params_dict.copy()
@@ -67,7 +69,6 @@ def fit_lattice_matrix(
         index_stop = -1
 
     matrix = Matrix(7, 7)
-    matrix.unit()
 
     bunch_out = Bunch()
     lost_bunch = Bunch()

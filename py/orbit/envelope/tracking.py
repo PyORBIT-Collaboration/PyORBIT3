@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from orbit.core.bunch import Bunch
+from orbit.core.orbit_utils import Matrix
 from orbit.core.teapot_base import MatrixGenerator
 from orbit.space_charge import SC_Base_AccNode
 
@@ -56,6 +57,8 @@ class EnvelopeTracker:
 
         self._bunch = None
         self._matrix_generator = None
+        self._lost_bunch = None
+        self._fit_matrix = None
         self._node_maps = None
 
     def track(
@@ -178,13 +181,20 @@ class EnvelopeTracker:
 
             if self._matrix_generator is None:
                 self._matrix_generator = MatrixGenerator()
+            if self._lost_bunch is None:
+                self._lost_bunch = Bunch()
+            self._bunch.copyEmptyBunchTo(self._lost_bunch)
+            if self._fit_matrix is None:
+                self._fit_matrix = Matrix(7, 7)
 
             matrix = fit_node_matrix(
                 node=node,
                 bunch=self._bunch,
                 part_index=part_index,
                 matrix_generator=self._matrix_generator,
+                lost_bunch=self._lost_bunch,
                 params_dict=params_dict,
+                matrix=self._fit_matrix,
             )
 
             envelope.kin_energy = sync_particle.kinEnergy()
