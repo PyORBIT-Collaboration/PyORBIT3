@@ -28,3 +28,9 @@ python test_sns_ring.py --sc 1 --sol 1
 python test_sns_ring_speed.py --sc 0
 python test_sns_ring_speed.py --sc 1
 cd ..
+
+python test_match_fodo_2d.py
+python test_cold_spheroid.py
+python test_optimize_fodo.py
+python test_kv_stability.py
+python sns_ring/test_orbit_correction.py

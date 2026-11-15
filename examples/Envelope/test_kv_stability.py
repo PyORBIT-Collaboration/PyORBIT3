@@ -35,7 +35,9 @@ def main(args: argparse.Namespace) -> None:
     for kq in np.linspace(args.kq_min, args.kq_max, args.points):
         lattice, _ = make_fodo(kq, args.nslice)
         try:
-            bare, _ = matched_envelope(lattice, intensity=0.0, optimizer_kwargs={"verbose": 0})
+            bare, _ = matched_envelope(
+                lattice, intensity=0.0, optimizer_kwargs={"verbose": 0}
+            )
         except (RuntimeError, ValueError):
             failures += args.points
             continue
@@ -95,8 +97,10 @@ def main(args: argparse.Namespace) -> None:
     if np.linalg.matrix_rank(data[:, [2, 4]] - data[0, [2, 4]]) < 2:
         raise RuntimeError("Heatmap requires samples spanning both phase axes")
     growth_grid = griddata(
-        data[:, [2, 4]], np.maximum(data[:, 6], 0.0),
-        (bare_grid, depressed_grid), method="linear",
+        data[:, [2, 4]],
+        np.maximum(data[:, 6], 0.0),
+        (bare_grid, depressed_grid),
+        method="linear",
     )
     growth_grid[depressed_grid > bare_grid] = np.nan
     fig, ax = plt.subplots()
@@ -121,8 +125,15 @@ if __name__ == "__main__":
     parser.add_argument("--kq-min", type=float, default=0.1)
     parser.add_argument("--kq-max", type=float, default=1.15)
     parser.add_argument("--intensity-max", type=float, default=1e10)
-    parser.add_argument("--points", type=int, default=31, help="Resolution of the kq-intensity scan")
-    parser.add_argument("--grid-points", type=int, default=121, help="Interpolated heatmap resolution from 0 to 120 degrees")
+    parser.add_argument(
+        "--points", type=int, default=31, help="Resolution of the kq-intensity scan"
+    )
+    parser.add_argument(
+        "--grid-points",
+        type=int,
+        default=121,
+        help="Interpolated heatmap resolution from 0 to 120 degrees",
+    )
     parser.add_argument("--nslice", type=int, default=20)
     parser.add_argument("--delta", type=float, default=1e-5)
     parser.add_argument("--growth-tol", type=float, default=1e-4)

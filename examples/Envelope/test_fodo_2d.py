@@ -61,7 +61,9 @@ def parse_args() -> argparse.Namespace:
 
 
 def main(args: argparse.Namespace) -> None:
-    output_dir = os.path.join("outputs", Path(__file__).stem, time.strftime("%Y%m%d_%H%M%S"))
+    output_dir = os.path.join(
+        "outputs", Path(__file__).stem, time.strftime("%Y%m%d_%H%M%S")
+    )
     os.makedirs(output_dir, exist_ok=True)
 
     # Create lattice
@@ -149,11 +151,14 @@ def main(args: argparse.Namespace) -> None:
     envelope_sc = "2d" if args.sc else None
 
     analysis = EnvelopeAnalysis(envelope)
-    history = {key: [] for key in ('xrms', 'yrms', 'xavg', 'yavg')}
+    history = {key: [] for key in ("xrms", "yrms", "xavg", "yavg")}
     for turn in range(args.turns):
         if turn > 0:
             lattice.trackEnvelope(
-                envelope, sc=envelope_sc, fit=args.fit, static=True,
+                envelope,
+                sc=envelope_sc,
+                fit=args.fit,
+                static=True,
             )
 
         rms = 1000.0 * analysis.rms()

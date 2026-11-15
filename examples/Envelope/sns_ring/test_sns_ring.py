@@ -165,20 +165,29 @@ def main(args: argparse.Namespace) -> None:
     )
 
     analysis = EnvelopeAnalysis(envelope)
-    history = {key: [] for key in ('rms_x', 'rms_y', 'avg_x', 'avg_y', 'eps_x', 'eps_y')}
+    history = {
+        key: [] for key in ("rms_x", "rms_y", "avg_x", "avg_y", "eps_x", "eps_y")
+    }
     for turn in range(args.turns + 1):
         if turn > 0:
             lattice.trackEnvelope(
-                envelope, sc=("2d" if args.sc else None), fit=args.fit, static=args.static, fallback=args.fallback
+                envelope,
+                sc=("2d" if args.sc else None),
+                fit=args.fit,
+                static=args.static,
+                fallback=args.fallback,
             )
 
         rms = 1000.0 * analysis.rms()
         mean = 1000.0 * analysis.centroid()
         eps = 1e6 * analysis.emittances()
         parameters = {
-            "rms_x": rms[0], "rms_y": rms[1],
-            "avg_x": mean[0], "avg_y": mean[2],
-            "eps_x": eps[0], "eps_y": eps[1],
+            "rms_x": rms[0],
+            "rms_y": rms[1],
+            "avg_x": mean[0],
+            "avg_y": mean[2],
+            "eps_x": eps[0],
+            "eps_y": eps[1],
         }
         for key, value in parameters.items():
             history[key].append(value)

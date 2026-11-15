@@ -56,13 +56,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dist", type=str, default="kv")
     parser.add_argument("--nparts", type=int, default=20_000)
     parser.add_argument("--sc", type=int, default=0)
-    parser.add_argument("--sc-model", type=str, default="ellipsoid", choices=("ellipsoid", "fft"))
+    parser.add_argument(
+        "--sc-model", type=str, default="ellipsoid", choices=("ellipsoid", "fft")
+    )
     parser.add_argument("--sc-ellipsoid-n", type=int, default=1)
     parser.add_argument("--sc-path-length-min", type=float, default=0.01)
     parser.add_argument("--current", type=float, default=0.038)
     parser.add_argument("--show", type=int, default=0)
     parser.add_argument("--seq-stop", type=str, default="CCL2")
-    parser.add_argument("--fit", type=int, default=1, help="Use best-fit transfer matrices")
+    parser.add_argument(
+        "--fit", type=int, default=1, help="Use best-fit transfer matrices"
+    )
     return parser.parse_args()
 
 

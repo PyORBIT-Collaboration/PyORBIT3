@@ -43,13 +43,14 @@ def main(args: argparse.Namespace) -> None:
             "Corrector count must be between 1 and half the ring node count"
         )
 
-    positions = np.linspace(0, len(nodes), 2 * args.correctors, endpoint=False, dtype=int)
+    positions = np.linspace(
+        0, len(nodes), 2 * args.correctors, endpoint=False, dtype=int
+    )
     rng = np.random.default_rng(23)
     corrector_nodes = []
     for i, index in enumerate(positions):
         corrector_node = KickTEAPOT(
-            name=f"orbit_kick_{i}",
-            kx=(rng.normal(0.0, args.error) if i % 2 else 0.0)
+            name=f"orbit_kick_{i}", kx=(rng.normal(0.0, args.error) if i % 2 else 0.0)
         )
         nodes[index].addChildNode(corrector_node, AccNode.ENTRANCE)
         if i % 2 == 0:
@@ -78,10 +79,7 @@ def main(args: argparse.Namespace) -> None:
 
     response = np.column_stack(columns)
     result = scipy.optimize.lsq_linear(
-        response,
-        -before,
-        bounds=(-args.max_kick, args.max_kick),
-        tol=1e-12
+        response, -before, bounds=(-args.max_kick, args.max_kick), tol=1e-12
     )
     if not result.success:
         raise RuntimeError(result.message)
@@ -110,7 +108,9 @@ def main(args: argparse.Namespace) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--correctors", type=int, default=12)
-    parser.add_argument("--error", type=float, default=1e-4, help="RMS injected dipole error [rad]")
+    parser.add_argument(
+        "--error", type=float, default=1e-4, help="RMS injected dipole error [rad]"
+    )
     parser.add_argument("--max-kick", type=float, default=1e-3)
     parser.add_argument("--delta", type=float, default=1e-6)
     main(parser.parse_args())

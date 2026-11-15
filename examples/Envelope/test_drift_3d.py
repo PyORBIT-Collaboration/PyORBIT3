@@ -28,7 +28,7 @@ from orbit.utils.consts import mass_proton
 
 from plot import plot_rms_ellipse
 from plot import plot_corner
-from utils import gen_dist
+from utils import sample_distribution
 from utils import project_cov_matrix
 
 plt.style.use("style.mplstyle")
@@ -134,17 +134,21 @@ def main(args: argparse.Namespace) -> None:
     envelope_sc = "3d" if args.sc else None
 
     analysis = EnvelopeAnalysis(envelope)
-    history = {key: [] for key in ('s', 'xrms', 'yrms', 'zrms')}
+    history = {key: [] for key in ("s", "xrms", "yrms", "zrms")}
     for turn in range(args.turns):
         if turn > 0:
             lattice.trackEnvelope(
-                envelope, sc=envelope_sc, fit=args.fit,
+                envelope,
+                sc=envelope_sc,
+                fit=args.fit,
             )
 
         rms = 1000.0 * analysis.rms()
         parameters = {
             "s": turn * lattice.getLength(),
-            "xrms": rms[0], "yrms": rms[1], "zrms": rms[2] * envelope.gamma,
+            "xrms": rms[0],
+            "yrms": rms[1],
+            "zrms": rms[2] * envelope.gamma,
         }
         for key, value in parameters.items():
             history[key].append(value)
@@ -162,7 +166,7 @@ def main(args: argparse.Namespace) -> None:
     bunch.getSyncParticle().kinEnergy(args.kin_energy)
 
     bunch_coords = np.zeros((args.nparts, 6))
-    bunch_coords[:, (0, 2, 4)] = gen_dist(
+    bunch_coords[:, (0, 2, 4)] = sample_distribution(
         size=args.nparts, cov_matrix=cov_matrix_xyz, name="waterbag"
     )
 
@@ -224,8 +228,14 @@ def main(args: argparse.Namespace) -> None:
         for i, model in enumerate(["envelope", "bunch"]):
             color = ["black", "red"][i]
             lw = [None, 0][i]
-            ax.plot(histories[model]["s"], histories[model][key],
-                    marker=".", lw=lw, color=color, label=model)
+            ax.plot(
+                histories[model]["s"],
+                histories[model][key],
+                marker=".",
+                lw=lw,
+                color=color,
+                label=model,
+            )
         ax.set_ylim(0.0, ax.get_ylim()[1] * 1.2)
         ax.set_xlabel("s [m]")
         ax.set_ylabel("rms size [mm]")

@@ -132,7 +132,9 @@ def main(args: argparse.Namespace) -> None:
         bunch_coords[:, :4] = gen_dist(
             size=args.nparts, cov_matrix=cov_matrix_init[0:4, 0:4], name="kv"
         )
-        bunch_coords[:, 4] = args.bunch_length * rng.uniform(-0.5, 0.5, size=args.nparts)
+        bunch_coords[:, 4] = args.bunch_length * rng.uniform(
+            -0.5, 0.5, size=args.nparts
+        )
 
         for i in range(bunch_coords.shape[0]):
             bunch.addParticle(*bunch_coords[i])

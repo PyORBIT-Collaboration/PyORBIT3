@@ -45,7 +45,11 @@ def main(args: argparse.Namespace) -> None:
         acceleration = (
             coefficient
             * state[:3]
-            * [scipy.special.elliprd(b, c, a), scipy.special.elliprd(a, c, b), scipy.special.elliprd(a, b, c)]
+            * [
+                scipy.special.elliprd(b, c, a),
+                scipy.special.elliprd(a, c, b),
+                scipy.special.elliprd(a, b, c),
+            ]
         )
         return np.r_[state[3:], acceleration]
 
@@ -55,7 +59,7 @@ def main(args: argparse.Namespace) -> None:
     lattice.initialize()
 
     gamma = envelope.gamma
-    history, _  = track_history(lattice, envelope, sc="3d")
+    history, _ = track_history(lattice, envelope, sc="3d")
 
     tracked = np.zeros((history["covariance"].shape[0], 3))
     tracked[:, 0] = np.sqrt(5.0 * history["covariance"][:, 0, 0])
@@ -75,7 +79,6 @@ def main(args: argparse.Namespace) -> None:
 
     exact = reference.sol(history["s"])[:3].T
     print(f"Maximum relative radius error: {np.max(abs(tracked / exact - 1)):.3g}")
-
 
     fig, axs = plt.subplots(ncols=3, sharex=True, sharey=False, figsize=(10.0, 2.5))
     for i, dim in enumerate(("x", "y", "z")):

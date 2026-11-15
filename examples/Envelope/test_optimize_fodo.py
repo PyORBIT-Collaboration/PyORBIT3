@@ -15,7 +15,7 @@ from utils import twiss_parameters
 def main(args: argparse.Namespace) -> None:
     output_dir = make_output_dir(__file__)
     plt.style.use("style.mplstyle")
-    
+
     cell, _ = make_fodo(args.kq, args.nslice)
     envelope, _ = matched_envelope(cell, args.intensity)
     lattice, quads = make_fodo(args.kq, args.nslice, args.cells)
