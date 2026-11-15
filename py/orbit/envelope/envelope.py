@@ -40,6 +40,7 @@ def get_bunch_centroid(bunch: Bunch) -> np.ndarray:
 
 class Envelope:
     """Represents the first and second moments of a phase-space distribution.."""
+
     def __init__(
         self,
         cov_matrix: np.ndarray | None = None,
@@ -53,7 +54,7 @@ class Envelope:
     ) -> None:
         """Constructor.
 
-        Args:            
+        Args:
             cov_matrix: 6 x 6 covariance matrix.
             centroid: 6 x 1 centroid vector.
             kin_energy: Synchronous particle kinetic energy [GeV].
@@ -105,7 +106,7 @@ class Envelope:
 
     @property
     def sc_factor(self) -> float:
-        return 2.0 * self.intensity * self.classical_radius / (self.beta ** 2 * self.gamma ** 3)
+        return 2.0 * self.intensity * self.classical_radius / (self.beta**2 * self.gamma**3)
 
     def rms(self, axis: int | None = None) -> float | np.ndarray:
         return np.sqrt(np.diag(self.cov_matrix))[axis]
@@ -144,8 +145,12 @@ class Envelope:
         phi = -0.5 * math.atan2(2.0 * cov_xy, cov_xx - cov_yy)
         sin_phi = math.sin(phi)
         cos_phi = math.cos(phi)
-        rx = 2.0 * math.sqrt(abs(cov_xx * cos_phi**2 + cov_yy * sin_phi**2 - 2.0 * cov_xy * sin_phi * cos_phi))
-        ry = 2.0 * math.sqrt(abs(cov_xx * sin_phi**2 + cov_yy * cos_phi**2 + 2.0 * cov_xy * sin_phi * cos_phi))
+        rx = 2.0 * math.sqrt(
+            abs(cov_xx * cos_phi**2 + cov_yy * sin_phi**2 - 2.0 * cov_xy * sin_phi * cos_phi)
+        )
+        ry = 2.0 * math.sqrt(
+            abs(cov_xx * sin_phi**2 + cov_yy * cos_phi**2 + 2.0 * cov_xy * sin_phi * cos_phi)
+        )
 
         bunch_length = self.rms_bunch_length_factor * math.sqrt(cov_matrix[4, 4])
         factor = 2.0 * self.sc_factor * length / (bunch_length * (rx + ry))
@@ -178,11 +183,13 @@ class Envelope:
         eigenvalues, eigenvectors = np.linalg.eigh(cov_position)
         cov_xx, cov_yy, cov_zz = eigenvalues
 
-        strengths = np.array([
-            scipy.special.elliprd(cov_yy, cov_zz, cov_xx),
-            scipy.special.elliprd(cov_xx, cov_zz, cov_yy),
-            scipy.special.elliprd(cov_xx, cov_yy, cov_zz),
-        ])
+        strengths = np.array(
+            [
+                scipy.special.elliprd(cov_yy, cov_zz, cov_xx),
+                scipy.special.elliprd(cov_xx, cov_zz, cov_yy),
+                scipy.special.elliprd(cov_xx, cov_yy, cov_zz),
+            ]
+        )
         strengths *= 0.5 * self.sc_factor * (0.2**1.5) * length
 
         # Rotate out of upright frame.

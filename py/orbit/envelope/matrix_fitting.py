@@ -7,6 +7,7 @@ import numpy as np
 from orbit.core.bunch import Bunch
 from orbit.core.orbit_utils import Matrix
 from orbit.core.teapot_base import MatrixGenerator
+
 if TYPE_CHECKING:
     from orbit.lattice import AccLattice
     from orbit.lattice import AccNode

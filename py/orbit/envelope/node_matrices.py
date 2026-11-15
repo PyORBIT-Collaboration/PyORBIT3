@@ -177,7 +177,9 @@ def _matrix_fringe_field(node, envelope: Envelope, part_index: int = -1) -> np.n
 
 
 @get_node_matrix.register(ContinuousLinearFocusingTEAPOT)
-def _matrix_continuous_focusing_teapot(node, envelope: Envelope, part_index: int = -1) -> np.ndarray | None:
+def _matrix_continuous_focusing_teapot(
+    node, envelope: Envelope, part_index: int = -1
+) -> np.ndarray | None:
     length = node.getLength(part_index)
     if length <= 0:
         return None
