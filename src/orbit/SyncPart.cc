@@ -320,10 +320,6 @@ double SyncPart::getMass(){
 	return bunch->getMass();
 }
 
-double SyncPart::getCharge(){
-	return bunch->getCharge();
-}
-
 void SyncPart::readSyncPart(const char* fileName){
 
   //for MPI
