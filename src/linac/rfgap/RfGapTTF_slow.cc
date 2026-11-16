@@ -106,7 +106,13 @@ void RfGapTTF_slow::trackBunch(Bunch* bunch, double frequency, double E0L, doubl
 	double kappa, trans_coeff;
 	double Ekin, dE, p2, p_z2, beta_z, gamma_z, beta_z_out, gamma_z_out;
 	double xp,yp;
-	for(int i = 0, n = bunch->getSize(); i < n; i++){
+	int const n = bunch->getSize();
+  #pragma omp parallel for private( \
+		dE, xp, yp, Ekin, p2, p_z2, beta_z, gamma_z, kappa, Kr, kappa_Kr, \
+		x, y, r, I0, I1, trans_coeff, phase_coeff, phase_in, phase_rf, \
+		sin_phRf, cos_phRf, ttf_t, ttf_s, ttf_tp, ttf_sp, phase_out, \
+	  beta_z_out, d_rp)
+	for(int i = 0; i < n; i++){
 
 		dE = bunch->dE(i);
 		xp = bunch->xp(i);

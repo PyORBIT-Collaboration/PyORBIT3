@@ -1,26 +1,20 @@
 [build-system]
-build-backend = 'mesonpy'
-requires = ['meson-python', "setuptools>=45", "wheel", "setuptools_scm"]
+build-backend = "mesonpy"
+requires = ["meson-python", "setuptools_scm"]
 
 [project]
-name = 'PyORBIT'
+name = "PyORBIT"
 dynamic = ["version"]
-description = 'Use meson-python to build c++ anf python modules.'
-requires-python = '>=3.9'
-#dependencies = [
-#'setuptools',
-#'setuptools-scm'
-#]
+description = "Particle accelerator beam dynamics simulation." 
+requires-python = '>=3.10'
 authors = [
-  {name = 'Alexander Zhukov', email = 'zhukovap@ornl.gov'},
+  {name = "Alexander Zhukov", email = "zhukovap@ornl.gov"},
 ]
-
-
-[tool.setuptools_scm]
 
 [project.optional-dependencies]
-numpy = [
-    "numpy",
-]
+numpy = [ "numpy" ]
+examples = [ "numpy", "scipy", "matplotlib", "pandas" ]
+tests = [ "pytest" ]
 
+[tool.setuptools_scm]
 

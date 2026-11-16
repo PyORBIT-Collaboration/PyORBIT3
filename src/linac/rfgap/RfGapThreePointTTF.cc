@@ -96,7 +96,9 @@ void RfGapThreePointTTF::trackBunch(Bunch* bunch, double dz, double Em, double E
 	double prime_coeff = (beta_in * gamma_in)/(beta_out * gamma_out);
 	double x, y, r, I0,I1, phase_in , phase_out, phase_rf, d_rp;
 	double sin_phRf, cos_phRf;
-	for(int i = 0, n = bunch->getSize(); i < n; i++){
+	int const n = bunch->getSize();
+	#pragma omp parallel for private(x, y, r, I0, I1, phase_in, phase_rf, sin_phRf, cos_phRf, phase_out, d_rp)
+	for(int i = 0; i < n; i++){
     x = bunch->x(i);
     y = bunch->y(i);
     r = sqrt(x * x + y * y);

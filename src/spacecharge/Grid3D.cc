@@ -19,6 +19,8 @@
 
 #include "Grid3D.hh"
 
+#include "orbit_openmp.hh"
+
 #include <iostream>
 
 using namespace OrbitUtils;
@@ -70,27 +72,27 @@ double** Grid3D::getSlice2D(int zInd){return Arr3D[zInd];}
 Grid2D* Grid3D::getGrid2D(int zInd){return grid2dArr[zInd];}
 
 /** Returns the grid size in x-direction */
-int Grid3D::getSizeX(){
+int Grid3D::getSizeX() const{
 	return nX_;
 }
 
 /** Returns the grid size in y-direction */
-int Grid3D::getSizeY(){
+int Grid3D::getSizeY() const{
 	return nY_;
 }
 
 /** Returns the grid size in z-direction */
-int Grid3D::getSizeZ(){
+int Grid3D::getSizeZ() const{
 	return nZ_;
 }
 
 /** Returns the grid point x-coordinate for this index. */
-double Grid3D::getGridX(int index){
+double Grid3D::getGridX(int index) const{
 	return xMin_ + index*dx_;
 }
 
 /** Returns the grid point y-coordinate for this index. */
-double Grid3D::getGridY(int index){
+double Grid3D::getGridY(int index) const{
 	return yMin_ + index*dy_;
 }
 
@@ -100,42 +102,42 @@ double Grid3D::getGridY(int index){
 	We redefined it to allow the periodicity
 	along the longitudinal coordinate in the beam.
 */
-double Grid3D::getGridZ(int index){
+double Grid3D::getGridZ(int index) const{
 	return zMin_ + (index+0.5)*dz_;
 }
 
 /** Returns the grid step along x-axis */
-double Grid3D::getStepX(){
+double Grid3D::getStepX() const{
 	return dx_;
 }
 
 /** Returns the grid step along y-axis */
-double Grid3D::getStepY(){
+double Grid3D::getStepY() const{
 	return dy_;
 }
 
 /** Returns the grid step along z-axis */
-double Grid3D::getStepZ(){
+double Grid3D::getStepZ() const{
 	return dz_;
 }
 
 /** Returns the max x in the grid points */
-double Grid3D::getMaxX(){return xMax_;};
+double Grid3D::getMaxX() const{return xMax_;};
 
 /** Returns the min x in the grid points */
-double Grid3D::getMinX(){return xMin_;};
+double Grid3D::getMinX() const{return xMin_;};
 
 /** Returns the max y in the grid points */
-double Grid3D::getMaxY(){return yMax_;};
+double Grid3D::getMaxY() const{return yMax_;};
 
 /** Returns the min y in the grid points */
-double Grid3D::getMinY(){return yMin_;};
+double Grid3D::getMinY() const{return yMin_;};
 
 /** Returns the max z in the grid points */
-double Grid3D::getMaxZ(){return zMax_;};
+double Grid3D::getMaxZ() const{return zMax_;};
 
 /** Returns the min z in the grid points */
-double Grid3D::getMinZ(){return zMin_;};
+double Grid3D::getMinZ() const{return zMin_;};
 
 /** Sets the limits for the x-grid */
 void Grid3D::setGridX(double xMin, double xMax){
@@ -209,14 +211,14 @@ void Grid3D::multiply(double coeff)
   }
 }
 
-void Grid3D::getIndAndFracX(double x, int& ind, double& frac){
+void Grid3D::getIndAndFracX(double x, int& ind, double& frac) const{
    ind  = int ( (x - xMin_)/dx_ + 0.5 );
    if(ind < 1) ind = 1;
    if(ind > (nX_-2)) ind = nX_ - 2;
    frac = (x - (xMin_ + ind*dx_))/dx_;
 }
 
-void Grid3D::getIndAndFracY(double y, int& ind, double& frac){
+void Grid3D::getIndAndFracY(double y, int& ind, double& frac) const{
    ind  = int ( (y - yMin_)/dy_ + 0.5 );
    if(ind < 1) ind = 1;
    if(ind > (nY_-2)) ind = nY_ - 2;
@@ -225,7 +227,7 @@ void Grid3D::getIndAndFracY(double y, int& ind, double& frac){
 
 void Grid3D::getGridIndAndFrac(double x, int& xInd, double& xFrac,
 	double y, int& yInd, double& yFrac,
-	double z, int& zInd, double& zFrac)
+	double z, int& zInd, double& zFrac) const
 {
   this->getIndAndFracX( x, xInd, xFrac);
   this->getIndAndFracY( y, yInd, yFrac);
@@ -273,6 +275,12 @@ double Grid3D::getValueOnGrid(int ix, int iy, int iz){
 	return Arr3D[iz][ix][iy];
 }
 
+std::size_t Grid3D::array_index(int iz, int ix, int iy) const
+{ 
+  return nX_*nY_*iz + nY_*ix + iy; 
+}
+
+
 /**
 	Bins the Bunch into the 3D grid. If bunch has a macrosize particle attribute it will be used.
 	This method will wrap the bunch particles in the longitudonal directions if
@@ -292,8 +300,41 @@ void Grid3D::binBunch(Bunch* bunch,double lambda){
 			if(longWrapping != 0) z = remainder(z,lambda);
 			this->binValue(m_size,part_coord_arr[i][0],part_coord_arr[i][2],z);
 		}
-		return;
-	}
+	} else {
+#ifdef WITH_OPENMP
+    double const m_size = bunch->getMacroSize();
+    int const nPart = bunch->getSize();
+
+    #pragma omp parallel
+    {
+      int const nthreads = orbit_omp_get_num_threads();
+      int const ithread  = orbit_omp_get_thread_num();
+      #pragma omp single
+      {
+        if(rho.size() < nthreads*nX_*nY_*nZ_)
+          rho.resize(nthreads*nX_*nY_*nZ_);
+      }
+
+      std::fill(rho.begin() + ithread*nX_*nY_*nZ_, rho.begin() + (ithread+1)*nX_*nY_*nZ_, 0);
+
+      #pragma omp for
+      for(int i = 0; i < nPart; i++){
+        double z = part_coord_arr[i][4];
+        if(longWrapping != 0) z = remainder(z,lambda);
+        this->binValue(&rho.at(ithread*nX_*nY_*nZ_), m_size,part_coord_arr[i][0],part_coord_arr[i][2],z);
+      }
+
+      #pragma omp for
+      for(int iz = 0; iz < nZ_; ++iz) {
+        for(int ix = 0; ix < nX_; ++ix) {
+          for(int iy = 0; iy < nY_; ++iy) {
+            for(int i = 0; i < nthreads; ++i)
+              Arr3D[iz][ix][iy] += rho[i*nX_*nY_*nZ_ + array_index(iz,ix,iy)];
+          }
+        }
+      }
+    }
+#else
 	double m_size = bunch->getMacroSize();
 	int nParts = bunch->getSize();
 	for(int i = 0; i < nParts; i++){
@@ -301,6 +342,8 @@ void Grid3D::binBunch(Bunch* bunch,double lambda){
 		if(longWrapping != 0) z = remainder(z,lambda);
 		this->binValue(m_size,part_coord_arr[i][0],part_coord_arr[i][2],z);
 	}
+#endif
+  }
 }
 
 
@@ -308,6 +351,124 @@ void Grid3D::binBunch(Bunch* bunch,double lambda){
 void Grid3D::binBunch(Bunch* bunch){
 	longWrapping = 0;
 	this->binBunch(bunch,0.);
+}
+
+void Grid3D::binValue(double* arr, double macroSize, double x, double y, double z) const
+{
+	if(x < xMin_ || x > xMax_ || y < yMin_ || y > yMax_ || z < zMin_ || z > zMax_) return;
+  int iX, iY, iZ;
+  double xFrac, yFrac, zFrac;
+  getGridIndAndFrac(x, iX, xFrac, y, iY, yFrac, z, iZ, zFrac);
+
+  //Calculate interpolation weight and indexes
+  double Wxm,Wx0,Wxp,Wym,Wy0,Wyp;
+  double Wzm,Wz0,Wzp;
+  Wzm = Wz0 = Wzp = 0.0;
+
+  Wxm = 0.5 * (0.5 - xFrac) * (0.5 - xFrac);
+  Wx0 = 0.75 - xFrac * xFrac;
+  Wxp = 0.5 * (0.5 + xFrac) * (0.5 + xFrac);
+  Wym = 0.5 * (0.5 - yFrac) * (0.5 - yFrac);
+  Wy0 = 0.75 - yFrac * yFrac;
+  Wyp = 0.5 * (0.5 + yFrac) * (0.5 + yFrac);
+
+  int iZ0 = iZ;
+  int iZm = iZ-1;
+  int iZp = iZ+1;
+  if(iZm < 0) iZm = nZ_ - 1;
+  if(iZp >= nZ_) iZp = 0;
+
+  if( nZ_ >= 3){
+    Wzm = 0.5 * (0.5 - zFrac) * (0.5 - zFrac);
+    Wz0 = 0.75 - zFrac * zFrac;
+    Wzp = 0.5 * (0.5 + zFrac) * (0.5 + zFrac);
+  }
+  if( nZ_ == 2){
+    Wzm = 1.0 - zFrac; // for zInd=0
+    Wz0 = 0.0;
+    Wzp = zFrac;       // for zInd=1
+  }
+
+  //Add weight of particle to Arr3D
+  double tmp;
+  if( nZ_ >= 3){
+    tmp = Wym * Wzm *macroSize;
+    arr[array_index(iZm, iX-1, iY-1)] += Wxm * tmp;
+    arr[array_index(iZm, iX  , iY-1)] += Wx0 * tmp;
+    arr[array_index(iZm, iX+1, iY-1)] += Wxp * tmp;
+    tmp = Wy0 * Wzm *macroSize;
+    arr[array_index(iZm, iX-1, iY  )] += Wxm * tmp;
+    arr[array_index(iZm, iX  , iY  )] += Wx0 * tmp;
+    arr[array_index(iZm, iX+1, iY  )] += Wxp * tmp;
+    tmp = Wyp * Wzm *macroSize;
+    arr[array_index(iZm, iX-1, iY+1)] += Wxm * tmp;
+    arr[array_index(iZm, iX  , iY+1)] += Wx0 * tmp;
+    arr[array_index(iZm, iX+1, iY+1)] += Wxp * tmp;
+    tmp = Wym * Wz0 *macroSize;
+    arr[array_index(iZ0, iX-1, iY-1)] += Wxm * tmp;
+    arr[array_index(iZ0, iX  , iY-1)] += Wx0 * tmp;
+    arr[array_index(iZ0, iX+1, iY-1)] += Wxp * tmp;
+    tmp = Wy0 * Wz0 *macroSize;
+    arr[array_index(iZ0, iX-1, iY  )] += Wxm * tmp;
+    arr[array_index(iZ0, iX  , iY  )] += Wx0 * tmp;
+    arr[array_index(iZ0, iX+1, iY  )] += Wxp * tmp;
+    tmp = Wyp * Wz0 *macroSize;
+    arr[array_index(iZ0, iX-1, iY+1)] += Wxm * tmp;
+    arr[array_index(iZ0, iX  , iY+1)] += Wx0 * tmp;
+    arr[array_index(iZ0, iX+1, iY+1)] += Wxp * tmp;
+    tmp = Wym * Wzp *macroSize;
+    arr[array_index(iZp, iX-1, iY-1)] += Wxm * tmp;
+    arr[array_index(iZp, iX  , iY-1)] += Wx0 * tmp;
+    arr[array_index(iZp, iX+1, iY-1)] += Wxp * tmp;
+    tmp = Wy0 * Wzp *macroSize;
+    arr[array_index(iZp, iX-1, iY  )] += Wxm * tmp;
+    arr[array_index(iZp, iX  , iY  )] += Wx0 * tmp;
+    arr[array_index(iZp, iX+1, iY  )] += Wxp * tmp;
+    tmp = Wyp * Wzp *macroSize;
+    arr[array_index(iZp, iX-1, iY+1)] += Wxm * tmp;
+    arr[array_index(iZp, iX  , iY+1)] += Wx0 * tmp;
+    arr[array_index(iZp, iX+1, iY+1)] += Wxp * tmp;
+  }
+  if( nZ_ == 2){
+    tmp = Wym * Wzm *macroSize;
+    arr[array_index(0, iX-1, iY-1)] += Wxm * tmp;
+    arr[array_index(0, iX  , iY-1)] += Wx0 * tmp;
+    arr[array_index(0, iX+1, iY-1)] += Wxp * tmp;
+    tmp = Wy0 * Wzm *macroSize;
+    arr[array_index(0, iX-1, iY  )] += Wxm * tmp;
+    arr[array_index(0, iX  , iY  )] += Wx0 * tmp;
+    arr[array_index(0, iX+1, iY  )] += Wxp * tmp;
+    tmp = Wyp * Wzm *macroSize;
+    arr[array_index(0, iX-1, iY+1)] += Wxm * tmp;
+    arr[array_index(0, iX  , iY+1)] += Wx0 * tmp;
+    arr[array_index(0, iX+1, iY+1)] += Wxp * tmp;
+    tmp = Wym * Wzp *macroSize;
+    arr[array_index(1, iX-1, iY-1)] += Wxm * tmp;
+    arr[array_index(1, iX  , iY-1)] += Wx0 * tmp;
+    arr[array_index(1, iX+1, iY-1)] += Wxp * tmp;
+    tmp = Wy0 * Wzp *macroSize;
+    arr[array_index(1, iX-1, iY  )] += Wxm * tmp;
+    arr[array_index(1, iX  , iY  )] += Wx0 * tmp;
+    arr[array_index(1, iX+1, iY ) ] += Wxp * tmp;
+    tmp = Wyp * Wzp *macroSize;
+    arr[array_index(1, iX-1, iY+1)] += Wxm * tmp;
+    arr[array_index(1, iX  , iY+1)] += Wx0 * tmp;
+    arr[array_index(1, iX+1, iY+1)] += Wxp * tmp;
+  }
+  if( nZ_ == 1){
+    tmp = Wym * macroSize;
+    arr[array_index(0, iX-1, iY-1)] += Wxm * tmp;
+    arr[array_index(0, iX  , iY-1)] += Wx0 * tmp;
+    arr[array_index(0, iX+1, iY-1)] += Wxp * tmp;
+    tmp = Wy0 * macroSize;
+    arr[array_index(0, iX-1, iY  )] += Wxm * tmp;
+    arr[array_index(0, iX  , iY  )] += Wx0 * tmp;
+    arr[array_index(0, iX+1, iY  )] += Wxp * tmp;
+    tmp = Wyp * macroSize;
+    arr[array_index(0, iX-1, iY+1)] += Wxm * tmp;
+    arr[array_index(0, iX  , iY+1)] += Wx0 * tmp;
+    arr[array_index(0, iX+1, iY+1)] += Wxp * tmp;
+  }
 }
 
 /** Bins the value into the grid 3D assuming a wrapped longitudinal direction */
@@ -513,7 +674,7 @@ void Grid3D::binValueSlice2D(double macroSize, double x, double y, double z)
 */
 void Grid3D::calcGradient(double x,double& gradX,
 			  double y,double& gradY,
-			  double z,double& gradZ)
+			  double z,double& gradZ) const
 {
   int iX, iY, iZ;
   double xFrac, yFrac, zFrac;
@@ -793,7 +954,7 @@ double Grid3D::calcValueOnY(int iX, int iY, int iZ, double Wym,double Wy0,double
 /** Calculates Gradient from each z-sheet without interpolating in z */
 double Grid3D::calcSheetGradient(int iZ,int iX,int iY,
 				 double xm,double x0,double xp,
-				 double ym,double y0,double yp)
+				 double ym,double y0,double yp) const
 {
   double sheetGradient =
     xm * ym * Arr3D[iZ][iX-1][iY-1] +

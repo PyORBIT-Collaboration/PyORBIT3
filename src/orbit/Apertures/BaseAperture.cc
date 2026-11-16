@@ -155,6 +155,7 @@ void BaseAperture::checkBunch(Bunch* bunch, Bunch* lostbunch){
 	}
 
 	//Loop over all particles in the bunch
+	#pragma parallel for if(lostbunch == NULL)
 	for (int count = 0; count < nParts; count++){
 		//if particle is not inside the shape we remove it from bunch
 		if(apertureShape->inside(bunch,count) != 1){

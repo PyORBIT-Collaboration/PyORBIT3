@@ -1,4 +1,4 @@
-#include "Python.h"
+#include <Python.h>
 
 #ifndef ORBIT_MPI_INCLUDE
 #define ORBIT_MPI_INCLUDE
@@ -8,7 +8,7 @@
 #endif
 
 #if USE_MPI > 0
-  #include "mpi.h"
+  #include <mpi.h>
   #define ORBIT_MPI_IN_PLACE MPI_IN_PLACE
 #else
 //---------------------------------------------------------------
@@ -210,6 +210,10 @@ int ORBIT_MPI_Graph_neighbors(MPI_Comm comm, int rank, int maxneighbors, int *ne
 int ORBIT_MPI_Barrier(MPI_Comm comm);
 int ORBIT_MPI_Wait(MPI_Request  *request, MPI_Status *status);
 int ORBIT_MPI_Allreduce(void* buf_in, void* buf_out, int count, MPI_Datatype, MPI_Op, MPI_Comm);
+int ORBIT_MPI_Gather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                     void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
+int ORBIT_MPI_Allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                         void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm);
 int ORBIT_MPI_Bcast(void* buf, int count, MPI_Datatype, int rank, MPI_Comm);
 int ORBIT_MPI_Send(void* buf, int count, MPI_Datatype, int dest,   int tag, MPI_Comm);
 int ORBIT_MPI_Recv(void* buf, int count, MPI_Datatype, int source, int tag, MPI_Comm, MPI_Status *);

@@ -69,9 +69,9 @@ void BunchTwissAnalysis::analyzeBunch(Bunch* bunch){
 	int has_msize = bunch->hasParticleAttributes("macrosize");
 	if(has_msize > 0){
 		ParticleMacroSize* macroSizeAttr = (ParticleMacroSize*) bunch->getParticleAttributes("macrosize");
-		double m_size = 0.;
+		#pragma omp parallel for reduction(+:total_macrosize) reduction(+:avg_arr[:6]) reduction(+:corr_arr[:36])
 		for(int ip = 0; ip < nParts; ip++){
-			m_size = macroSizeAttr->macrosize(ip);
+			double const m_size = macroSizeAttr->macrosize(ip);
 			total_macrosize += m_size;
 			for(int i = 0; i < 6; i++){
 				avg_arr[i] += m_size*part_coord_arr[ip][i];
@@ -85,6 +85,7 @@ void BunchTwissAnalysis::analyzeBunch(Bunch* bunch){
 		}
 	} else {
 		m_size = 1.0;
+		#pragma omp parallel for reduction(+:avg_arr[:6]) reduction(+:corr_arr[:36])
 		for(int ip = 0; ip < nParts; ip++){
 			for(int i = 0; i < 6; i++){
 				avg_arr[i] += part_coord_arr[ip][i];

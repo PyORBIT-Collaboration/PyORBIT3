@@ -1,0 +1,35 @@
+BasedOnStyle: LLVM
+
+IndentWidth: 4
+ContinuationIndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+
+BreakBeforeBraces: Allman
+AllowShortBlocksOnASingleLine: Never
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+
+PointerAlignment: Left
+ReferenceAlignment: Left
+DerivePointerAlignment: false
+AccessModifierOffset: -4
+NamespaceIndentation: None
+IndentCaseLabels: true
+
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+# The matching implementation header automatically receives priority 0.
+IncludeCategories:
+  # Known third-party headers, whether quoted or enclosed in angle brackets.
+  - Regex: '^[<"](Python\.h|structmember\.h|numpy/[^">]+|mpi\.h|fftw3\.h)[">]$'
+    Priority: 2
+  # Standard library and system headers.
+  - Regex: '^<.*>$'
+    Priority: 1
+  # Project/local headers.
+  - Regex: '.*'
+    Priority: 3
+ReflowComments: false

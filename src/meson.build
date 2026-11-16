@@ -13,8 +13,24 @@ base = meson.current_source_dir() + '/core'
 dependencies = []
 
 dependencies += python.dependency()
-dependencies += dependency('fftw3', version: '>= 3.0.0', required: true)
+dep_fftw = dependency('fftw3', version: '>= 3.0.0', required: true)
+dependencies += dep_fftw
 
+# Enable OpenMP if available
+use_openmp = get_option('USE_OPENMP')
+dep_openmp = dependency('openmp', required: use_openmp)
+
+if use_openmp
+  add_global_arguments('-DWITH_OPENMP', language : 'cpp')
+  dependencies += dep_openmp
+endif
+
+# Enable OpenMP if requested
+if get_option('USE_FFTW_THREADS')
+  add_global_arguments('-DWITH_FFTW3_THREADS', language : 'cpp')
+  dep_fftw_threads = cpp.find_library('fftw3_threads', dirs: [dep_fftw.get_variable('libdir')])
+  dependencies += dep_fftw_threads
+endif
 # Detecting if MPICH or OPENMPI are installed and enabling support if present
 
 
@@ -187,7 +203,7 @@ sources = files([
 	'spacecharge/wrap_grid3D.cc',
 	'spacecharge/BaseBoundary2D.cc',
 	'spacecharge/wrap_grid2D.cc',
-	'spacecharge/wrap_spacechargecalc_unif_ellipse.cc',
+	'spacecharge/wrap_spacechargecalc_uniform_ellipse.cc',
 	'spacecharge/wrap_spacechargecalc3d.cc',
 	'spacecharge/UniformEllipsoidFieldCalculator.cc',
 	'spacecharge/wrap_spacechargeforcecalc2p5d.cc',
@@ -247,7 +263,8 @@ sources = files([
 	'teapot/wrap_teapotbase.cc',
 	'teapot/wrap_matrix_generator.cc',
 	'teapot/teapotbase.cc',
-	'teapot/MatrixGenerator.cc'
+	'teapot/MatrixGenerator.cc',
+	'openmp/orbit_openmp.cc'
 ])
 inc = include_directories([
     'main',
@@ -256,6 +273,7 @@ inc = include_directories([
     'utils/ellipticalint',
     'teapot',
     'mpi',
+	'openmp',
     'orbit/ParticlesAttributes',
     'orbit/Errors',
     'orbit/FieldTracker',
