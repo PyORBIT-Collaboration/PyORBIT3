@@ -42,10 +42,11 @@ class TeapotFoilNode(DriftTEAPOT):
         bunch = paramsDict["bunch"]
         if self.scatterChoice == 0:
             self.foil.traverseFoilFullScatter(bunch, paramsDict["lostbunch"])
-        elif self.scatterChoice == 2:
-            self.foil.traverseFoilGeometricalScatter(bunch)
-        else:
+        elif self.scatterChoice == 1:
             self.foil.traverseFoilSimpleScatter(bunch)
+        else:
+            self.foil.traverseFoilGeometricalScatter(bunch)
+
 
     def setScatterChoice(self, choice):
         self.scatterChoice = choice
