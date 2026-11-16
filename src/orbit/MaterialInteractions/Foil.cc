@@ -45,7 +45,7 @@ Foil::Foil(double xmin, double xmax, double ymin, double ymax, double thick): Cp
 	length_ = 0.0;
 	ma_ = 0;
 	nHits = 0;
-    nLost = 0;
+	nLost = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -149,6 +149,26 @@ void Foil::traverseFoilSimpleScatter(Bunch* bunch){
 		}
 	}
 
+}
+
+void Foil::traverseFoilGeometricalScatter(Bunch* bunch)
+{
+
+    bunch->compress();
+
+    const int nParts = bunch->getSize();
+    double** coords = bunch->coordArr();
+    int hitsThisPass = 0;
+
+    #pragma omp parallel for reduction(+:hitsThisPass) schedule(static)
+    for (int ip =0; ip < nParts; ++ip){
+        //coordinate order: x, xp, y, yp, z, dE
+        if (checkFoilFlag(coords[ip][0], coords[ip][2]) == 1){
+            ++hitsThisPass;
+            }
+        }
+
+    nHits += hitsThisPass;
 }
 
 
@@ -621,6 +641,6 @@ void Foil::loseParticle(Bunch* bunch, Bunch* lostbunch, int ip, int& nLost, int&
 //
 ///////////////////////////////////////////////////////////////////////////
 
-int Foil::getnHits(){
+int Foil::getnHits() const {
 	return nHits;
 }

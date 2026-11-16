@@ -127,7 +127,7 @@ print("Stop.")
 
 def test_getnHits_counts_and_accumulates():
     foil_node = TeapotFoilNode(-0.1, 0.1, -0.1, 0.1, 400)
-    foil_node.setScatterChoice(1)  # Simple scattering
+    foil_node.setScatterChoice(2)  # Simple scattering
 
     bunch = Bunch()
     bunch.mass(0.93827231)
@@ -151,6 +151,7 @@ def test_getnHits_counts_and_accumulates():
     foil_node.track(params)
     print(f"After tracking a second time:{foil_node.getnHits()}")
     assert foil_node.getnHits() == 4
+
 
 os.remove("mainbunch.dat")
 os.remove("lostbunch.dat")

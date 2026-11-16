@@ -31,7 +31,7 @@ class TeapotFoilNode(DriftTEAPOT):
         self.foil = Foil(xmin, xmax, ymin, ymax, thick)
         self.setType("foil teapot")
         self.setLength(0.0)
-        # The user choice of scattering routine. Defualt (0) is full scatter
+        # Scattering routine: 0 = full (default), 1 = simple, 2 = geometrical.
         self.scatterChoice = 0
 
     def track(self, paramsDict):
@@ -40,9 +40,10 @@ class TeapotFoilNode(DriftTEAPOT):
         """
         length = self.getLength(self.getActivePartIndex())
         bunch = paramsDict["bunch"]
-        lostbunch = paramsDict["lostbunch"]
         if self.scatterChoice == 0:
-            self.foil.traverseFoilFullScatter(bunch, lostbunch)
+            self.foil.traverseFoilFullScatter(bunch, paramsDict["lostbunch"])
+        elif self.scatterChoice == 2:
+            self.foil.traverseFoilGeometricalScatter(bunch)
         else:
             self.foil.traverseFoilSimpleScatter(bunch)
 

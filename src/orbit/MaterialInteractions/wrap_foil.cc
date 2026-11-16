@@ -80,6 +80,33 @@ extern "C" {
 		return Py_None;
 	}
 
+      /** Counts foil hits without modifying particle coordinates. */
+    static PyObject* Foil_traverseFoilGeometricalScatter(
+        PyObject* self, PyObject* pyBunch)
+    {
+
+        PyObject* bunchType = wrap_orbit_bunch::getBunchType("Bunch");
+
+        if (bunchType == NULL) {
+            return NULL;
+        }
+
+        // Validate the object before accessing its C++ pointer.
+        if (!PyObject_TypeCheck(pyBunch, (PyTypeObject*)bunchType)) {
+            PyErr_SetString(
+                PyExc_TypeError,
+                "traverseFoilGeometricalScatter expects a Bunch"
+            );
+            return NULL;
+        }
+
+        Foil* cpp_Foil = (Foil*)((pyORBIT_Object*)self)->cpp_obj;
+        Bunch* cpp_bunch = (Bunch*)((pyORBIT_Object*)pyBunch)->cpp_obj;
+        cpp_Foil->traverseFoilGeometricalScatter(cpp_bunch);
+
+        Py_RETURN_NONE;
+    }
+
     /** Returns the accumulated number of foil hits. */
     static PyObject* Foil_getnHits(PyObject *self, PyObject *args){
         Foil* cpp_Foil = (Foil*)((pyORBIT_Object*) self)->cpp_obj;
@@ -102,6 +129,7 @@ extern "C" {
 	static PyMethodDef FoilClassMethods[] = {
 		{ "traverseFoilFullScatter", Foil_traverseFoilFullScatter, METH_VARARGS,"Performs the foil scatter of the bunch."},
 		{ "traverseFoilSimpleScatter", Foil_traverseFoilSimpleScatter, METH_VARARGS,"Performs the foil scatter of the bunch."},
+        { "traverseFoilGeometricalScatter", Foil_traverseFoilGeometricalScatter, METH_O, "Counts particles inside the foil without scattering."},
         {"getnHits", Foil_getnHits, METH_NOARGS, "Returns the accumulated number of foil hits. "},
    {NULL}
   	};
