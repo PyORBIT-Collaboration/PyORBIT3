@@ -16,6 +16,10 @@ NB:
 1. The use of Twiss weights makes transport matrices more accurate.
 2. The RF gaps should be MatrixRfGap. They are linear transport matrices.
 3. The apertures are added to the lattice.
+4. User can try 38 mA peak current to see the difference in the longitudinal
+   direction because of space charge presence
+5. User can try HEBT1-HEBT2 and see the difference in the longitudinal
+   direction because of dispersion presence in HEBT2
 """
 
 import sys
@@ -60,7 +64,7 @@ random.seed(100)
 py_orbit_sns_home = os.path.abspath("..")
 
 names = ["HEBT1", "HEBT2"]
-#names = ["HEBT1",]
+names = ["HEBT1",]
 
 # ---- the XML file name with the structure
 xml_file_name = py_orbit_sns_home + "/sns_linac_xml/sns_linac.xml"
@@ -192,9 +196,10 @@ bunch_gen = SNS_Linac_BunchGenerator(twissX, twissY, twissZ)
 bunch_gen.setKinEnergy(e_kin_ini)
 
 # set the beam peak current in mA
-bunch_gen.setBeamCurrent(38.0)
+#bunch_gen.setBeamCurrent(38.0)
+bunch_gen.setBeamCurrent(0.0)
 
-bunch_in = bunch_gen.getBunch(nParticles=10000, distributorClass=WaterBagDist3D)
+bunch_in = bunch_gen.getBunch(nParticles=1000, distributorClass=WaterBagDist3D)
 # bunch_in = bunch_gen.getBunch(nParticles = 100000, distributorClass = GaussDist3D)
 # bunch_in = bunch_gen.getBunch(nParticles = 10000, distributorClass = KVDist3D)
 
@@ -306,6 +311,14 @@ print("time[sec]=", time_exec)
 
 file_out.close()
 
+#---- The final betatron phase advances after beta-functions integrations
+#---- final_beta_integr_phase_adv_arr = [phase_adv_x,phase_adv_y,phase_adv_z]
+final_beta_integr_phase_adv_arr = []
+for ind in range(3):
+    func = phase_adv_func_arr[ind]
+    phase_adv = func.y(func.getSize()-1)
+    final_beta_integr_phase_adv_arr.append(phase_adv)
+    
 #-----------------------------------------------------------------------------
 #---- FINAL STEP. Tracking the bunch through transport matrices.
 #---- print out (and write to the file) the determinant of the transport 
@@ -338,3 +351,24 @@ for trMtrx_ind in range(len(trMatrices)):
 file_out.close()
 
 print ("debug test remove all nodes = ",trMatricesGenerator.removeAllNodes())
+
+#---- The final betatron phase advances after transport matrix tracking
+#---- final_tr_mtrx_phase_adv_arr = [phase_adv_x,phase_adv_y,phase_adv_z]
+final_tr_mtrx_phase_adv_arr = phase_adv_arr
+
+#---- Difference between two methods
+diff2 = 0.
+for ind in range(3):
+    phase_adv_1 = final_tr_mtrx_phase_adv_arr[ind]
+    phase_adv_0 = final_beta_integr_phase_adv_arr[ind]
+    diff2 += (phase_adv_1 - phase_adv_0)**2
+diff = math.sqrt(diff2)
+
+print ("final_tr_mtrx_phase_adv_arr=",final_tr_mtrx_phase_adv_arr)
+print ("inal_beta_integr_phase_adv_arr=",final_beta_integr_phase_adv_arr)
+print ("average diff=",diff)
+
+if(diff > 1.0):
+    sys.exit(1)
+else:
+    sys.exit(0)
