@@ -43,38 +43,25 @@ class Envelope:
 
     def __init__(
         self,
-        cov_matrix: np.ndarray | None = None,
-        centroid: np.ndarray | None = None,
-        kin_energy: float | None = None,
-        mass: float | None = None,
+        cov_matrix: np.ndarray,
+        kin_energy: float,
+        mass: float,
         charge: float = 1.0,
         time: float = 0.0,
         intensity: float = 0.0,
-        bunch: Bunch | None = None,
+        centroid: np.ndarray | None = None,
     ) -> None:
         """Constructor.
 
         Args:
             cov_matrix: 6 x 6 covariance matrix.
-            centroid: 6 x 1 centroid vector.
+            centroid: 6 x 1 centroid vector. Defaults to zero.
             kin_energy: Synchronous particle kinetic energy [GeV].
             mass: Particle mass [GeV / c^2].
             charge: Particle charge [e].
             time: Synchronous particle time [s].
             intensity: Total number of particles in bunch.
-            bunch: If provided, the parameters above are calculated
-                from the bunch parameters and macroparticle coordiantes.
         """
-        if bunch is not None:
-            cov_matrix = get_bunch_covariance(bunch)
-            centroid = get_bunch_centroid(bunch)
-            mass = bunch.mass()
-            charge = bunch.charge()
-            sync_part = bunch.getSyncParticle()
-            kin_energy = sync_part.kinEnergy()
-            time = sync_part.time()
-            intensity = bunch.macroSize() * bunch.getSizeGlobal()
-
         self.centroid = np.zeros(6) if centroid is None else centroid
         self.cov_matrix = np.eye(6) if cov_matrix is None else cov_matrix
         self.kin_energy = kin_energy
@@ -84,6 +71,20 @@ class Envelope:
         self.intensity = intensity
         self.classical_radius = get_classical_radius(self.charge, self.mass)
         self.rms_bunch_length_factor = RMS_BUNCH_LENGTH_FACTOR
+
+    @classmethod
+    def from_bunch(cls, bunch: Bunch) -> "Envelope":
+        """Snapshot the bunch moments and reference state without retaining it."""
+        sync_part = bunch.getSyncParticle()
+        return cls(
+            cov_matrix=get_bunch_covariance(bunch),
+            centroid=get_bunch_centroid(bunch),
+            kin_energy=sync_part.kinEnergy(),
+            mass=bunch.mass(),
+            charge=bunch.charge(),
+            time=sync_part.time(),
+            intensity=bunch.macroSize() * bunch.getSizeGlobal(),
+        )
 
     def copy(self) -> "Envelope":
         return copy.deepcopy(self)
