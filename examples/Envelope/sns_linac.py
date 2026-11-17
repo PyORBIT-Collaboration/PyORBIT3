@@ -193,7 +193,7 @@ class BunchMonitor:
         params_dict["old_pos"] = position
         params_dict["count"] += 1
 
-        analysis = EnvelopeAnalysis(Envelope(bunch=bunch))
+        analysis = EnvelopeAnalysis(Envelope.from_bunch(bunch))
         results = {"s": position, **analysis.to_dict()}
         for key in self.history:
             self.history[key].append(results[key])
@@ -220,7 +220,7 @@ def main(args: argparse.Namespace) -> None:
 
     # Track envelope
     bunch = make_bunch(args)
-    envelope = Envelope(bunch=bunch)
+    envelope = Envelope.from_bunch(bunch)
 
     lattice = make_lattice(args)
     lattice.trackDesignBunch(bunch)

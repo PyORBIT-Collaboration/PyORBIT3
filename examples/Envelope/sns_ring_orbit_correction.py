@@ -48,7 +48,7 @@ def main(args: argparse.Namespace) -> None:
     lattice.initialize()
 
     def closed_orbit() -> tuple[np.ndarray, np.ndarray, float]:
-        beam = Envelope(kin_energy=1.3, mass=mass_proton)
+        beam = Envelope(cov_matrix=np.eye(6), kin_energy=1.3, mass=mass_proton)
         matrix = lattice.trackEnvelope(beam.copy(), fit=False, return_matrix=True)
         beam.centroid[:4] = np.linalg.solve(np.eye(4) - matrix[:4, :4], matrix[:4, 6])
         initial = beam.centroid.copy()

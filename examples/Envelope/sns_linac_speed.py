@@ -107,7 +107,7 @@ def main(args: argparse.Namespace) -> None:
     lattice = make_lattice(args)
     bunch = make_bunch(args)
     lattice.trackDesignBunch(bunch)
-    envelope = Envelope(bunch=bunch)
+    envelope = Envelope.from_bunch(bunch)
 
     profiler = cProfile.Profile()
     profiler.enable()
