@@ -31,6 +31,39 @@ from orbit.teapot import TEAPOT_Lattice
 from orbit.utils.consts import mass_proton
 
 
+def test_envelope_from_bunch():
+    bunch = Bunch()
+    bunch.mass(2 * mass_proton)
+    bunch.charge(-1)
+    bunch.getSyncParticle().kinEnergy(.1)
+    bunch.getSyncParticle().time(1.25)
+    bunch.macroSize(100)
+    coords = np.random.default_rng(42).normal(size=(20, 6)) * 1e-3
+    coords += np.arange(6) * 1e-3
+    for row in coords:
+        bunch.addParticle(*row)
+
+    envelope = Envelope.from_bunch(bunch)
+    np.testing.assert_allclose(envelope.centroid, coords.mean(axis=0), atol=1e-15)
+    np.testing.assert_allclose(envelope.cov_matrix, calc_bunch_cov(bunch), atol=1e-15)
+    assert envelope.mass == bunch.mass()
+    assert envelope.charge == -1
+    assert envelope.kin_energy == pytest.approx(.1)
+    assert envelope.time == 1.25
+    assert envelope.intensity == 100 * bunch.getSizeGlobal()
+
+    bunch.getSyncParticle().kinEnergy(.2)
+    bunch.getSyncParticle().time(2.5)
+    bunch.mass(mass_proton)
+    bunch.charge(1)
+    bunch.x(0, 10)
+    assert envelope.kin_energy == pytest.approx(.1)
+    assert envelope.time == 1.25
+    assert envelope.mass == 2 * mass_proton
+    assert envelope.charge == -1
+    np.testing.assert_allclose(envelope.centroid, coords.mean(axis=0), atol=1e-15)
+
+
 def get_lorentz_factors(kin_energy: float, mass: float) -> tuple[float, float]:
     gamma = 1.0 + kin_energy / mass
     beta = np.sqrt(1.0 - (1.0 / gamma) ** 2)
@@ -109,7 +142,7 @@ def track_and_compare_rms(
     # Covariance matrix calculated from particles will be slightly different.
     cov_matrix = calc_bunch_cov(bunch)
 
-    envelope = Envelope(bunch=bunch).copy()
+    envelope = Envelope.from_bunch(bunch).copy()
     data["bunch"]["cov"]["in"] = cov_scale * calc_bunch_cov(bunch)
     lattice.trackBunch(bunch)
     data["bunch"]["cov"]["out"] = cov_scale * calc_bunch_cov(bunch)
@@ -238,7 +271,7 @@ def test_bend_teapot_edge_matrix(charge: float):
     bunch.getSyncParticle().kinEnergy(1.3)
 
     matrix_fit = fit_lattice_matrix(lattice, bunch)
-    envelope = Envelope(bunch=bunch)
+    envelope = Envelope.from_bunch(bunch)
     matrix_analytic = lattice.trackEnvelope(envelope.copy(), fit=False, return_matrix=True)
     assert np.allclose(matrix_analytic, matrix_fit, atol=1.0e-10)
 
@@ -258,7 +291,7 @@ def test_fitted_envelope_matrices():
     bunch.getSyncParticle().kinEnergy(1.3)
 
     matrix_expected = fit_lattice_matrix(lattice, bunch)
-    envelope = Envelope(bunch=bunch)
+    envelope = Envelope.from_bunch(bunch)
     matrix_actual = lattice.trackEnvelope(envelope.copy(), return_matrix=True, fit=True)
     assert np.allclose(matrix_actual, matrix_expected, atol=1.0e-12)
 
@@ -348,7 +381,7 @@ def test_rf_gap_matrix(charge: float):
 
     coords_out_1 = collect_bunch(bunch_out_1)["coords"]
 
-    reference = Envelope(bunch=bunch_in)
+    reference = Envelope.from_bunch(bunch_in)
     matrix = get_matrix_rf_gap(
         reference,
         frequency=frequency,
@@ -469,7 +502,7 @@ def test_edge_bends_with_fringe(kind, fringe_in, fringe_out, static, theta, char
     for coord in coords:
         bunch.addParticle(*coord)
 
-    envelope = Envelope(bunch=bunch)
+    envelope = Envelope.from_bunch(bunch)
 
     expected = fit_lattice_matrix(lattice, bunch)
     actual = lattice.trackEnvelope(
