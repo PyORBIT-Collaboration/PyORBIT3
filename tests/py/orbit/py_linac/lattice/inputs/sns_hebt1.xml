@@ -1,0 +1,153 @@
+<?xml version="1.0" ?>
+<!-- HEBT1 sequence from the SNS linac lattice; kept local for this test. -->
+<sns>
+ <HEBT1 bpmFrequency="4.025E8" length="41.973095" name="HEBT1">
+  <accElement name="HEBT1_START" length="0.0" pos="0.0" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement name="HEBT1_START" length="0.0" pos="0.0" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement name="HEBT1_START" length="0.0" pos="0.0" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.0" name="HEBT1_START" pos="0.0" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.505" name="HEBT_Mag:QV01" pos="1.0" type="QUAD">
+   <parameters aperture="0.12" aprt_type="1" field="4.14"/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Diag:BPM01" pos="1.383197" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Diag:WS01" pos="2.3625" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.505" name="HEBT_Mag:QH02" pos="5.0" type="QUAD">
+   <parameters aperture="0.12" aprt_type="1" field="-4.14"/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Diag:BPM02" pos="5.383197" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Diag:WS02" pos="6.2730" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.505" name="HEBT_Mag:QV03" pos="9.0" type="QUAD">
+   <parameters aperture="0.12" aprt_type="1" field="4.14"/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Diag:BPM03" pos="9.383197" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Diag:WS03" pos="10.2730" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Coll:Scrp01L" pos="12.6965" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Coll:Scrp01R" pos="12.6965" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.505" name="HEBT_Mag:QH04" pos="13.0" type="QUAD">
+   <parameters aperture="0.12" aprt_type="1" field="-4.14"/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Diag:BPM04" pos="13.383197" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Diag:WS04" pos="14.2730" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Coll:Scrp01U" pos="16.6980" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Coll:Scrp01D" pos="16.6980" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.505" name="HEBT_Mag:QV05" pos="17.0" type="QUAD">
+   <parameters aperture="0.12" aprt_type="1" field="4.14"/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Diag:BPM05" pos="17.383197" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Mag:DCV05" pos="17.520192" type="DCV">
+   <parameters B="0.0" effLength="0.33"/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Coll:Scrp02L" pos="20.6610" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Coll:Scrp02R" pos="20.6610" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.505" name="HEBT_Mag:QH06" pos="21.0" type="QUAD">
+   <parameters aperture="0.12" aprt_type="1" field="-4.14"/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Diag:BPM06" pos="21.383197" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Mag:DCH06" pos="21.520192" type="DCH">
+   <parameters B="0.0" effLength="0.33"/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Coll:Scrp02U" pos="24.6980" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Coll:Scrp02D" pos="24.6980" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.505" name="HEBT_Mag:QV07" pos="25.0" type="QUAD">
+   <parameters aperture="0.12" aprt_type="1" field="4.14"/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Diag:BPM07" pos="25.383197" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Mag:DCV07" pos="25.520192" type="DCV">
+   <parameters B="0.0" effLength="0.33"/>
+  </accElement>
+  <accElement length="0.505" name="HEBT_Mag:QH08" pos="29.0" type="QUAD">
+   <parameters aperture="0.12" aprt_type="1" field="-3.54599"/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Diag:BPM08" pos="29.383197" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Mag:DCH08" pos="29.520192" type="DCH">
+   <parameters B="0.0" effLength="0.33"/>
+  </accElement>
+  <accElement length="0.505" name="HEBT_Mag:QV09" pos="33.0" type="QUAD">
+   <parameters aperture="0.12" aprt_type="1" field="3.15906"/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Diag:BPM09" pos="33.383197" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Diag:WS09" pos="34.3625" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.505" name="HEBT_Mag:QH10" pos="37.0" type="QUAD">
+   <parameters aperture="0.12" aprt_type="1" field="-2.94351"/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Diag:BPM10" pos="37.383197" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Diag:EMS_X" pos="39.443" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Diag:EMS_Y" pos="39.443" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.0" name="HEBT_Diag:BPM11" pos="41.116803" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement length="0.505" name="HEBT_Mag:QV11" pos="41.5" type="QUAD">
+   <parameters aperture="0.12" aprt_type="1" field="2.4639"/>
+  </accElement>
+  <accElement length="0.0" name="HEBT1_END" pos="41.973095" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement name="HEBT1_END" length="0.0" pos="41.973095" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement name="HEBT1_END" length="0.0" pos="41.973095" type="MARKER">
+   <parameters/>
+  </accElement>
+  <accElement name="HEBT1_END" length="0.0" pos="41.973095" type="MARKER">
+   <parameters/>
+  </accElement>
+ </HEBT1>
+</sns>
