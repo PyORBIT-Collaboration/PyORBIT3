@@ -25,6 +25,7 @@ from orbit.core.orbit_utils import bunch_utils_functions
 
 from orbit.core.orbit_utils import Matrix
 
+from orbit.core.bunch import BunchTwissAnalysis
 
 class LinacTrMatrixGenNode(MarkerLinacNode):
     """
@@ -36,12 +37,20 @@ class LinacTrMatrixGenNode(MarkerLinacNode):
     coordinates to the final ones that are in the bu
     """
 
-    def __init__(self, trMatricesController, name="TrMatrixGen"):
+    def __init__(self, trMatricesController, name="TrMatrixGen", parent_node = None):
         if name == "TrMatrixGen":
             name += name + ":" + str(trMatricesController.getCount())
         MarkerLinacNode.__init__(self, name)
         self.trMatricesController = trMatricesController
         self.trMtrxNode_ind = trMatricesController.getCount()
+        self.parent_node = parent_node
+        #---------------------------------------
+        #---- self.twiss_arr = [TwissX,TwissY,TwissZ]
+        #---- Twiss X,Y,Z = [alpha, beta, gamma, emittance]
+        self.twiss_arr = [None,None,None]
+        #---- betatron phase advance for x, y, z axis in degrees
+        self.phase_adv_arr = [0.,0.,0.]
+        #---------------------------------------
         self.use_twiss_weight_x = 0
         self.use_twiss_weight_y = 0
         self.use_twiss_weight_z = 0
@@ -90,6 +99,20 @@ class LinacTrMatrixGenNode(MarkerLinacNode):
             self.use_twiss_weight_y = 1
         if use_twiss_weight_z == True:
             self.use_twiss_weight_z = 1
+            
+    def getTwissParams(self,axis_ind):
+        """
+        Returns [alpha, beta, gamma, emittance] for X, Y, or Z axises
+        axis_ind = 0 for X , 1 for Y, 2 for Z
+        """
+        return self.twiss_arr[axis_ind]
+        
+    def getPhaseAdvances(self):
+        """
+        Returns the betatron phase advances list for X, Y, or Z axises 
+        in degrees
+        """
+        return self.phase_adv_arr
 
     def track(self, paramsDict):
         bunch = paramsDict["bunch"]
@@ -106,6 +129,24 @@ class LinacTrMatrixGenNode(MarkerLinacNode):
                 self.use_twiss_weight_y,
                 self.use_twiss_weight_z,
             )
+        #---- self.twiss_arr = [TwissX,TwissY,TwissZ]
+        #---- Twiss X,Y,Z = [alpha, beta, gamma, emittance]
+        mtrx = self.trMtrx
+        twiss_analysis = self.trMatricesController.getTwissAnalysis()
+        twiss_analysis.analyzeBunch(bunch) 
+        for axis_ind in range(3):
+            (alpha, beta, gamma, emittance) = twiss_analysis.getTwiss(axis_ind)
+            self.twiss_arr[axis_ind] = [alpha, beta, gamma, emittance]
+            #---- betatron phase advance in degrees
+            if(self.trMtrxNode_ind != 0):
+                alpha_0 = self.trMatricesController.getNode(0).getTwissParams(axis_ind)[0]
+                beta_0 = self.trMatricesController.getNode(0).getTwissParams(axis_ind)[1]
+                sin_mu = mtrx.get(axis_ind*2,axis_ind*2 + 1)/math.sqrt(beta*beta_0)
+                cos_mu = math.sqrt(beta_0/beta)*mtrx.get(axis_ind*2,axis_ind*2) - alpha_0*sin_mu
+                phase_advance = (180./math.pi)*math.atan2(sin_mu,cos_mu)           
+                self.phase_adv_arr[axis_ind] = phase_advance 
+           
+         
 
     def trackDesign(self, paramsDict):
         """
@@ -185,6 +226,36 @@ class LinacTrMatrixGenNode(MarkerLinacNode):
                 print("m(" + str(i) + "," + str(j) + ")=" + "%12.5g" % m.get(i, j) + " ")
             print(" ")
 
+    def removeFromParent(self):
+        """
+        It removes itself from the parent node.
+        It is used when we do not want to slow down Bunch tracking
+        after we got and processed necessary transport matrix information.
+        """
+        if(self.parent_node == None): return True
+        nodes = self.parent_node.getChildNodes(MarkerLinacNode.ENTRANCE)
+        if(self in nodes):
+            nodes.remove(self)
+            self.parent_node = None
+            return True
+        nodes = self.parent_node.getChildNodes(MarkerLinacNode.EXIT)
+        if(self in nodes):
+            nodes.remove(self)
+            self.parent_node = None
+            return True
+        n_parts = self.parent_node.getnParts()
+        for part_ind in range(n_parts):
+            nodes = self.parent_node.getChildNodes(MarkerLinacNode.BODY,part_ind,MarkerLinacNode.BEFORE)
+            if(self in nodes):
+                nodes.remove(self)
+                self.parent_node = None
+                return True
+            nodes = self.parent_node.getChildNodes(MarkerLinacNode.BODY,part_ind,MarkerLinacNode.AFTER)
+            if(self in nodes):
+                nodes.remove(self)
+                self.parent_node = None
+                return True
+        return False
 
 class LinacTrMatricesController:
     """
@@ -194,6 +265,7 @@ class LinacTrMatricesController:
 
     def __init__(self):
         self.trMatrxNodes = []
+        self.bunchTwissAnalysis = BunchTwissAnalysis()
 
     def getCount(self):
         return len(self.trMatrxNodes)
@@ -206,6 +278,9 @@ class LinacTrMatricesController:
 
     def getNodes(self):
         return self.trMatrxNodes
+        
+    def getTwissAnalysis(self):
+        return self.bunchTwissAnalysis
 
     def init(self):
         # --- place nodes in the right order
@@ -227,7 +302,7 @@ class LinacTrMatricesController:
             nodes.append(node_or_nodes)
         # -----------------------------
         for node in nodes:
-            trMatrxGenNode = LinacTrMatrixGenNode(self, node.getName() + ":trMatrx")
+            trMatrxGenNode = LinacTrMatrixGenNode(self, node.getName() + ":trMatrx", node)
             if(place == MarkerLinacNode.ENTRANCE):
                 node.addChildNode(trMatrxGenNode, place, place_in_part = AccActionsContainer.BEFORE)
             else:
@@ -260,3 +335,19 @@ class LinacTrMatricesController:
         Adds the LinacTrMatrixGenNode to the nodes as child nodes at the exit.
         """
         self.addTrMatrixGenNodes(accLattice, node_or_nodes, MarkerLinacNode.EXIT)
+        
+    def removeAllNodes(self):
+        """
+        Remove all nodes from the lattice using information about parent node
+        inside the LinacTrMatrixGenNode instances.
+        """
+        result = True
+        for trMtrxNode in self.trMatrxNodes[:]:
+            res = trMtrxNode.removeFromParent()
+            if(not res):
+                result = False
+            else:
+                self.trMatrxNodes.remove(trMtrxNode)
+        if(self.getCount() != 0):
+            result = False
+        return result

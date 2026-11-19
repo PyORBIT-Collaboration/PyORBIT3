@@ -1,0 +1,374 @@
+#! /usr/bin/env python
+
+"""
+This script tracks the bunch through HEBT1-HEBT2 (no RF acceleration) and
+calculates different values along the lattice:
+1. Twiss parameters and betatron phase advances for X,Y,Z axes after 
+   integration of 1/twiss_beta along the lattice
+2. Transport matrices and betatron phase advances calculated from 
+   these matrices.
+The results are saved in two files:
+
+hebt_beta_func_phase_adv.dat
+hebt_tr_mtrx_phase_adv.dat
+
+NB:
+1. The use of Twiss weights makes transport matrices more accurate.
+2. The RF gaps should be MatrixRfGap. They are linear transport matrices.
+3. The apertures are added to the lattice.
+4. User can try 38 mA peak current to see the difference in the longitudinal
+   direction because of space charge presence
+5. User can try HEBT1-HEBT2 and see the difference in the longitudinal
+   direction because of dispersion presence in HEBT2
+"""
+
+import sys
+import os
+import math
+import random
+import time
+
+from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
+
+# from linac import the C++ RF gap classes
+from orbit.core.linac import BaseRfGap, MatrixRfGap, RfGapTTF
+
+from orbit.bunch_generators import TwissContainer
+from orbit.bunch_generators import WaterBagDist3D, GaussDist3D, KVDist3D
+
+from orbit.core.bunch import Bunch, BunchTwissAnalysis
+
+from orbit.lattice import AccLattice, AccNode, AccActionsContainer
+
+from orbit.py_linac.lattice_modifications import Add_quad_apertures_to_lattice
+from orbit.py_linac.lattice_modifications import Add_rfgap_apertures_to_lattice
+from orbit.py_linac.lattice_modifications import AddMEBTChopperPlatesAperturesToSNS_Lattice
+from orbit.py_linac.lattice_modifications import AddScrapersAperturesToLattice
+
+# ---- BaseRF_Gap to  AxisFieldRF_Gap replacement  ---- It is a possibility ----------
+from orbit.py_linac.lattice_modifications import Replace_BaseRF_Gap_to_AxisField_Nodes
+
+# we take a SNS Linac Bunch generator from a neighboring directory
+sys.path.append("../pyorbit3_linac_model")
+from sns_linac_bunch_generator import SNS_Linac_BunchGenerator
+
+from orbit.py_linac.lattice import LinacTrMatricesController
+
+from orbit.core.orbit_utils import Matrix
+from orbit.core.orbit_utils import Function
+
+from orbit.utils import phaseNearTargetPhaseDeg
+
+random.seed(100)
+
+py_orbit_sns_home = os.path.abspath("..")
+
+names = ["HEBT1", "HEBT2"]
+names = ["HEBT1",]
+
+# ---- the XML file name with the structure
+xml_file_name = py_orbit_sns_home + "/sns_linac_xml/sns_linac.xml"
+
+# ---- create the factory instance
+sns_linac_factory = SNS_LinacLatticeFactory()
+sns_linac_factory.setMaxDriftLength(0.01)
+
+# ---- make lattice from XML file
+accLattice = sns_linac_factory.getLinacAccLattice(names, xml_file_name)
+
+print("Linac lattice is ready. L=", accLattice.getLength())
+
+# ----set up RF Gap Model -------------
+# ---- There are three available models at this moment
+# ---- BaseRfGap  uses only E0TL*cos(phi)*J0(kr) with E0TL = const
+# ---- MatrixRfGap uses a matrix approach like envelope codes
+# ---- RfGapTTF uses Transit Time Factors (TTF) like PARMILA
+# cppGapModel = BaseRfGap
+cppGapModel = MatrixRfGap
+#cppGapModel = RfGapTTF
+rf_gaps = accLattice.getRF_Gaps()
+for rf_gap in rf_gaps:
+    rf_gap.setCppGapModel(cppGapModel())
+
+# ------------------------------------------------------------------
+# ---- BaseRF_Gap to  AxisFieldRF_Gap direct replacement
+# ---- in the MEBT, CCL, SCLMed,SCLHigh  it could be done directly
+# ---- because rf fields cover drifts only.
+# ---- The DTL needs a special treatment.
+# ------------------------------------------------------------------
+"""
+#---- axis fields files location
+dir_location = "../sns_rf_fields/"
+Replace_BaseRF_Gap_to_AxisField_Nodes(accLattice,dir_location,["MEBT","CCL1","CCL2","CCL3","CCL4","SCLMed"])
+
+print "Linac lattice has been modified. New L[m] = ",accLattice.getLength()
+"""
+
+# -----------------------------------------------------
+# Set up Space Charge Acc Nodes
+# -----------------------------------------------------
+from orbit.space_charge.sc3d import setSC3DAccNodes, setUniformEllipsesSCAccNodes
+from orbit.core.spacecharge import SpaceChargeCalcUnifEllipse, SpaceChargeCalc3D
+
+sc_path_length_min = 0.05
+
+print("Set up Space Charge nodes. ")
+
+# set of uniformly charged ellipses Space Charge
+nEllipses = 1
+calcUnifEllips = SpaceChargeCalcUnifEllipse(nEllipses)
+space_charge_nodes = setUniformEllipsesSCAccNodes(accLattice, sc_path_length_min, calcUnifEllips)
+
+"""
+# set FFT 3D Space Charge
+sizeX = 64
+sizeY = 64
+sizeZ = 64
+calc3d = SpaceChargeCalc3D(sizeX,sizeY,sizeZ)
+space_charge_nodes =  setSC3DAccNodes(accLattice,sc_path_length_min,calc3d)
+"""
+
+max_sc_length = 0.0
+min_sc_length = accLattice.getLength()
+for sc_node in space_charge_nodes:
+    scL = sc_node.getLengthOfSC()
+    if scL > max_sc_length:
+        max_sc_length = scL
+    if scL < min_sc_length:
+        min_sc_length = scL
+print("maximal SC length =", max_sc_length, "  min=", min_sc_length)
+
+print("===== Aperture Nodes START  =======")
+aprtNodes = Add_quad_apertures_to_lattice(accLattice)
+aprtNodes = Add_rfgap_apertures_to_lattice(accLattice, aprtNodes)
+
+"""
+for node in aprtNodes:
+	print "aprt=",node.getName()," pos =",node.getPosition()
+"""
+
+print("===== Aperture Nodes Added =======")
+
+trMatricesGenerator = LinacTrMatricesController()
+
+nodes = accLattice.getNodes()
+parent_tr_mtrx_nodes = []
+for node in nodes:
+    parent_tr_mtrx_nodes.append(node)
+
+trMatrices = trMatricesGenerator.addTrMatrixGenNodes(accLattice, parent_tr_mtrx_nodes)
+
+# ---- The use of Twiss weights makes transport matrices more accurate.
+for trMtrx in trMatrices:
+    trMtrx.setTwissWeightUse(True, True, True)
+
+# -----TWISS Parameters at the entrance of MEBT ---------------
+# transverse emittances are unnormalized and in pi*mm*mrad
+# longitudinal emittance is in pi*eV*sec
+e_kin_ini = 1.000222  # in [GeV]
+mass = 0.939294  # in [GeV]
+gamma = (mass + e_kin_ini) / mass
+beta = math.sqrt(gamma * gamma - 1.0) / gamma
+print("relat. gamma=", gamma)
+print("relat.  beta=", beta)
+frequency = 402.5e6
+v_light = 2.99792458e8  # in [m/sec]
+
+
+print(" ========= PyORBIT Twiss ===========")
+(alphaX, betaX, emittX) = ( 1.4040 ,  5.6534  , 0.1908 * 1.0e-6)
+(alphaY, betaY, emittY) = (-2.3665 , 13.0151  , 0.1544 * 1.0e-6)
+(alphaZ, betaZ, emittZ) = (-16.436 , 169.5695 , 0.4265 * 1.0e-6)
+
+print(" ========= PyORBIT Twiss ===========")
+print(" aplha beta emitt[mm*mrad] X= %6.4f %6.4f %6.4f " % (alphaX, betaX, emittX * 1.0e6))
+print(" aplha beta emitt[mm*mrad] Y= %6.4f %6.4f %6.4f " % (alphaY, betaY, emittY * 1.0e6))
+print(" aplha beta emitt[mm*MeV]  Z= %6.4f %6.4f %6.4f " % (alphaZ, betaZ, emittZ * 1.0e6))
+
+twissX = TwissContainer(alphaX, betaX, emittX)
+twissY = TwissContainer(alphaY, betaY, emittY)
+twissZ = TwissContainer(alphaZ, betaZ, emittZ)
+
+print("Start Bunch Generation.")
+bunch_gen = SNS_Linac_BunchGenerator(twissX, twissY, twissZ)
+
+# set the initial kinetic energy in GeV
+bunch_gen.setKinEnergy(e_kin_ini)
+
+# set the beam peak current in mA
+#bunch_gen.setBeamCurrent(38.0)
+bunch_gen.setBeamCurrent(0.0)
+
+bunch_in = bunch_gen.getBunch(nParticles=1000, distributorClass=WaterBagDist3D)
+# bunch_in = bunch_gen.getBunch(nParticles = 100000, distributorClass = GaussDist3D)
+# bunch_in = bunch_gen.getBunch(nParticles = 10000, distributorClass = KVDist3D)
+
+print("Bunch Generation completed.")
+
+# set up design
+bunch = Bunch()
+bunch_in.copyBunchTo(bunch)
+accLattice.trackDesignBunch(bunch)
+
+print("Design tracking completed.")
+
+# track through the lattice
+paramsDict = {"old_pos": 0.0, "count": 0}
+actionContainer = AccActionsContainer("Test Design Bunch Tracking")
+
+pos_start = 0.0
+
+twiss_analysis = BunchTwissAnalysis()
+
+phase_adv_func_arr = [Function(),Function(),Function()]
+for dir_ind in range(3):
+    phase_adv_func_arr[dir_ind].add(0.,0.)
+
+file_out = open("hebt_beta_func_phase_adv.dat", "w")
+
+s = " Node   position "
+s += "   alphaX betaX emittX  normEmittX"
+s += "   alphaY betaY emittY  normEmittY"
+s += "   alphaZ betaZ emittZ  emittZphiMeV"
+s += "   sizeX[mm] sizeY[mm] sizeZ[mm] sizeZ[deg]"
+s += "   PhaseAdvX[deg] PhaseAdvY[deg] PhaseAdvZ[deg]"
+s += "   eKin Nparts "
+file_out.write(s + "\n")
+print(" N node   position    sizeX  sizeY  sizeZ  sizeZdeg PhaseAdvX PhaseAdvY PhaseAdvZ eKin Nparts ")
+
+
+def action_entrance(paramsDict):
+    node = paramsDict["node"]
+    bunch = paramsDict["bunch"]
+    pos = paramsDict["path_length"]
+    delta_pos = pos - paramsDict["old_pos"]
+    paramsDict["old_pos"] = pos
+    if(delta_pos == 0.): return
+    paramsDict["count"] += 1
+    gamma = bunch.getSyncParticle().gamma()
+    beta = bunch.getSyncParticle().beta()
+    twiss_analysis.analyzeBunch(bunch)
+    x_rms = math.sqrt(twiss_analysis.getTwiss(0)[1] * twiss_analysis.getTwiss(0)[3]) * 1000.0
+    y_rms = math.sqrt(twiss_analysis.getTwiss(1)[1] * twiss_analysis.getTwiss(1)[3]) * 1000.0
+    z_rms = math.sqrt(twiss_analysis.getTwiss(2)[1] * twiss_analysis.getTwiss(2)[3]) * 1000.0
+    z_to_phase_coeff = bunch_gen.getZtoPhaseCoeff(bunch)
+    z_rms_deg = z_to_phase_coeff * z_rms / 1000.0
+    nParts = bunch.getSizeGlobal()
+    (alphaX, betaX, emittX) = (twiss_analysis.getTwiss(0)[0], twiss_analysis.getTwiss(0)[1], twiss_analysis.getTwiss(0)[3] * 1.0e6)
+    (alphaY, betaY, emittY) = (twiss_analysis.getTwiss(1)[0], twiss_analysis.getTwiss(1)[1], twiss_analysis.getTwiss(1)[3] * 1.0e6)
+    (alphaZ, betaZ, emittZ) = (twiss_analysis.getTwiss(2)[0], twiss_analysis.getTwiss(2)[1], twiss_analysis.getTwiss(2)[3] * 1.0e6)
+    norm_emittX = emittX * gamma * beta
+    norm_emittY = emittY * gamma * beta
+    # ---- phi_de_emittZ will be in [pi*deg*MeV]
+    phi_de_emittZ = z_to_phase_coeff * emittZ
+    eKin = bunch.getSyncParticle().kinEnergy() * 1.0e3
+    #---------phase_adv_arr = [phase_adv_x,phase_adv_y,phase_adv_z]
+    phase_adv_arr = [0.,0.,0.]
+    for dir_ind in range(3):
+        beta_val = betaX
+        if(dir_ind == 1): beta_val = betaY
+        if(dir_ind == 2): beta_val = betaZ
+        ind_last = phase_adv_func_arr[dir_ind].getSize() - 1
+        beta_coeff = 1.0
+        if(dir_ind == 2): beta_coeff = 1./(beta**2*gamma**3*bunch.mass())
+        val0 = phase_adv_func_arr[dir_ind].y(ind_last)
+        val1 = val0 + (180./math.pi)*beta_coeff*delta_pos/beta_val
+        val1 = phaseNearTargetPhaseDeg(val1,0.)
+        phase_adv_func_arr[dir_ind].add(pos,val1)
+        phase_adv_arr[dir_ind] = val1 
+    s = " %35s  %4.5f " % (node.getName(), pos + pos_start)
+    s += "   %6.4f  %6.4f  %6.4f  %6.4f   " % (alphaX, betaX, emittX, norm_emittX)
+    s += "   %6.4f  %6.4f  %6.4f  %6.4f   " % (alphaY, betaY, emittY, norm_emittY)
+    s += "   %6.4f  %6.4f  %6.4f  %6.4f   " % (alphaZ, betaZ, emittZ, phi_de_emittZ)
+    s += "   %5.3f  %5.3f  %5.3f   %5.3f" % (x_rms, y_rms, z_rms, z_rms_deg)
+    s += "   %+6.2f  %+6.2f  %+6.2f  "%(tuple(phase_adv_arr))
+    s += "  %10.6f   %8d " % (eKin, nParts)
+    file_out.write(s + "\n")
+    file_out.flush()
+    s_prt = " %5d  %35s  %4.5f " % (paramsDict["count"], node.getName(), pos + pos_start)
+    s_prt += "  %5.3f  %5.3f   %5.3f   %5.3f " % (x_rms, y_rms, z_rms, z_rms_deg)
+    s_prt += "   %+6.2f  %+6.2f  %+6.2f   "%(tuple(phase_adv_arr))
+    s_prt += "  %10.6f   %8d " % (eKin, nParts)
+    print(s_prt)
+
+
+def action_exit(paramsDict):
+    action_entrance(paramsDict)
+    
+def action_body(paramsDict):
+    action_entrance(paramsDict)
+
+actionContainer.addAction(action_entrance, AccActionsContainer.ENTRANCE)
+actionContainer.addAction(action_body, AccActionsContainer.BODY)
+actionContainer.addAction(action_exit, AccActionsContainer.EXIT)
+
+time_start = time.process_time()
+
+accLattice.trackBunch(bunch, paramsDict=paramsDict, actionContainer=actionContainer)
+
+time_exec = time.process_time() - time_start
+print("time[sec]=", time_exec)
+
+file_out.close()
+
+#---- The final betatron phase advances after beta-functions integrations
+#---- final_beta_integr_phase_adv_arr = [phase_adv_x,phase_adv_y,phase_adv_z]
+final_beta_integr_phase_adv_arr = []
+for ind in range(3):
+    func = phase_adv_func_arr[ind]
+    phase_adv = func.y(func.getSize()-1)
+    final_beta_integr_phase_adv_arr.append(phase_adv)
+    
+#-----------------------------------------------------------------------------
+#---- FINAL STEP. Tracking the bunch through transport matrices.
+#---- print out (and write to the file) the determinant of the transport 
+#---- matrices and tracking the initial bunch though the matrices.
+#---- The RMS bunch sizes should be close to the results of usual bunch tracking
+#---- through the linac lattice.
+#-----------------------------------------------------------------------------
+file_out = open("hebt_tr_mtrx_phase_adv.dat", "w")
+st = " ind Name  pos[m]  detX detY detZ    x_rms[mm] y_rms[mm]  z_rms[mm]  PhaseAdvX[deg] PhaseAdvY[deg] PhaseAdvZ[deg]"
+print(st)
+file_out.write(st + "\n")
+for trMtrx_ind in range(len(trMatrices)):
+    bunch = Bunch()
+    bunch_in.copyBunchTo(bunch)   
+    trMtrx = trMatrices[trMtrx_ind]
+    s = " %03d " % trMtrx_ind + "  %55s " % trMtrx.getName()
+    s += " %7.3f   " % trMtrx.getPosition()
+    s += " %6.4f  %6.4f  %6.4f  " % trMtrx.getNormDetXYZ()
+    trMtrx.getTransportMatrix().track(bunch)
+    twiss_analysis.analyzeBunch(bunch)
+    x_rms = math.sqrt(twiss_analysis.getTwiss(0)[1] * twiss_analysis.getTwiss(0)[3]) * 1000.0
+    y_rms = math.sqrt(twiss_analysis.getTwiss(1)[1] * twiss_analysis.getTwiss(1)[3]) * 1000.0
+    z_rms = math.sqrt(twiss_analysis.getTwiss(2)[1] * twiss_analysis.getTwiss(2)[3]) * 1000.0
+    s += "   %5.3f  %5.3f  %5.3f  " % (x_rms, y_rms, z_rms)
+    phase_adv_arr = trMtrx.getPhaseAdvances()
+    s += " %+6.2f  %+6.2f  %+6.2f "%(tuple(phase_adv_arr))
+    print(s)
+    file_out.write(s + "\n")
+    file_out.flush()
+file_out.close()
+
+print ("debug test remove all nodes = ",trMatricesGenerator.removeAllNodes())
+
+#---- The final betatron phase advances after transport matrix tracking
+#---- final_tr_mtrx_phase_adv_arr = [phase_adv_x,phase_adv_y,phase_adv_z]
+final_tr_mtrx_phase_adv_arr = phase_adv_arr
+
+#---- Difference between two methods
+diff2 = 0.
+for ind in range(3):
+    phase_adv_1 = final_tr_mtrx_phase_adv_arr[ind]
+    phase_adv_0 = final_beta_integr_phase_adv_arr[ind]
+    diff2 += (phase_adv_1 - phase_adv_0)**2
+diff = math.sqrt(diff2)
+
+print ("final_tr_mtrx_phase_adv_arr=",final_tr_mtrx_phase_adv_arr)
+print ("inal_beta_integr_phase_adv_arr=",final_beta_integr_phase_adv_arr)
+print ("average diff=",diff)
+
+if(diff > 1.0):
+    sys.exit(1)
+else:
+    sys.exit(0)

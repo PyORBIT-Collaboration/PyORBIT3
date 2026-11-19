@@ -1,13 +1,21 @@
 #! /usr/bin/env python
 
 """
-This script will track the bunch through the SNS Linac and
-will generate the transport matices.
+This script tracks the bunch through MEBT-DTL (RF acceleration is present) and
+calculates different values along the lattice:
+1. Twiss parameters and betatron phase advances for X,Y,Z axes after 
+   integration of 1/twiss_beta along the lattice
+2. Transport matrices and betatron phase advances calculated from 
+   these matrices.
+The results are saved in two files:
 
+mebt-dtl_beta_func_phase_adv.dat
+mebt-dtl_tr_mtrx_phase_adv.dat
+
+NB:
 1. The use of Twiss weights makes transport matrices more accurate.
 2. The RF gaps should be MatrixRfGap. They are linear transport matrices.
-
-The apertures are added to the lattice.
+3. The apertures are added to the lattice.
 """
 
 import sys
@@ -33,6 +41,9 @@ from orbit.py_linac.lattice_modifications import Add_rfgap_apertures_to_lattice
 from orbit.py_linac.lattice_modifications import AddMEBTChopperPlatesAperturesToSNS_Lattice
 from orbit.py_linac.lattice_modifications import AddScrapersAperturesToLattice
 
+# ---- Phase Aperture node
+from orbit.py_linac.lattice import LinacPhaseApertureNode
+
 # ---- BaseRF_Gap to  AxisFieldRF_Gap replacement  ---- It is a possibility ----------
 from orbit.py_linac.lattice_modifications import Replace_BaseRF_Gap_to_AxisField_Nodes
 
@@ -43,20 +54,20 @@ from sns_linac_bunch_generator import SNS_Linac_BunchGenerator
 from orbit.py_linac.lattice import LinacTrMatricesController
 
 from orbit.core.orbit_utils import Matrix
+from orbit.core.orbit_utils import Function
+
+from orbit.utils import phaseNearTargetPhaseDeg
 
 random.seed(100)
 
 py_orbit_sns_home = os.path.abspath("..")
 
 names = ["MEBT", "DTL1", "DTL2", "DTL3", "DTL4", "DTL5", "DTL6", "CCL1", "CCL2", "CCL3", "CCL4", "SCLMed", "SCLHigh", "HEBT1", "HEBT2"]
-names = ["MEBT", "DTL1", "DTL2"]
-
-# ---- create the factory instance
-sns_linac_factory = SNS_LinacLatticeFactory()
-sns_linac_factory.setMaxDriftLength(0.01)
+names = ["MEBT", "DTL1", "DTL2", "DTL3", "DTL4", "DTL5", "DTL6", "CCL1", "CCL2", "CCL3", "CCL4", "SCLMed", "SCLHigh", "HEBT1"]
+names = ["MEBT", "DTL1", "DTL2", "DTL3", "DTL4", "DTL5", "DTL6"]
 
 # ---- the XML file name with the structure
-xml_file_name = py_orbit_sns_home + "/sns_linac_xml/sns_linac.xml"
+xml_file_name = py_orbit_sns_home + "/sns_linac_xml/sns_pup_linac.xml"
 
 # ---- create the factory instance
 sns_linac_factory = SNS_LinacLatticeFactory()
@@ -67,18 +78,30 @@ accLattice = sns_linac_factory.getLinacAccLattice(names, xml_file_name)
 
 print("Linac lattice is ready. L=", accLattice.getLength())
 
+
 # ----set up RF Gap Model -------------
 # ---- There are three available models at this moment
 # ---- BaseRfGap  uses only E0TL*cos(phi)*J0(kr) with E0TL = const
 # ---- MatrixRfGap uses a matrix approach like envelope codes
 # ---- RfGapTTF uses Transit Time Factors (TTF) like PARMILA
 # cppGapModel = BaseRfGap
-#cppGapModel = MatrixRfGap
-cppGapModel = RfGapTTF
+cppGapModel = MatrixRfGap
+#cppGapModel = RfGapTTF
 rf_gaps = accLattice.getRF_Gaps()
 for rf_gap in rf_gaps:
     rf_gap.setCppGapModel(cppGapModel())
 
+#---- add Phase Aperture nodes to provide stability of Space Charge calulations
+#---- RF frequency Hz
+rf_frequency_rfq = 402.5e+6
+for rf_gap in rf_gaps:
+    rf_frequency = rf_frequency_rfq
+    if(rf_gap.getName().find("MEBT") < 0):
+        rf_frequency = 2*rf_frequency_rfq
+    phaseAperture = LinacPhaseApertureNode(rf_frequency, rf_gap.getName() + ":phaseAprt")
+    phaseAperture.setPosition(rf_gap.getPosition())
+    phaseAperture.setMinMaxPhase(-180.0, +180.0)
+    rf_gap.addChildNode(phaseAperture, AccNode.EXIT)           
 
 # ------------------------------------------------------------------
 # ---- BaseRF_Gap to  AxisFieldRF_Gap direct replacement
@@ -100,7 +123,7 @@ print "Linac lattice has been modified. New L[m] = ",accLattice.getLength()
 from orbit.space_charge.sc3d import setSC3DAccNodes, setUniformEllipsesSCAccNodes
 from orbit.core.spacecharge import SpaceChargeCalcUnifEllipse, SpaceChargeCalc3D
 
-sc_path_length_min = 0.05
+sc_path_length_min = 0.01
 
 print("Set up Space Charge nodes. ")
 
@@ -226,8 +249,9 @@ bunch_gen.setKinEnergy(e_kin_ini)
 
 # set the beam peak current in mA
 bunch_gen.setBeamCurrent(38.0)
+#bunch_gen.setBeamCurrent(0.0)
 
-bunch_in = bunch_gen.getBunch(nParticles=1000, distributorClass=WaterBagDist3D)
+bunch_in = bunch_gen.getBunch(nParticles= 10000, distributorClass=WaterBagDist3D)
 # bunch_in = bunch_gen.getBunch(nParticles = 100000, distributorClass = GaussDist3D)
 # bunch_in = bunch_gen.getBunch(nParticles = 10000, distributorClass = KVDist3D)
 
@@ -241,33 +265,35 @@ accLattice.trackDesignBunch(bunch)
 print("Design tracking completed.")
 
 # track through the lattice
-paramsDict = {"old_pos": -1.0, "count": 0, "pos_step": 0.001}
+paramsDict = {"old_pos": 0.0, "count": 0}
 actionContainer = AccActionsContainer("Test Design Bunch Tracking")
 
 pos_start = 0.0
 
 twiss_analysis = BunchTwissAnalysis()
 
-file_out = open("pyorbit_twiss_sizes_ekin.dat", "w")
+phase_adv_func_arr = [Function(),Function(),Function()]
+for dir_ind in range(3):
+    phase_adv_func_arr[dir_ind].add(0.,0.)
+
+file_out = open("mebt-dtl_beta_func_phase_adv.dat", "w")
 
 s = " Node   position "
 s += "   alphaX betaX emittX  normEmittX"
 s += "   alphaY betaY emittY  normEmittY"
 s += "   alphaZ betaZ emittZ  emittZphiMeV"
 s += "   sizeX[mm] sizeY[mm] sizeZ[mm] sizeZ[deg]"
+s += "   PhaseAdvX[deg] PhaseAdvY[deg] PhaseAdvZ[deg] "
 s += "   eKin Nparts "
 file_out.write(s + "\n")
-print(" N node   position    sizeX  sizeY  sizeZ  sizeZdeg  eKin Nparts ")
+print(" N node   position    sizeX  sizeY  sizeZ  sizeZdeg PhaseAdvX PhaseAdvY PhaseAdvZ eKin Nparts ")
 
 
 def action_entrance(paramsDict):
     node = paramsDict["node"]
     bunch = paramsDict["bunch"]
     pos = paramsDict["path_length"]
-    if paramsDict["old_pos"] == pos:
-        return
-    if paramsDict["old_pos"] + paramsDict["pos_step"] > pos:
-        return
+    delta_pos = pos - paramsDict["old_pos"]
     paramsDict["old_pos"] = pos
     paramsDict["count"] += 1
     gamma = bunch.getSyncParticle().gamma()
@@ -287,16 +313,32 @@ def action_entrance(paramsDict):
     # ---- phi_de_emittZ will be in [pi*deg*MeV]
     phi_de_emittZ = z_to_phase_coeff * emittZ
     eKin = bunch.getSyncParticle().kinEnergy() * 1.0e3
+    #---------phase_adv_arr = [phase_adv_x,phase_adv_y,phase_adv_z]
+    phase_adv_arr = [0.,0.,0.]
+    for dir_ind in range(3):
+        beta_val = betaX
+        if(dir_ind == 1): beta_val = betaY
+        if(dir_ind == 2): beta_val = betaZ
+        ind_last = phase_adv_func_arr[dir_ind].getSize() - 1
+        beta_coeff = 1.0
+        if(dir_ind == 2): beta_coeff = 1./(beta**2*gamma**3*bunch.mass())
+        val0 = phase_adv_func_arr[dir_ind].y(ind_last)
+        val1 = val0 + (180./math.pi)*beta_coeff*delta_pos/beta_val
+        val1 = phaseNearTargetPhaseDeg(val1,0.)
+        phase_adv_func_arr[dir_ind].add(pos,val1)
+        phase_adv_arr[dir_ind] = val1 
     s = " %35s  %4.5f " % (node.getName(), pos + pos_start)
     s += "   %6.4f  %6.4f  %6.4f  %6.4f   " % (alphaX, betaX, emittX, norm_emittX)
     s += "   %6.4f  %6.4f  %6.4f  %6.4f   " % (alphaY, betaY, emittY, norm_emittY)
     s += "   %6.4f  %6.4f  %6.4f  %6.4f   " % (alphaZ, betaZ, emittZ, phi_de_emittZ)
     s += "   %5.3f  %5.3f  %5.3f   %5.3f" % (x_rms, y_rms, z_rms, z_rms_deg)
+    s += "   %+6.2f  %+6.2f  %+6.2f  "%(tuple(phase_adv_arr))
     s += "  %10.6f   %8d " % (eKin, nParts)
     file_out.write(s + "\n")
     file_out.flush()
     s_prt = " %5d  %35s  %4.5f " % (paramsDict["count"], node.getName(), pos + pos_start)
     s_prt += "  %5.3f  %5.3f   %5.3f   %5.3f " % (x_rms, y_rms, z_rms, z_rms_deg)
+    s_prt += "   %+6.2f  %+6.2f  %+6.2f   "%(tuple(phase_adv_arr))
     s_prt += "  %10.6f   %8d " % (eKin, nParts)
     print(s_prt)
 
@@ -304,8 +346,11 @@ def action_entrance(paramsDict):
 def action_exit(paramsDict):
     action_entrance(paramsDict)
 
+def action_body(paramsDict):
+    action_entrance(paramsDict)
 
 actionContainer.addAction(action_entrance, AccActionsContainer.ENTRANCE)
+actionContainer.addAction(action_body, AccActionsContainer.BODY)
 actionContainer.addAction(action_exit, AccActionsContainer.EXIT)
 
 time_start = time.process_time()
@@ -317,6 +362,8 @@ print("time[sec]=", time_exec)
 
 file_out.close()
 
+#sys.exit(0)
+
 #-----------------------------------------------------------------------------
 #---- FINAL STEP. Tracking the bunch through transport matrices.
 #---- print out (and write to the file) the determinant of the transport 
@@ -324,21 +371,28 @@ file_out.close()
 #---- The RMS bunch sizes should be close to the results of usual bunch tracking
 #---- through the linac lattice.
 #-----------------------------------------------------------------------------
-file_out = open("pyorbit_transport_mtrx_trajectory.dat", "w")
+file_out = open("mebt-dtl_tr_mtrx_phase_adv.dat", "w")
+st = " ind Name  pos[m]  detX detY detZ    x_rms y_rms  z_rms  PhaseAdvX PhaseAdvY PhaseAdvZ"
+print(st)
+file_out.write(st + "\n")
 for trMtrx_ind in range(len(trMatrices)):
     bunch = Bunch()
     bunch_in.copyBunchTo(bunch)   
     trMtrx = trMatrices[trMtrx_ind]
     s = " %03d " % trMtrx_ind + "  %55s " % trMtrx.getName()
-    s += " pos[m] = %4.5f " % trMtrx.getPosition()
-    s += " det(M) = %8.6f  %8.6f  %8.6f " % trMtrx.getNormDetXYZ()
+    s += " %7.3f   " % trMtrx.getPosition()
+    s += " %6.4f  %6.4f  %6.4f  " % trMtrx.getNormDetXYZ()
     trMtrx.getTransportMatrix().track(bunch)
     twiss_analysis.analyzeBunch(bunch)
     x_rms = math.sqrt(twiss_analysis.getTwiss(0)[1] * twiss_analysis.getTwiss(0)[3]) * 1000.0
     y_rms = math.sqrt(twiss_analysis.getTwiss(1)[1] * twiss_analysis.getTwiss(1)[3]) * 1000.0
     z_rms = math.sqrt(twiss_analysis.getTwiss(2)[1] * twiss_analysis.getTwiss(2)[3]) * 1000.0
-    s += " rms_xyz =  %5.3f  %5.3f  %5.3f " % (x_rms, y_rms, z_rms)
+    s += "   %5.3f  %5.3f  %5.3f  " % (x_rms, y_rms, z_rms)
+    phase_adv_arr = trMtrx.getPhaseAdvances()
+    s += " %+6.2f  %+6.2f  %+6.2f "%(tuple(phase_adv_arr))
     print(s)
     file_out.write(s + "\n")
     file_out.flush()
 file_out.close()
+
+print ("debug remove all nodes = ",trMatricesGenerator.removeAllNodes())
