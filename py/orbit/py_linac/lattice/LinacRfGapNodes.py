@@ -26,6 +26,7 @@ from orbit.core.linac import BaseRfGap, MatrixRfGap, RfGapTTF, RfGapThreePointTT
 # The abstract RF gap import
 from orbit.py_linac.lattice.LinacAccNodes import AbstractRF_Gap
 
+
 # import teapot base functions from wrapper around C++ functions
 
 # Import the linac specific tracking from linac_tracking. This module has

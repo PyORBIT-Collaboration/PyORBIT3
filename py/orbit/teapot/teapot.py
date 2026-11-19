@@ -23,16 +23,16 @@ from typing import Any
 from typing import Callable
 from typing import Union
 
-from ..lattice import AccLattice
-from ..lattice import AccNode
-from ..lattice import AccActionsContainer
-from ..lattice import AccNodeBunchTracker
-from ..teapot_base import TPB
-from ..utils import orbitFinalize
-from ..parsers.mad_parser import MAD_Parser
-from ..parsers.mad_parser import MAD_LattElement
-from ..parsers.madx_parser import MADX_Parser
-from ..parsers.madx_parser import MADX_LattElement
+from orbit.lattice import AccLattice
+from orbit.lattice import AccNode
+from orbit.lattice import AccActionsContainer
+from orbit.lattice import AccNodeBunchTracker
+from orbit.teapot_base import TPB
+from orbit.utils import orbitFinalize
+from orbit.parsers.mad_parser import MAD_Parser
+from orbit.parsers.mad_parser import MAD_LattElement
+from orbit.parsers.madx_parser import MADX_Parser
+from orbit.parsers.madx_parser import MADX_LattElement
 
 from orbit.core.aperture import Aperture
 from orbit.core.bunch import Bunch
@@ -440,7 +440,6 @@ class TurnCounterTEAPOT(BaseTEAPOT):
             turn = bunch.bunchAttrInt("TurnNumber")
             bunch.bunchAttrInt("TurnNumber", turn + 1)
 
-
 class NodeTEAPOT(BaseTEAPOT):
     def __init__(self, name: str = "no name") -> None:
         """
@@ -582,7 +581,6 @@ class DriftTEAPOT(NodeTEAPOT):
         bunch = paramsDict["bunch"]
         TPB.drift(bunch, length)
 
-
 class ApertureTEAPOT(NodeTEAPOT):
     """
     Aperture TEAPOT element.
@@ -622,7 +620,6 @@ class ApertureTEAPOT(NodeTEAPOT):
         lostbunch = paramsDict["lostbunch"]
         self.aperture.checkBunch(bunch, lostbunch)
 
-
 class MonitorTEAPOT(NodeTEAPOT):
     """
     Monitor TEAPOT element.
@@ -649,7 +646,6 @@ class MonitorTEAPOT(NodeTEAPOT):
         self.addParam("yAvg", self.twiss.getAverage(2))
         self.addParam("ypAvg", self.twiss.getAverage(3))
 
-
 class BunchWrapTEAPOT(NodeTEAPOT):
     """
     Drift TEAPOT element.
@@ -672,7 +668,6 @@ class BunchWrapTEAPOT(NodeTEAPOT):
         bunch = paramsDict["bunch"]
         length = self.getParam("ring_length")
         TPB.wrapbunch(bunch, length)
-
 
 class SolenoidTEAPOT(NodeTEAPOT):
     """
@@ -720,7 +715,6 @@ class SolenoidTEAPOT(NodeTEAPOT):
         Sets the time dependent waveform function
         """
         self.waveform = waveform
-
 
 class MultipoleTEAPOT(NodeTEAPOT):
     """
@@ -870,7 +864,6 @@ class MultipoleTEAPOT(NodeTEAPOT):
         Sets the time dependent waveform function
         """
         self.waveform = waveform
-
 
 class QuadTEAPOT(NodeTEAPOT):
     """
@@ -1034,7 +1027,6 @@ class QuadTEAPOT(NodeTEAPOT):
         """
         self.waveform = waveform
 
-
 class BendTEAPOT(NodeTEAPOT):
     """
     Bend Combined Functions TEAPOT element.
@@ -1063,6 +1055,8 @@ class BendTEAPOT(NodeTEAPOT):
 
         self.addParam("ea1", ea1)
         self.addParam("ea2", ea2)
+        self.getNodeFringeFieldIN().setType("bend fringe in")
+        self.getNodeFringeFieldOUT().setType("bend fringe out")
         self.addParam("theta", theta)
 
         self.setnParts(nparts)
@@ -1248,7 +1242,6 @@ class BendTEAPOT(NodeTEAPOT):
             TPB.bend1(bunch, length, theta / 2.0)
         return
 
-
 class RingRFTEAPOT(NodeTEAPOT):
     """
     Ring RF TEAPOT element.
@@ -1414,7 +1407,6 @@ class KickTEAPOT(NodeTEAPOT):
         """
         self.waveform = waveform
 
-
 class TiltTEAPOT(BaseTEAPOT):
     """
     The class to do tilt at the entrance of an TEAPOT element.
@@ -1448,7 +1440,6 @@ class TiltTEAPOT(BaseTEAPOT):
         if self.__angle != 0.0:
             bunch = paramsDict["bunch"]
             TPB.rotatexy(bunch, self.__angle)
-
 
 class FringeFieldTEAPOT(BaseTEAPOT):
     """

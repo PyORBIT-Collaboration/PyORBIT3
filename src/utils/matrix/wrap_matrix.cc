@@ -6,6 +6,7 @@
 #include "wrap_bunch.hh"
 
 #include <iostream>
+#include <cstring>
 
 #include "Matrix.hh"
 #include "PhaseVector.hh"
@@ -110,6 +111,34 @@ extern "C" {
     pyORBIT_Object* pyMatrix = (pyORBIT_Object*) self;
 		Matrix* cpp_Matrix = (Matrix*) pyMatrix->cpp_obj;
 		return Py_BuildValue("(i,i)",cpp_Matrix->rows(),cpp_Matrix->columns());
+  }
+
+  // Copy all elements into a writable, C-contiguous native-double buffer.
+  static PyObject* Matrix_copyToBuffer(PyObject *self, PyObject *target){
+    Matrix* matrix = (Matrix*) ((pyORBIT_Object*) self)->cpp_obj;
+    Py_buffer buffer;
+    if(PyObject_GetBuffer(target, &buffer, PyBUF_WRITABLE | PyBUF_FORMAT | PyBUF_C_CONTIGUOUS) < 0){
+      return NULL;
+    }
+    if(buffer.itemsize != sizeof(double) || buffer.format == NULL || std::strcmp(buffer.format, "d") != 0){
+      PyBuffer_Release(&buffer);
+      PyErr_SetString(PyExc_TypeError, "copyToBuffer requires a native float64 buffer");
+      return NULL;
+    }
+    if(buffer.ndim != 2 || buffer.shape[0] != matrix->rows() ||
+        buffer.shape[1] != matrix->columns()){
+      PyBuffer_Release(&buffer);
+      PyErr_SetString(PyExc_ValueError, "copyToBuffer requires the same shape as the matrix");
+      return NULL;
+    }
+    char* destination = (char*) buffer.buf;
+    const size_t row_bytes = matrix->columns() * sizeof(double);
+    double** source = matrix->getArray();
+    for(int i = 0; i < matrix->rows(); i++){
+      std::memcpy(destination + i * row_bytes, source[i], row_bytes);
+    }
+    PyBuffer_Release(&buffer);
+    Py_RETURN_NONE;
   }
 
 	//  copy() - returns the new Matrix that is equal to the parent one
@@ -289,6 +318,8 @@ extern "C" {
 	// defenition of the methods of the python Matrix wrapper class
 	// they will be vailable from python level
   static PyMethodDef MatrixClassMethods[] = {
+    { "copyToBuffer", Matrix_copyToBuffer, METH_O,
+      "Copy values into a writable C-contiguous float64 buffer with matching shape."},
     { "size",       Matrix_size      ,METH_VARARGS,"Returns tuple with (n,m)"},
     { "get",        Matrix_get_set   ,METH_VARARGS,"Returns valuie(i,j)"},
     { "set",        Matrix_get_set   ,METH_VARARGS,"Sets the new value to (i,j) element - set (i,j,val)"},

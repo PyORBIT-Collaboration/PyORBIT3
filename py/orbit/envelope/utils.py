@@ -1,0 +1,57 @@
+import math
+import numpy as np
+from scipy.constants import epsilon_0
+
+from orbit.utils.consts import charge_electron
+
+
+def get_classical_radius(charge: float, mass: float) -> float:
+    q = charge * charge_electron  # [C]
+    rest_energy = mass * 1e9 * charge_electron  # [J]
+    return q**2 / (4.0 * math.pi * epsilon_0 * rest_energy)
+
+
+def sample_distribution_gauss(size: int, cov_matrix: np.ndarray) -> np.ndarray:
+    return np.random.multivariate_normal(
+        mean=np.zeros(cov_matrix.shape[0]),
+        cov=cov_matrix,
+        size=size,
+    )
+
+
+def sample_distribution_kv(size: int, cov_matrix: np.ndarray) -> np.ndarray:
+    X = np.random.normal(size=(size, cov_matrix.shape[0]))
+    X /= np.linalg.norm(X, axis=1)[:, None]
+    X /= np.std(X, axis=0)
+    return X
+
+
+def sample_distribution_waterbag(size: int, cov_matrix: np.ndarray) -> np.ndarray:
+    X = sample_distribution_kv(size, cov_matrix)
+    dim = X.shape[1]
+    r = np.random.uniform(size=size) ** (1.0 / dim)
+    X *= r[:, None]
+    X /= np.std(X, axis=0)
+    return X
+
+
+def sample_distribution(size: int, cov_matrix: np.ndarray, name: str) -> np.ndarray:
+    if name == "kv":
+        X = sample_distribution_kv(size, cov_matrix)
+    elif name == "waterbag":
+        X = sample_distribution_waterbag(size, cov_matrix)
+    elif name == "gauss":
+        X = sample_distribution_gauss(size, cov_matrix)
+    else:
+        raise ValueError(f"Invalid distribution name: {name}")
+
+    L = np.linalg.cholesky(cov_matrix)
+    return X @ L.T
+
+
+def project_covariance_matrix(cov_matrix: np.ndarray, axis: tuple[int, ...]) -> np.ndarray:
+    cov_matrix_proj = np.zeros((len(axis), len(axis)))
+    for i in range(len(axis)):
+        for j in range(len(axis)):
+            cov_matrix_proj[i, j] = cov_matrix[axis[i], axis[j]]
+    return cov_matrix_proj

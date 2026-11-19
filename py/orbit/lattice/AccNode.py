@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import sys
 import os
 import math
@@ -7,7 +9,7 @@ from ..utils import NamedObject
 from ..utils import TypedObject
 from ..utils import ParamsDictObject
 
-from ..lattice import AccActionsContainer
+from .AccActionsContainer import AccActionsContainer
 
 
 class AccNode(NamedObject, TypedObject, ParamsDictObject):

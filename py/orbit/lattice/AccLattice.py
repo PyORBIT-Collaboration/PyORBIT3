@@ -1,12 +1,20 @@
-import sys
+from __future__ import annotations
+
 import os
+from typing import TYPE_CHECKING
 
-from ..utils import orbitFinalize
-from ..utils import NamedObject
-from ..utils import TypedObject
+import numpy as np
 
-from ..lattice import AccActionsContainer
-from ..lattice import AccNode
+from orbit.utils import orbitFinalize
+from orbit.utils import NamedObject
+from orbit.utils import TypedObject
+
+from .AccActionsContainer import AccActionsContainer
+from .AccNode import AccNode
+
+if TYPE_CHECKING:
+    from orbit.envelope.envelope import Envelope
+    from orbit.envelope.tracking import EnvelopeTracker
 
 
 class AccLattice(NamedObject, TypedObject):
@@ -31,6 +39,7 @@ class AccLattice(NamedObject, TypedObject):
         self.__isInitialized = False
         self.__children = []
         self.__childPositions = {}
+        self._envelope_tracker: EnvelopeTracker | None = None
 
     def initialize(self):
         """
@@ -261,3 +270,70 @@ class AccLattice(NamedObject, TypedObject):
             paramsDict["node"] = node
             paramsDict["parentNode"] = self
             node.trackActions(actionsContainer, paramsDict)
+
+    def trackEnvelope(
+        self,
+        envelope: Envelope,
+        index_start: int = 0,
+        index_stop: int | None = None,
+        sc: str | None = None,
+        params_dict: dict | None = None,
+        action_container: AccActionsContainer | None = None,
+        fit: bool = False,
+        fallback: bool = False,
+        static: bool = False,
+        return_matrix: bool = False,
+    ) -> np.ndarray | None:
+        """Tracks envelope through the lattice.
+
+        Args:
+            envelope: Beam envelope.
+            index_start: First node index.
+            index_stop: Last node index.
+            sc: Space charge model {None, "2d", "3d"}.
+            params_dict: Parameter dictionary.
+            action_container: AccActions container.
+            fit: Whether to use best-fit transfer matrices instead of analytic matrices.
+            fallback: When fit=False, fall back to best-fit transfer matrix for nodes
+                without analytic matrix.
+            static: If True, precompute transfer matrices and reuse on future calls.
+                This assumes there are no time-dependent nodes in the lattice and
+                no acceleration. Call initialize() or track once with static=False
+                to clear matrices after changing the lattice or reference beam.
+            return_matrix: Whether to compute total transfer matrix.
+
+        Returns:
+            If `return_matrix`, returns the total transfer matrix (including linear
+            space charge). Otherwise, returns None.
+        """
+        from orbit.envelope.tracking import EnvelopeTracker
+
+        tracker = EnvelopeTracker(
+            self,
+            index_start=index_start,
+            index_stop=index_stop,
+            fit=fit,
+            fallback=fallback,
+        )
+
+        if static:
+            if self._envelope_tracker is None or (
+                self._envelope_tracker.index_start != tracker.index_start
+                or self._envelope_tracker.index_stop != tracker.index_stop
+                or self._envelope_tracker.fit != fit
+                or self._envelope_tracker.fallback != fallback
+            ):
+                tracker.precompute(envelope, params_dict=params_dict)
+                self._envelope_tracker = tracker
+            else:
+                tracker = self._envelope_tracker
+        else:
+            self._envelope_tracker = None
+
+        return tracker.track(
+            envelope,
+            sc=sc,
+            params_dict=params_dict,
+            action_container=action_container,
+            return_matrix=return_matrix,
+        )

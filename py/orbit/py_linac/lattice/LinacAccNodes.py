@@ -18,6 +18,7 @@ from orbit.lattice import AccNode, AccActionsContainer, AccNodeBunchTracker
 # import teapot base functions from wrapper around C++ functions
 from orbit.teapot_base import TPB
 
+
 # Import the linac specific tracking from linac_tracking. This module has
 # the following functions duplicated the original TEAPOT functions
 # drift - linac drift tracking
@@ -140,7 +141,6 @@ class MarkerLinacNode(BaseLinacNode):
     def __init__(self, name="none"):
         BaseLinacNode.__init__(self, name)
         self.setType("markerLinacNode")
-
 
 class LinacNode(BaseLinacNode):
     """
@@ -307,7 +307,6 @@ class Drift(BaseLinacNode):
         length = self.getLength(self.getActivePartIndex())
         bunch = paramsDict["bunch"]
         self.tracking_module.drift(bunch, length)
-
 
 class Quad(LinacMagnetNode):
     """
@@ -517,7 +516,6 @@ class Quad(LinacMagnetNode):
             G = self.getParam("dB/dr")
         return G
 
-
 class Bend(LinacMagnetNode):
     """
     Bend Combined Functions TEAPOT element.
@@ -534,6 +532,8 @@ class Bend(LinacMagnetNode):
 
         self.addParam("ea1", 0.0)
         self.addParam("ea2", 0.0)
+        self.getNodeFringeFieldIN().setType("bend fringe in")
+        self.getNodeFringeFieldOUT().setType("bend fringe out")
         self.addParam("rho", 0.0)
         self.addParam("theta", 1.0e-36)
 
@@ -709,7 +709,6 @@ class Bend(LinacMagnetNode):
             TPB.bend1(bunch, length, theta / 2.0)
         return
 
-
 class DCorrectorH(LinacMagnetNode):
     """
     The Horizontal Dipole Corrector.
@@ -754,7 +753,6 @@ class DCorrectorH(LinacMagnetNode):
         kick = -field * charge * length * 0.299792 / momentum
         self.tracking_module.kick(bunch, kick, 0.0, 0.0)
 
-
 class DCorrectorV(LinacMagnetNode):
     """
     The Vertical Dipole Corrector.
@@ -798,7 +796,6 @@ class DCorrectorV(LinacMagnetNode):
         # dp/p = Q*c*B*L/p p in GeV/c, c = 2.99792*10^8/10^9
         kick = field * charge * length * 0.299792 / momentum
         self.tracking_module.kick(bunch, 0, kick, 0.0)
-
 
 class ThickKick(LinacMagnetNode):
     """
@@ -1013,7 +1010,6 @@ class TiltElement(BaseLinacNode):
         if self.__angle != 0.0:
             bunch = paramsDict["bunch"]
             TPB.rotatexy(bunch, self.__angle)
-
 
 class FringeField(BaseLinacNode):
     """
