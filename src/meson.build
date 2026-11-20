@@ -13,11 +13,7 @@ dependencies = []
 
 dependencies += python.dependency()
 if get_option('USE_NUMPY')
-  numpy_include = run_command(
-    python, ['-c', 'import numpy; print(numpy.get_include())'],
-    check: true,
-  ).stdout().strip()
-  dependencies += declare_dependency(include_directories: include_directories(numpy_include))
+  dependencies += dependency('numpy')
   add_project_arguments('-DWITH_NUMPY', language: 'cpp')
 endif
 dep_fftw = dependency('fftw3', version: '>= 3.0.0', required: true)
