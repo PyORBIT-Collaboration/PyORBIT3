@@ -12,6 +12,10 @@ endif
 dependencies = []
 
 dependencies += python.dependency()
+if get_option('USE_NUMPY')
+  dependencies += dependency('numpy')
+  add_project_arguments('-DWITH_NUMPY', language: 'cpp')
+endif
 dep_fftw = dependency('fftw3', version: '>= 3.0.0', required: true)
 dependencies += dep_fftw
 

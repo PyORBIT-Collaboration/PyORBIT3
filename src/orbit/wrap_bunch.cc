@@ -9,6 +9,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 #include "wrap_bunch.hh"
+#ifdef WITH_NUMPY
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#include <numpy/arrayobject.h>
+#endif
 #include "wrap_syncpart.hh"
 #include "wrap_bunch_twiss_analysis.hh"
 #include "wrap_bunch_tune_analysis.hh"
@@ -123,6 +127,70 @@ namespace wrap_orbit_bunch{
     return Py_BuildValue("i",ind);
   }
 
+
+#ifdef WITH_NUMPY
+  //Returns an owned snapshot without compressing or filtering deleted particles.
+  static PyObject* Bunch_coordinates(PyObject *self, PyObject*)
+  {
+    Bunch* cpp_bunch = static_cast<Bunch*>(
+        reinterpret_cast<pyORBIT_Object*>(self)->cpp_obj);
+
+    const int count = cpp_bunch->getSize();
+    npy_intp shape[2] = {static_cast<npy_intp>(count), 6};
+
+    PyObject* result = PyArray_SimpleNew(2, shape, NPY_DOUBLE);
+
+    if(result == NULL) return NULL;
+
+    double* data = static_cast<double*>(
+        PyArray_DATA(reinterpret_cast<PyArrayObject*>(result)));
+
+    double** coordinates = cpp_bunch->coordArr();
+
+    #pragma omp parallel for schedule(static)
+    for(int i = 0; i < count; ++i) {
+      for(int j = 0; j < 6; ++j) {
+        data[static_cast<npy_intp>(i)*6 + j] = coordinates[i][j];
+      }
+    }
+
+    return result;
+  }
+
+  //Appends local particle coordinates from an array-like object of shape (N, 6).
+  static PyObject* Bunch_addParticles(PyObject *self, PyObject *coordinates)
+  {
+    PyArrayObject* array = reinterpret_cast<PyArrayObject*>(PyArray_FROM_OTF(
+        coordinates, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY));
+
+    if(array == NULL) return NULL;
+
+    if(PyArray_NDIM(array) != 2 || PyArray_DIM(array,1) != 6){
+      Py_DECREF(array);
+      PyErr_SetString(PyExc_ValueError,
+                      "addParticles expects coordinates with shape (N, 6)");
+      return NULL;
+    }
+
+    Bunch* cpp_bunch = static_cast<Bunch*>(
+        reinterpret_cast<pyORBIT_Object*>(self)->cpp_obj);
+
+    const double* data = static_cast<const double*>(PyArray_DATA(array));
+    const npy_intp count = PyArray_DIM(array,0);
+
+    // TODO: Due to Bunch's lack of a bulk-append method, it's not currently 
+    // thread-safe to parallelize this loop, but doing it serially is already pretty fast.
+    // Investigate the potential for parallelization later.
+    for(npy_intp i = 0; i < count; ++i) {
+      const double* row = data + 6*i;
+      cpp_bunch->addParticle(row[0],row[1],row[2],row[3],row[4],row[5]);
+    }
+
+    Py_DECREF(array);
+    Py_RETURN_NONE;
+  }
+
+#endif
 
   //removes a particle to the Bunch object
   //returns the number of particles in the bunch
@@ -1192,6 +1260,16 @@ namespace wrap_orbit_bunch{
     { "setMPIComm",                     Bunch_setMPIComm                    ,METH_VARARGS,"Sets a new MPI Comm for this bunch"},
     { "getSyncParticle",                Bunch_getSyncParticle               ,METH_VARARGS,"Returns syncParticle class instance"},
     { "addParticle",                    Bunch_addParticle                   ,METH_VARARGS,"Adds a macro-particle to the bunch"},
+#ifdef WITH_NUMPY
+    { "addParticles",                   Bunch_addParticles                  ,METH_O,
+      "Append local coordinates of shape (N, 6), ordered (x, xp, y, yp, z, dE). Returns None."},
+    { "coordinates",                    Bunch_coordinates                   ,METH_NOARGS,
+      "Return an independent C-contiguous float64 array of local coordinates.\n"
+      "Shape (getSize(), 6); columns (x, xp, y, yp, z, dE), in existing units.\n"
+      "No MPI communication, particle attributes, or metadata are included.\n"
+      "Does not compress or filter deleted particles. Call compress() first if\n"
+      "particles have been deleted; otherwise addParticles() can revive dead slots."},
+#endif
     { "deleteParticle",                 Bunch_deleteParticle                ,METH_VARARGS,"Removes macro-particle from the bunch and call compress inside"},
     { "deleteParticleFast",             Bunch_deleteParticleFast            ,METH_VARARGS,"Removes macro-particle from the bunch very fast"},
     { "recoverParticle",                Bunch_recoverParticle               ,METH_VARARGS,"Recovers a particle marked for removal"},
@@ -1315,6 +1393,9 @@ extern "C" {
 
   /* The name of the function was changed to avoid collision with PyImport magic naming */
   PyMODINIT_FUNC initbunch(void) {
+#ifdef WITH_NUMPY
+      import_array();
+#endif
       //check that the Bunch wrapper is ready
       if(PyType_Ready(&pyORBIT_Bunch_Type) < 0) return NULL;
       Py_INCREF(&pyORBIT_Bunch_Type);
