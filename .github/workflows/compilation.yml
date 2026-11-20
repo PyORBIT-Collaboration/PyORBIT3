@@ -116,7 +116,9 @@ jobs:
           pip install -U pip
           pip install -r requirements.txt
           pip install -U setuptools
+          pip install numpy
           pip install --no-build-isolation --editable ".[numpy]" \
+            --config-settings=setup-args="-DUSE_NUMPY=true" \
             --config-settings=setup-args="-DUSE_FFTW_THREADS=true" \
             --config-settings=setup-args="-DUSE_OPENMP=true"
 
