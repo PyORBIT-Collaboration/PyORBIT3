@@ -1,4 +1,5 @@
 option('USE_MPI', type: 'string', value: 'auto', description: 'Choose MPI implementation (mpich, openmpi, none, auto)')
 option('USE_FFTW_THREADS', type: 'boolean', value: false,  description: 'Build with threaded version of FFTW')
 option('USE_OPENMP', type: 'boolean', value: false, description: 'Build with OpenMP (multi-threading) support')
+option('USE_NUMPY', type: 'boolean', value: false, description: 'Build Bunch.addParticles and Bunch.coordinates with the NumPy C API')
 
